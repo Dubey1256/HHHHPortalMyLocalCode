@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as $ from 'jquery';
-import '../../CssFolder/foundation.scss'
+import '../../cssFolder/foundation.scss';
+import '../../cssFolder/foundationmin.scss';
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as Moment from 'moment';
 import Groupby from './TaskWebpart';
