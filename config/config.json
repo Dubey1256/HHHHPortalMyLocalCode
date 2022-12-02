@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "service-portfolio-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/servicePortfolio/ServicePortfolioWebPart.js",
+          "manifest": "./src/webparts/servicePortfolio/ServicePortfolioWebPart.manifest.json"
+        }
+      ]
+    },
+    "component-portfolio-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/componentPortfolio/ComponentPortfolioWebPart.js",
+          "manifest": "./src/webparts/componentPortfolio/ComponentPortfolioWebPart.manifest.json"
+        }
+      ]
+    },
+    "component-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/componentProfile/ComponentProfileWebPart.js",
+          "manifest": "./src/webparts/componentProfile/ComponentProfileWebPart.manifest.json"
+        }
+      ]
+    },
+    "component-edit-popup-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/componentEditPopup/ComponentEditPopupWebPart.js",
+          "manifest": "./src/webparts/componentEditPopup/ComponentEditPopupWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {"jquery": {
+
+    "path": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js",
+
+    "globalName": "jQuery"
+
+ }},
+  "localizedResources": {
+    "ServicePortfolioWebPartStrings": "lib/webparts/servicePortfolio/loc/{locale}.js",
+    "ComponentPortfolioWebPartStrings": "lib/webparts/componentPortfolio/loc/{locale}.js",
+    "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
+    "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js"
+  }
+}

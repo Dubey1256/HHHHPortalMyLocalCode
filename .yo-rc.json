@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": false,
+    "version": "1.15.2",
+    "libraryName": "hhhh-portal",
+    "libraryId": "27fb8e2e-b470-4fc2-a52c-f4040c2c78d2",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "hhhh-portal",
+    "solutionShortDescription": "hhhh-portal description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
