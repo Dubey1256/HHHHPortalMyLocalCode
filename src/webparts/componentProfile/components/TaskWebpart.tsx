@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
-import './PopupOfdata/TestWithDiff/foundation.scss';
+import '../../cssFolder/foundation.scss';
 import { Modal } from 'office-ui-fabric-react';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
