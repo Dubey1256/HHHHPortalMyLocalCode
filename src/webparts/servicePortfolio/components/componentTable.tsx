@@ -2590,7 +2590,7 @@ function ComponentTable() {
                                                                                         >{item.Title}
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         >{item.Title}
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
@@ -2689,7 +2689,7 @@ function ComponentTable() {
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 &&
@@ -2787,7 +2787,7 @@ function ComponentTable() {
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.childs.length > 0 &&
@@ -2882,7 +2882,7 @@ function ComponentTable() {
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&
