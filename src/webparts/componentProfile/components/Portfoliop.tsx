@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import * as Moment from 'moment';
 import Groupby from './TaskWebpart';
 import Tooltip from './Tooltip';
+import ComponentTable from './TaskWebpart';
 
 function Portfolio({ID}:any) {
     const [data, setTaskData] = React.useState([]);
@@ -802,9 +803,10 @@ function Portfolio({ID}:any) {
                             {/* {data.map(item => (
                                 <Groupbyt  title={item.Title} level={item.PortfolioLevel}/>))} */}
                                 {/* <Groupby/> */}
-                                {data.map(item => (
+                                {/* {data.map(item => (
                                 <Groupby Id={item.Id} level={item.PortfolioLevel}/>
-                                ))}
+                                ))} */}
+                                <ComponentTable/>
                             </div>
 
                         </section>
