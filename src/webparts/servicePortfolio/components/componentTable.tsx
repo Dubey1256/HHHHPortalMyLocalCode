@@ -11,7 +11,7 @@ import { CSVLink } from "react-csv";
 import '../../cssFolder/foundation.scss' ;
 import { map } from 'jquery';
 import { concat } from 'lodash';
-import EditInstitution from '../../EditPopupFiles/EditComponent';
+import EditInstituton from '../../EditPopupFiles/EditComponent';
 
 
 
@@ -49,18 +49,23 @@ function ComponentTable() {
 
     const [collapseItem, setcollapseItem] = React.useState(true);
     const [EditTaskItemitle, setEditItem] = React.useState('');
-    const [popupStatus, setPopupItem] = React.useState(false);
+    const [popupStatus, setPopupItem] = React.useState(true);
     const [itemData, setItemData] = React.useState([])
-
+    const [popupcount, setPopupcount] = React.useState(0);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-    const editProfile = (itemData: any) => {
-        console.log('test')
-        setPopupItem(true);
-        setItemData(['']);
-        setItemData(itemData);// => ([...itemData]));
-
-
-    }
+    // const editProfile = (itemData: any) => {
+    //     console.log('test')
+    //     setPopupItem(true);
+    //     setPopupcount(popupcount+1);
+    //     setItemData(['']);
+    //     itemData.popupcount=popupcount +1;
+    //    // => ([...itemData]));
+       
+    //      setItemData(itemData);
+    //     // itemData.preventDefault();
+    // }
+   
+   
     const SingleLookDatatest = (e: any, item: any, value: any) => {
         const { checked } = e.target;
         if (checked) {
@@ -2631,7 +2636,8 @@ function ComponentTable() {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td>
+                                                                                    <td style={{ width: "3%" }}> {popupStatus ? <EditInstituton item={item} /> : null}</td>
+                                                                                    {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
                                                                         </td>
@@ -2728,7 +2734,7 @@ function ComponentTable() {
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                            <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => editProfile(childitem)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td>
+                                                                                                            <td style={{ width: "3%" }}>{childitem.siteType == "Master Tasks" && popupStatus ? <EditInstituton item={childitem} /> : null}</td>
                                                                                                         </tr>
                                                                                                     </table>
                                                                                                 </td>
@@ -2826,7 +2832,7 @@ function ComponentTable() {
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
                                                                                                                                     <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType == "Master Tasks" && <a onClick={(e) => editProfile(childinew)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td>
+                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType == "Master Tasks" && <a><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td>
                                                                                                                                 </tr>
                                                                                                                             </table>
                                                                                                                         </td>
@@ -2963,7 +2969,7 @@ function ComponentTable() {
                             </div>
                         </div></section>
                 </div></section>
-            {popupStatus ? <EditInstitution props={itemData} /> : null}
+           
         </div>
     );
 }
