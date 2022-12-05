@@ -1,43 +1,31 @@
 import * as React from 'react';
-import styles from './ComponentProfile.module.scss';
 import { IComponentProfileProps } from './IComponentProfileProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+import Portfolio from './Portfoliop';
 
 export default class ComponentProfile extends React.Component<IComponentProfileProps, {}> {
   public render(): React.ReactElement<IComponentProfileProps> {
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
-      userDisplayName
-    } = this.props;
+  
 
+    function getQueryVariable(variable:any)
+    {
+            var query = window.location.search.substring(1);
+            console.log(query)//"app=article&act=news_content&aid=160990"
+            var vars = query.split("&");
+           
+            console.log(vars) 
+            for (var i=0;i<vars.length;i++) {
+                        var pair = vars[i].split("=");
+                        console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ] 
+            if(pair[0] == variable){ return pair[1];}
+             }
+             return(false);
+             
+             
+    }
     return (
-      <section className={`${styles.componentProfile} ${hasTeamsContext ? styles.teams : ''}`}>
-        <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
-          <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
-        </div>
-        <div>
-          <h3>Welcome to SharePoint Framework!</h3>
-          <p>
-            The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-          </p>
-          <h4>Learn more about SPFx development:</h4>
-          <ul className={styles.links}>
-            <li><a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">SharePoint Framework Overview</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">Use Microsoft Graph in your solution</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">Build for Microsoft Teams using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">Publish SharePoint Framework applications to the marketplace</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">SharePoint Framework API reference</a></li>
-            <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
-          </ul>
-        </div>
-      </section>
+      <div>
+      <Portfolio ID={getQueryVariable('taskId')}/>
+      </div>
     );
   }
 }
