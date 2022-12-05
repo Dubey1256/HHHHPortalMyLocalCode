@@ -33,19 +33,27 @@
           "manifest": "./src/webparts/componentEditPopup/ComponentEditPopupWebPart.manifest.json"
         }
       ]
+    },
+    "task-user-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskUserManagement/TaskUserManagementWebPart.js",
+          "manifest": "./src/webparts/taskUserManagement/TaskUserManagementWebPart.manifest.json"
+        }
+      ]
     }
   },
-  "externals": {"jquery": {
-
-    "path": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js",
-
-    "globalName": "jQuery"
-
- }},
+  "externals": {
+    "jquery": {
+      "path": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js",
+      "globalName": "jQuery"
+    }
+  },
   "localizedResources": {
     "ServicePortfolioWebPartStrings": "lib/webparts/servicePortfolio/loc/{locale}.js",
     "ComponentPortfolioWebPartStrings": "lib/webparts/componentPortfolio/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
-    "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js"
+    "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js",
+    "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js"
   }
 }
