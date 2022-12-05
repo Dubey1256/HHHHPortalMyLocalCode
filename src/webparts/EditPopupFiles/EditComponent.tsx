@@ -25,8 +25,8 @@ function EditInstitution(item: any) {
     const [useeffectdata, setuseeffectdata] = React.useState(false);
     const [selectedOption, setselectedOption] = React.useState('');
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
-    const setModalIsOpenToTrue = () => {
-
+    const setModalIsOpenToTrue = (e:any) => {
+        e.preventDefault()
         setModalIsOpen(true)
     }
 
@@ -121,7 +121,7 @@ function EditInstitution(item: any) {
     //     }
     // }
     var getMasterTaskListTasks = function () {
-        var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
+        var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.item.Id + "";
         $.ajax({
             url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
             method: "GET",
@@ -172,7 +172,7 @@ function EditInstitution(item: any) {
                 });
                 //  deferred.resolve(Tasks);
                 setComponent(Tasks);
-                setModalIsOpenToTrue();
+              //  setModalIsOpenToTrue();
             },
 
             error: function (error) {
@@ -187,13 +187,17 @@ function EditInstitution(item: any) {
     var ListId: any = '';
     var CurrentSiteUrl: any = '';
     //var SharewebItemRank: any = '';
-   
+    const [state, setState] = React.useState("state");
+
+    const loadDataOnlyOnce = React.useCallback(() => {
+      console.log(`I need ${state}!!`);
+    }, [state]);
   
     var Item: any = '';
     React.useEffect(() => {
         var initLoading = function () {
-            if (item.props != undefined && item.props.siteType != undefined) {
-                var Item = item.props;
+            if (item.item != undefined && item.item.siteType != undefined) {
+                var Item = item.item;
                 if (Item.siteType == 'HTTPS:') {
                     Item.siteType = 'HHHH';
                 }
@@ -210,12 +214,12 @@ function EditInstitution(item: any) {
         initLoading();
  
     },
-       [item.props !=undefined ?item.props.Id:''] );
+       [] );
 
    
     return (
         <>
-            <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue()}
+            <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
                 src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />
             <Modal
                 isOpen={modalIsOpen}
