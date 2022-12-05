@@ -41,6 +41,14 @@
           "manifest": "./src/webparts/taskUserManagement/TaskUserManagementWebPart.manifest.json"
         }
       ]
+    },
+    "task-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskDashboard/TaskDashboardWebPart.js",
+          "manifest": "./src/webparts/taskDashboard/TaskDashboardWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -54,6 +62,7 @@
     "ComponentPortfolioWebPartStrings": "lib/webparts/componentPortfolio/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
     "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js",
-    "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js"
+    "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
+    "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js"
   }
 }
