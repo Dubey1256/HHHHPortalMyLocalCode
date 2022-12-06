@@ -803,10 +803,11 @@ function Portfolio({ID}:any) {
                             {/* {data.map(item => (
                                 <Groupbyt  title={item.Title} level={item.PortfolioLevel}/>))} */}
                                 {/* <Groupby/> */}
-                                {/* {data.map(item => (
-                                <Groupby Id={item.Id} level={item.PortfolioLevel}/>
-                                ))} */}
-                                <ComponentTable/>
+                                {data.map(item => (
+                                // <Groupby Id={item.Id} level={item.PortfolioLevel}/>
+                                <ComponentTable props={item.Title}/>
+                                ))}
+                                
                             </div>
 
                         </section>

@@ -6,7 +6,7 @@ import { Modal } from 'office-ui-fabric-react';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import Tooltip from './Tooltip';
-export default function ComponentTable() {
+export default function ComponentTable({props}:any) {
 
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
     // const [Editpopup, setEditpopup] = React.useState(false)
@@ -1052,9 +1052,13 @@ export default function ComponentTable() {
              }
         })
         //maidataBackup.push(ComponentsData)
-
-        setmaidataBackup(arrys[1])
-        setData(arrys[1]);
+        arrys.map((item: any)=>{
+            if(item.length>0){
+                setmaidataBackup(item)
+                setData(item);
+            }
+        })
+       
 
         showProgressHide();
 
@@ -2199,7 +2203,7 @@ export default function ComponentTable() {
                         <span>
                             {/* {data.map(item => <a>{item.Title}</a>)} */}
                             {/* <a>Contact Database</a> */}
-                            {/* <a>{props.title}</a> */}
+                            <a>{props}</a>
                         </span>
                     </label>
                                         <span className="g-search">
@@ -2631,7 +2635,7 @@ export default function ComponentTable() {
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             {/* <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => editProfile(childitem)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td> */}
-                                                                                                            <td>{childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                                            <td>{childitem.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</td>
                                                                                                             <td></td>
                                                                                                             <td></td>
                                                                                                             <td></td>
