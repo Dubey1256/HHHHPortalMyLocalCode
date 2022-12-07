@@ -25,7 +25,7 @@ function EditInstitution(item: any) {
     const [useeffectdata, setuseeffectdata] = React.useState(false);
     const [selectedOption, setselectedOption] = React.useState('');
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
-    const setModalIsOpenToTrue = (e:any) => {
+    const setModalIsOpenToTrue = (e: any) => {
         e.preventDefault()
         setModalIsOpen(true)
     }
@@ -172,7 +172,7 @@ function EditInstitution(item: any) {
                 });
                 //  deferred.resolve(Tasks);
                 setComponent(Tasks);
-              //  setModalIsOpenToTrue();
+                //  setModalIsOpenToTrue();
             },
 
             error: function (error) {
@@ -190,9 +190,9 @@ function EditInstitution(item: any) {
     const [state, setState] = React.useState("state");
 
     const loadDataOnlyOnce = React.useCallback(() => {
-      console.log(`I need ${state}!!`);
+        console.log(`I need ${state}!!`);
     }, [state]);
-  
+
     var Item: any = '';
     React.useEffect(() => {
         var initLoading = function () {
@@ -205,18 +205,18 @@ function EditInstitution(item: any) {
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
                 setSharewebItemRank([{ rankTitle: '(8) Top Highlights', rank: '8' }, { rankTitle: '(7) Featured Item', rank: '7' }, { rankTitle: '(6) Key Item', rank: '6' }, { rankTitle: '(5) Relevant Item', rank: '5' }, { rankTitle: '(4) Background Item', rank: '4' }, { rankTitle: '(2) to be verified', rank: '2' }, { rankTitle: '(1) Archive', rank: '1' }, { rankTitle: '(0) No Show', rank: '0' }]);
-                if(useeffectdata ==false)
-                setuseeffectdata(true);
-                else  setuseeffectdata(false);
+                if (useeffectdata == false)
+                    setuseeffectdata(true);
+                else setuseeffectdata(false);
                 //loadColumnDetails();
             }
         }
         initLoading();
- 
-    },
-       [] );
 
-   
+    },
+        []);
+
+
     return (
         <>
             <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
@@ -229,58 +229,188 @@ function EditInstitution(item: any) {
             >
                 {CompoenetItem != undefined && CompoenetItem.map(institution =>
                     <div id="EditGrueneContactSearch">
-                        <div className="panel panel-default" ng-cloak>
-                            <div className="modal-header">
-                                <h3 className="modal-title">
-                                    <img style={{ width: "22px" }} ng-if="selectedImageUrl != undefined" id="selectedimage"
-                                        ng-src="{{selectedImageUrl}}?RenditionID=12" />
-                                    <img style={{ width: "22px" }} ng-if="selectedImageUrl == undefined"
-                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg" />
-                                    Edit Institution-
-                                    {institution.Title}
-                                    <span className="pull-right">
-                                        {/* <page-settings-info webpartid="'EditInstitutionPopup'"></page-settings-info> */}
-                                        {/* <Tooltip /> */}
-                                    </span>
-                                </h3>
-                                <button type="button" style={{ minWidth: "10px" }} className="close" data-dismiss="modal"
-                                    onClick={setModalIsOpenToFalse}>
-                                    &times;
-                                </button>
-                            </div>
-                            <div className="modal-body">
-                                <form name="ItemForm" noValidate role="form">
-                                    <div id="table-wrapper">
-                                        <div id="table-scroll">
-                                            <div id="itemtabs" className="exTab3">
+                        <div className="modal-dailog modal-lg">
+                            <div className="modal-content" ng-cloak>
+                                <div className="modal-header">
+                                    <h3 className="modal-title">
+                                        Service-Portfolio<span > {">"} </span>
+                                        {institution.Title}
+                                        <span className="pull-right">
+                                            {/* <page-settings-info webpartid="'EditInstitutionPopup'"></page-settings-info> */}
+                                            {/* <Tooltip /> */}
+                                        </span>
+                                    </h3>
+                                    <button type="button" style={{ minWidth: "10px" }} className="close" data-dismiss="modal"
+                                        onClick={setModalIsOpenToFalse}>
+                                        &times;
+                                    </button>
+                                </div>
+                                <div className="modal-body">
+                                    <form name="ItemForm" noValidate role="form">
+                                        <div id="table-wrapper">
+                                            <div id="table-scroll">
+                                                <div id="itemtabs" className="exTab3">
 
-                                                <div className="tab-content clearfixnew">
-                                                    <Tabs>
-                                                        <Tab title="BASIC INFORMATION">
-
-
-                                                            <div id="basicinfo">
-                                                                <div className="col-sm-12">
-                                                                    <div className="row form-group">
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Title</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Title != undefined ? institution.Title : ""} />
+                                                    <div className="tab-content bg-f5f5 clearfixnew">
+                                                        <Tabs>
+                                                            <Tab title="BASIC INFORMATION">
+                                                                <div>
+                                                                    <div className="col-sm-5 mt-10">
+                                                                        <div className="row form-group">
+                                                                            <div className="col-sm-6">
+                                                                                <label className="full_width">Title</label>
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.Title != undefined ? institution.Title : ""} />
+                                                                            </div>
+                                                                            <div className="col-sm-6 padL-0" title="Email">
+                                                                                <label className="full_width">Item Rank</label>
+                                                                                <select className="full_width searchbox_height">
+                                                                                    <option>---select---</option>
+                                                                                    {
+                                                                                        SharewebItemRank &&
+                                                                                        SharewebItemRank.map((h: any, i: any) =>
+                                                                                            (<option key={i} value={h.rankTitle}>{h.rankTitle}</option>))
+                                                                                    }
+                                                                                </select>
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="col-sm-3 padL-0" title="Email">
-                                                                            <label className="full_width">Item Rank</label>
-                                                                            <select className="form-control">
-                                                                                <option>---select---</option>
-                                                                                {
-                                                                                    SharewebItemRank &&
-                                                                                    SharewebItemRank.map((h: any, i: any) =>
-                                                                                        (<option key={i} value={h.rankTitle}>{h.rankTitle}</option>))
-                                                                                }
-                                                                            </select>
+                                                                        <div className="row form-group">
+                                                                            <div className="col-sm-6">
+                                                                                <div className="col-sm-11 padL-0 PadR0">
+                                                                                    <label className="full_width">
+                                                                                        Component Portfolio
+                                                                                    </label>
+                                                                                    <input style={{ width: "100%" }} type="text"
+                                                                                        className="full_width searchbox_height" id="txtSmartCountries" />
+
+                                                                                </div>
+                                                                                <div className="col-sm-1 PadR0">
+                                                                                    <label className="full_width">&nbsp;</label>
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/PublishingImages/Logos/EMMCopyTerm.png"
+                                                                                        ng-click="openSmartTaxonomy('Countries');" />
+                                                                                </div>
+                                                                                <div className="col-sm-11 padL-0 PadR0 inner-tabb">
+                                                                                    <div className="block mt-5" >
+
+                                                                                        {institution.SmartCountries.length != 0 ? institution.SmartCountries.Title : ""}
+
+
+                                                                                        <a className="hreflink"
+                                                                                            ng-click="removeSmartCountry(item.Id,Item)">
+                                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div className="col-sm-6 padL-0">
+                                                                                <label className="full_width">Deliverable-Synonyms</label>
+
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.WorkAddress != undefined ? institution.WorkAddress : ""} />
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="col-sm-3 padL-0" title="Categories">
+                                                                        <div className="row form-group">
+                                                                            <div className="col-sm-4">
+                                                                                <label className="full_width">Start Date</label>
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.CellPhone != null ? institution.CellPhone : ""}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="col-sm-4 padL-0">
+                                                                                <label className="full_width">Due Date</label>
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.HomePhone != null ? institution.HomePhone : ""} />
+                                                                            </div>
+
+                                                                            <div className="col-sm-4 padL-0">
+                                                                                <label className="full_width">
+                                                                                    Completion Date <a className="hreflink" href={institution.LinkedIn != null ? institution.LinkedIn.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-linkedin"></i></span></a></label>
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.LinkedIn != null ? institution.LinkedIn.Description : ""} />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="row form-group">
+                                                                            <div className="col-sm-4">
+                                                                                <label className="full_width">Synonyms <a className="hreflink" href={institution.Instagram != null ? institution.Instagram.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.Instagram != null ? institution.Instagram.Description : ""} />
+                                                                            </div>
+
+                                                                            <div className="col-sm-4 padL-0">
+                                                                                <label className="full_width">Client Activity <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
+                                                                            </div>
+
+                                                                            <div className="col-sm-4 padL-0">
+                                                                                <label className="full_width">Package <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="row form-group">
+                                                                            <div className="col-sm-6">
+                                                                                <label className="full_width">Status</label>
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input className="form-check-input"
+                                                                                            ng-checked="Item.AdminStatus=='Not Started'"
+                                                                                            name="Not Started" type="radio" value="Not Started"
+                                                                                            ng-click="Adminstatus('Not Started')"
+                                                                                            ng-model="AdminStatusChecked"></input> Not Started
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input className="form-check-input"
+                                                                                            ng-checked="Item.AdminStatus=='In Preparation'"
+                                                                                            name="In Preparation" type="radio"
+                                                                                            value="In Preparation"
+                                                                                            ng-click="Adminstatus('In Preparation')"
+                                                                                            ng-model="AdminStatusChecked"></input> In Preparation
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input className="form-check-input"
+                                                                                            ng-checked="Item.AdminStatus=='In Development'"
+                                                                                            name="In Development" type="radio"
+                                                                                            value="In Development"
+                                                                                            ng-click="Adminstatus('In Development')"
+                                                                                            ng-model="AdminStatusChecked"></input> In Development
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input className="form-check-input"
+                                                                                            ng-checked="Item.AdminStatus=='Active'" name="Active"
+                                                                                            type="radio" value="Active"
+                                                                                            ng-click="Adminstatus( 'Active')"
+                                                                                            ng-model="AdminStatusChecked"></input> Active
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input className="form-check-input"
+                                                                                            ng-checked="Item.AdminStatus=='Archived'"
+                                                                                            name="Archived" type="radio" value="Archived"
+                                                                                            ng-click="Adminstatus('Archived')"
+                                                                                            ng-model="AdminStatusChecked"></input> Archived
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="col-sm-6 padL-0">
+                                                                                <label className="full_width">Time <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                                <input type="text" className="full_width searchbox_height"
+                                                                                    defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-sm-3 mt-10">
+                                                                        <div className="col-sm-12 padL-0" title="Priority">
                                                                             <label className="full_width">Priority</label>
-                                                                            <input type="text" className="form-control"
+                                                                            <input type="text" className="full_width searchbox_height"
                                                                                 defaultValue={institution.Categories != undefined ? institution.Categories : ""} />
                                                                             <div className="radio">
                                                                                 <label>
@@ -304,328 +434,380 @@ function EditInstitution(item: any) {
                                                                                 </label>
                                                                             </div>
                                                                         </div>
-
-                                                                    </div>
-                                                                    <div className="row form-group">
-
-                                                                        <div className="col-sm-3">
-                                                                            <div className="col-sm-11 padL-0 PadR0">
-                                                                                <label className="full_width">
-                                                                                    Component Portfolio
-                                                                                </label>
-                                                                                <input style={{ width: "100%" }} type="text"
-                                                                                    className="form-control" id="txtSmartCountries" />
-
-                                                                            </div>
-                                                                            <div className="col-sm-1 PadR0">
-                                                                                <label className="full_width">&nbsp;</label>
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/PublishingImages/Logos/EMMCopyTerm.png"
-                                                                                    ng-click="openSmartTaxonomy('Countries');" />
-                                                                            </div>
-                                                                            <div className="col-sm-11 padL-0 PadR0 inner-tabb">
-                                                                                <div className="block mt-5" >
-
-                                                                                    {institution.SmartCountries.length != 0 ? institution.SmartCountries.Title : ""}
-
-
-                                                                                    <a className="hreflink"
-                                                                                        ng-click="removeSmartCountry(item.Id,Item)">
-                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                    </a>
-                                                                                </div>
-                                                                            </div>
-
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Deliverable-Synonyms</label>
-
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.WorkAddress != undefined ? institution.WorkAddress : ""} />
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            {/* <label className="full_width">Institution Type</label>
-
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.InstitutionType != undefined ? institution.InstitutionType : ""} /> */}
-                                                                        </div>
-                                                                        <div className="col-sm-3">
-                                                                            <form name="validURLFormforWebPage">
-                                                                                {/* <label className="full_width">Website</label>
-                                                                                <input type="text" name="validUrl"
-                                                                                    ng-pattern="/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,7}(:[0-9]{1,7})?(\/.*)?$/"
-                                                                                    className="form-control form-group"
-
-                                                                                    defaultValue={institution.WebPage != null ? institution.WebPage.Description : ""}
-                                                                                /> */}
-                                                                            </form>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="row form-group">
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Start Date</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.CellPhone != null ? institution.CellPhone : ""}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Due Date</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.HomePhone != null ? institution.HomePhone : ""} />
-                                                                        </div>
-
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">
-                                                                                Completion Date <a className="hreflink" href={institution.LinkedIn != null ? institution.LinkedIn.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-linkedin"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.LinkedIn != null ? institution.LinkedIn.Description : ""} />
-                                                                        </div>
-
-                                                                        <div className="col-sm-3 padL-0">
+                                                                        <div className="col-sm-12 padL-0">
                                                                             <label className="full_width">Categories <a className="hreflink" href={institution.Facebook != null ? institution.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
+                                                                            <input type="text" className="full_width searchbox_height"
                                                                                 defaultValue={institution.Facebook != null ? institution.Facebook.Description : ""} />
                                                                         </div>
-
-
                                                                     </div>
-                                                                    <div className="row form-group">
-
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Synonyms <a className="hreflink" href={institution.Instagram != null ? institution.Instagram.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Instagram != null ? institution.Instagram.Description : ""} />
+                                                                    <div className="col-sm-4 padL-0 mt-10">
+                                                                        <div className="panel panel-default mt-25">
+                                                                            <div className="panel-heading">
+                                                                                <h3 className="panel-title">Comments</h3>
+                                                                            </div>
+                                                                            <div className="panel-body">
+                                                                                <textarea className="form-control ui-autocomplete-input ng-pristine ng-valid ng-empty ng-touched" placeholder="Enter your comments here" ng-model="ReplyTextBody" autoComplete="off"></textarea>
+                                                                            </div>
                                                                         </div>
-
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Client Activity <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
-                                                                        </div>
-
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Package <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
-                                                                        </div>
-
-
                                                                     </div>
-                                                                    <div className="row form-group">
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Status</label>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='Not Started'"
-                                                                                        name="Not Started" type="radio" value="Not Started"
-                                                                                        ng-click="Adminstatus('Not Started')"
-                                                                                        ng-model="AdminStatusChecked"></input> Not Started
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='In Preparation'"
-                                                                                        name="In Preparation" type="radio"
-                                                                                        value="In Preparation"
-                                                                                        ng-click="Adminstatus('In Preparation')"
-                                                                                        ng-model="AdminStatusChecked"></input> In Preparation
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='In Development'"
-                                                                                        name="In Development" type="radio"
-                                                                                        value="In Development"
-                                                                                        ng-click="Adminstatus('In Development')"
-                                                                                        ng-model="AdminStatusChecked"></input> In Development
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='Active'" name="Active"
-                                                                                        type="radio" value="Active"
-                                                                                        ng-click="Adminstatus( 'Active')"
-                                                                                        ng-model="AdminStatusChecked"></input> Active
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='Archived'"
-                                                                                        name="Archived" type="radio" value="Archived"
-                                                                                        ng-click="Adminstatus('Archived')"
-                                                                                        ng-model="AdminStatusChecked"></input> Archived
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Time <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
-                                                                        </div>
-
-                                                                    </div>
-                                                                    <div className="col-sm-12">
+                                                                    <div className="col-sm-8 mb-10">
                                                                         <label className="full_width">Url</label>
-                                                                        <div className="forFullScreenButton" id="itemDescription" ng-model="localaboutdescription">
+                                                                        <input type="text" className="full_width searchbox_height" placeholder="Url" ng-model="Item.component_x0020_link.Url"></input>
 
-                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="clearfix"></div>
-                                                            </div>
-                                                        </Tab>
+                                                            </Tab>
 
-                                                        <Tab title="IMAGES INFOMATION">
-                                                            {/* <div id="ImageInfo">
-                                                                <ImagesC id={null} />
-                                                            </div> */}
-                                                        </Tab>
+                                                            <Tab title="CONCEPT">
+                                                                {/* <div id="ImageInfo">
+                                                                    <ImagesC id={null} />
+                                                                </div> */}
+                                                            </Tab>
 
-                                                        <Tab title="DIVISION">
-                                                            <div id="Institution" className="tab-pane fade">
-                                                                <div className="divPanelBody clearfix">
-                                                                    <div className="col-sm-12 clearfix">
-                                                                        <ul id="main-menu" className="new">
-                                                                            <li>
-                                                                                <a className="hreflink" ng-click="editDivisionpopup()">
-                                                                                    <img src="https://kathabeck.sharepoint.com/sites/42/SiteCollectionImages/ICONS/Shareweb/Add-New.png"
-                                                                                        alt="" title="Add Taxonomy Item"
-                                                                                        className="img-icon" />
-                                                                                </a>
-                                                                            </li>
-                                                                            <li id="node_{{item.Id}}" ng-repeat="item in AllDivisions">
-                                                                                <a target="_blank" className="hreflink"
-                                                                                    ng-href="{{CurrentSiteUrl}}/SitePages/Institution-Profile.aspx?contactId={{item.Id}}&name={{item.Title}}">
-                                                                                    {/* {{item.Title}} */}
-                                                                                </a>
-                                                                                <a style={{ padding: "0px 6px" }}
-                                                                                    className="hreflink pull-right"
-                                                                                    ng-click="deleteitem(item);">
-                                                                                    <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                </a>
-                                                                            </li>
-
-                                                                        </ul>
-                                                                    </div>
-
-                                                                </div>
-                                                            </div>
-                                                        </Tab>
-
-                                                        <Tab title="SYNONYMS">
-                                                            <div id="AddSynonyms" className="tab-pane fade">
-                                                                <div className="fixed-divPanelBody clearfix">
-                                                                    <div className="col-sm-12">
-                                                                        <span className="pull-right mb-10 mt-10">
-                                                                            <button type="button" className="btn btn-primary" ng-click="addsynonyms()">
-                                                                                Add
-                                                                                Synonyms
-                                                                            </button>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="col-sm-12">
-                                                                        <div ng-if="Item['Synonyms'].length==0">
-                                                                            <div className="current_commnet">No Synonyms Available</div>
+                                                            <Tab title="Architecture & Technologies">
+                                                                <div className="container">
+                                                                    <div className="col-sm-12 pad0 mb-10">
+                                                                        <div className="col-sm-12 pull-left HedaBackclr">
+                                                                            <div ng-if="!TechnicalConceptExpandad" className="col-sm-11 padL-0 hreflink"
+                                                                                ng-click="forExpand('TechnicalConcept')">
+                                                                                <img
+                                                                                    ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/right-list-iconwhite.png"></img>
+                                                                                <span className="txtSizeClr">
+                                                                                    <label ng-bind-html="GetColumnDetails('TechnicalConcept') | trustedHTML"></label>
+                                                                                </span>
+                                                                            </div>
+                                                                            <div ng-if="TechnicalConceptExpandad" className="col-sm-11 padL-0 hreflink"
+                                                                                ng-click="forCollapse('TechnicalConcept')">
+                                                                                <img
+                                                                                    ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/list-iconwhite.png"></img>
+                                                                                <span className="txtSizeClr">
+                                                                                    <label ng-bind-html="GetColumnDetails('TechnicalConcept') | trustedHTML"></label>
+                                                                                </span>
+                                                                            </div>
                                                                         </div>
-                                                                        <div ng-if="Item['Synonyms'].length>0">
-                                                                            <div className="section-event">
-                                                                                <div className="container-new">
-                                                                                    <table className="table  compare_item" style={{ width: "100%" }}>
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th style={{ width: "80%" }}>
-                                                                                                    <div className="text" style={{ width: "80%" }}>
-                                                                                                        Title
-                                                                                                    </div>
-                                                                                                </th>
-                                                                                                <th style={{ width: "10%" }}>
-                                                                                                    <div style={{ width: "10%" }}></div>
-                                                                                                </th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr ng-repeat="val in Item['Synonyms']">
-                                                                                                <td style={{ width: "95%" }}>
-                                                                                                    <input className="form-control" type="text"
-                                                                                                        ng-model="val.Title"
-                                                                                                        ng-disabled="val.status" />
-                                                                                                </td>
-                                                                                                <td>
-                                                                                                    <span ng-if="!val.status"
-                                                                                                        ng-click="val.status=!val.status"
-                                                                                                        title="Save">
-                                                                                                        <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png" />
-                                                                                                    </span>
-                                                                                                    <span ng-if="val.status"
-                                                                                                        ng-click="val.status=!val.status"
-                                                                                                        title="Edit">
-                                                                                                        <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png" />
-                                                                                                    </span>
-                                                                                                    <a className="hreflink"
-                                                                                                        ng-click="Item['Synonyms'].splice($index,1);">
-                                                                                                        <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                                    </a>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
+                                                                        <div className="col-sm-12 mb-10  BdrBoxBlue" ng-show="TechnicalConceptExpandad">
+
+                                                                            <div className="col-sm-12 pad0">
+
+                                                                                <div className="form-group">
+                                                                                    <label></label>
+                                                                                    <span className="pull-right">
+                                                                                        <input type="checkbox"
+                                                                                            ng-click="chTechnicalExplanationsVerified(TechnicalExplanationsVerified)"
+                                                                                            ng-model="Item.TechnicalExplanationsVerified" />
+                                                                                        <span>Verified</span>
+                                                                                    </span>
+                                                                                    <div id="TechnicalExplanations" className="tm-height"></div>
+                                                                                    <div className="clearfix"></div>
                                                                                 </div>
+
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </Tab>
-                                                    </Tabs>
+                                                            </Tab>
+
+                                                            <Tab title="Help">
+                                                                <div className="col-sm-12 mb-10">
+                                                                    <div className="col-sm-12 pull-left HedaBackclr">
+                                                                        <div ng-if="!HelpInformationExpandad" className="col-sm-11 padL-0 hreflink"
+                                                                            ng-click="forExpand('HelpInformation')">
+                                                                            <img
+                                                                                ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/right-list-iconwhite.png"></img>
+                                                                            <span className="txtSizeClr">
+                                                                                <label ng-bind-html="GetColumnDetails('HelpInformation') | trustedHTML"></label>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div ng-if="HelpInformationExpandad" className="col-sm-11 padL-0 hreflink"
+                                                                            ng-click="forCollapse('HelpInformation')">
+                                                                            <img
+                                                                                ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/list-iconwhite.png"></img>
+                                                                            <span className="txtSizeClr">
+                                                                                <label ng-bind-html="GetColumnDetails('HelpInformation') | trustedHTML"></label>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-sm-12 mb-10  BdrBoxBlue" ng-show="HelpInformationExpandad">
+                                                                        <div className="col-sm-12 pad0">
+                                                                            <div className="form-group">
+                                                                                <label></label>
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox"
+                                                                                        ng-click="chHelpInformationVerified(Item.HelpInformationVerified)"
+                                                                                        ng-model="Item.HelpInformationVerified" />
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <div id="HelpInformation"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="">
+                                                                    <div className="col-md-12">
+                                                                        <div className="col-sm-12  mt-10 pad0">
+                                                                            <label className="">
+                                                                                Questions
+                                                                                Description
+                                                                            </label><a className="hreflink pull-right"
+                                                                                ng-click="AskQuestion('Question')">Add Questions</a>
+                                                                        </div>
+                                                                        <div className="col-sm-12 pad0 section-event pt-0">
+                                                                            <table className="mb-10" width="100%" cellSpacing="0">
+
+                                                                                <div className="accordin-header ng-scope"
+                                                                                    ng-repeat="item in AllComponentRelated">
+                                                                                    <input className="toggle-box-content" id="identifier-{{item.Id}}"
+                                                                                        type="checkbox"></input>
+                                                                                    <label htmlFor="identifier-{{item.Id}}" className="ng-binding">
+                                                                                        <span>{item.Title}</span>
+                                                                                        <span className="pull-right">
+                                                                                            <a className="hreflink" ng-click="UpdateQuestion(item)">
+                                                                                                <img ng-src="/_layouts/images/edititem.gif"></img>
+                                                                                            </a> <a className="hreflink"
+                                                                                                ng-click="DeleteQuestion(item)">
+                                                                                                <img src="/_layouts/images/delete.gif" />
+                                                                                            </a>
+                                                                                        </span>
+                                                                                    </label>
+                                                                                    <div ng-show="item.QuestionStatus=='Approved'"
+                                                                                        className="ng-binding">
+                                                                                        <div className="accordin-content"
+                                                                                            ng-bind-html="item.Body | trustedHTML">
+                                                                                        </div>
+
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </table>
+                                                                            <div ng-show="AllComponentRelated.length==0"
+                                                                                className="text-center panel-heading">
+                                                                                No Questions Description available
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                    <div className="col-md-12">
+
+                                                                        <div className="col-sm-12 mb-5 mt-10 pad0">
+                                                                            <label className="">
+                                                                                Help
+                                                                                Description
+                                                                            </label> <a className="pull-right hreflink"
+                                                                                ng-click="AskQuestion('Help')">Add Help</a>
+                                                                        </div>
+                                                                        <div className="col-sm-12 pad0 section-event pt-0">
+                                                                            <table width="100%" cellSpacing="0" className="mb-10">
+                                                                                <div className="accordin-header ng-scope"
+                                                                                    ng-repeat="item in AllComponentRelatedHelp">
+                                                                                    <input className="toggle-box-content" id="identifier-{{item.Id}}"
+                                                                                        type="checkbox"></input>
+                                                                                    <label htmlFor="identifier-{{item.Id}}" className="ng-binding">
+                                                                                        <span>{item.Title}</span>
+                                                                                        <span className="pull-right">
+                                                                                            <a className="hreflink" ng-click="UpdateHelp(item)">
+                                                                                                <img ng-src="/_layouts/images/edititem.gif"></img>
+                                                                                            </a>
+                                                                                            <div className="col-sm-12 mb-10">
+                                                                                                <div className="col-sm-12 pull-left HedaBackclr">
+                                                                                                    <div ng-if="!HelpInformationExpandad" className="col-sm-11 padL-0 hreflink"
+                                                                                                        ng-click="forExpand('HelpInformation')">
+                                                                                                        <img
+                                                                                                            ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/right-list-iconwhite.png"></img>
+                                                                                                        <span className="txtSizeClr">
+                                                                                                            <label ng-bind-html="GetColumnDetails('HelpInformation') | trustedHTML"></label>
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                    <div ng-if="HelpInformationExpandad" className="col-sm-11 padL-0 hreflink"
+                                                                                                        ng-click="forCollapse('HelpInformation')">
+                                                                                                        <img
+                                                                                                            ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/list-iconwhite.png"></img>
+                                                                                                        <span className="txtSizeClr">
+                                                                                                            <label ng-bind-html="GetColumnDetails('HelpInformation') | trustedHTML"></label>
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className="col-sm-12 mb-10  BdrBoxBlue" ng-show="HelpInformationExpandad">
+                                                                                                    <div className="col-sm-12 pad0">
+                                                                                                        <div className="form-group">
+                                                                                                            <label></label>
+                                                                                                            <span className="pull-right">
+                                                                                                                <input type="checkbox"
+                                                                                                                    ng-click="chHelpInformationVerified(Item.HelpInformationVerified)"
+                                                                                                                    ng-model="Item.HelpInformationVerified" />
+                                                                                                                <span>Verified</span>
+                                                                                                            </span>
+                                                                                                            <div id="HelpInformation"></div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div className="">
+                                                                                                <div className="col-md-12">
+                                                                                                    <div className="col-sm-12  mt-10 pad0">
+                                                                                                        <label className="">
+                                                                                                            Questions
+                                                                                                            Description
+                                                                                                        </label><a className="hreflink pull-right"
+                                                                                                            ng-click="AskQuestion('Question')">Add Questions</a>
+                                                                                                    </div>
+                                                                                                    <div className="col-sm-12 pad0 section-event pt-0">
+                                                                                                        <table className="mb-10" width="100%" cellSpacing="0">
+
+                                                                                                            <div className="accordin-header ng-scope"
+                                                                                                                ng-repeat="item in AllComponentRelated">
+                                                                                                                <input className="toggle-box-content" id="identifier-{{item.Id}}"
+                                                                                                                    type="checkbox"></input>
+                                                                                                                <label htmlFor="identifier-{{item.Id}}" className="ng-binding">
+                                                                                                                    <span>{item.Title}</span>
+                                                                                                                    <span className="pull-right">
+                                                                                                                        <a className="hreflink" ng-click="UpdateQuestion(item)">
+                                                                                                                            <img ng-src="/_layouts/images/edititem.gif"></img>
+                                                                                                                        </a> <a className="hreflink"
+                                                                                                                            ng-click="DeleteQuestion(item)">
+                                                                                                                            <img src="/_layouts/images/delete.gif" />
+                                                                                                                        </a>
+                                                                                                                    </span>
+                                                                                                                </label>
+                                                                                                                <div ng-show="item.QuestionStatus=='Approved'"
+                                                                                                                    className="ng-binding">
+                                                                                                                    <div className="accordin-content"
+                                                                                                                        ng-bind-html="item.Body | trustedHTML">
+                                                                                                                    </div>
+
+                                                                                                                </div>
+
+                                                                                                            </div>
+                                                                                                        </table>
+                                                                                                        <div ng-show="AllComponentRelated.length==0"
+                                                                                                            className="text-center panel-heading">
+                                                                                                            No Questions Description available
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                </div>
+                                                                                                <div className="col-md-12">
+
+                                                                                                    <div className="col-sm-12 mb-5 mt-10 pad0">
+                                                                                                        <label className="">
+                                                                                                            Help
+                                                                                                            Description
+                                                                                                        </label> <a className="pull-right hreflink"
+                                                                                                            ng-click="AskQuestion('Help')">Add Help</a>
+                                                                                                    </div>
+                                                                                                    <div className="col-sm-12 pad0 section-event pt-0">
+                                                                                                        <table width="100%" cellSpacing="0" className="mb-10">
+                                                                                                            <div className="accordin-header ng-scope"
+                                                                                                                ng-repeat="item in AllComponentRelatedHelp">
+                                                                                                                <input className="toggle-box-content" id="identifier-{{item.Id}}"
+                                                                                                                    type="checkbox"></input>
+                                                                                                                <label htmlFor="identifier-{{item.Id}}" className="ng-binding">
+                                                                                                                    <span>{item.Title}</span>
+                                                                                                                    <span className="pull-right">
+                                                                                                                        <a className="hreflink" ng-click="UpdateHelp(item)">
+                                                                                                                            <img ng-src="/_layouts/images/edititem.gif"></img>
+                                                                                                                        </a> <a className="hreflink" ng-click="DeleteHelp(item)">
+                                                                                                                            <img src="/_layouts/images/delete.gif" />
+                                                                                                                        </a>
+                                                                                                                    </span>
+                                                                                                                </label>
+                                                                                                                <div className="ng-binding">
+                                                                                                                    <div className="accordin-content"
+                                                                                                                        ng-bind-html="item.Body | trustedHTML">
+                                                                                                                    </div>
+
+                                                                                                                </div>
+
+                                                                                                            </div>
+
+                                                                                                        </table>
+                                                                                                        <div ng-show="AllComponentRelatedHelp.length==0"
+                                                                                                            className="text-center panel-heading">
+                                                                                                            No Help Description available
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <img src="/_layouts/images/delete.gif" />
+
+                                                                                        </span>
+                                                                                    </label>
+                                                                                    <div className="ng-binding">
+                                                                                        <div className="accordin-content"
+                                                                                            ng-bind-html="item.Body | trustedHTML">
+                                                                                        </div>
+
+                                                                                    </div>
+
+                                                                                </div>
+
+                                                                            </table>
+                                                                            <div ng-show="AllComponentRelatedHelp.length==0"
+                                                                                className="text-center panel-heading">
+                                                                                No Help Description available
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </Tab>
+                                                            <Tab title="Test cases">
+                                                                {/* <div id="ImageInfo">
+                                                                    <ImagesC id={null} />
+                                                                </div> */}
+                                                            </Tab>
+                                                            <Tab title="Image Information">
+                                                                {/* <div id="ImageInfo">
+                                                                    <ImagesC id={null} />
+                                                                </div> */}
+                                                            </Tab>
+                                                        </Tabs>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </form>
-                                {/* <!--<item-info></item-info>--> */}
+                                    </form>
+                                    {/* <!--<item-info></item-info>--> */}
 
-                            </div>
-                            <div className="modal-footer">
-                                <div className="col-sm-12">
-                                    <div className="row">
-                                        <div className="ItemInfo col-sm-6">
-                                            <div className="text-left">
-                                                Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{institution.Created != null ? moment(institution.Created).format('DD/MM/YYYY') : ""}</span> by
-                                                <span className="footerUsercolor">
-                                                    {/* {{Item.Author.Title}} */}
-                                                    {institution.Author.Title != undefined ? institution.Author.Title : ""}
-                                                </span>
-                                            </div>
-                                            <div className="text-left">
-                                                Last modified <span ng-bind="Item.Modified | date:'dd/MM/yyyy hh:mm'">{institution.Modified != null ? moment(institution.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
-                                                    {/* {{Item.Editor.Title}} */}
-                                                    {institution.Editor.Title != undefined ? institution.Editor.Title : ""}
-                                                </span>
-                                            </div>
-                                            <div className="text-left">
-                                                <a className="hreflink" ng-click="removeItem(institution.Id)">
-                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-6 ItemInfo-right">
-                                            <div className="pull-right">
-                                                <span>
-                                                    <a className="ForAll hreflink" target="_blank"
-                                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/Institution-Profile.aspx?contactId=${institution.Id}&name=${institution.Title}`}>
-                                                        <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
-                                                            ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
+                                </div>
+                                <div className="modal-footer">
+                                    <div className="col-sm-12">
+                                        <div className="row">
+                                            <div className="ItemInfo col-sm-6 mb-5 pad0">
+                                                <div className="text-left">
+                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{institution.Created != null ? moment(institution.Created).format('DD/MM/YYYY') : ""}</span> by
+                                                    <span className="footerUsercolor">
+                                                        {/* {{Item.Author.Title}} */}
+                                                        {institution.Author.Title != undefined ? institution.Author.Title : ""}
+                                                    </span>
+                                                </div>
+                                                <div className="text-left">
+                                                    Last modified <span ng-bind="Item.Modified | date:'dd/MM/yyyy hh:mm'">{institution.Modified != null ? moment(institution.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
+                                                        {/* {{Item.Editor.Title}} */}
+                                                        {institution.Editor.Title != undefined ? institution.Editor.Title : ""}
+                                                    </span>
+                                                </div>
+                                                <div className="text-left">
+                                                    <a className="hreflink" ng-click="removeItem(institution.Id)">
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
                                                     </a>
-                                                </span>
-                                                <span>|</span>
-                                                <a ng-href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/Lists/Institutions/EditForm.aspx?ID=${institution.Id}`}
-                                                    target="_blank">Open out-of-the-box form</a>
-                                                <button type="button" className="btn btn-primary" ng-click="SaveItem()">Save</button>
-                                                <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 PadR0 ItemInfo-right">
+                                                <div className="pull-right">
+                                                    <span>
+                                                        <a className="ForAll hreflink" target="_blank"
+                                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/Institution-Profile.aspx?contactId=${institution.Id}&name=${institution.Title}`}>
+                                                            <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
+                                                                ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
+                                                        </a>
+                                                    </span>
+                                                    <span className="ml5">|</span>
+                                                    <a className="ml5" ng-href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/Lists/Institutions/EditForm.aspx?ID=${institution.Id}`}
+                                                        target="_blank">Open out-of-the-box form</a>
+                                                    <button type="button" className="btn btn-primary ml5" ng-click="SaveItem()">Save</button>
+                                                    <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
