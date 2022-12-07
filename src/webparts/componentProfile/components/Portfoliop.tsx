@@ -7,8 +7,8 @@ import * as Moment from 'moment';
 
 import Tooltip from './Tooltip';
 import ComponentTable from './TaskWebpart';
-
-function Portfolio({ID}:any) {
+   
+function Portfolio({ID}:any) {  
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
     const [array, setArray] = React.useState([])
