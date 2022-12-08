@@ -141,6 +141,7 @@ function EditInstitution(item: any) {
                     item.DateCreated = item.CreatedDate = ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
                     item.Creatednewdate = ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
                     item.Modified = ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+                    item.smartComponent = [];
                     if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
                         switch (item.Priority) {
                             case '(1) High':
@@ -161,6 +162,13 @@ function EditInstitution(item: any) {
                     if (item.PercentComplete != undefined) {
                         item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
                     }
+                    // if (item.ComponentPortfolio != undefined) {
+                    //     if (item.ComponentPortfolio.Id != undefined) {
+                    //         if (item.smartComponent != undefined)
+                    //             item.smartComponent.push({ 'Title': item.ComponentPortfolio.Title, 'Id': item.ComponentPortfolio.Id });
+                    //         else item.smartComponent = [];
+                    //     }
+                    // }
                     item.siteType = 'Master Tasks';
                     item.taskLeader = 'None';
                     if (item.AssignedTo != undefined && item.AssignedTo.results != undefined && item.AssignedTo.results.length > 0)
@@ -204,7 +212,7 @@ function EditInstitution(item: any) {
                 getMasterTaskListTasks();
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
-                setSharewebItemRank([{ rankTitle: '(8) Top Highlights', rank: '8' }, { rankTitle: '(7) Featured Item', rank: '7' }, { rankTitle: '(6) Key Item', rank: '6' }, { rankTitle: '(5) Relevant Item', rank: '5' }, { rankTitle: '(4) Background Item', rank: '4' }, { rankTitle: '(2) to be verified', rank: '2' }, { rankTitle: '(1) Archive', rank: '1' }, { rankTitle: '(0) No Show', rank: '0' }]);
+                setSharewebItemRank([{ rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
                 if (useeffectdata == false)
                     setuseeffectdata(true);
                 else setuseeffectdata(false);
@@ -227,14 +235,14 @@ function EditInstitution(item: any) {
                 isBlocking={false}
             // {width:"1250px"}
             >
-                {CompoenetItem != undefined && CompoenetItem.map(institution =>
+                {CompoenetItem != undefined && CompoenetItem.map(item =>
                     <div id="EditGrueneContactSearch">
                         <div className="modal-dailog modal-lg">
                             <div className="modal-content" ng-cloak>
                                 <div className="modal-header">
                                     <h3 className="modal-title">
                                         Service-Portfolio<span > {">"} </span>
-                                        {institution.Title}
+                                        {item.Title}
                                         <span className="pull-right">
                                             {/* <page-settings-info webpartid="'EditInstitutionPopup'"></page-settings-info> */}
                                             {/* <Tooltip /> */}
@@ -260,16 +268,16 @@ function EditInstitution(item: any) {
                                                                             <div className="col-sm-6">
                                                                                 <label className="full_width">Title</label>
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.Title != undefined ? institution.Title : ""} />
+                                                                                    defaultValue={item.Title != undefined ? item.Title : ""} />
                                                                             </div>
                                                                             <div className="col-sm-6 padL-0" title="Email">
                                                                                 <label className="full_width">Item Rank</label>
                                                                                 <select className="full_width searchbox_height">
-                                                                                    <option>---select---</option>
+                                                                                    <option >{item.ItemRank}</option> 
                                                                                     {
                                                                                         SharewebItemRank &&
                                                                                         SharewebItemRank.map((h: any, i: any) =>
-                                                                                            (<option key={i} value={h.rankTitle}>{h.rankTitle}</option>))
+                                                                                            (<option key={i} value={h.ItemRank} >{item.ItemRank != h.rankTitle}</option>))
                                                                                     }
                                                                                 </select>
                                                                             </div>
@@ -281,7 +289,7 @@ function EditInstitution(item: any) {
                                                                                         Component Portfolio
                                                                                     </label>
                                                                                     <input style={{ width: "100%" }} type="text"
-                                                                                        className="full_width searchbox_height" id="txtSmartCountries" />
+                                                                                        className="full_width searchbox_height" id="txtSmartCountries" defaultValue={item.Priority_x0020_Rank != undefined ? item.Priority_x0020_Rank : ""} />
 
                                                                                 </div>
                                                                                 <div className="col-sm-1 PadR0">
@@ -290,15 +298,23 @@ function EditInstitution(item: any) {
                                                                                         ng-click="openSmartTaxonomy('Countries');" />
                                                                                 </div>
                                                                                 <div className="col-sm-11 padL-0 PadR0 inner-tabb">
-                                                                                    <div className="block mt-5" >
-
-                                                                                        {institution.SmartCountries.length != 0 ? institution.SmartCountries.Title : ""}
-
-
-                                                                                        <a className="hreflink"
-                                                                                            ng-click="removeSmartCountry(item.Id,Item)">
-                                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                        </a>
+                                                                                    <div className="row">
+                                                                                        {/* <div className="col-sm-12 PadR0">
+                                                                                            {item !=undefined && item.smartComponent !=undefined && item.smartComponent.map((childinew: any) =>
+                                                                                                < div className="block bgsiteColor"
+                                                                                                    ng-mouseover="HoverIn(item);"
+                                                                                                    ng-mouseleave="ComponentTitle.STRING='';"
+                                                                                                    title="{{ ComponentTitle.STRING }}"
+                                                                                                >
+                                                                                                    <a className="hreflink" target="_blank"
+                                                                                                        ng-href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{item.Title}</a>
+                                                                                                    <a className="hreflink"
+                                                                                                        ng-click="removeSmartComponent(item.Id)">
+                                                                                                        <img ng-src="/_layouts/images/delete.gif"></img>
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                            )}
+                                                                                        </div>  */}
                                                                                     </div>
                                                                                 </div>
 
@@ -307,46 +323,46 @@ function EditInstitution(item: any) {
                                                                                 <label className="full_width">Deliverable-Synonyms</label>
 
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.WorkAddress != undefined ? institution.WorkAddress : ""} />
+                                                                                    defaultValue={item.WorkAddress != undefined ? item.WorkAddress : ""} />
                                                                             </div>
                                                                         </div>
                                                                         <div className="row form-group">
                                                                             <div className="col-sm-4">
                                                                                 <label className="full_width">Start Date</label>
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.CellPhone != null ? institution.CellPhone : ""}
+                                                                                    defaultValue={item.CellPhone != null ? item.CellPhone : ""}
                                                                                 />
                                                                             </div>
                                                                             <div className="col-sm-4 padL-0">
                                                                                 <label className="full_width">Due Date</label>
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.HomePhone != null ? institution.HomePhone : ""} />
+                                                                                    defaultValue={item.HomePhone != null ? item.HomePhone : ""} />
                                                                             </div>
 
                                                                             <div className="col-sm-4 padL-0">
                                                                                 <label className="full_width">
-                                                                                    Completion Date <a className="hreflink" href={institution.LinkedIn != null ? institution.LinkedIn.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-linkedin"></i></span></a></label>
+                                                                                    Completion Date <a className="hreflink" href={item.LinkedIn != null ? item.LinkedIn.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-linkedin"></i></span></a></label>
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.LinkedIn != null ? institution.LinkedIn.Description : ""} />
+                                                                                    defaultValue={item.LinkedIn != null ? item.LinkedIn.Description : ""} />
                                                                             </div>
                                                                         </div>
                                                                         <div className="row form-group">
                                                                             <div className="col-sm-4">
-                                                                                <label className="full_width">Synonyms <a className="hreflink" href={institution.Instagram != null ? institution.Instagram.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
+                                                                                <label className="full_width">Synonyms <a className="hreflink" href={item.Instagram != null ? item.Instagram.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.Instagram != null ? institution.Instagram.Description : ""} />
+                                                                                    defaultValue={item.Instagram != null ? item.Instagram.Description : ""} />
                                                                             </div>
 
                                                                             <div className="col-sm-4 padL-0">
-                                                                                <label className="full_width">Client Activity <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                                <label className="full_width">Client Activity <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
+                                                                                    defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
                                                                             </div>
 
                                                                             <div className="col-sm-4 padL-0">
-                                                                                <label className="full_width">Package <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                                <label className="full_width">Package <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
+                                                                                    defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
                                                                             </div>
                                                                         </div>
                                                                         <div className="row form-group">
@@ -357,53 +373,73 @@ function EditInstitution(item: any) {
                                                                                         <input className="form-check-input"
                                                                                             ng-checked="Item.AdminStatus=='Not Started'"
                                                                                             name="Not Started" type="radio" value="Not Started"
-                                                                                            ng-click="Adminstatus('Not Started')"
-                                                                                            ng-model="AdminStatusChecked"></input> Not Started
+                                                                                            defaultChecked={item.Status === "Not Started"} ng-click="Adminstatus('Not Started')"
+                                                                                        ></input> Not Started
                                                                                     </label>
                                                                                 </div>
                                                                                 <div className="radio">
                                                                                     <label>
                                                                                         <input className="form-check-input"
-                                                                                            ng-checked="Item.AdminStatus=='In Preparation'"
                                                                                             name="In Preparation" type="radio"
                                                                                             value="In Preparation"
                                                                                             ng-click="Adminstatus('In Preparation')"
-                                                                                            ng-model="AdminStatusChecked"></input> In Preparation
+                                                                                            defaultChecked={item.Status === "In Preparation"}></input> In Preparation
                                                                                     </label>
                                                                                 </div>
                                                                                 <div className="radio">
                                                                                     <label>
                                                                                         <input className="form-check-input"
-                                                                                            ng-checked="Item.AdminStatus=='In Development'"
                                                                                             name="In Development" type="radio"
                                                                                             value="In Development"
                                                                                             ng-click="Adminstatus('In Development')"
-                                                                                            ng-model="AdminStatusChecked"></input> In Development
+                                                                                            defaultChecked={item.Status === "In Development"}></input> In Development
                                                                                     </label>
                                                                                 </div>
                                                                                 <div className="radio">
                                                                                     <label>
-                                                                                        <input className="form-check-input"
-                                                                                            ng-checked="Item.AdminStatus=='Active'" name="Active"
+                                                                                        <input className="form-check-input" name="Active"
                                                                                             type="radio" value="Active"
                                                                                             ng-click="Adminstatus( 'Active')"
-                                                                                            ng-model="AdminStatusChecked"></input> Active
+                                                                                            defaultChecked={item.Status === "Active"}></input> Active
                                                                                     </label>
                                                                                 </div>
                                                                                 <div className="radio">
                                                                                     <label>
                                                                                         <input className="form-check-input"
-                                                                                            ng-checked="Item.AdminStatus=='Archived'"
                                                                                             name="Archived" type="radio" value="Archived"
                                                                                             ng-click="Adminstatus('Archived')"
-                                                                                            ng-model="AdminStatusChecked"></input> Archived
+                                                                                            defaultChecked={item.Status === "Archived"}></input> Archived
                                                                                     </label>
                                                                                 </div>
                                                                             </div>
                                                                             <div className="col-sm-6 padL-0">
-                                                                                <label className="full_width">Time <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                                <label className="full_width">Time <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
                                                                                 <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
+                                                                                    defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input name="radioTime" defaultChecked={item.Mileage === "05"}
+                                                                                            type="radio" ng-click="SelectTime('05')"></input>Very Quick
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input name="radioTime" defaultChecked={item.Mileage === "15"}
+                                                                                            type="radio" ng-click="SelectTime('15')"></input>Quick
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input name="radioTime" defaultChecked={item.Mileage === "60"}
+                                                                                            type="radio" ng-click="SelectTime('60')"></input>Medium
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div className="radio">
+                                                                                    <label>
+                                                                                        <input name="radioTime" defaultChecked={item.Mileage === "240"}
+                                                                                            type="radio" ng-click="SelectTime('240')"></input>Long
+                                                                                    </label>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -411,33 +447,33 @@ function EditInstitution(item: any) {
                                                                         <div className="col-sm-12 padL-0" title="Priority">
                                                                             <label className="full_width">Priority</label>
                                                                             <input type="text" className="full_width searchbox_height"
-                                                                                defaultValue={institution.Categories != undefined ? institution.Categories : ""} />
+                                                                                defaultValue={item.Priority_x0020_Rank != undefined ? item.Priority_x0020_Rank : ""} />
                                                                             <div className="radio">
                                                                                 <label>
                                                                                     <input className="form-check-input" name="radioPriority"
                                                                                         type="radio" value="(1) High" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'High'}></input>High
+                                                                                        defaultChecked={item.Priority === "(1) High"}></input>High
                                                                                 </label>
                                                                             </div>
                                                                             <div className="radio">
                                                                                 <label>
                                                                                     <input className="form-check-input" name="radioPriority"
                                                                                         type="radio" value="(2) Normal" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'Normal'}></input>Normal
+                                                                                        defaultChecked={item.Priority === "(2) Normal"}></input>Normal
                                                                                 </label>
                                                                             </div>
                                                                             <div className="radio">
                                                                                 <label>
                                                                                     <input className="form-check-input" name="radioPriority"
                                                                                         type="radio" value="(3) Low" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'Low'}></input>Low
+                                                                                        defaultChecked={item.Priority === "(3) Low"}></input>Low
                                                                                 </label>
                                                                             </div>
                                                                         </div>
                                                                         <div className="col-sm-12 padL-0">
-                                                                            <label className="full_width">Categories <a className="hreflink" href={institution.Facebook != null ? institution.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
+                                                                            <label className="full_width">Categories <a className="hreflink" href={item.Facebook != null ? item.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
                                                                             <input type="text" className="full_width searchbox_height"
-                                                                                defaultValue={institution.Facebook != null ? institution.Facebook.Description : ""} />
+                                                                                defaultValue={item.Facebook != null ? item.Facebook.Description : ""} />
                                                                         </div>
                                                                     </div>
                                                                     <div className="col-sm-4 padL-0 mt-10">
@@ -775,20 +811,20 @@ function EditInstitution(item: any) {
                                         <div className="row">
                                             <div className="ItemInfo col-sm-6 mb-5 pad0">
                                                 <div className="text-left">
-                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{institution.Created != null ? moment(institution.Created).format('DD/MM/YYYY') : ""}</span> by
+                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{item.Created != null ? moment(item.Created).format('DD/MM/YYYY') : ""}</span> by
                                                     <span className="footerUsercolor">
                                                         {/* {{Item.Author.Title}} */}
-                                                        {institution.Author.Title != undefined ? institution.Author.Title : ""}
+                                                        {item.Author.Title != undefined ? item.Author.Title : ""}
                                                     </span>
                                                 </div>
                                                 <div className="text-left">
-                                                    Last modified <span ng-bind="Item.Modified | date:'dd/MM/yyyy hh:mm'">{institution.Modified != null ? moment(institution.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
+                                                    Last modified <span ng-bind="Item.Modified | date:'dd/MM/yyyy hh:mm'">{item.Modified != null ? moment(item.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
                                                         {/* {{Item.Editor.Title}} */}
-                                                        {institution.Editor.Title != undefined ? institution.Editor.Title : ""}
+                                                        {item.Editor.Title != undefined ? item.Editor.Title : ""}
                                                     </span>
                                                 </div>
                                                 <div className="text-left">
-                                                    <a className="hreflink" ng-click="removeItem(institution.Id)">
+                                                    <a className="hreflink" ng-click="removeItem(item.Id)">
                                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
                                                     </a>
                                                 </div>
@@ -797,13 +833,13 @@ function EditInstitution(item: any) {
                                                 <div className="pull-right">
                                                     <span>
                                                         <a className="ForAll hreflink" target="_blank"
-                                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/Institution-Profile.aspx?contactId=${institution.Id}&name=${institution.Title}`}>
+                                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Id}&name=${item.Title}`}>
                                                             <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
                                                                 ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
                                                         </a>
                                                     </span>
                                                     <span className="ml5">|</span>
-                                                    <a className="ml5" ng-href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/Lists/Institutions/EditForm.aspx?ID=${institution.Id}`}
+                                                    <a className="ml5" ng-href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${item.Id}`}
                                                         target="_blank">Open out-of-the-box form</a>
                                                     <button type="button" className="btn btn-primary ml5" ng-click="SaveItem()">Save</button>
                                                     <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
@@ -903,8 +939,9 @@ function EditInstitution(item: any) {
 
 
                     </div>
-                )}
-            </Modal>
+                )
+                }
+            </Modal >
         </>
     )
 } export default React.memo(EditInstitution);
