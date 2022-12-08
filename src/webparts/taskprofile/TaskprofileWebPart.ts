@@ -12,6 +12,8 @@ import * as strings from 'TaskprofileWebPartStrings';
 import Taskprofile from './components/Taskprofile';
 import { ITaskprofileProps } from './components/ITaskprofileProps';
 
+import * as pnp from 'sp-pnp-js';
+
 export interface ITaskprofileWebPartProps {
   description: string;
 }
@@ -22,9 +24,12 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
   private _environmentMessage: string = '';
 
   protected onInit(): Promise<void> {
-    this._environmentMessage = this._getEnvironmentMessage();
-
-    return super.onInit();
+    //this._environmentMessage = this._getEnvironmentMessage();
+    return super.onInit().then(_ => {
+      pnp.setup({
+        spfxContext: this.context
+      });
+    });
   }
 
   public render(): void {
@@ -35,7 +40,8 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl
       }
     );
 
