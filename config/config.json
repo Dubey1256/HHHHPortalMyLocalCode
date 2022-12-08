@@ -57,6 +57,14 @@
           "manifest": "./src/webparts/taskprofile/TaskprofileWebPart.manifest.json"
         }
       ]
+    },
+    "component-comments-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/componentComments/ComponentCommentsWebPart.js",
+          "manifest": "./src/webparts/componentComments/ComponentCommentsWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -72,6 +80,7 @@
     "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js",
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js",
-    "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js"
+    "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
+    "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js"
   }
 }
