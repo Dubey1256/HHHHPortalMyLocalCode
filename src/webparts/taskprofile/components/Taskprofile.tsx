@@ -4,7 +4,10 @@ import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
 import { escape } from '@microsoft/sp-lodash-subset';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
-import {Modal} from '@fluentui/react';
+import { Modal } from 'office-ui-fabric-react';
+import CommentCard from '../../../globalComponents/Comments/CommentCard'
+import '../../cssFolder/foundation.scss';
+import '../../cssFolder/foundationmin.scss';
 
 export interface ITaskprofileState {  
   Result : any;
@@ -243,9 +246,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     } = this.props;
 
     return (
-      <div>        
-          
-            <div className={styles.task_title} style={{verticalAlign:'top'}}>
+      <div> 
+
+        <div className='col-sm-12 pad0'>
+          <div className='col-lg-9 left-col'>
+          <div className={styles.task_title} style={{verticalAlign:'top'}}>
               <h1 className="mb-5 ng-binding">
                 <img className={styles.imgWid29} src={this.state.Result["SiteIcon"]}/>
                 {this.state.Result['Title']}
@@ -364,6 +369,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 <img style={{maxWidth: '96%',margin: '2%'}} src={this.state.imageInfo["ImageUrl"]}></img>
             </div>
           </Modal>
+
+          </div>
+          <div className='col-md-3'>
+            <CommentCard siteUrl={this.props.siteUrl} userDisplayName={this.props.userDisplayName}></CommentCard>
+          </div>
+        </div>
       </div>
         
     );
