@@ -28,6 +28,7 @@
     "react-dom": "16.13.1",
     "react-draft-wysiwyg": "^1.15.0",
     "react-icons": "^4.7.1",
+    "react-images-uploading": "^3.1.7",
     "reactjs-popup": "^2.0.5",
     "sp-pnp-js": "^3.0.10",
     "tslib": "2.3.1"
