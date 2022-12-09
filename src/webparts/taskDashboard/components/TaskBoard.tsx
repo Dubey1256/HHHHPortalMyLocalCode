@@ -11,9 +11,9 @@ import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaS
 import * as Moment from 'moment';
 import { HiOutlineDocumentText } from 'react-icons/Hi';
 import './TaskDashboard.scss';
-import EditInstitution from './EditInstitution';
+import EditTaskPopup from '../../EditPopupFiles/EditTaskPopup/EditTaskPopup';
 //import { Items } from 'sp-pnp-js';
-import TeamComposition from './TeamComposition';
+import TeamComposition from '../../EditPopupFiles/EditTaskPopup/TeamComposition';
 
 
 
@@ -1282,7 +1282,7 @@ const TaskDashboards = (props: any) => {
                                                                             <td><span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span></td>
                                                                             <td>{item.PercentComplete}</td>
   
-                                                                            <td><EditInstitution Items={item}/></td>
+                                                                            <td><EditTaskPopup Items={item}/></td>
                                                                             
                                                                            
                                                                             {/* {isComponentVisible ? <EditInstitution/> : null} */}
