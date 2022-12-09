@@ -8,7 +8,8 @@ import * as Moment from 'moment';
 import Tooltip from './Tooltip';
 import ComponentTable from './TaskWebpart';
    
-function Portfolio({ID}:any) {  
+
+function Portfolio({ID}:any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
     const [array, setArray] = React.useState([])
@@ -97,7 +98,7 @@ function Portfolio({ID}:any) {
             myarray[0].map((items: any) => {
     
     
-                if (items.SiteImages != undefined && items.SiteImages != '' && items.SiteImages.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+                if (items.SiteImages != undefined && items.SiteImages != '' ) {
                     items.SiteImages = items.SiteImages.replace('https://www.hochhuth-consulting.de', 'https://hhhhteams.sharepoint.com/sites/HHHH')
                     myarray1.push(items)
     
@@ -332,14 +333,14 @@ function Portfolio({ID}:any) {
                                                     className="tlvalue impact-infoII ">
                                                         
                                                     <div className="hreflink block ng-binding">
-                                                        <a className="hreflink block ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a>
+                                                        <a className="hreflink block ng-binding" style={{border:"0px"}}target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a>
                                                     </div>
                                                    
                                                 </div>
                                      
                                             </div>
                                         </div>
-                                        {myarray1.length!=0?
+                                        
                                         <div
                                             className="col-sm-12 pad0 dashboard-sm-12">
                                             <div className="panel panel-primary-head blocks"
@@ -364,12 +365,7 @@ function Portfolio({ID}:any) {
                                                     <a className="hreflink ng-scope" title="Analyse Site Composition" >
                                                         <img className="wid-20"  data-themekey="#" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/analyze.png" />
                                                     </a>
-                                                                   
-                                                                            
-                                                                          
-                                                           
-                                                                       
-                                                                    
+                                                      
                                                                 </span>
                                                            )}
                                                             {/* <span ng-if="Task.expanded2 &amp;&amp;Task.Portfolio_x0020_Type=='Component'" style={{ cursor: "pointer" }} ng-click="toggle2Smart(Task)" className="ng-scope">
@@ -455,7 +451,7 @@ function Portfolio({ID}:any) {
                                                 </div>
                                             </div>
                                         </div>
-                                        :""}
+                                        
                                         
                                     </div>
                                     )}
@@ -592,11 +588,15 @@ function Portfolio({ID}:any) {
                                         </div>
                                         }
                                         
-                                    
+                     
+                                </div>
+                                )}
+
+                                               
                                 {/* Value Added */}
 
                                   
-                                   {data.map(item =>
+                                {data.map(item =>
                                     <div className="col-sm-8 pad0 teamdashboard_col-sm-12 ng-scope">
                                         {item.ValueAdded !== null &&
                                         <div className="panel panel-default" id="t_draggable1">
@@ -672,8 +672,6 @@ function Portfolio({ID}:any) {
                                     </div>
                                      )}
 
-                                </div>
-                                )}
                             </div>
                         </div>
                         </div>
@@ -807,7 +805,6 @@ function Portfolio({ID}:any) {
                                 // <Groupby Id={item.Id} level={item.PortfolioLevel}/>
                                 <ComponentTable props={item.Title}/>
                                 ))}
-                                
                             </div>
 
                         </section>

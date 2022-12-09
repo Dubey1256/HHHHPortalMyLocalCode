@@ -285,8 +285,8 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     }
     let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
         setSearch(e.target.value.toLowerCase());
-        var Title = titleName;
-
+        var Title = titleName;  
+ 
         var AllFilteredTagNews = [];
         var filterglobal = e.target.value.toLowerCase();
         if (filterglobal != undefined && filterglobal.length >= 1) {
@@ -349,7 +349,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             // setData(data => ([...maidataBackup]));
             setData(maidataBackup);
             //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
-        }
+        } 
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
 
     };
@@ -368,7 +368,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
         $(' #SpfxProgressbar').hide();
     }
     React.useEffect(() => {
-
+            console.log("Use effect is running")
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------
@@ -456,7 +456,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                         }
                         if (newsite.Title != "Master Tasks" || newsite.Title != "Foundation")
                             siteConfig.push(newsite);
-                    })
+                    }) 
                     $.each(MetaData, function (newitem: any, item) {
                         if (item.TaxType != 'Status' && item.TaxType != 'Admin Status' && item.TaxType != 'Task Type' && item.TaxType != 'Time' && item.Id != 300 && item.TaxType != 'Portfolio Type' && item.TaxType != 'Task Types') {
                             if (item.TaxType == 'Sites') {
@@ -1170,6 +1170,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                             item.flag = true;
                             item.siteType = config.Title;
                             item.childs = [];
+                            item.TeamLeaderUser=[]
 
                             if (item.SharewebCategories.results != undefined) {
                                 if (item.SharewebCategories.results.length > 0) {
@@ -1186,9 +1187,13 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                         // var result = $.grep(AllTasks, function (mPho, index) {
                         //     {return mPho.isDrafted == false};
                         // });
+                        // $.each(AllTasks,function(index:any,item:any){
+                        //     item.TeamLeaderUser=[]
+
+                        // })
                         if (Counter == 18) {
                             $.each(AllTasks, function (index: any, result: any) {
-                                result.TeamLeaderUser = []
+                                //result.TeamLeaderUser = []
                                 result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
 
                                 if (result.DueDate == 'Invalid date' || '') {
@@ -2480,6 +2485,16 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
+                                                                <span className="dropdown filer-icons">
+                                                <span className="filter-iconfil"
+                                                //  href="#myDropdown1"
+                                                onClick={setCreatedmodalIsOpenToTrue}
+                                                //   ng-click="myFunction('myDropdown1','PercentComplete')"
+                                                  >
+                                                    <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue}/></i>
+                                                </span>
+                                            </span>
+                                                                
                                                             </div>
                                                         </th>
                                                     
@@ -2600,12 +2615,14 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                 })}</div>
                                                                                     </td>
                                                                                     <td style={{ width: "7%" }}>
-                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1:any) {
                                                                                             return (
-                                                                                                <span className="ClientCategory-Usericon"
-                                                                                                    title={client1.Title}>
+                                                                                                <span 
+                                                                                                   title={client1.Title}>
+                                                                                                        
 
-                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                    {/* <a>{client1.Title.slice(0, 2).toUpperCase()}</a> */}
+                                                                                                    <img  className="ClientCategory-Usericon" src={client1.ItemCover.Url}/>
 
                                                                                                 </span>
                                                                                             )
