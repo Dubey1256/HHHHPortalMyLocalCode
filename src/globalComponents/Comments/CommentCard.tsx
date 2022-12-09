@@ -1,17 +1,20 @@
 import * as React from 'react';
-import styles from './ComponentComments.module.scss';
-import { IComponentCommentsProps } from './IComponentCommentsProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { Web } from "sp-pnp-js";
-import '../../cssFolder/foundation.scss';
-import '../../cssFolder/foundationmin.scss';
-import './commentCustomStyle.scss'
+import '../../webparts/cssFolder/foundation.scss'
+import '../../webparts/cssFolder/foundationmin.scss';
+import './CommentStyle.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 //import FloraEditor from "./TextEditor";
 
-export interface IComponentCommentsState {  
+export interface ICommentCardProps {
+  siteUrl? : string;
+  userDisplayName? : string;
+}
+
+export interface ICommentCardState {  
   Result : any;
   listName : string;
   itemID : number;
@@ -21,19 +24,19 @@ export interface IComponentCommentsState {
   AllCommentModal: boolean;
 }
 
-export default class ComponentComments extends React.Component<IComponentCommentsProps, IComponentCommentsState> {
+export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
   private taskUsers : any = [];
   private currentUser: any;
-  public constructor(props:IComponentCommentsProps,state:IComponentCommentsState){
+  constructor(props:ICommentCardProps){
     super(props);
-    const params = new URLSearchParams(window.location.search);    
-    console.log(params.get('taskId'));
-    console.log(params.get('Site'));
+    const params1 = new URLSearchParams(window.location.search);    
+    console.log(params1.get('taskId'));
+    console.log(params1.get('Site'));
 
     this.state ={
       Result:{},
-      listName: params.get('Site'),
-      itemID : Number(params.get('taskId')),
+      listName: params1.get('Site'),
+      itemID : Number(params1.get('taskId')),
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,
@@ -73,8 +76,7 @@ export default class ComponentComments extends React.Component<IComponentComment
         if (keyA > keyB) return -1;
         return 0;
       });
-    }
-    
+    }   
     
     this.setState({
       Result : tempTask
@@ -214,17 +216,13 @@ export default class ComponentComments extends React.Component<IComponentComment
     });
   }
 
-  public render(): React.ReactElement<IComponentCommentsProps> {
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
+  public render(): React.ReactElement<ICommentCardProps> {
+    const {      
       userDisplayName
     } = this.props;
 
     return (
-      <div className="col-md-3">
+      <div>
         <div className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title">Comments</h3>
@@ -386,3 +384,5 @@ export default class ComponentComments extends React.Component<IComponentComment
     );
   }
 }
+
+export default CommentCard;
