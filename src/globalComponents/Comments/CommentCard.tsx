@@ -7,7 +7,8 @@ import './CommentStyle.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-//import FloraEditor from "./TextEditor";
+import { MentionsInput, Mention } from 'react-mentions';
+import mentionClass from './mention.module.scss';
 
 export interface ICommentCardProps {
   siteUrl? : string;
@@ -22,6 +23,7 @@ export interface ICommentCardState {
   updateComment: boolean;
   isModalOpen: boolean;
   AllCommentModal: boolean;
+  mentionValue: string;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -29,10 +31,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private currentUser: any;
   constructor(props:ICommentCardProps){
     super(props);
-    const params1 = new URLSearchParams(window.location.search);    
-    console.log(params1.get('taskId'));
-    console.log(params1.get('Site'));
-
+    const params1 = new URLSearchParams(window.location.search);  
+    
     this.state ={
       Result:{},
       listName: params1.get('Site'),
@@ -40,7 +40,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,
-      AllCommentModal: false
+      AllCommentModal: false,
+      mentionValue:''
     }
     this.GetResult();
   }
@@ -53,9 +54,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .items
       .getById(this.state.itemID)
       .select("ID","Title","Comments")
-      .get()
-      
-    console.log(taskDetails);
+      .get()      
+   
     await this.GetTaskUsers();
 
     this.currentUser = this.GetUserObject(this.props.userDisplayName);
@@ -64,9 +64,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       ID: 'T'+taskDetails["ID"],
       Title: taskDetails["Title"],      
       Comments: JSON.parse(taskDetails["Comments"])      
-    };
+    };    
     
-    console.log(tempTask);
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0){
       tempTask["Comments"].sort(function(a:any, b:any) {
         let keyA = a.ID,
@@ -83,6 +82,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
   }
 
+  private mentionUsers:any;
+  private topCommenters:any;
   private async GetTaskUsers(){
     let web = new Web(this.props.siteUrl);
     let taskUsers = [];    
@@ -90,9 +91,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .getByTitle('Task Users')
       .items
       .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title')
+      .filter("ItemType eq 'User'")
       .expand('AssingedToUser')
       .get();    
-    this.taskUsers = taskUsers;  
+    this.taskUsers = taskUsers; 
+    
+    this.topCommenters = taskUsers.slice(0,4);
+    console.log(this.topCommenters);
+
+    this.mentionUsers = this.taskUsers.map((i:any)=>{
+      return({   
+        id : i.Title,        
+        display: i.Title
+        
+      })
+    });
 
   }
 
@@ -100,7 +113,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.setState({CommenttoPost: e.target.value}); 
    }
 
-  private async PostComment(){
+  private async PostComment(txtCommentControlId:any){
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
       let temp = {
@@ -108,7 +121,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '', 
         Created: (new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',',''),
         Description:txtComment,
-        Header: "",
+        Header: this.GetMentionValues(),
         ID: this.state.Result["Comments"].length,
         Title: txtComment,
         editable: false
@@ -133,8 +146,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       
       console.log(this.state.Result);
       
-      (document.getElementById('txtComment') as HTMLTextAreaElement).value = '';
-      (document.getElementById('txtCommentModal') as HTMLTextAreaElement).value = '';
+      (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
       
       let web = new Web(this.props.siteUrl);
       
@@ -153,6 +165,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }  
     
   } 
+
+  private GetMentionValues(){
+    let mention_str='';
+    if (this.state.mentionValue != ''){
+      let regExpStr = this.state.mentionValue;
+      let regExpLiteral = /\[(.*?)\]/gi;
+      let allMention = regExpStr.match(regExpLiteral);
+      if (allMention.length>0){
+        for (let index = 0; index < allMention.length; index++) {
+          mention_str += allMention[index].replace('[','@').replace(']','').trim() + ' ';          
+        }        
+      }
+    }
+    return mention_str.trim();
+  }
 
   private GetUserObject(username:any){
     let userDeatails = {};
@@ -216,6 +243,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
   }
 
+  private topCommentersClick(e:any){
+    console.log(e.currentTarget.className);
+    if (e.currentTarget.className.indexOf('active')<0){
+      e.currentTarget.classList.add('active');
+      this.setState({
+        mentionValue : this.state.mentionValue + '@['+ e.currentTarget.title +']('+ e.currentTarget.title + ') '
+      })
+    }
+    
+  }
+
+  private setMentionValue(e:any){
+    this.setState({
+      mentionValue:e.target.value
+    },()=>{ console.log(this.state.mentionValue) })    
+  }
+
   public render(): React.ReactElement<ICommentCardProps> {
     const {      
       userDisplayName
@@ -231,15 +275,30 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           <div className="panel-body">
            
             <div className="TopRecipients">
-                <span className="mt-2 mr-5"> <strong>To:</strong>  </span>
+                <span className="mt-2 mr-5"> <strong>To:</strong></span>
+                {this.topCommenters != null && this.topCommenters.length>0 && this.topCommenters.map( (topCmnt:any,i:any)=> {
+                  return <span className="Recipients ng-scope">
+                            <a className="hreflink" target="_blank">
+                              <img onClick={(e)=>this.topCommentersClick(e)} className="Recipients-image" title={topCmnt.Title}
+                                  src={topCmnt.Item_x0020_Cover != undefined  ? 
+                                  topCmnt.Item_x0020_Cover.Url  :  "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
+                            </a>
+                          </span>
+                })}
+                  
+                
                 <span className="RecipientsNameField mt-0  mb-5">
-                    <textarea autoComplete='off' placeholder="Recipients Name" rows={1} className="form-control ng-valid ui-autocomplete-input ng-dirty ng-touched ng-valid-parse ui-autocomplete-loading ng-not-empty" id="taskprofile" style={{width: '161px', height: '43px'}}></textarea>
+                <MentionsInput value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
+                      className="mentions"
+                      classNames={mentionClass}>
+                  <Mention trigger="@" data={this.mentionUsers} className={mentionClass.mentions__mention}/>            
+                </MentionsInput>
                 </span>
             </div>            
             <div className="RecipientsCommentsField ">
                 <textarea id='txtComment' onChange={(e)=>this.handleInputChange(e)} className="form-control ui-autocomplete-input ng-valid ng-touched ng-dirty ng-empty" rows={3} placeholder="Enter your comments here" autoComplete="off" style={{width: '286px', height: '58px'}}></textarea>
                                
-                <button onClick={()=>this.PostComment()} title="Post comment" type="button" className="btn btn-primary pull-right mt-5 mb-5">
+                <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary pull-right mt-5 mb-5">
                     Post
                 </button>
 
@@ -328,12 +387,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   <div className="col-sm-12 mt-10 mb-10 padL-0 PadR0">
                       <div className="col-sm-12 mb-10 pl-7 PadR0">
                         <div className="col-sm-11 padL-0">
-                          <textarea id="txtCommentModal" onChange={(e)=>this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
+                          <textarea id="txtCommentModal" onChange={(e)=>this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>                          
                           <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                         </div>
                         <div className="col-sm-1 padL-0">
                           <div className="icon_post">
-                            <img onClick={()=>this.PostComment()} title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/>
+                            <img onClick={()=>this.PostComment('txtCommentModal')} title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/>
                           </div>
                         </div>
                       </div>
