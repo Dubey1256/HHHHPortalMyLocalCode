@@ -96,15 +96,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .get();    
     this.taskUsers = taskUsers; 
     
-    this.topCommenters = taskUsers.slice(0,4);
+    this.topCommenters = taskUsers.filter(function (i:any){ 
+      if (i.Title =="Deepak Trivedi"  || i.Title =="Stefan Hochhuth"  || i.Title =="Robert Ungethuem"  || i.Title =="Mattis Hahn" ){
+        return({id : i.Title,display: i.Title})
+      }
+    });
     console.log(this.topCommenters);
 
-    this.mentionUsers = this.taskUsers.map((i:any)=>{
-      return({   
-        id : i.Title,        
-        display: i.Title
-        
-      })
+    this.mentionUsers = this.taskUsers.map((i:any)=>{      
+        return({id : i.Title,display: i.Title})
     });
 
   }
@@ -122,7 +122,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         Created: (new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',',''),
         Description:txtComment,
         Header: this.GetMentionValues(),
-        ID: this.state.Result["Comments"].length,
+        ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
         editable: false
       };
@@ -157,7 +157,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               });
       
       this.setState({ 
-        updateComment: true
+        updateComment: true,
+        CommenttoPost: '',
+        mentionValue:''
       });      
 
     }else{
@@ -296,7 +298,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 </span>
             </div>            
             <div className="RecipientsCommentsField ">
-                <textarea id='txtComment' onChange={(e)=>this.handleInputChange(e)} className="form-control ui-autocomplete-input ng-valid ng-touched ng-dirty ng-empty" rows={3} placeholder="Enter your comments here" autoComplete="off" style={{width: '286px', height: '58px'}}></textarea>
+                <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e)=>this.handleInputChange(e)} className="form-control ui-autocomplete-input ng-valid ng-touched ng-dirty ng-empty" rows={3} placeholder="Enter your comments here" autoComplete="off" style={{width: '286px', height: '58px'}}></textarea>
                                
                 <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary pull-right mt-5 mb-5">
                     Post
