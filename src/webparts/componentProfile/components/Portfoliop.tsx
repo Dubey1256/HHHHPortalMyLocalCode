@@ -101,6 +101,7 @@ function Portfolio({ID}:any) {
                 if (items.SiteImages != undefined && items.SiteImages != '' ) {
                     items.SiteImages = items.SiteImages.replace('https://www.hochhuth-consulting.de', 'https://hhhhteams.sharepoint.com/sites/HHHH')
                     myarray1.push(items)
+                    
     
                 }
                 console.log(myarray1);
@@ -115,29 +116,29 @@ function Portfolio({ID}:any) {
             })
         }
     
-    
-            if(item.ClientCategory.results.length!=0){
-                item.ClientCategory.results.map((terms: any)=>{
-                //     if(myarray2.length!=0 && myarray2[0].title==terms.title){
-                //                ""
-                //     }else{
-                //    myarray2.push(terms);
-                // }
-                myarray2.push(terms);
-               })
+        if(item.ClientCategory.results.length!=0){
+            item.ClientCategory.results.map((terms: any)=>{
+            //     if(myarray2.length!=0 && myarray2[0].title==terms.title){
+            //                ""
+            //     }else{
+            //    myarray2.push(terms);
+            // }
+            myarray2.push(terms);
+           })
 
-           }
-        //    const letters = new Set([myarray2]);
-            
-                console.log(myarray2)
-            
-          
-            // myarray.push();
-        })
+       }
+    //    const letters = new Set([myarray2]);
+        
+            console.log(myarray2)
+        
+      
+        // myarray.push();
+    })
      
     var name;
     return (
         <div>
+           
             <div className="col-lg-12 pad0">
                 <section className="ContentSection">
                     <div className="container">
@@ -319,7 +320,7 @@ function Portfolio({ID}:any) {
                                             </div>
                                         </div>
                                     </div>
-                                    {data.map(item=>
+                                    
                                     <div className="col-lg-4 pad0">
                                         <div className="col-sm-12 pad0">
                                             <div className="involve_actor">
@@ -328,7 +329,9 @@ function Portfolio({ID}:any) {
                                                     <label className="full_width">Service Portfolio</label>
                                                 </div>
                                                 
-                                                          
+                                                {data.map(item=>    
+                                                 <>
+                                                 {item.ServicePortfolio.Title != undefined &&
                                                 <div ng-show="Task.Portfolio_x0020_Type=='Component'"
                                                     className="tlvalue impact-infoII ">
                                                         
@@ -337,7 +340,9 @@ function Portfolio({ID}:any) {
                                                     </div>
                                                    
                                                 </div>
-                                     
+                                                }
+                                                </>
+                                     ) }
                                             </div>
                                         </div>
                                         
@@ -377,6 +382,7 @@ function Portfolio({ID}:any) {
 
                                                     </a>
                                                 </div>
+                                                {data.map(item =>
                                                 <div className='accordion-content'>
                                                 {item.showk &&
                                                                            
@@ -401,7 +407,7 @@ function Portfolio({ID}:any) {
                                                                                 }
                                                                                    </div>
                                                                                   {item.Title=='EPS' &&
-                                                                                   <div ng-show="item.Title=='EPS'"
+                                                                                   <div 
                                                                                        className="SiteCompositionlist-ClientTitle">
                                                                                            {myarray2.length!=0? myarray2.map((client: any)=>{
                                                                                                        return( 
@@ -411,6 +417,29 @@ function Portfolio({ID}:any) {
                                                                                                className="user-Member-img"
                                                                                                ng-repeat="client in Task.ClientCategory.results">
                                                                                                     {(client.Title=="Kontakt Verwaltung" ||client.Title==" Steuerungsbericht der Direktion"||client.Title== "Shareweb Maintenance"||client.Title== "Newsletter Einbindung"||client.Title=="PSE-Partnerschaften")  &&
+                                                                                               <span> 
+                                                                                                  
+                                                                                                   {client.Title} 
+                                                                                              
+                                                                                                   </span>
+                                                                                                   }
+                                                                                           </div>
+                                                                                       </div>
+                                                                                   )
+                                                                               }):""} 
+                                                                                   </div>
+                                                                                   }
+                                                                                    {item.Title=='Education' &&
+                                                                                   <div 
+                                                                                       className="SiteCompositionlist-ClientTitle">
+                                                                                           {myarray2.length!=0? myarray2.map((client: any)=>{
+                                                                                                       return( 
+                                                                                       <div className="Members-Item">
+                                                                                     
+                                                                                           <div 
+                                                                                               className="user-Member-img"
+                                                                                               ng-repeat="client in Task.ClientCategory.results">
+                                                                                                    {(client.Title=="Contact Management" )  &&
                                                                                                <span> 
                                                                                                   
                                                                                                    {client.Title} 
@@ -449,12 +478,13 @@ function Portfolio({ID}:any) {
                                                                            </ul>
                                                                       }
                                                 </div>
+                                                )}
                                             </div>
                                         </div>
                                         
                                         
                                     </div>
-                                    )}
+                                   
                                     
                                     {/*  Short Description */}
                                     {data.map(item =>
