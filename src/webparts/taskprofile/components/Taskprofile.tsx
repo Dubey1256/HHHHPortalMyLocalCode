@@ -167,7 +167,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let userDeatails = [];
     let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
       if (user.AssingedToUser != undefined ){
+        
         return user.AssingedToUser['Title'] == username.Title || user.AssingedToUser['Title'] == "SPFx Developer1"
+      
       }
       });
       if (senderObject.length > 0){
