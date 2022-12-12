@@ -8,6 +8,7 @@ import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard'
 import '../../cssFolder/foundation.scss';
 import '../../cssFolder/foundationmin.scss';
+import './Taskprofile.module.scss';
 
 export interface ITaskprofileState {  
   Result : any;
@@ -438,40 +439,58 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             <div className="col-sm-12 pad0">
               <div className="row ml-0 mr-0">
                 <div className="col-sm-12 pad0 involve_actor">
-                  <div className="col-sm-4 PadL0 ng-scope" ng-if="attachments.length >0">
-                  {/* for Image */}
+                {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
+                  <div className="col-sm-4 PadL0 ng-scope">
+                  {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].map( (imgData:any,i:any)=> {
+                  return <div className="pad0 ng-scope">
+                            <div className="mt-10 ng-scope">
+                              <div className="img">
+                                <a className="sit-preview ng-scope" target="_blank" href={imgData.ImageUrl}>
+                                  <img alt={imgData.ImageName} src={imgData.ImageUrl} onMouseOver={(e) =>this.OpenModal(e, imgData)}></img>
+                                </a>
+                              </div>
+                            </div>
+                            <div className="mb-10 created-bg " style={{width: '100%', marginTop: '-5px', zIndex: '99',position: 'relative'}}>
+                              <div className="col-sm-5 padL-0">
+                                <span className="mt-2 font11  ng-scope" ng-show="attachedFiles.FileName==imageInfo.ImageName" ng-repeat="imageInfo in BasicImageInfo">
+                                  <span className="ng-binding">{imgData.UploadeDate}</span>                                 
+                                  <img className="wid14  upwh mr-5" title={imgData.UserName} src={imgData.UserImage}/>
+                                </span>
+                              </div>
+                              <div className="col-md-7 pad0">
+                                <span className="pull-right ng-binding">
+                                {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0,15)+'...' : imgData.ImageName }
+                                </span>
+                                <span className="pull-right mr-5">|</span>
+                              </div>
+                              <div className="clearfix">
+                              </div>
+                            </div>
+                    </div>
+                  })}
                   </div>
+                  }
                   <div className="col-sm-8 PadR0 mt-10">
-                    {/* for feedback comment */}
+                    {this.state.Result["SharewebTaskType"] !=null && this.state.Result["SharewebTaskType"] !='' && 
+                    this.state.Result["SharewebTaskType"] == 'Task' && this.state.Result["FeedBack"] != null && 
+                    this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
+                    this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
+                      <div className="Description desboxulli  PadR0">
+                        {this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
+                          return <TaskFeedbackCard feedback = {fbData} index={i+1} 
+                                                  onPost={()=>{this.onPost()}} 
+                                                  fullfeedback={this.state.Result["FeedBack"]} 
+                                                  CurrentUser={this.currentUser}>
+                                  </TaskFeedbackCard> 
+                        })}
+                      </div>
+                    }
                   </div>
                 </div>
               </div>
               <div className="ms-clear">
               </div>
             </div>
-          </div>
-
-          <div>
-              <div className={styles.imageSec}>            
-              {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].map( (imgData:any,i:any)=> {
-                return  <div style={{marginBottom:'5%'}}>
-                          <img className={styles.sit_preview} alt={imgData.ImageName} src={imgData.ImageUrl} onMouseOver={(e) =>this.OpenModal(e, imgData)}></img>
-                          <div>
-                            <span>{imgData.UploadeDate}</span>
-                            <span><img className={styles.imgAuthor} src={imgData.UserImage}></img></span>
-                            <span>{imgData.ImageName.length > 15 ? imgData.ImageName.substring(0,15)+'...' : imgData.ImageName }</span>
-                          </div>
-                        </div>                        
-              })}             
-              </div>
-
-              <div className={styles.feedbackSec}>
-              {this.state.Result["SharewebTaskType"] !=null && this.state.Result["SharewebTaskType"] !='' && 
-              this.state.Result["SharewebTaskType"] == 'Task' && this.state.Result["FeedBack"] != null && 
-              this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
-                  return <TaskFeedbackCard feedback = {fbData} index={i+1} onPost={()=>{this.onPost()}} fullfeedback={this.state.Result["FeedBack"]} CurrentUser={this.currentUser}></TaskFeedbackCard> 
-                })}
-              </div>
           </div>
           
           <Modal isOpen={this.state.isModalOpen} isBlocking={false} containerClassName={styles.custommodalpopup}>
