@@ -1,18 +1,19 @@
 import * as React from "react";
 import * as $ from 'jquery';
-import './foundation.scss';
+import '../../cssFolder/foundation.scss';
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
 import Tabs from "../Tabs/Tabs";
 import Tab from "../Tabs/Tab";
 import * as Moment from 'moment';
-import './Tabs/styles.css';
-import './TaskDashboard.scss'
-import './foundationmin.scss'
+import '../Tabs/styles.css';
+import '../../taskDashboard/components/TaskDashboard.scss'
+import '../../cssFolder/foundation.scss';
 import ComponentMail from './Componentmail';
 import { HiPencil } from 'react-icons/Hi';
 import axios, { AxiosResponse } from 'axios';
 import TeamComposition from './TeamComposition';
+// import Picker from "../../taskDashboard/components/SmartMetaDataPicker";
 import Picker from "./SmartMetaDataPicker";
 import { useRef, forwardRef, useImperativeHandle } from 'react'
 //import FloraEditor from "./TextEditor";

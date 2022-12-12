@@ -7,7 +7,7 @@ import Tabs from "./Tabs/Tabs";
 import Tab from "./Tabs/Tab";
 import * as Moment from 'moment';
 import './Tabs/styles.css';
-import './TaskDashboard.scss'
+import './TaskDashboard.module.scss';
 import '../../cssFolder/foundationmin.scss'
 import ComponentMail from './Componentmail';
 import { HiPencil } from 'react-icons/Hi';
