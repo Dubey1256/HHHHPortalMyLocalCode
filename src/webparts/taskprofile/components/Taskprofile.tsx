@@ -57,8 +57,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title")
-      .expand("Team_x0020_Members","Author","Responsible_x0020_Team")
+      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title")
+      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType")
       .get()
       
     console.log(taskDetails);
@@ -84,7 +84,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Author: this.GetUserObject(taskDetails["Author"]),
       component_url: taskDetails["component_x0020_link"],
       BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
-      FeedBack: JSON.parse(taskDetails["FeedBack"])      
+      FeedBack: JSON.parse(taskDetails["FeedBack"]),
+      SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : ''      
     };
     
     console.log(tempTask);
@@ -98,11 +99,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let web = new Web(this.props.siteUrl);
     let taskUsers = [];    
     taskUsers = await web.lists
-      .getByTitle('Task Users')
-      .items
-      .get();    
+    .getByTitle('Task Users')
+    .items
+    .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title')
+    .filter("ItemType eq 'User'")
+    .expand('AssingedToUser')
+    .get();    
     this.taskUsers = taskUsers;
-    //console.log(this.taskUsers);
+    console.log(this.taskUsers);
 
   }
 
@@ -141,7 +145,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private GetUserObjectFromCollection(UsersValues:any){  
     let userDeatails = [];
     for (let index = 0; index < UsersValues.length; index++) {
-      let senderObject = this.taskUsers.filter(function (user:any, i:any){ return user.Title == UsersValues[index].Title});
+      let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
+        if (user.AssingedToUser != undefined){
+          return user.AssingedToUser['Title'] == UsersValues[index].Title
+        }
+      });
       if (senderObject.length > 0){
           userDeatails.push({
             'Id' : senderObject[0].Id,
@@ -157,7 +165,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   private GetUserObject(username:any){
     let userDeatails = [];
-    let senderObject = this.taskUsers.filter(function (user:any, i:any){ return user.Title == username.Title});
+    let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
+      if (user.AssingedToUser != undefined ){
+        return user.AssingedToUser['Title'] == username.Title || user.AssingedToUser['Title'] == "SPFx Developer1"
+      }
+      });
       if (senderObject.length > 0){
           userDeatails.push({
             'Id' : senderObject[0].Id,
@@ -356,7 +368,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               </div>
 
               <div className={styles.feedbackSec}>
-              {this.state.Result["FeedBack"] != null && this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
+              {this.state.Result["SharewebTaskType"] !=null && this.state.Result["SharewebTaskType"] !='' && 
+              this.state.Result["SharewebTaskType"] == 'Task' && this.state.Result["FeedBack"] != null && 
+              this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
                   return <TaskFeedbackCard feedback = {fbData} index={i+1} onPost={()=>{this.onPost()}} fullfeedback={this.state.Result["FeedBack"]} CurrentUser={this.currentUser}></TaskFeedbackCard> 
                 })}
               </div>
