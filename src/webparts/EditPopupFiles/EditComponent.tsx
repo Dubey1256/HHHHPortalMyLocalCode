@@ -23,6 +23,10 @@ function EditInstitution(item: any) {
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false)
     }
+
+    const Call= React.useCallback(()=>{
+        setIsComponent(false);
+      },[]);
     var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
         if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
 
@@ -200,6 +204,12 @@ function EditInstitution(item: any) {
         setSharewebComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
+    const EditCallBack = (item: any, title: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(false);
+       // setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
 
     return (
         <>
@@ -271,7 +281,7 @@ function EditInstitution(item: any) {
                                                                                 </div>
                                                                                 <div className="col-sm-1 PadR0">
                                                                                     <label className="full_width">&nbsp;</label>
-                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/PublishingImages/Logos/EMMCopyTerm.png"
+                                                                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                                         onClick={(e) => EditComponent(item, 'Componet')} />
                                                                                 </div>
                                                                                 <div className="col-sm-11 padL-0 PadR0 inner-tabb">
@@ -913,7 +923,7 @@ function EditInstitution(item: any) {
                         </div>
 
 
-                      {IsComponent &&  <ComponentPortPolioPopup props={SharewebComponent}></ComponentPortPolioPopup>}
+                      {IsComponent &&  <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
 
                     </div>
                 )

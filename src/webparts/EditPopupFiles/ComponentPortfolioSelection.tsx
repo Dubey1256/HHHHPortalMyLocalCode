@@ -4,18 +4,34 @@ import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Version } from '@microsoft/sp-core-library';
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
-function ComponentPortPolioPopup(item: any) {
+const ComponentPortPolioPopup = (item: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setComponentsData] = React.useState([]);
+    const [CheckBoxdata, setcheckbox] = React.useState([]);
+    const [selectedComponent, selctedCompo] = React.useState('');
     React.useEffect(() => {
+        if (item.smartComponent != undefined && item.smartComponent.length > 0)
+            selctedCompo(item.smartComponent[0]);
+
         GetComponents();
-        setModalIsOpen(true)
     },
         []);
-    const setModalIsOpenToFalse = () => {
+    function Example(callBack: any) {
 
+        item.Call();
+
+    }
+    const setModalIsOpenToFalse = () => {
+        Example(false);
+        if (item.props.smartComponent.length == 0)
+            item.props.smartComponent.push(CheckBoxdata);
+        else {
+            item.props.smartComponent = [];
+            item.props.smartComponent.push(CheckBoxdata);
+        }
         setModalIsOpen(false)
     }
+
     const handleOpen = (item: any) => {
 
         item.show = item.show = item.show == true ? false : true;
@@ -61,7 +77,8 @@ function ComponentPortPolioPopup(item: any) {
             if (result.DueDate == 'Invalid date' || '') {
                 result.DueDate = result.DueDate.replaceAll("Invalid date", "")
             }
-            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+            if (result.PercentComplete != undefined)
+                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
             if (result.Short_x0020_Description_x0020_On != undefined) {
                 result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
@@ -145,37 +162,49 @@ function ComponentPortPolioPopup(item: any) {
         //maidataBackup.push(ComponentsData)
         // setmaidataBackup(ComponentsData)
         setComponentsData(ComponentsData);
-
+        setModalIsOpen(true)
 
     }
+    const setCompareComponents = function (item12: any) {
+        item12.Ischeck = true;
+        setcheckbox(item12)
+        //setComponentsData(data...[data]);
+        setComponentsData(data => ([...data]));
+    }
+
+
 
     return (
         <Modal
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
             isBlocking={false}>
-            <div>
+            <div className="modal-dailog modal-lg">
                 <section className="TableContentSection">
                     <div className="container-fluid">
                         <section className="TableSection">
                             <div className="container pad0">
                                 <div className="Alltable mt-10">
                                     <div className="tbl-headings">
-                                        <span className="leftsec w65">
-                                            <label>
-                                                {/* Showing {ComponentsData.length} of {ComponentsData.length} Components */}
-                                            </label>
-                                            <label> | </label>
-                                            {/* <label>
+                                        <div className='modal-header'>
+                                            <h5 className='modal-title'><span>Select Components</span></h5>
+                                            <button type="button" className='btn btn-danger pull-right' onClick={setModalIsOpenToFalse}>Cancel</button>
+                                        </div>
+
+                                        {/* <span className="leftsec w65">
+                                            <label> */}
+                                        {/* Showing {ComponentsData.length} of {ComponentsData.length} Components */}
+                                        {/* </label>
+                                            <label> | </label> */}
+                                        {/* <label>
                                             {SubComponentsData.length} of {SubComponentsData.length} SubComponents
                                         </label> */}
-                                            <label> | </label>
-                                            {/* <label>
+                                        {/* <label> | </label> */}
+                                        {/* <label>
                                             {FeatureData.length} of {FeatureData.length} Features
                                         </label> */}
-                                            <span className="g-search">
+                                        {/* <span className="g-search">
                                                 <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
-                                                {/* <span className="gsearch-btn" ><i><FaSearch /></i></span> */}
                                             </span>
                                             <span>
                                                 <select className="ml2 searchbox_height">
@@ -184,8 +213,8 @@ function ComponentPortPolioPopup(item: any) {
                                                     <option value="Exact Phrase">Exact Phrase</option>
 
                                                 </select>
-                                            </span>
-                                        </span>
+                                            </span> */}
+                                        {/* </span> */}
 
                                     </div>
                                     <div className="col-sm-12 pad0 smart">
@@ -216,7 +245,7 @@ function ComponentPortPolioPopup(item: any) {
                                                                 <div style={{ width: "17%" }} className="smart-relative">
                                                                     <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                                         title="Client Category" className="full_width searchbox_height"
-                                                                        />
+                                                                    />
                                                                     {/* <span className="sorticon">
                                                                         <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                         <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -302,6 +331,8 @@ function ComponentPortPolioPopup(item: any) {
 
                                                                                     <td style={{ width: "7%" }}>
                                                                                         <div className="">
+                                                                                            {/* <span><input type="checkbox" name="Active" checked={item.checked} onClick={() => setCompareComponents(item)} ></input></span> */}
+                                                                                            <span><input type="checkbox" name="Active"   onClick={() => {item.checked = !item.checked; setcheckbox(item)}} ></input></span>
                                                                                             <span>
                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                     <img className="icon-sites-img"
@@ -389,6 +420,7 @@ function ComponentPortPolioPopup(item: any) {
                                                                                                             </div>
                                                                                                         </td>
                                                                                                         <td style={{ width: "7%" }}>  <div className="d-flex">
+                                                                                                            <span><input type="checkbox" name="Active" onChange={() => setCompareComponents(childitem)} ></input></span>
                                                                                                             <span>
 
                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
@@ -468,6 +500,7 @@ function ComponentPortPolioPopup(item: any) {
 
 
                                                                                                                         <td style={{ width: "7%" }}> <div className="d-flex">
+                                                                                                                            <span><input type="checkbox" name="Active" onChange={() => setCompareComponents(item)} ></input></span>
                                                                                                                             <span>
 
                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
@@ -558,9 +591,12 @@ function ComponentPortPolioPopup(item: any) {
                                 </div>
                             </div></section>
                     </div></section>
-            </div>
-        </Modal>
+                <div className='modal-footer mt-3'>
+                    <button type="button" className="btn btn-primary" disabled={true} onClick={setModalIsOpenToFalse}>Cancel</button>
+                </div>
+            </div >
+        </Modal >
     )
 
-} export default ComponentPortPolioPopup;
+}; export default ComponentPortPolioPopup;
 
