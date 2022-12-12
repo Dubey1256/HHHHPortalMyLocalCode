@@ -261,38 +261,80 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     return (
       <div> 
-
         <div className='col-sm-12 pad0'>
-          <div className='col-lg-9 left-col'>
-          <div className={styles.task_title} style={{verticalAlign:'top'}}>
-              <h1 className="mb-5 ng-binding">
-                <img className={styles.imgWid29} src={this.state.Result["SiteIcon"]}/>
+          <div className="task-title" style={{verticalAlign:'top'}}>
+            <h1 className="mb-5 ng-binding">
+              <img className={styles.imgWid29} src={this.state.Result["SiteIcon"]}/>
                 {this.state.Result['Title']}
               </h1>
-            </div>
-          
-          <table className={styles.tasktable}>
-            <tr>
-              <td className={styles.taskNameTd}>Task Id</td>
-              <td>{this.state.Result["ID"]}</td>
-              <td className={styles.taskNameTd}>Due Date</td>
-              <td>{this.state.Result["DueDate"] != null ? (new Date(this.state.Result["DueDate"])).toLocaleDateString() : ''}</td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Categories</td>
-              <td>{this.state.Result["Categories"]}</td>
-              <td className={styles.taskNameTd}>Status</td>
-              <td>{this.state.Result["Status"]}</td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Start Date</td>
-              <td>{this.state.Result["StartDate"]}</td>
-              <td className={styles.taskNameTd}>Completion Date</td>
-              <td>{this.state.Result["CompletedDate"]}</td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Team Members</td>
-              <td> <div className={styles.team_Members_Item}>
+          </div>
+        </div>
+        <div className='col-sm-12 pad0'>
+          <div className='col-lg-9 left-col'>
+          <div className="row data-align">
+            <div className="col-sm-8 pad0">
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Task Id</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope" ng-show="Task.Shareweb_x0020_ID!=undefined" ng-repeat="taskId in maincollection">
+                    <span className="ng-binding">{this.state.Result["ID"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">Due Date</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                  {this.state.Result["DueDate"] != null ? (new Date(this.state.Result["DueDate"])).toLocaleDateString() : ''}
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Categories</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">{this.state.Result["Categories"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">Status</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                  {this.state.Result["Status"]}
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Start Date</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">{this.state.Result["StartDate"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">Completion Date</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                  {this.state.Result["CompletedDate"]}
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Team Members</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">
+                    <div className={styles.team_Members_Item}>
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 && this.state.Result["TeamLeader"].map( (rcData:any,i:any)=> {
                   return  <div className={styles.user_Member_img}><img className={styles.imgAuthor} src={rcData.userImage}></img></div>                        
                 })} 
@@ -320,41 +362,95 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </div>
                     </span>
                   </div>                        
-                }
-                
-                {/*this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].map( (rcData,i)=> {
-                  return  <span>{ i != 0 &&
-                            <img className={styles.imgAuthor} src={rcData.userImage}></img>}
-                    </span>                        
-                })*/}
+                }               
+               
+                </div>  
+                    </span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">SmartTime Total</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                  
+                  </div>
                 </div>
-              </td>
-              <td className={styles.taskNameTd}>SmartTime Total</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Item Rank</td>
-              <td>{this.state.Result["ItemRank"]}</td>
-              <td className={styles.taskNameTd}>% Complete</td>
-              <td>{this.state.Result["PercentComplete"]}</td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Priority</td>
-              <td>{this.state.Result["Priority"]}</td>
-              <td className={styles.taskNameTd}>Created</td>
-              <td>{this.state.Result["Created"]} | 
-              <img className={styles.imgAuthor} src={this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].userImage}></img>
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Url</td>
-              <td colSpan={3}>{this.state.Result["component_url"] != null &&
-                <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a> 
-               }
-              </td>
-              
-            </tr>
-            </table>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Item Rank</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">{this.state.Result["ItemRank"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">% Complete</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                    <span className="ng-binding">{this.state.Result["PercentComplete"]}</span>
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Priority</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">{this.state.Result["Priority"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">Created</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                    <span className="ng-binding">{this.state.Result["Created"]} | 
+                      <img className={styles.imgAuthor} src={this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].userImage}></img></span>
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Url</label>
+                  </div>
+                  <div className="tlvalue impact-info87">
+                    <div className="col-sm-12 pad0">
+                    {this.state.Result["component_url"] != null &&
+                      <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a> 
+                    }
+                    </div>      
+                  </div>
+                 
+                </div>
+                
+              </div>
+
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-sm-12 pad0">
+              <div className="row ml-0 mr-0">
+                <div className="col-sm-12 pad0 involve_actor">
+                  <div className="col-sm-4 PadL0 ng-scope" ng-if="attachments.length >0">
+                  {/* for Image */}
+                  </div>
+                  <div className="col-sm-8 PadR0 mt-10">
+                    {/* for feedback comment */}
+                  </div>
+                </div>
+              </div>
+              <div className="ms-clear">
+              </div>
+            </div>
+          </div>
+
           <div>
               <div className={styles.imageSec}>            
               {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].map( (imgData:any,i:any)=> {
