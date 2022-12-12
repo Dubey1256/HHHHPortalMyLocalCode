@@ -3,8 +3,8 @@ import * as $ from 'jquery';
 import '../../cssFolder/foundation.scss';
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
-import Tabs from "../Tabs/Tabs";
-import Tab from "../Tabs/Tab";
+import Tabs from "../../taskDashboard/components/Tabs/Tabs";
+import Tab from "../../taskDashboard/components/Tabs/Tab";
 import * as Moment from 'moment';
 import '../Tabs/styles.css';
 import '../../taskDashboard/components/TaskDashboard.scss'
