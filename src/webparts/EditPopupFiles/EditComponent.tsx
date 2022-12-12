@@ -5,11 +5,14 @@ import Tabs from "./Tabs/Tabs";
 import Tab from "./Tabs/Tab";
 import * as moment from 'moment';
 import './Tabs/styles.css';
+import ComponentPortPolioPopup from './ComponentPortfolioSelection';
 
 function EditInstitution(item: any) {
     const [CompoenetItem, setComponent] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
+    const [IsComponent, setIsComponent] = React.useState(false);
+    const [SharewebComponent, setSharewebComponent] = React.useState('');
     const setModalIsOpenToTrue = (e: any) => {
         e.preventDefault()
         setModalIsOpen(true)
@@ -191,7 +194,12 @@ function EditInstitution(item: any) {
 
     },
         []);
-
+    const EditComponent = (item: any, title: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
 
     return (
         <>
@@ -264,12 +272,12 @@ function EditInstitution(item: any) {
                                                                                 <div className="col-sm-1 PadR0">
                                                                                     <label className="full_width">&nbsp;</label>
                                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/PublishingImages/Logos/EMMCopyTerm.png"
-                                                                                        ng-click="openComponent('Countries');" />
+                                                                                        onClick={(e) => EditComponent(item, 'Componet')} />
                                                                                 </div>
                                                                                 <div className="col-sm-11 padL-0 PadR0 inner-tabb">
                                                                                     <div className="row">
                                                                                         <div className="col-sm-12 PadR0">
-                                                                                            {item !=undefined && item.smartComponent !=undefined && item.smartComponent.map((childinew: any) =>
+                                                                                            {item != undefined && item.smartComponent != undefined && item.smartComponent.map((childinew: any) =>
                                                                                                 < div className="block bgsiteColor"
                                                                                                     ng-mouseover="HoverIn(item);"
                                                                                                     ng-mouseleave="ComponentTitle.STRING='';"
@@ -283,7 +291,7 @@ function EditInstitution(item: any) {
                                                                                                     </a>
                                                                                                 </div>
                                                                                             )}
-                                                                                        </div> 
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
 
@@ -905,7 +913,7 @@ function EditInstitution(item: any) {
                         </div>
 
 
-
+                      {IsComponent &&  <ComponentPortPolioPopup props={SharewebComponent}></ComponentPortPolioPopup>}
 
                     </div>
                 )

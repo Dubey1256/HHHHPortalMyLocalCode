@@ -857,11 +857,11 @@ function Groupby() {
                                                                                 {ItemType.TaxType != 'Status' &&
                                                                                     <span className="ml-1">
 
-                                                                                        
-                                                                                            <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                                            
-                                                                                            <span className="ml-2">
-                                                                                                {ItemType.Title}
+
+                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+
+                                                                                        <span className="ml-2">
+                                                                                            {ItemType.Title}
 
                                                                                         </span>
 
@@ -870,8 +870,8 @@ function Groupby() {
                                                                                 {ItemType.TaxType == 'Status' &&
                                                                                     <span className="ml-2">
 
-                                                                                        
-                                                                                            <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+
+                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
                                                                                         <span className="ml-2">
                                                                                             {ItemType.Title}
 
@@ -1123,9 +1123,9 @@ function Groupby() {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
-                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-                        </div>
+                                                    <div id="SpfxProgressbar" style={{ display: "none" }}>
+                                                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                                    </div>
                                                     {data && data.map(function (item, index) {
                                                         if (search == "" || item.Title.toLowerCase().includes(search.toLowerCase())) {
                                                             return (
