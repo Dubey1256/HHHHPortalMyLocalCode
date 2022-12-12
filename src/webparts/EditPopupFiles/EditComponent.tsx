@@ -1,8 +1,8 @@
 import * as React from "react";
 // import ImagesC from "./Images";
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
-import Tabs from "./Tabs/Tabs";
-import Tab from "./Tabs/Tab";
+import Tabs from "../../webparts/taskDashboard/components/Tabs/Tabs";
+import Tab from "../../webparts/taskDashboard/components/Tabs/Tab";
 import * as moment from 'moment';
 import './Tabs/styles.css';
 import ComponentPortPolioPopup from './ComponentPortfolioSelection';

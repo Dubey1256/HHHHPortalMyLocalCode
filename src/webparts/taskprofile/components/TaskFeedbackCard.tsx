@@ -73,8 +73,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
       let temp = {
-        AuthorImage: this.props.CurrentUser['UserImage'] != null ? this.props.CurrentUser['UserImage'] : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/ChetanChauhan.png", 
-        AuthorName: this.props.CurrentUser['UserName'] != null ? this.props.CurrentUser['UserName'] : "Chetan Chauhan", 
+        AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
+        AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         Title:txtComment
       };
@@ -102,8 +102,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
       let temp = {
-        AuthorImage: this.props.CurrentUser['UserImage'] != null ? this.props.CurrentUser['UserImage'] : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/ChetanChauhan.png", 
-        AuthorName: this.props.CurrentUser['UserName'] != null ? this.props.CurrentUser['UserName'] : "Chetan Chauhan", 
+        AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
+        AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         Title:txtComment
       };
@@ -168,8 +168,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     
     if (txtComment != ''){
       let temp = {
-        AuthorImage: this.props.CurrentUser['UserImage'] != null ? this.props.CurrentUser['UserImage'] : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/ChetanChauhan.png", 
-        AuthorName: this.props.CurrentUser['UserName'] != null ? this.props.CurrentUser['UserName'] : "Chetan Chauhan", 
+        AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
+        AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         Title:txtComment
       };
@@ -187,8 +187,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
       <div>
-        
-        <div>
+        {this.state.fbData['Title'] != ''  &&
+          <div>
           <span style={{float:'right'}}><a onClick={(e) =>this.showhideCommentBox()}>Add Comment</a></span>
           <div style={{width:'100%' , display:'flex'}}>
             <div className={styles.infoNo}>
@@ -211,7 +211,10 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments'].map( (fbComment:any,k:any)=> {
                 return <div className={styles.fbCommentInfo}>
                   <div>
-                    <span><img className={styles.imgAuthor} src={fbComment.AuthorImage}></img></span>
+                    <span><img className={styles.imgAuthor} 
+                            src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
+                                  fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}>
+                      </img></span>
                     <span>{fbComment.AuthorName} - </span>
                     <span>{fbComment.Created}</span>
                     <span><a onClick={()=>this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a></span>
@@ -251,7 +254,9 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                 {fbSubData.Comments != null && fbSubData.Comments.length > 0 && fbSubData.Comments.map( (fbComment:any,k:any)=> {
                 return <div className={styles.fbCommentInfo}>
                   <div>
-                    <span><img className={styles.imgAuthor} src={fbComment.AuthorImage}></img></span>
+                    <span><img className={styles.imgAuthor} 
+                          src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
+                              fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img></span>
                     <span>{fbComment.AuthorName} - </span>
                     <span>{fbComment.Created}</span>
                     <span><a><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a></span>
@@ -269,6 +274,9 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>  
           })}
         </div>
+        }
+
+        
         <Modal isOpen={this.state.isModalOpen} isBlocking={false} containerClassName={styles.custommodalpopup}>
             <div className={styles.parentDiv}>
             <span className={styles.closeButtonRow}><img src={require('../assets/cross.png')} className={styles.modal_close_image} onClick={(e) =>this.CloseModal(e) }/></span>
