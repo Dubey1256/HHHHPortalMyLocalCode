@@ -1,17 +1,21 @@
 import * as React from 'react';
-import styles from './ComponentComments.module.scss';
-import { IComponentCommentsProps } from './IComponentCommentsProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { Web } from "sp-pnp-js";
-import '../../cssFolder/foundation.scss';
-import '../../cssFolder/foundationmin.scss';
-import './commentCustomStyle.scss'
+import '../../webparts/cssFolder/foundation.scss'
+import '../../webparts/cssFolder/foundationmin.scss';
+import './CommentStyle.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-//import FloraEditor from "./TextEditor";
+import { MentionsInput, Mention } from 'react-mentions';
+import mentionClass from './mention.module.scss';
 
-export interface IComponentCommentsState {  
+export interface ICommentCardProps {
+  siteUrl? : string;
+  userDisplayName? : string;
+}
+
+export interface ICommentCardState {  
   Result : any;
   listName : string;
   itemID : number;
@@ -19,25 +23,25 @@ export interface IComponentCommentsState {
   updateComment: boolean;
   isModalOpen: boolean;
   AllCommentModal: boolean;
+  mentionValue: string;
 }
 
-export default class ComponentComments extends React.Component<IComponentCommentsProps, IComponentCommentsState> {
+export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
   private taskUsers : any = [];
   private currentUser: any;
-  public constructor(props:IComponentCommentsProps,state:IComponentCommentsState){
+  constructor(props:ICommentCardProps){
     super(props);
-    const params = new URLSearchParams(window.location.search);    
-    console.log(params.get('taskId'));
-    console.log(params.get('Site'));
-
+    const params1 = new URLSearchParams(window.location.search);  
+    
     this.state ={
       Result:{},
-      listName: params.get('Site'),
-      itemID : Number(params.get('taskId')),
+      listName: params1.get('Site'),
+      itemID : Number(params1.get('taskId')),
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,
-      AllCommentModal: false
+      AllCommentModal: false,
+      mentionValue:''
     }
     this.GetResult();
   }
@@ -50,9 +54,8 @@ export default class ComponentComments extends React.Component<IComponentComment
       .items
       .getById(this.state.itemID)
       .select("ID","Title","Comments")
-      .get()
-      
-    console.log(taskDetails);
+      .get()      
+   
     await this.GetTaskUsers();
 
     this.currentUser = this.GetUserObject(this.props.userDisplayName);
@@ -61,9 +64,8 @@ export default class ComponentComments extends React.Component<IComponentComment
       ID: 'T'+taskDetails["ID"],
       Title: taskDetails["Title"],      
       Comments: JSON.parse(taskDetails["Comments"])      
-    };
+    };    
     
-    console.log(tempTask);
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0){
       tempTask["Comments"].sort(function(a:any, b:any) {
         let keyA = a.ID,
@@ -73,14 +75,15 @@ export default class ComponentComments extends React.Component<IComponentComment
         if (keyA > keyB) return -1;
         return 0;
       });
-    }
-    
+    }   
     
     this.setState({
       Result : tempTask
     });
   }
 
+  private mentionUsers:any;
+  private topCommenters:any;
   private async GetTaskUsers(){
     let web = new Web(this.props.siteUrl);
     let taskUsers = [];    
@@ -88,9 +91,21 @@ export default class ComponentComments extends React.Component<IComponentComment
       .getByTitle('Task Users')
       .items
       .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title')
+      .filter("ItemType eq 'User'")
       .expand('AssingedToUser')
       .get();    
-    this.taskUsers = taskUsers;  
+    this.taskUsers = taskUsers; 
+    
+    this.topCommenters = taskUsers.filter(function (i:any){ 
+      if (i.Title =="Deepak Trivedi"  || i.Title =="Stefan Hochhuth"  || i.Title =="Robert Ungethuem"  || i.Title =="Mattis Hahn" ){
+        return({id : i.Title,display: i.Title})
+      }
+    });
+    console.log(this.topCommenters);
+
+    this.mentionUsers = this.taskUsers.map((i:any)=>{      
+        return({id : i.Title,display: i.Title})
+    });
 
   }
 
@@ -98,7 +113,7 @@ export default class ComponentComments extends React.Component<IComponentComment
     this.setState({CommenttoPost: e.target.value}); 
    }
 
-  private async PostComment(){
+  private async PostComment(txtCommentControlId:any){
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
       let temp = {
@@ -106,8 +121,8 @@ export default class ComponentComments extends React.Component<IComponentComment
         AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '', 
         Created: (new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',',''),
         Description:txtComment,
-        Header: "",
-        ID: this.state.Result["Comments"].length,
+        Header: this.GetMentionValues(),
+        ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
         editable: false
       };
@@ -131,8 +146,7 @@ export default class ComponentComments extends React.Component<IComponentComment
       
       console.log(this.state.Result);
       
-      (document.getElementById('txtComment') as HTMLTextAreaElement).value = '';
-      (document.getElementById('txtCommentModal') as HTMLTextAreaElement).value = '';
+      (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
       
       let web = new Web(this.props.siteUrl);
       
@@ -143,7 +157,9 @@ export default class ComponentComments extends React.Component<IComponentComment
               });
       
       this.setState({ 
-        updateComment: true
+        updateComment: true,
+        CommenttoPost: '',
+        mentionValue:''
       });      
 
     }else{
@@ -151,6 +167,21 @@ export default class ComponentComments extends React.Component<IComponentComment
     }  
     
   } 
+
+  private GetMentionValues(){
+    let mention_str='';
+    if (this.state.mentionValue != ''){
+      let regExpStr = this.state.mentionValue;
+      let regExpLiteral = /\[(.*?)\]/gi;
+      let allMention = regExpStr.match(regExpLiteral);
+      if (allMention.length>0){
+        for (let index = 0; index < allMention.length; index++) {
+          mention_str += allMention[index].replace('[','@').replace(']','').trim() + ' ';          
+        }        
+      }
+    }
+    return mention_str.trim();
+  }
 
   private GetUserObject(username:any){
     let userDeatails = {};
@@ -214,17 +245,30 @@ export default class ComponentComments extends React.Component<IComponentComment
     });
   }
 
-  public render(): React.ReactElement<IComponentCommentsProps> {
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
+  private topCommentersClick(e:any){
+    console.log(e.currentTarget.className);
+    if (e.currentTarget.className.indexOf('active')<0){
+      e.currentTarget.classList.add('active');
+      this.setState({
+        mentionValue : this.state.mentionValue + '@['+ e.currentTarget.title +']('+ e.currentTarget.title + ') '
+      })
+    }
+    
+  }
+
+  private setMentionValue(e:any){
+    this.setState({
+      mentionValue:e.target.value
+    },()=>{ console.log(this.state.mentionValue) })    
+  }
+
+  public render(): React.ReactElement<ICommentCardProps> {
+    const {      
       userDisplayName
     } = this.props;
 
     return (
-      <div className="col-md-3">
+      <div>
         <div className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title">Comments</h3>
@@ -233,15 +277,30 @@ export default class ComponentComments extends React.Component<IComponentComment
           <div className="panel-body">
            
             <div className="TopRecipients">
-                <span className="mt-2 mr-5"> <strong>To:</strong>  </span>
+                <span className="mt-2 mr-5"> <strong>To:</strong></span>
+                {this.topCommenters != null && this.topCommenters.length>0 && this.topCommenters.map( (topCmnt:any,i:any)=> {
+                  return <span className="Recipients ng-scope">
+                            <a className="hreflink" target="_blank">
+                              <img onClick={(e)=>this.topCommentersClick(e)} className="Recipients-image" title={topCmnt.Title}
+                                  src={topCmnt.Item_x0020_Cover != undefined  ? 
+                                  topCmnt.Item_x0020_Cover.Url  :  "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
+                            </a>
+                          </span>
+                })}
+                  
+                
                 <span className="RecipientsNameField mt-0  mb-5">
-                    <textarea autoComplete='off' placeholder="Recipients Name" rows={1} className="form-control ng-valid ui-autocomplete-input ng-dirty ng-touched ng-valid-parse ui-autocomplete-loading ng-not-empty" id="taskprofile" style={{width: '161px', height: '43px'}}></textarea>
+                <MentionsInput value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
+                      className="mentions"
+                      classNames={mentionClass}>
+                  <Mention trigger="@" data={this.mentionUsers} className={mentionClass.mentions__mention}/>            
+                </MentionsInput>
                 </span>
             </div>            
             <div className="RecipientsCommentsField ">
-                <textarea id='txtComment' onChange={(e)=>this.handleInputChange(e)} className="form-control ui-autocomplete-input ng-valid ng-touched ng-dirty ng-empty" rows={3} placeholder="Enter your comments here" autoComplete="off" style={{width: '286px', height: '58px'}}></textarea>
+                <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e)=>this.handleInputChange(e)} className="form-control ui-autocomplete-input ng-valid ng-touched ng-dirty ng-empty" rows={3} placeholder="Enter your comments here" autoComplete="off" style={{width: '286px', height: '58px'}}></textarea>
                                
-                <button onClick={()=>this.PostComment()} title="Post comment" type="button" className="btn btn-primary pull-right mt-5 mb-5">
+                <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary pull-right mt-5 mb-5">
                     Post
                 </button>
 
@@ -330,12 +389,12 @@ export default class ComponentComments extends React.Component<IComponentComment
                   <div className="col-sm-12 mt-10 mb-10 padL-0 PadR0">
                       <div className="col-sm-12 mb-10 pl-7 PadR0">
                         <div className="col-sm-11 padL-0">
-                          <textarea id="txtCommentModal" onChange={(e)=>this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
+                          <textarea id="txtCommentModal" onChange={(e)=>this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>                          
                           <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                         </div>
                         <div className="col-sm-1 padL-0">
                           <div className="icon_post">
-                            <img onClick={()=>this.PostComment()} title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/>
+                            <img onClick={()=>this.PostComment('txtCommentModal')} title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/>
                           </div>
                         </div>
                       </div>
@@ -386,3 +445,5 @@ export default class ComponentComments extends React.Component<IComponentComment
     );
   }
 }
+
+export default CommentCard;

@@ -4,7 +4,11 @@ import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
 import { escape } from '@microsoft/sp-lodash-subset';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
-import {Modal} from '@fluentui/react';
+import { Modal } from 'office-ui-fabric-react';
+import CommentCard from '../../../globalComponents/Comments/CommentCard'
+import '../../cssFolder/foundation.scss';
+import '../../cssFolder/foundationmin.scss';
+import './Taskprofile.module.scss';
 
 export interface ITaskprofileState {  
   Result : any;
@@ -54,8 +58,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title")
-      .expand("Team_x0020_Members","Author","Responsible_x0020_Team")
+      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title")
+      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType")
       .get()
       
     console.log(taskDetails);
@@ -81,7 +85,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Author: this.GetUserObject(taskDetails["Author"]),
       component_url: taskDetails["component_x0020_link"],
       BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
-      FeedBack: JSON.parse(taskDetails["FeedBack"])      
+      FeedBack: JSON.parse(taskDetails["FeedBack"]),
+      SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : ''      
     };
     
     console.log(tempTask);
@@ -95,11 +100,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let web = new Web(this.props.siteUrl);
     let taskUsers = [];    
     taskUsers = await web.lists
-      .getByTitle('Task Users')
-      .items
-      .get();    
+    .getByTitle('Task Users')
+    .items
+    .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title')
+    .filter("ItemType eq 'User'")
+    .expand('AssingedToUser')
+    .get();    
     this.taskUsers = taskUsers;
-    //console.log(this.taskUsers);
+    console.log(this.taskUsers);
 
   }
 
@@ -138,7 +146,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private GetUserObjectFromCollection(UsersValues:any){  
     let userDeatails = [];
     for (let index = 0; index < UsersValues.length; index++) {
-      let senderObject = this.taskUsers.filter(function (user:any, i:any){ return user.Title == UsersValues[index].Title});
+      let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
+        if (user.AssingedToUser != undefined){
+          return user.AssingedToUser['Title'] == UsersValues[index].Title
+        }
+      });
       if (senderObject.length > 0){
           userDeatails.push({
             'Id' : senderObject[0].Id,
@@ -154,7 +166,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   private GetUserObject(username:any){
     let userDeatails = [];
-    let senderObject = this.taskUsers.filter(function (user:any, i:any){ return user.Title == username.Title});
+    let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
+      if (user.AssingedToUser != undefined ){
+        
+        return user.AssingedToUser['Title'] == username.Title || user.AssingedToUser['Title'] == "SPFx Developer1"
+      
+      }
+      });
       if (senderObject.length > 0){
           userDeatails.push({
             'Id' : senderObject[0].Id,
@@ -243,37 +261,81 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     } = this.props;
 
     return (
-      <div>        
-          
-            <div className={styles.task_title} style={{verticalAlign:'top'}}>
-              <h1 className="mb-5 ng-binding">
-                <img className={styles.imgWid29} src={this.state.Result["SiteIcon"]}/>
+      <div> 
+        <div className='col-sm-12 pad0'>
+          <div className="task-title" style={{verticalAlign:'top'}}>
+            <h1 className="mb-5 ng-binding">
+              <img className={styles.imgWid29} src={this.state.Result["SiteIcon"]}/>
                 {this.state.Result['Title']}
               </h1>
-            </div>
-          
-          <table className={styles.tasktable}>
-            <tr>
-              <td className={styles.taskNameTd}>Task Id</td>
-              <td>{this.state.Result["ID"]}</td>
-              <td className={styles.taskNameTd}>Due Date</td>
-              <td>{this.state.Result["DueDate"] != null ? (new Date(this.state.Result["DueDate"])).toLocaleDateString() : ''}</td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Categories</td>
-              <td>{this.state.Result["Categories"]}</td>
-              <td className={styles.taskNameTd}>Status</td>
-              <td>{this.state.Result["Status"]}</td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Start Date</td>
-              <td>{this.state.Result["StartDate"]}</td>
-              <td className={styles.taskNameTd}>Completion Date</td>
-              <td>{this.state.Result["CompletedDate"]}</td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Team Members</td>
-              <td> <div className={styles.team_Members_Item}>
+          </div>
+        </div>
+        <div className='col-sm-12 pad0'>
+          <div className='col-lg-9 left-col'>
+          <div className="row data-align">
+            <div className="col-sm-8 pad0">
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Task Id</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope" ng-show="Task.Shareweb_x0020_ID!=undefined" ng-repeat="taskId in maincollection">
+                    <span className="ng-binding">{this.state.Result["ID"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">Due Date</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                  {this.state.Result["DueDate"] != null ? (new Date(this.state.Result["DueDate"])).toLocaleDateString() : ''}
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Categories</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">{this.state.Result["Categories"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">Status</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                  {this.state.Result["Status"]}
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Start Date</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">{this.state.Result["StartDate"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">Completion Date</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                  {this.state.Result["CompletedDate"]}
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Team Members</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">
+                    <div className={styles.team_Members_Item}>
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 && this.state.Result["TeamLeader"].map( (rcData:any,i:any)=> {
                   return  <div className={styles.user_Member_img}><img className={styles.imgAuthor} src={rcData.userImage}></img></div>                        
                 })} 
@@ -301,60 +363,134 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </div>
                     </span>
                   </div>                        
-                }
-                
-                {/*this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].map( (rcData,i)=> {
-                  return  <span>{ i != 0 &&
-                            <img className={styles.imgAuthor} src={rcData.userImage}></img>}
-                    </span>                        
-                })*/}
+                }               
+               
+                </div>  
+                    </span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">SmartTime Total</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                  
+                  </div>
                 </div>
-              </td>
-              <td className={styles.taskNameTd}>SmartTime Total</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Item Rank</td>
-              <td>{this.state.Result["ItemRank"]}</td>
-              <td className={styles.taskNameTd}>% Complete</td>
-              <td>{this.state.Result["PercentComplete"]}</td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Priority</td>
-              <td>{this.state.Result["Priority"]}</td>
-              <td className={styles.taskNameTd}>Created</td>
-              <td>{this.state.Result["Created"]} | 
-              <img className={styles.imgAuthor} src={this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].userImage}></img>
-              </td>
-            </tr>
-            <tr>
-              <td className={styles.taskNameTd}>Url</td>
-              <td colSpan={3}>{this.state.Result["component_url"] != null &&
-                <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a> 
-               }
-              </td>
-              
-            </tr>
-            </table>
-          <div>
-              <div className={styles.imageSec}>            
-              {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].map( (imgData:any,i:any)=> {
-                return  <div style={{marginBottom:'5%'}}>
-                          <img className={styles.sit_preview} alt={imgData.ImageName} src={imgData.ImageUrl} onMouseOver={(e) =>this.OpenModal(e, imgData)}></img>
-                          <div>
-                            <span>{imgData.UploadeDate}</span>
-                            <span><img className={styles.imgAuthor} src={imgData.UserImage}></img></span>
-                            <span>{imgData.ImageName.length > 15 ? imgData.ImageName.substring(0,15)+'...' : imgData.ImageName }</span>
-                          </div>
-                        </div>                        
-              })}             
+                
               </div>
 
-              <div className={styles.feedbackSec}>
-              {this.state.Result["FeedBack"] != null && this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
-                  return <TaskFeedbackCard feedback = {fbData} index={i+1} onPost={()=>{this.onPost()}} fullfeedback={this.state.Result["FeedBack"]} CurrentUser={this.currentUser}></TaskFeedbackCard> 
-                })}
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Item Rank</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">{this.state.Result["ItemRank"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">% Complete</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                    <span className="ng-binding">{this.state.Result["PercentComplete"]}</span>
+                  </div>
+                </div>
+                
               </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Priority</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-scope">
+                    <span className="ng-binding">{this.state.Result["Priority"]}</span>              
+                  </div>
+                  <div className="tmvalue" title="due date">
+                    <label className="full_width">Created</label>
+                  </div>
+                  <div className="tlvalue impact-info53 ng-binding">
+                    <span className="ng-binding">{this.state.Result["Created"]} | 
+                      <img className={styles.imgAuthor} src={this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].userImage}></img></span>
+                  </div>
+                </div>
+                
+              </div>
+
+              <div className="col-sm-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue" title="Task Id">
+                    <label className="full_width">Url</label>
+                  </div>
+                  <div className="tlvalue impact-info87">
+                    <div className="col-sm-12 pad0">
+                    {this.state.Result["component_url"] != null &&
+                      <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a> 
+                    }
+                    </div>      
+                  </div>
+                 
+                </div>
+                
+              </div>
+
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-sm-12 pad0">
+              <div className="row ml-0 mr-0">
+                <div className="col-sm-12 pad0 involve_actor">
+                {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
+                  <div className="col-sm-4 PadL0 ng-scope">
+                  {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].map( (imgData:any,i:any)=> {
+                  return <div className="pad0 ng-scope">
+                            <div className="mt-10 ng-scope">
+                              <div className="img">
+                                <a className="sit-preview ng-scope" target="_blank" href={imgData.ImageUrl}>
+                                  <img alt={imgData.ImageName} src={imgData.ImageUrl} onMouseOver={(e) =>this.OpenModal(e, imgData)}></img>
+                                </a>
+                              </div>
+                            </div>
+                            <div className="mb-10 created-bg " style={{width: '100%', marginTop: '-5px', zIndex: '99',position: 'relative'}}>
+                              <div className="col-sm-5 padL-0">
+                                <span className="mt-2 font11  ng-scope" ng-show="attachedFiles.FileName==imageInfo.ImageName" ng-repeat="imageInfo in BasicImageInfo">
+                                  <span className="ng-binding">{imgData.UploadeDate}</span>                                 
+                                  <img className="wid14  upwh mr-5" title={imgData.UserName} src={imgData.UserImage}/>
+                                </span>
+                              </div>
+                              <div className="col-md-7 pad0">
+                                <span className="pull-right ng-binding">
+                                {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0,15)+'...' : imgData.ImageName }
+                                </span>
+                                <span className="pull-right mr-5">|</span>
+                              </div>
+                              <div className="clearfix">
+                              </div>
+                            </div>
+                    </div>
+                  })}
+                  </div>
+                  }
+                  <div className="col-sm-8 PadR0 mt-10">
+                    {this.state.Result["SharewebTaskType"] !=null && this.state.Result["SharewebTaskType"] !='' && 
+                    this.state.Result["SharewebTaskType"] == 'Task' && this.state.Result["FeedBack"] != null && 
+                    this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
+                    this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
+                      <div className="Description desboxulli  PadR0">
+                        {this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
+                          return <TaskFeedbackCard feedback = {fbData} index={i+1} 
+                                                  onPost={()=>{this.onPost()}} 
+                                                  fullfeedback={this.state.Result["FeedBack"]} 
+                                                  CurrentUser={this.currentUser}>
+                                  </TaskFeedbackCard> 
+                        })}
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div className="ms-clear">
+              </div>
+            </div>
           </div>
           
           <Modal isOpen={this.state.isModalOpen} isBlocking={false} containerClassName={styles.custommodalpopup}>
@@ -364,6 +500,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 <img style={{maxWidth: '96%',margin: '2%'}} src={this.state.imageInfo["ImageUrl"]}></img>
             </div>
           </Modal>
+
+          </div>
+          <div className='col-md-3'>
+            <CommentCard siteUrl={this.props.siteUrl} userDisplayName={this.props.userDisplayName}></CommentCard>
+          </div>
+        </div>
       </div>
         
     );

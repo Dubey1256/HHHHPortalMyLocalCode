@@ -1,30 +1,18 @@
 import * as React from "react";
 // import ImagesC from "./Images";
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
-import Tabs from "./Tabs/Tabs";
-import Tab from "./Tabs/Tab";
+import Tabs from "../../webparts/taskDashboard/components/Tabs/Tabs";
+import Tab from "../../webparts/taskDashboard/components/Tabs/Tab";
 import * as moment from 'moment';
 import './Tabs/styles.css';
-
-// import { Editor } from "react-draft-wysiwyg";
-//import { Editor, EditorState, ContentState } from "react-draft-wysiwyg";
-// import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-//import Tooltip from "./Tooltip/popup";
-
-
-
+import ComponentPortPolioPopup from './ComponentPortfolioSelection';
 
 function EditInstitution(item: any) {
-    // Id:any
-
-
-
-
     const [CompoenetItem, setComponent] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const [useeffectdata, setuseeffectdata] = React.useState(false);
-    const [selectedOption, setselectedOption] = React.useState('');
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
+    const [IsComponent, setIsComponent] = React.useState(false);
+    const [SharewebComponent, setSharewebComponent] = React.useState('');
     const setModalIsOpenToTrue = (e: any) => {
         e.preventDefault()
         setModalIsOpen(true)
@@ -35,6 +23,10 @@ function EditInstitution(item: any) {
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false)
     }
+
+    const Call= React.useCallback(()=>{
+        setIsComponent(false);
+      },[]);
     var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
         if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
 
@@ -107,19 +99,6 @@ function EditInstitution(item: any) {
             item.Item.Priority = '(1) High';
         }
     }
-    // var SelectPriority = function (Item:any) {
-    //     switch (Item.Priority) {
-    //         case '(3) Low':
-    //             setselectedOption(PriorityRank = '1';
-    //             break;
-    //         case '(2) Normal':
-    //             PriorityRank = '4';
-    //             break;
-    //         case '(1) High':
-    //             $scope.PriorityRank = '8';
-    //             break;
-    //     }
-    // }
     var getMasterTaskListTasks = function () {
         var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.item.Id + "";
         $.ajax({
@@ -158,6 +137,8 @@ function EditInstitution(item: any) {
                         }
                     }
                     item.assigned = getMultiUserValues(item);
+                    if (item.ItemRank != undefined)
+                        item.ItemRankTitle = TaskItemRank[0].filter((option: { rank: any; }) => option.rank == item.ItemRank)[0].rankTitle;
                     item.PercentComplete = item.PercentComplete <= 1 ? item.PercentComplete * 100 : item.PercentComplete;
                     if (item.PercentComplete != undefined) {
                         item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
@@ -194,14 +175,8 @@ function EditInstitution(item: any) {
 
     var ListId: any = '';
     var CurrentSiteUrl: any = '';
-    //var SharewebItemRank: any = '';
-    const [state, setState] = React.useState("state");
-
-    const loadDataOnlyOnce = React.useCallback(() => {
-        console.log(`I need ${state}!!`);
-    }, [state]);
-
     var Item: any = '';
+    const TaskItemRank: any = [];
     React.useEffect(() => {
         var initLoading = function () {
             if (item.item != undefined && item.item.siteType != undefined) {
@@ -212,18 +187,29 @@ function EditInstitution(item: any) {
                 getMasterTaskListTasks();
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
-                setSharewebItemRank([{ rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
-                if (useeffectdata == false)
-                    setuseeffectdata(true);
-                else setuseeffectdata(false);
-                //loadColumnDetails();
+
+                //   setSharewebItemRank
+                TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: 67677 }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
+                setSharewebItemRank(TaskItemRank[0]);
+
             }
         }
         initLoading();
 
     },
         []);
-
+    const EditComponent = (item: any, title: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+    const EditCallBack = (item: any, title: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(false);
+       // setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
 
     return (
         <>
@@ -233,7 +219,6 @@ function EditInstitution(item: any) {
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 isBlocking={false}
-            // {width:"1250px"}
             >
                 {CompoenetItem != undefined && CompoenetItem.map(item =>
                     <div id="EditGrueneContactSearch">
@@ -244,8 +229,6 @@ function EditInstitution(item: any) {
                                         Service-Portfolio<span > {">"} </span>
                                         {item.Title}
                                         <span className="pull-right">
-                                            {/* <page-settings-info webpartid="'EditInstitutionPopup'"></page-settings-info> */}
-                                            {/* <Tooltip /> */}
                                         </span>
                                     </h3>
                                     <button type="button" style={{ minWidth: "10px" }} className="close" data-dismiss="modal"
@@ -272,12 +255,16 @@ function EditInstitution(item: any) {
                                                                             </div>
                                                                             <div className="col-sm-6 padL-0" title="Email">
                                                                                 <label className="full_width">Item Rank</label>
-                                                                                <select className="full_width searchbox_height">
-                                                                                    <option >{item.ItemRank}</option> 
+                                                                                <select className="full_width searchbox_height" value={item.ItemRankTitle}>
                                                                                     {
                                                                                         SharewebItemRank &&
-                                                                                        SharewebItemRank.map((h: any, i: any) =>
-                                                                                            (<option key={i} value={h.ItemRank} >{item.ItemRank != h.rankTitle}</option>))
+                                                                                        SharewebItemRank.map((h: any, i: any): JSX.Element => {
+                                                                                            return (
+                                                                                                (
+                                                                                                    <option key={i} defaultValue={item.ItemRankTitle == h.rankTitle ? item.ItemRankTitle : h.rankTitle} >{item.ItemRankTitle == h.rankTitle ? item.ItemRankTitle : h.rankTitle}</option>)
+                                                                                            )
+                                                                                        }
+                                                                                        )
                                                                                     }
                                                                                 </select>
                                                                             </div>
@@ -294,13 +281,13 @@ function EditInstitution(item: any) {
                                                                                 </div>
                                                                                 <div className="col-sm-1 PadR0">
                                                                                     <label className="full_width">&nbsp;</label>
-                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/PublishingImages/Logos/EMMCopyTerm.png"
-                                                                                        ng-click="openSmartTaxonomy('Countries');" />
+                                                                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                                        onClick={(e) => EditComponent(item, 'Componet')} />
                                                                                 </div>
                                                                                 <div className="col-sm-11 padL-0 PadR0 inner-tabb">
                                                                                     <div className="row">
-                                                                                        {/* <div className="col-sm-12 PadR0">
-                                                                                            {item !=undefined && item.smartComponent !=undefined && item.smartComponent.map((childinew: any) =>
+                                                                                        <div className="col-sm-12 PadR0">
+                                                                                            {item != undefined && item.smartComponent != undefined && item.smartComponent.map((childinew: any) =>
                                                                                                 < div className="block bgsiteColor"
                                                                                                     ng-mouseover="HoverIn(item);"
                                                                                                     ng-mouseleave="ComponentTitle.STRING='';"
@@ -314,7 +301,7 @@ function EditInstitution(item: any) {
                                                                                                     </a>
                                                                                                 </div>
                                                                                             )}
-                                                                                        </div>  */}
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
 
@@ -936,7 +923,7 @@ function EditInstitution(item: any) {
                         </div>
 
 
-
+                      {IsComponent &&  <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
 
                     </div>
                 )
