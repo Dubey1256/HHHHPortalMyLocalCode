@@ -5,4 +5,5 @@ export interface ITaskprofileProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   siteUrl : string;
+  Context: any;
 }

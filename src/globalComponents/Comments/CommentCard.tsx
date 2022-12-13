@@ -10,9 +10,12 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 
+import { sp } from "@pnp/sp";
+import "@pnp/sp/sputilities";
+
 export interface ICommentCardProps {
-  siteUrl? : string;
-  userDisplayName? : string;
+  siteUrl? : string;  
+  Context: any;
 }
 
 export interface ICommentCardState {  
@@ -29,21 +32,30 @@ export interface ICommentCardState {
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
   private taskUsers : any = [];
   private currentUser: any;
+  private mentionUsers:any=[];
+  private topCommenters:any=[];
+
+  private params1:any;
   constructor(props:ICommentCardProps){
     super(props);
-    const params1 = new URLSearchParams(window.location.search);  
+     this.params1 = new URLSearchParams(window.location.search);  
     
     this.state ={
       Result:{},
-      listName: params1.get('Site'),
-      itemID : Number(params1.get('taskId')),
+      listName: this.params1.get('Site'),
+      itemID : Number(this.params1.get('taskId')),
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,
       AllCommentModal: false,
       mentionValue:''
     }
-    this.GetResult();
+    this.GetResult();    
+    console.log(this.props.Context);
+    sp.setup({
+      spfxContext: this.props.Context
+    }); 
+    
   }
 
   private async GetResult() {
@@ -53,17 +65,30 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","Comments")
+      .select("ID","Title","Status","Team_x0020_Members/Title","PercentComplete","Priority","Created","Author/Title","Author/EMail","Editor/Title","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","Comments","Modified")
+      .expand("Team_x0020_Members","Author","Editor","Responsible_x0020_Team","SharewebTaskType")
       .get()      
    
     await this.GetTaskUsers();
 
-    this.currentUser = this.GetUserObject(this.props.userDisplayName);
+    this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
 
     let tempTask = {      
       ID: 'T'+taskDetails["ID"],
       Title: taskDetails["Title"],      
-      Comments: JSON.parse(taskDetails["Comments"])      
+      Status: taskDetails["Status"],
+      TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
+      TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
+      PercentComplete: taskDetails["PercentComplete"],
+      Priority: taskDetails["Priority"],
+      Created:  taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
+      Modified:  taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
+      ModifiedBy: this.GetUserObjectArr(taskDetails["Editor"]),
+      Author: this.GetUserObjectArr(taskDetails["Author"]),
+      component_url: taskDetails["component_x0020_link"],     
+      Comments: JSON.parse(taskDetails["Comments"]),
+      FeedBack: JSON.parse(taskDetails["FeedBack"]),
+      SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : ''      
     };    
     
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0){
@@ -82,31 +107,59 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
   }
 
-  private mentionUsers:any;
-  private topCommenters:any;
+  private GetUserObjectFromCollection(UsersValues:any){  
+    let userDeatails = [];
+    for (let index = 0; index < UsersValues.length; index++) {
+      let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
+        if (user.AssingedToUser != undefined){
+          return user.AssingedToUser['Title'] == UsersValues[index].Title
+        }
+      });
+      if (senderObject.length > 0){
+          userDeatails.push({
+            'Id' : senderObject[0].Id,
+            'Name' : senderObject[0].Email,
+            'Suffix' : senderObject[0].Suffix,
+            'Title' : senderObject[0].Title,
+            'userImage': senderObject[0].Item_x0020_Cover.Url
+          })
+        }
+      }
+    return userDeatails;
+  }
+
+ 
   private async GetTaskUsers(){
     let web = new Web(this.props.siteUrl);
     let taskUsers = [];    
     taskUsers = await web.lists
       .getByTitle('Task Users')
       .items
-      .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title')
+      .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title','AssingedToUser/EMail')
       .filter("ItemType eq 'User'")
       .expand('AssingedToUser')
       .get();    
     this.taskUsers = taskUsers; 
-    
-    this.topCommenters = taskUsers.filter(function (i:any){ 
-      if (i.Title =="Deepak Trivedi"  || i.Title =="Stefan Hochhuth"  || i.Title =="Robert Ungethuem"  || i.Title =="Mattis Hahn" ){
-        return({id : i.Title,display: i.Title})
-      }
-    });
-    console.log(this.topCommenters);
-
-    this.mentionUsers = this.taskUsers.map((i:any)=>{      
-        return({id : i.Title,display: i.Title})
-    });
-
+       
+      for (let index = 0; index < this.taskUsers.length; index++) {
+        this.mentionUsers.push({
+          id : this.taskUsers[index].Title+"{"+this.taskUsers[index].Email+"}",
+          display: this.taskUsers[index].Title
+        });
+        
+        if (this.taskUsers[index].Title =="Deepak Trivedi"  || this.taskUsers[index].Title =="Stefan Hochhuth"  || this.taskUsers[index].Title =="Robert Ungethuem"  || this.taskUsers[index].Title =="Mattis Hahn" ){
+          this.topCommenters.push({
+            id : this.taskUsers[index].Title+"{"+this.taskUsers[index].Email+"}",
+            display: this.taskUsers[index].Title,
+            Title:this.taskUsers[index].Title,
+            ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ? 
+                              this.taskUsers[index].Item_x0020_Cover.Url :
+                              "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+          })
+        }
+      }       
+      console.log(this.topCommenters);
+      console.log(this.mentionUsers);
   }
 
   private handleInputChange(e:any){
@@ -114,6 +167,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
    }
 
   private async PostComment(txtCommentControlId:any){
+    
+
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
       let temp = {
@@ -157,10 +212,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               });
       
       this.setState({ 
+          updateComment: true
+      },()=>this.GetEmailObjects());      
+
+      this.setState({ 
         updateComment: true,
         CommenttoPost: '',
         mentionValue:''
-      });      
+      });  
+      
+      
 
     }else{
       alert('Please input some text.')
@@ -181,6 +242,27 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       }
     }
     return mention_str.trim();
+  }
+
+  private GetUserObjectArr(username:any){
+    let userDeatails = [];
+    let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
+      if (user.AssingedToUser != undefined ){
+        
+        return user.AssingedToUser['Title'] == username.Title || user.AssingedToUser['Title'] == "SPFx Developer1"
+      
+      }
+      });
+      if (senderObject.length > 0){
+          userDeatails.push({
+            'Id' : senderObject[0].Id,
+            'Name' : senderObject[0].Email,
+            'Suffix' : senderObject[0].Suffix,
+            'Title' : senderObject[0].Title,
+            'userImage': senderObject[0].Item_x0020_Cover.Url
+          })
+        }    
+    return userDeatails;
   }
 
   private GetUserObject(username:any){
@@ -250,8 +332,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     if (e.currentTarget.className.indexOf('active')<0){
       e.currentTarget.classList.add('active');
       this.setState({
-        mentionValue : this.state.mentionValue + '@['+ e.currentTarget.title +']('+ e.currentTarget.title + ') '
-      })
+        mentionValue : this.state.mentionValue + '@['+ e.currentTarget.title +']('+ e.currentTarget.id + ') '
+      }, ()=>{console.log(this.state.mentionValue)})
     }
     
   }
@@ -262,11 +344,66 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     },()=>{ console.log(this.state.mentionValue) })    
   }
 
-  public render(): React.ReactElement<ICommentCardProps> {
-    const {      
-      userDisplayName
-    } = this.props;
+  private GetEmailObjects(){
+   
+    if (this.state.mentionValue != ''){
+      //Get All To's
+      let mention_To:any=[];
+      let regExpStr = this.state.mentionValue;
+      let regExpLiteral = /\{(.*?)\}/gi;
+      let allMention = regExpStr.match(regExpLiteral);
+      if (allMention.length>0){
+        for (let index = 0; index < allMention.length; index++) {
+          /*For Prod when mail is open for all
+          if (allMention[index].indexOf(null)<0){
+            mention_To.push(allMention[index].replace('{','').replace('}','').trim());   
+          } 
+          */
+           /*testing*/
+           if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de')>0){
+            mention_To.push(allMention[index].replace('{','').replace('}','').trim());   
+            }                      
+          }        
+      
+      console.log(mention_To);
+      if (mention_To.length > 0){
+        let emailprops = {
+          To:mention_To,
+          Subject :"["+this.params1.get('Site')+" - Comment by "+ this.props.Context.pageContext.user.displayName +"] " + this.state.Result["Title"],
+          Body:this.state.Result["Title"]
+        }
+        console.log(emailprops);
+        
+        this.SendEmail(emailprops);      
+                    
+        }      
+      }
+    }
+  }
 
+  private BindHtmlBody(){
+    let body= document.getElementById('htmlMailBody')
+    console.log(body.innerHTML);
+    return body.innerHTML;
+  }
+  
+  private SendEmail(emailprops:any){
+    sp.utility.sendEmail({
+      //Body of Email  
+      Body: this.BindHtmlBody(),
+      //Subject of Email  
+      Subject: emailprops.Subject,
+      //Array of string for To of Email  
+      To: emailprops.To,
+      AdditionalHeaders: {
+        "content-type": "text/html"
+      },
+      }).then(() => {
+        console.log("Email Sent!");
+      });
+  }
+
+  public render(): React.ReactElement<ICommentCardProps> {
     return (
       <div>
         <div className="panel panel-default">
@@ -282,8 +419,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   return <span className="Recipients ng-scope">
                             <a className="hreflink" target="_blank">
                               <img onClick={(e)=>this.topCommentersClick(e)} className="Recipients-image" title={topCmnt.Title}
-                                  src={topCmnt.Item_x0020_Cover != undefined  ? 
-                                  topCmnt.Item_x0020_Cover.Url  :  "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
+                                  id={topCmnt.id} src={topCmnt.ItemCoverURL}/>
                             </a>
                           </span>
                 })}
@@ -440,6 +576,122 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           </div>          
           </div>          
         </Modal>
+
+        {this.state.Result !=null && this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 &&
+        <div id='htmlMailBody' style={{display:'none'}}>
+        <p><a><span>{this.state.Result["Title"]}</span></a></p>
+        <table>
+          <tr>
+            <td>
+              {/* table for Comments */}
+              <table style={{border:'1px solid black'}}>
+                <tr>
+                  <td colSpan={2}>Comments ({this.state.Result["Comments"].length})</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {this.state.Result["Comments"].map( (cmtData:any,i:any)=> {
+                  return  <tr>
+                          <td><span>{cmtData.Description}</span></td>
+                          <td><span>{cmtData.Created}</span></td>
+                          </tr>
+                })}
+                
+              </table>
+            </td>
+            <td>
+              {/* table for Basid info */}
+              <table style={{border:'1px solid black'}}>
+                <tr>
+                  <td>
+                    <table>
+                      <tr>
+                        <td colSpan={5}>
+                        Task Details
+                        </td>
+                      </tr>
+                      <tr><td colSpan={5}></td></tr>
+                      <tr>
+                        <td>Task URL:</td>
+                        <td colSpan={4}>{this.state.Result["component_url"] != null ? this.state.Result["component_url"].Url : ''}</td>
+                      </tr>
+                      <tr><td colSpan={5}></td></tr>
+                      <tr>
+                        <td>Component:</td>
+                        <td></td>
+                        <td></td>
+                        <td>Team:</td>
+                        <td></td>
+                      </tr>
+                      <tr><td colSpan={5}></td></tr>
+                    </table>
+                    <table>
+                      <tr>
+                        <td>Status:</td>
+                        <td></td>
+                        <td>Priority:</td>
+                        <td></td>
+                        <td>Created By:</td>
+                        <td></td>
+                        <td>Modified By:</td>
+                      </tr>
+                      <tr>
+                        <td>{this.state.Result["CompletedDate"]} {this.state.Result["Status"]}</td>
+                        <td></td>
+                        <td>{this.state.Result["Priority"]}</td>
+                        <td></td>
+                        <td>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</td>
+                        <td></td>
+                        <td>{this.state.Result["ModifiedBy"] != null && this.state.Result["ModifiedBy"].length > 0 && this.state.Result["ModifiedBy"][0].Title}</td>
+                      </tr>
+                      <tr>
+                        <td colSpan={7}></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table style={{border:'1px solid black'}}>
+          <tr>
+            <td>
+              <table>
+                <tr>
+                  <td colSpan={3}>Task Description : </td>
+                </tr>
+                <tr>
+                  <td></td>
+                </tr>                
+                {this.state.Result["SharewebTaskType"] !=null && this.state.Result["SharewebTaskType"] !='' && 
+                    this.state.Result["SharewebTaskType"] == 'Task' && this.state.Result["FeedBack"] != null && 
+                    this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
+                    this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
+                    this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
+                      return <table>
+                                  <tr>
+                                    <td>{i+1}.</td>
+                                    <td>{fbData['Title'].replace(/<[^>]*>/g, '')}</td>
+                                  </tr>
+                        {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map( (fbSubData:any,j:any)=> {
+                          return <tr>
+                            <td>{i+1}.{j+1}</td>
+                            <td>{fbSubData['Title'].replace(/<[^>]*>/g, '')}</td>
+                          </tr>
+                        })}
+                      </table>                      
+                    })}               
+                
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+        }
+        
 
       </div>      
     );
