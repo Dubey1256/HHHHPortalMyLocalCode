@@ -13,6 +13,8 @@ import mentionClass from './mention.module.scss';
 export interface ICommentCardProps {
   siteUrl? : string;
   userDisplayName? : string;
+  listName? : string;
+  itemID? : number;
 }
 
 export interface ICommentCardState {  
@@ -35,8 +37,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     
     this.state ={
       Result:{},
-      listName: params1.get('Site'),
-      itemID : Number(params1.get('taskId')),
+      listName: (params1.get('Site')  !=undefined ? params1.get('Site'):  props.listName),
+      itemID : (params1.get('taskId')  != undefined ? Number(params1.get('taskId')): props.itemID),
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,

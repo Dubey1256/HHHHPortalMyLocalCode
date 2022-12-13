@@ -5,7 +5,9 @@ import Tabs from "../../webparts/taskDashboard/components/Tabs/Tabs";
 import Tab from "../../webparts/taskDashboard/components/Tabs/Tab";
 import * as moment from 'moment';
 import './Tabs/styles.css';
+import { Web } from "sp-pnp-js";
 import ComponentPortPolioPopup from './ComponentPortfolioSelection';
+import CommentCard from "../../globalComponents/Comments/CommentCard";
 
 function EditInstitution(item: any) {
     const [CompoenetItem, setComponent] = React.useState([]);
@@ -13,6 +15,7 @@ function EditInstitution(item: any) {
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [AllComponents, setComponentsData] = React.useState([]);
     const setModalIsOpenToTrue = (e: any) => {
         e.preventDefault()
         setModalIsOpen(true)
@@ -24,9 +27,9 @@ function EditInstitution(item: any) {
         setModalIsOpen(false)
     }
 
-    const Call= React.useCallback(()=>{
+    const Call = React.useCallback((item1) => {
         setIsComponent(false);
-      },[]);
+    }, []);
     var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
         if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
 
@@ -143,13 +146,13 @@ function EditInstitution(item: any) {
                     if (item.PercentComplete != undefined) {
                         item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
                     }
-                    // if (item.ComponentPortfolio != undefined) {
-                    //     if (item.ComponentPortfolio.Id != undefined) {
-                    //         if (item.smartComponent != undefined)
-                    //             item.smartComponent.push({ 'Title': item.ComponentPortfolio.Title, 'Id': item.ComponentPortfolio.Id });
-                    //         else item.smartComponent = [];
-                    //     }
-                    // }
+                    if (item.ComponentPortfolio != undefined) {
+                        if (item.ComponentPortfolio.Id != undefined) {
+                            if (item.smartComponent != undefined)
+                                item.smartComponent.push({ 'Title': item.ComponentPortfolio.Title, 'Id': item.ComponentPortfolio.Id });
+                            else item.smartComponent = [];
+                        }
+                    }
                     item.siteType = 'Master Tasks';
                     item.taskLeader = 'None';
                     if (item.AssignedTo != undefined && item.AssignedTo.results != undefined && item.AssignedTo.results.length > 0)
@@ -157,6 +160,7 @@ function EditInstitution(item: any) {
                     if (item.Task_x0020_Type == undefined)
                         item.Task_x0020_Type = 'Activity Tasks';
                     item.SmartCountries = [];
+                    item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                     item['SiteIcon'] = item.siteType == "Master Tasks" ? GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined) : GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
                 });
                 //  deferred.resolve(Tasks);
@@ -204,12 +208,191 @@ function EditInstitution(item: any) {
         setSharewebComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    const EditCallBack = (item: any, title: any) => {
-        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
-        setIsComponent(false);
-       // setSharewebComponent(item);
-        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    const GetComponents = async () => {
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let componentDetails = [];
+        componentDetails = await web.lists
+            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            .getByTitle('Master Tasks')
+            .items
+            //.getById(this.state.itemID)
+            .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo")
+            .top(4999)
+            .filter("Item_x0020_Type eq Component")
+            .get()
+
+        console.log(componentDetails);
     }
+    let mentionUsers:any =[];
+    //  mentionUsers = this.taskUsers.map((i:any)=>{      
+    //     return({id : i.Title,display: i.Title})
+    // });
+
+    // var generateHierarchichalData = function (item, items) {
+    //     var autoCompleteItem = {};
+    //     autoCompleteItem['value'] = item.Title;
+    //     autoCompleteItem['Id'] = item.Id;
+    //     autoCompleteItem['description'] = item.Description1;
+    //     autoCompleteItem['TaxType'] = item.TaxType;
+    //     if (item.SiteType != undefined)
+    //         autoCompleteItem['SiteType'] = item.SiteType
+    //     autoCompleteItem['label'] = item.Title;
+    //     angular.forEach(items, function (parentItem) {
+    //         if (item.ParentID == parentItem.Id) {
+    //             autoCompleteItem['label'] = parentItem.Title + ' > ' + item.Title;
+    //             if (parentItem.ParentID > 0) {
+    //                 angular.forEach(items, function (gParentItem) {
+    //                     if (parentItem.ParentID == gParentItem.Id) {
+    //                         autoCompleteItem['label'] = gParentItem.Title + ' > ' + autoCompleteItem.label;
+
+
+
+    //                         if (gParentItem.ParentID > 0) {
+    //                             angular.forEach(items, function (mParentItem) {
+    //                                 if (gParentItem.ParentID == mParentItem.Id) {
+    //                                     autoCompleteItem['label'] = mParentItem.Title + ' > ' + autoCompleteItem.label;
+
+    //                                     return false;
+
+    //                                 }
+    //                             });
+    //                         }
+    //                     }
+    //                 });
+    //             }
+
+
+    //             return false;
+    //         }
+    //     });
+
+    //     return autoCompleteItem;
+    // }
+    // const bindAutoCompleteId = function (countrolId:any, taxItems:any, taxType:any, service:any, CompositionSiteType:any) {
+    //     var Items:any = [];
+    //     $.each(taxItems, function (taxItem:any) {
+    //         if (taxItem.TaxType == taxType && taxItem.TaxType != 'Components') {
+    //             var item = SharewebCommonFactoryService.generateHierarchichalData(taxItem, taxItems);
+    //             item["Title"] = item.value;
+    //             Items.push(item);
+    //         }
+    //         if (taxItem.TaxType == 'Components') {
+    //             var item = SharewebCommonFactoryService.generateHierarchichalData(taxItem, taxItems);
+    //             item["Title"] = item.value;
+    //             Items.push(item);
+    //         }
+    //     });
+    //     $("#" + countrolId).autocomplete({
+    //         source: function (request, response) {
+    //             // delegate back to autocomplete, but extract the last term
+    //             //var index= request.term.indexOf("@");
+    //             // if (request.term != undefined && request.term[index] == '@') 
+    //             //     request.term = request.term.substr(index + 1, request.term.length);
+    //             //response($.ui.autocomplete.filter(Items, $scope.extractLast(request.term)));
+    //             var responseItems = $.ui.autocomplete.filter(Items, $scope.extractLast(request.term));
+    //             SharewebCommonFactoryService.DynamicSortitems(responseItems, 'label', 'Text', 'Ascending')
+    //             response(responseItems);
+
+    //         },
+    //         focus: function () {
+    //             // prevent value inserted on focus
+    //             return false;
+    //         },
+    //         select: function (event, ui) {
+    //             var terms = $scope.split(this.value);
+    //             // remove the current input
+    //             terms.pop();
+    //             // add the selected item
+    //             terms.push(ui.item.value);
+    //             // add placeholder to get the comma-and-space at the end
+    //             terms.push("");
+    //             this.value = terms.join("; ");
+    //             if (ui.item.TaxType != undefined && service == 'Service') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.ServicesmartComponent, ui.item.Id)) {
+    //                     ui.item['siteType'] = 'Master Tasks';
+    //                     $scope.ServicesmartComponent[0] = ui.item;
+    //                     $scope.SmartCompCopy[0] = ui.item;
+    //                     $scope.$apply();
+    //                 }
+    //                 $('#txtServiceSharewebComponent').val('');
+    //                 $('#txtServiceSharewebComponentselsction').val('');
+    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Components') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartComponent, ui.item.Id)) {
+    //                     ui.item['siteType'] = 'Master Tasks';
+    //                     $scope.smartComponent[0] = ui.item;
+    //                     $scope.SmartCompCopy[0] = ui.item;
+    //                     $scope.$apply();
+    //                     $scope.Item.Portfolio_x0020_Type == 'Component'
+    //                 }
+    //                 $('#txtSharewebComponent').val('');
+    //                 $('#txtSharewebComponentselsction').val('');
+    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Categories') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartCategories, ui.item.Id)) {
+    //                     $scope.smartCategories.push(ui.item);
+    //                     $scope.$apply();
+    //                 }
+    //                 $('#txtCategories').val('');
+    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Sites') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.TargetedSites, ui.item.Id)) {
+    //                     $scope.TargetedSites.push(ui.item);
+    //                     $scope.$apply();
+    //                 }
+    //                 $('#txtSites').val('');
+    //             }
+    //             else if (ui.item.TaxType != undefined && ui.item.TaxType == 'SPComponents') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartSPComponents, ui.item.Id)) {
+    //                     $scope.smartSPComponents.push(ui.item);
+    //                     $scope.$apply();
+    //                 }
+    //                 $('#txtSPComponents').val('');
+    //                 $('#txtSPComponentsselsction').val('');
+    //             }
+    //             else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Client Category') {
+    //                 $scope.IsUpdateClientCategory = true;
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id)) {
+    //                     if ($scope.smartClientCategories != undefined && $scope.smartClientCategories.length > 0) {
+    //                         angular.forEach($scope.smartClientCategories, function (clientcategory, index) {
+    //                             $scope.IsPushed = true;
+    //                             if (clientcategory.SiteType == ui.item.SiteType && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id)) {
+    //                                 $scope.smartClientCategories.push(ui.item);
+    //                                 $scope.IsPushed = false
+    //                             }
+    //                         })
+    //                         if ($scope.IsPushed == true && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id))
+    //                             $scope.smartClientCategories.push(ui.item);
+    //                     }
+    //                     else {
+    //                         if (!$scope.isItemExists($scope.smartClientCategories, ui.item.Id))
+    //                             $scope.smartClientCategories.push(ui.item);
+    //                     }
+    //                 }
+    //                 angular.forEach($scope.smartClientCategories, function (item) {
+    //                     if (item.SiteType == 'EI' && !$scope.isItemExists($scope.EIClientCategory, item.Id)) {
+    //                         $scope.EIClientCategory.push(item);
+    //                     }
+
+    //                     else if (item.SiteType == 'EPS' && !$scope.isItemExists($scope.EPSClientCategory, item.Id)) {
+    //                         $scope.EPSClientCategory.push(item);
+    //                     }
+    //                     else if (item.SiteType == 'Education' && !$scope.isItemExists($scope.EducationClientCategory, item.Id)) {
+    //                         $scope.EducationClientCategory.push(item);
+    //                     }
+
+    //                 })
+    //                 $scope.$apply();
+    //                 $scope.CurrentCCSiteType = CompositionSiteType;
+    //                 $('#UpdateCCItem').show();
+    //                 $('#txtclientCategories').val('');
+    //                 $('#EItxtclientCategories').val('');
+    //                 $('#EPStxtclientCategories').val('');
+    //                 $('#EducationtxtclientCategories').val('');
+    //                 $('#txtclientCategories1').val('');
+    //             }
+    //             return false;
+    //         }
+    //     });
+    // }
 
     return (
         <>
@@ -294,7 +477,7 @@ function EditInstitution(item: any) {
                                                                                                     title="{{ ComponentTitle.STRING }}"
                                                                                                 >
                                                                                                     <a className="hreflink" target="_blank"
-                                                                                                        ng-href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{item.Title}</a>
+                                                                                                        ng-href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{childinew.Title}</a>
                                                                                                     <a className="hreflink"
                                                                                                         ng-click="removeSmartComponent(item.Id)">
                                                                                                         <img ng-src="/_layouts/images/delete.gif"></img>
@@ -464,14 +647,15 @@ function EditInstitution(item: any) {
                                                                         </div>
                                                                     </div>
                                                                     <div className="col-sm-4 padL-0 mt-10">
-                                                                        <div className="panel panel-default mt-25">
+                                                                        <CommentCard siteUrl={item.siteUrl} userDisplayName={item.userDisplayName} listName={item.siteType} itemID={item.Id}></CommentCard>
+                                                                        {/* <div className="panel panel-default mt-25">
                                                                             <div className="panel-heading">
                                                                                 <h3 className="panel-title">Comments</h3>
                                                                             </div>
                                                                             <div className="panel-body">
                                                                                 <textarea className="form-control ui-autocomplete-input ng-pristine ng-valid ng-empty ng-touched" placeholder="Enter your comments here" ng-model="ReplyTextBody" autoComplete="off"></textarea>
                                                                             </div>
-                                                                        </div>
+                                                                        </div> */}
                                                                     </div>
                                                                     <div className="col-sm-8 mb-10">
                                                                         <label className="full_width">Url</label>
@@ -923,7 +1107,7 @@ function EditInstitution(item: any) {
                         </div>
 
 
-                      {IsComponent &&  <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
+                        {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
 
                     </div>
                 )

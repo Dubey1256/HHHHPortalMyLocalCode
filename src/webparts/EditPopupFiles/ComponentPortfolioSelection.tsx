@@ -22,14 +22,19 @@ const ComponentPortPolioPopup = (item: any) => {
 
     }
     const setModalIsOpenToFalse = () => {
-        Example(false);
+        Example(item);
+        setModalIsOpen(false)
+    }
+    const setModalIsOpenToOK = () => {
+
         if (item.props.smartComponent.length == 0)
-            item.props.smartComponent.push(CheckBoxdata);
+            item.props.smartComponent = CheckBoxdata;
         else {
             item.props.smartComponent = [];
-            item.props.smartComponent.push(CheckBoxdata);
+            item.props.smartComponent = CheckBoxdata;
         }
-        setModalIsOpen(false)
+        Example(item);
+        setModalIsOpen(false);
     }
 
     const handleOpen = (item: any) => {
@@ -165,12 +170,7 @@ const ComponentPortPolioPopup = (item: any) => {
         setModalIsOpen(true)
 
     }
-    const setCompareComponents = function (item12: any) {
-        item12.Ischeck = true;
-        setcheckbox(item12)
-        //setComponentsData(data...[data]);
-        setComponentsData(data => ([...data]));
-    }
+
 
 
 
@@ -180,420 +180,438 @@ const ComponentPortPolioPopup = (item: any) => {
             onDismiss={setModalIsOpenToFalse}
             isBlocking={false}>
             <div className="modal-dailog modal-lg">
-                <section className="TableContentSection">
-                    <div className="container-fluid">
-                        <section className="TableSection">
-                            <div className="container pad0">
-                                <div className="Alltable mt-10">
-                                    <div className="tbl-headings">
-                                        <div className='modal-header'>
-                                            <h5 className='modal-title'><span>Select Components</span></h5>
-                                            <button type="button" className='btn btn-danger pull-right' onClick={setModalIsOpenToFalse}>Cancel</button>
-                                        </div>
-
-                                        {/* <span className="leftsec w65">
-                                            <label> */}
-                                        {/* Showing {ComponentsData.length} of {ComponentsData.length} Components */}
-                                        {/* </label>
-                                            <label> | </label> */}
-                                        {/* <label>
-                                            {SubComponentsData.length} of {SubComponentsData.length} SubComponents
-                                        </label> */}
-                                        {/* <label> | </label> */}
-                                        {/* <label>
-                                            {FeatureData.length} of {FeatureData.length} Features
-                                        </label> */}
-                                        {/* <span className="g-search">
-                                                <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
-                                            </span>
-                                            <span>
-                                                <select className="ml2 searchbox_height">
-                                                    <option value="All Words">All Words</option>
-                                                    <option value="Any Words">Any Words</option>
-                                                    <option value="Exact Phrase">Exact Phrase</option>
-
-                                                </select>
-                                            </span> */}
-                                        {/* </span> */}
-
-                                    </div>
-                                    <div className="col-sm-12 pad0 smart">
-                                        <div className="section-event">
-                                            <div className="wrapper">
-                                                <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                                    <thead>
-                                                        <tr>
-                                                            <th style={{ width: "2%" }}>
-                                                                <div></div>
-                                                            </th>
-                                                            <th style={{ width: "7%" }}>
-                                                                <div>Id</div>
-                                                            </th>
-                                                            <th style={{ width: "20%" }}>
-                                                                <div style={{ width: "19%" }} className="smart-relative">
-                                                                    <input type="search" placeholder="Title" className="full_width searchbox_height" />
-
-                                                                    {/* <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
-
-
-                                                                </div>
-                                                            </th>
-                                                            <th style={{ width: "18%" }}>
-                                                                <div style={{ width: "17%" }} className="smart-relative">
-                                                                    <input id="searchClientCategory" type="search" placeholder="Client Category"
-                                                                        title="Client Category" className="full_width searchbox_height"
-                                                                    />
-                                                                    {/* <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
-                                                                </div>
-                                                            </th>
-                                                            <th style={{ width: "20%" }}>
-                                                                <div style={{ width: "19%" }} className="smart-relative">
-                                                                    <input id="searchClientCategory" type="search" placeholder="Team"
-                                                                        title="Client Category" className="full_width searchbox_height"
-                                                                    />
-                                                                    {/* <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
-
-                                                                </div>
-                                                            </th>
-                                                            <th style={{ width: "10%" }}>
-                                                                <div style={{ width: "9%" }} className="smart-relative">
-                                                                    <input id="searchClientCategory" type="search" placeholder="Status"
-                                                                        title="Client Category" className="full_width searchbox_height"
-                                                                    />
-                                                                    {/* <span className="sorticon">
-                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                </span> */}
-
-                                                                </div>
-                                                            </th>
-                                                            <th style={{ width: "10%" }}>
-                                                                <div style={{ width: "9%" }} className="smart-relative">
-                                                                    <input id="searchClientCategory" type="search" placeholder="Item Rank"
-                                                                        title="Client Category" className="full_width searchbox_height"
-                                                                    />
-                                                                    {/* <span className="sorticon">
-                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                </span> */}
-                                                                </div>
-                                                            </th>
-                                                            <th style={{ width: "10%" }}>
-                                                                <div style={{ width: "9%" }} className="smart-relative">
-                                                                    <input id="searchClientCategory" type="search" placeholder="Due"
-                                                                        title="Client Category" className="full_width searchbox_height"
-                                                                    />
-                                                                    {/* <span className="sorticon">
-                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                </span> */}
-
-                                                                </div>
-                                                            </th>
-                                                            <th style={{ width: "3%" }}></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <div id="SpfxProgressbar" style={{ display: "none" }}>
-                                                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                <div className="modal-content">
+                    <div className='modal-header'>
+                        <h3 className='modal-title'>Select Components</h3>
+                        <button type="button" className='close pull-right' onClick={setModalIsOpenToFalse}>x</button>
+                    </div>
+                    <div className="modal-body bg-f5f5 clearfix">
+                        <div className="Alltable mt-10">
+                            <div className="col-sm-12 pad0 smart">
+                                <div className="section-event">
+                                    <div className="wrapper">
+                                        <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                                            <thead>
+                                                <tr>
+                                                    <th style={{ width: "2%" }}>
+                                                        <div style={{ width: "2%" }}>
+                                                            <div className="accordian-header" onClick={() => handleOpen(item)}>
+                                                                {item.Child != undefined &&
+                                                                    <a className='hreflink'
+                                                                        title="Tap to expand the childs">
+                                                                        <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
+                                                                            : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                        </div>
+                                                                    </a>
+                                                                }
+                                                            </div>
                                                         </div>
-                                                        {data && data.map(function (item, index) {
+                                                    </th>
+                                                    <th style={{ width: "2%" }}>
+                                                        <div></div>
+                                                    </th>
+                                                    <th style={{ width: "4%" }}>
+                                                        <div></div>
+                                                    </th>
+                                                    <th style={{ width: "2%" }}>
+                                                        <div></div>
+                                                    </th>
+                                                    <th style={{ width: "22%" }}>
+                                                        <div style={{ width: "21%" }} className="smart-relative">
+                                                            <input type="search" placeholder="Title" className="full_width searchbox_height" />
 
-                                                            return (
-                                                                <>
-                                                                    <tr >
-                                                                        <td className="pad0" colSpan={9}>
-                                                                            <table className="table" style={{ width: "100%" }}>
-                                                                                <tr className="bold for-c0l">
+                                                            {/* <span className="sorticon">
+                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                        </span> */}
 
-                                                                                    <td style={{ width: "2%" }}>
+
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "18%" }}>
+                                                        <div style={{ width: "17%" }} className="smart-relative">
+                                                            <input id="searchClientCategory" type="search" placeholder="Client Category"
+                                                                title="Client Category" className="full_width searchbox_height"
+                                                            />
+                                                            {/* <span className="sorticon">
+                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                        </span> */}
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "20%" }}>
+                                                        <div style={{ width: "19%" }} className="smart-relative">
+                                                            <input id="searchClientCategory" type="search" placeholder="Team"
+                                                                title="Client Category" className="full_width searchbox_height"
+                                                            />
+                                                            {/* <span className="sorticon">
+                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                        </span> */}
+
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "10%" }}>
+                                                        <div style={{ width: "9%" }} className="smart-relative">
+                                                            <input id="searchClientCategory" type="search" placeholder="Status"
+                                                                title="Client Category" className="full_width searchbox_height"
+                                                            />
+                                                            {/* <span className="sorticon">
+                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                    </span> */}
+
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "10%" }}>
+                                                        <div style={{ width: "9%" }} className="smart-relative">
+                                                            <input id="searchClientCategory" type="search" placeholder="Item Rank"
+                                                                title="Client Category" className="full_width searchbox_height"
+                                                            />
+                                                            {/* <span className="sorticon">
+                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                    </span> */}
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "10%" }}>
+                                                        <div style={{ width: "9%" }} className="smart-relative">
+                                                            <input id="searchClientCategory" type="search" placeholder="Due"
+                                                                title="Client Category" className="full_width searchbox_height"
+                                                            />
+                                                            {/* <span className="sorticon">
+                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                    </span> */}
+
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
+                                                    <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                                </div>
+                                                {data && data.map(function (item, index) {
+
+                                                    return (
+                                                        <>
+                                                            <tr >
+                                                                <td className="pad0" colSpan={10}>
+                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                        <tr className="bold for-c0l">
+
+                                                                            <td style={{ width: "2%" }}>
+                                                                                <div className="accordian-header" onClick={() => handleOpen(item)}>
+                                                                                    {item.Child != undefined &&
+                                                                                        <a className='hreflink'
+                                                                                            title="Tap to expand the childs">
+                                                                                            <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
+                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                            </div>
+                                                                                        </a>
+                                                                                    }
+                                                                                </div>
+
+                                                                            </td>
+                                                                            <td style={{ width: "2%" }}>
+                                                                                <input type="checkbox" name="Active" checked={item.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { item.checked = !item.checked; setcheckbox([item.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : item]) }} ></input>
+
+                                                                            </td>
+
+                                                                            <td style={{ width: "4%" }}>
+                                                                                <div className="">
+                                                                                    <span>
+                                                                                        <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                            <img className="icon-sites-img"
+                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                                                                        </a>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td style={{ width: "2%" }}>
+                                                                                <div className="">
+                                                                                    <span>
                                                                                         <div className="accordian-header" onClick={() => handleOpen(item)}>
                                                                                             {item.Child != undefined &&
                                                                                                 <a className='hreflink'
                                                                                                     title="Tap to expand the childs">
-                                                                                                    <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                                    <div className="sign">{item.show ? <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png" />
+                                                                                                        : <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png" />}
                                                                                                     </div>
                                                                                                 </a>
                                                                                             }
                                                                                         </div>
 
-                                                                                    </td>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td style={{ width: "22%" }}>
+                                                                                <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
+                                                                                >{item.Title}
+                                                                                </a>
+                                                                                {item.Child != undefined &&
+                                                                                    <span>({item.Child.length})</span>
+                                                                                }
 
-                                                                                    <td style={{ width: "7%" }}>
-                                                                                        <div className="">
-                                                                                            {/* <span><input type="checkbox" name="Active" checked={item.checked} onClick={() => setCompareComponents(item)} ></input></span> */}
-                                                                                            <span><input type="checkbox" name="Active" checked={item.Id ==( CheckBoxdata.length >0 && CheckBoxdata[0]["Id"]? CheckBoxdata[0]["Id"]  :CheckBoxdata) ?true :false }   onClick={() => {item.checked = !item.checked; setcheckbox([item.Title ==( CheckBoxdata.length >0 ? CheckBoxdata[0]["Title"] :CheckBoxdata) ? [] :item])}} ></input></span>
-                                                                                            <span>
-                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                                                                                    <img className="icon-sites-img"
-                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
-                                                                                                </a>
+                                                                                {item.Short_x0020_Description_x0020_On != null &&
+                                                                                    <span className="project-tool"><img
+                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                            <span className="tooltiptext">
+                                                                                                <div className="tooltip_Desc">
+                                                                                                    <span>{item.Short_x0020_Description_x0020_On}</span>
+                                                                                                </div>
                                                                                             </span>
-                                                                                            <span className="ml-2">{item.PortfolioStructureID}</span>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                    <td style={{ width: "20%" }}>
-                                                                                        <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
-                                                                                        >{item.Title}
-                                                                                        </a>
-                                                                                        {item.Child != undefined &&
-                                                                                            <span>({item.Child.length})</span>
-                                                                                        }
-
-                                                                                        {item.Short_x0020_Description_x0020_On != null &&
-                                                                                            <span className="project-tool"><img
-                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                    <span className="tooltiptext">
-                                                                                                        <div className="tooltip_Desc">
-                                                                                                            <span>{item.Short_x0020_Description_x0020_On}</span>
-                                                                                                        </div>
-                                                                                                    </span>
-                                                                                                </span>
+                                                                                        </span>
+                                                                                    </span>
+                                                                                }
+                                                                            </td>
+                                                                            <td style={{ width: "18%" }}>
+                                                                                <div>
+                                                                                    {item.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                        return (
+                                                                                            <span className="ClientCategory-Usericon"
+                                                                                                title={client.Title}>
+                                                                                                <a>{client.Title.slice(0, 2).toUpperCase()}</a>
                                                                                             </span>
-                                                                                        }
-                                                                                    </td>
-                                                                                    <td style={{ width: "18%" }}>
-                                                                                        <div>
-                                                                                            {item.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                        )
+                                                                                    })}</div>
+                                                                            </td>
+                                                                            <td style={{ width: "20%" }}>
+                                                                                <div>{item.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                    return (
+                                                                                        <span className="ClientCategory-Usericon"
+                                                                                            title={client1.Title}>
+
+                                                                                            <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+
+                                                                                        </span>
+                                                                                    )
+                                                                                })}</div></td>
+                                                                            <td style={{ width: "10%" }}>{item.PercentComplete}</td>
+                                                                            <td style={{ width: "10%" }}>{item.ItemRank}</td>
+                                                                            <td style={{ width: "10%" }}>{item.DueDate}</td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+
+
+                                                            </tr>
+                                                            {item.show && (
+                                                                <>
+                                                                    {item.Child.map(function (childitem: any) {
+
+                                                                        return (
+
+                                                                            <>
+                                                                                <tr >
+                                                                                    <td className="pad0" colSpan={10}>
+                                                                                        <table className="table" style={{ width: "100%" }}>
+                                                                                            <tr className="for-c02">
+                                                                                                <td style={{ width: "2%" }}>
+                                                                                                    <div className="accordian-header" onClick={() => handleOpen(childitem)}>
+                                                                                                        {childitem.Child.length > 0 &&
+                                                                                                            <a className='hreflink'
+                                                                                                                title="Tap to expand the childs">
+                                                                                                                <div className="sign">{childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
+                                                                                                                    : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                                                </div>
+                                                                                                            </a>
+                                                                                                        }
+
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                                <td style={{ width: "2%" }}>
+                                                                                                    <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setcheckbox([childitem.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : childitem]) }} ></input>
+                                                                                                </td>
+                                                                                                <td style={{ width: "4%" }}> <div>
+
+                                                                                                    <span>
+
+                                                                                                        <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                            <img className="icon-sites-img"
+                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png" />
+                                                                                                        </a>
+
                                                                                                     </span>
-                                                                                                )
-                                                                                            })}</div>
-                                                                                    </td>
-                                                                                    <td style={{ width: "20%" }}>
-                                                                                        <div>{item.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                            return (
-                                                                                                <span className="ClientCategory-Usericon"
-                                                                                                    title={client1.Title}>
+                                                                                                </div>
+                                                                                                </td>
+                                                                                                <td style={{ width: "2%" }}>
+                                                                                                    <div className="accordian-header" onClick={() => handleOpen(childitem)}>
+                                                                                                        {childitem.Child.length > 0 &&
+                                                                                                            <a className='hreflink'
+                                                                                                                title="Tap to expand the childs">
+                                                                                                                <div className="sign">{childitem.show ? <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png" />
+                                                                                                                    : <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png" />}
+                                                                                                                </div>
+                                                                                                            </a>
+                                                                                                        }
 
-                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                    </div>
 
-                                                                                                </span>
-                                                                                            )
-                                                                                        })}</div></td>
-                                                                                    <td style={{ width: "10%" }}>{item.PercentComplete}</td>
-                                                                                    <td style={{ width: "10%" }}>{item.ItemRank}</td>
-                                                                                    <td style={{ width: "10%" }}>{item.DueDate}</td>
+                                                                                                </td>
+                                                                                                <td style={{ width: "22%" }}>
+                                                                                                    <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                    >{childitem.Title}
+                                                                                                    </a>
+                                                                                                    {childitem.Child.length > 0 &&
+                                                                                                        <span>({childitem.Child.length})</span>
+                                                                                                    }
 
-                                                                                </tr>
-                                                                            </table>
-                                                                        </td>
+                                                                                                    {childitem.Short_x0020_Description_x0020_On != null &&
+                                                                                                        <span className="project-tool"><img
+                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                                <span className="tooltiptext">
+                                                                                                                    <div className="tooltip_Desc">
+                                                                                                                        <span>{childitem.Short_x0020_Description_x0020_On}</span>
+                                                                                                                    </div>
+                                                                                                                </span>
+                                                                                                            </span>
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                </td>
+                                                                                                <td style={{ width: "18%" }}>
+                                                                                                    <div>
+                                                                                                        {childitem.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                            return (
+                                                                                                                <span className="ClientCategory-Usericon"
+                                                                                                                    title={client.Title}>
+                                                                                                                    <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                </span>
+                                                                                                            )
+                                                                                                        })}</div>
+                                                                                                </td>
+                                                                                                <td style={{ width: "20%" }}>
+                                                                                                    <div>{childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                        return (
+                                                                                                            <div className="ClientCategory-Usericon"
+                                                                                                                title={client1.Title}>
 
-
-                                                                    </tr>
-                                                                    {item.show && (
-                                                                        <>
-                                                                            {item.Child.map(function (childitem: any) {
-
-                                                                                return (
-
-                                                                                    <>
-                                                                                        <tr >
-                                                                                            <td className="pad0" colSpan={9}>
-                                                                                                <table className="table" style={{ width: "100%" }}>
-                                                                                                    <tr className="for-c02">
-                                                                                                        <td style={{ width: "2%" }}>
-                                                                                                            <div className="accordian-header" onClick={() => handleOpen(childitem)}>
-                                                                                                                {childitem.Child.length > 0 &&
-                                                                                                                    <a className='hreflink'
-                                                                                                                        title="Tap to expand the childs">
-                                                                                                                        <div className="sign">{childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                                                            : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
-                                                                                                                        </div>
-                                                                                                                    </a>
-                                                                                                                }
+                                                                                                                <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
 
                                                                                                             </div>
-                                                                                                        </td>
-                                                                                                        <td style={{ width: "7%" }}>  <div className="d-flex">
-                                                                                                            <span><input type="checkbox" name="Active" checked={childitem.Id ==( CheckBoxdata.length >0 && CheckBoxdata[0]["Id"]? CheckBoxdata[0]["Id"]  :CheckBoxdata) ?true :false }   onClick={() => {childitem.checked = !childitem.checked; setcheckbox([childitem.Title ==( CheckBoxdata.length >0 ? CheckBoxdata[0]["Title"] :CheckBoxdata) ? [] :childitem])}} ></input></span>
-                                                                                                            <span>
+                                                                                                        )
+                                                                                                    })}</div></td>
+                                                                                                <td style={{ width: "10%" }}>{childitem.PercentComplete}</td>
+                                                                                                <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
+                                                                                                <td style={{ width: "10%" }}>{childitem.DueDate}</td>
 
-                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                                                                                                    <img className="icon-sites-img"
-                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png" />
-                                                                                                                </a>
 
-                                                                                                            </span>
-                                                                                                            <span className="ml-2">{childitem.PortfolioStructureID}</span>
-                                                                                                        </div>
-                                                                                                        </td>
+                                                                                            </tr>
+                                                                                        </table>
+                                                                                    </td>
+                                                                                </tr>
 
-                                                                                                        <td style={{ width: "20%" }}>
-                                                                                                            <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                            >{childitem.Title}
-                                                                                                            </a>
-                                                                                                            {childitem.Child.length > 0 &&
-                                                                                                                <span>({childitem.Child.length})</span>
-                                                                                                            }
+                                                                                {childitem.show && (
+                                                                                    <>
+                                                                                        {childitem.Child.map(function (childinew: any) {
+                                                                                            return (
+                                                                                                <tr >
+                                                                                                    <td className="pad0" colSpan={10}>
+                                                                                                        <table className="table" style={{ width: "100%" }}>
+                                                                                                            <tr className="tdrow">
+                                                                                                                <td style={{ width: "2%" }}>
 
-                                                                                                            {childitem.Short_x0020_Description_x0020_On != null &&
-                                                                                                                <span className="project-tool"><img
-                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                                        <span className="tooltiptext">
-                                                                                                                            <div className="tooltip_Desc">
-                                                                                                                                <span>{childitem.Short_x0020_Description_x0020_On}</span>
-                                                                                                                            </div>
-                                                                                                                        </span>
+                                                                                                                </td>
+
+                                                                                                                <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setcheckbox([childinew.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : childinew]) }}  ></input></td>
+                                                                                                                <td style={{ width: "4%" }}> <div>
+                                                                                                                    <span>
+
+                                                                                                                        <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                                            <img className="icon-sites-img"
+                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />
+                                                                                                                        </a>
+
                                                                                                                     </span>
-                                                                                                                </span>
-                                                                                                            }
-                                                                                                        </td>
-                                                                                                        <td style={{ width: "18%" }}>
-                                                                                                            <div>
-                                                                                                                {childitem.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                                    return (
-                                                                                                                        <span className="ClientCategory-Usericon"
-                                                                                                                            title={client.Title}>
-                                                                                                                            <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                </div>
+                                                                                                                </td>
+                                                                                                                <td style={{ width: "2%" }}></td>
+                                                                                                                <td style={{ width: "22%" }}>
+
+                                                                                                                    <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                    >{childinew.Title}
+                                                                                                                    </a>
+                                                                                                                    {childinew.Child.length > 0 &&
+                                                                                                                        <span>({childinew.Child.length})</span>
+                                                                                                                    }
+
+                                                                                                                    {childinew.Short_x0020_Description_x0020_On != null &&
+                                                                                                                        <span className="project-tool"><img
+                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                                                <span className="tooltiptext">
+                                                                                                                                    <div className="tooltip_Desc">
+                                                                                                                                        <span>{childinew.Short_x0020_Description_x0020_On}</span>
+                                                                                                                                    </div>
+                                                                                                                                </span>
+                                                                                                                            </span>
                                                                                                                         </span>
-                                                                                                                    )
-                                                                                                                })}</div>
-                                                                                                        </td>
-                                                                                                        <td style={{ width: "20%" }}>
-                                                                                                            <div>{childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                return (
-                                                                                                                    <div className="ClientCategory-Usericon"
-                                                                                                                        title={client1.Title}>
+                                                                                                                    }
+                                                                                                                </td>
+                                                                                                                <td style={{ width: "18%" }}>
+                                                                                                                    <div>
+                                                                                                                        {childinew.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                                            return (
+                                                                                                                                <span className="ClientCategory-Usericon"
+                                                                                                                                    title={client.Title}>
+                                                                                                                                    <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                </span>
+                                                                                                                            )
+                                                                                                                        })}</div>
+                                                                                                                </td>
+                                                                                                                <td style={{ width: "20%" }}>
+                                                                                                                    <div>{childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                                        return (
+                                                                                                                            <span className="ClientCategory-Usericon"
+                                                                                                                                title={client1.Title}>
 
-                                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                                    </div>
-                                                                                                                )
-                                                                                                            })}</div></td>
-                                                                                                        <td style={{ width: "10%" }}>{childitem.PercentComplete}</td>
-                                                                                                        <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
-                                                                                                        <td style={{ width: "10%" }}>{childitem.DueDate}</td>
-
-
-                                                                                                    </tr>
-                                                                                                </table>
-                                                                                            </td>
-                                                                                        </tr>
-
-                                                                                        {childitem.show && (
-                                                                                            <>
-                                                                                                {childitem.Child.map(function (childinew: any) {
-                                                                                                    return (
-                                                                                                        <tr >
-                                                                                                            <td className="pad0" colSpan={10}>
-                                                                                                                <table className="table" style={{ width: "100%" }}>
-                                                                                                                    <tr className="tdrow">
-                                                                                                                        <td style={{ width: "2%" }}>
-
-                                                                                                                        </td>
-
-
-                                                                                                                        <td style={{ width: "7%" }}> <div className="d-flex">
-                                                                                                                            <span><input type="checkbox" name="Active" checked={childinew.Id ==( CheckBoxdata.length >0 && CheckBoxdata[0]["Id"]? CheckBoxdata[0]["Id"]  :CheckBoxdata) ?true :false }   onClick={() => {childinew.checked = !childinew.checked; setcheckbox([childinew.Title ==( CheckBoxdata.length >0 ? CheckBoxdata[0]["Title"] :CheckBoxdata) ? [] :childinew])}}  ></input></span>
-                                                                                                                            <span>
-
-                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                                                                                                                    <img className="icon-sites-img"
-                                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />
-                                                                                                                                </a>
+                                                                                                                                <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
 
                                                                                                                             </span>
-                                                                                                                            <span className="ml-2">{childinew.PortfolioStructureID}</span>
-                                                                                                                        </div>
-                                                                                                                        </td>
-
-                                                                                                                        <td style={{ width: "20%" }}>
-
-                                                                                                                            <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                            >{childinew.Title}
-                                                                                                                            </a>
-                                                                                                                            {childinew.Child.length > 0 &&
-                                                                                                                                <span>({childinew.Child.length})</span>
-                                                                                                                            }
-
-                                                                                                                            {childinew.Short_x0020_Description_x0020_On != null &&
-                                                                                                                                <span className="project-tool"><img
-                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                                                        <span className="tooltiptext">
-                                                                                                                                            <div className="tooltip_Desc">
-                                                                                                                                                <span>{childinew.Short_x0020_Description_x0020_On}</span>
-                                                                                                                                            </div>
-                                                                                                                                        </span>
-                                                                                                                                    </span>
-                                                                                                                                </span>
-                                                                                                                            }
-                                                                                                                        </td>
-                                                                                                                        <td style={{ width: "18%" }}>
-                                                                                                                            <div>
-                                                                                                                                {childinew.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                                                    return (
-                                                                                                                                        <span className="ClientCategory-Usericon"
-                                                                                                                                            title={client.Title}>
-                                                                                                                                            <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                                        </span>
-                                                                                                                                    )
-                                                                                                                                })}</div>
-                                                                                                                        </td>
-                                                                                                                        <td style={{ width: "20%" }}>
-                                                                                                                            <div>{childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                                return (
-                                                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                                                        title={client1.Title}>
-
-                                                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                                                    </span>
-                                                                                                                                )
-                                                                                                                            })}</div></td>
-                                                                                                                        <td style={{ width: "10%" }}>{childinew.PercentComplete}</td>
-                                                                                                                        <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
-                                                                                                                        <td style={{ width: "10%" }}>{childinew.DueDate}</td>
-                                                                                                                    </tr>
-                                                                                                                </table>
-                                                                                                            </td>
-                                                                                                        </tr>
-                                                                                                    )
-                                                                                                })}</>
-                                                                                        )}</>
-                                                                                )
-                                                                            })}
-                                                                        </>
-                                                                    )}
+                                                                                                                        )
+                                                                                                                    })}</div></td>
+                                                                                                                <td style={{ width: "10%" }}>{childinew.PercentComplete}</td>
+                                                                                                                <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
+                                                                                                                <td style={{ width: "10%" }}>{childinew.DueDate}</td>
+                                                                                                            </tr>
+                                                                                                        </table>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            )
+                                                                                        })}</>
+                                                                                )}</>
+                                                                        )
+                                                                    })}
                                                                 </>
+                                                            )}
+                                                        </>
 
 
-                                                            )
+                                                    )
 
-                                                        })}
-
-
-
-                                                    </tbody>
+                                                })}
 
 
 
-                                                </table>
-                                            </div>
-                                        </div>
+                                            </tbody>
+
+
+
+                                        </table>
                                     </div>
                                 </div>
-                            </div></section>
-                    </div></section>
-                <div className='modal-footer mt-3'>
-                    <button type="button" className="btn btn-primary" disabled={true} onClick={setModalIsOpenToFalse}>Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
+                        <button type="button" className="btn btn-grey" onClick={setModalIsOpenToFalse}>Cancel</button>
+                    </div>
                 </div>
+
             </div >
         </Modal >
     )
