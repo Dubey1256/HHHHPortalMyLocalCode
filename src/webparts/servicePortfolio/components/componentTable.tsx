@@ -11,7 +11,7 @@ import { CSVLink } from "react-csv";
 import '../../cssFolder/foundation.scss' ;
 import { map } from 'jquery';
 import { concat } from 'lodash';
-//import EditInstituton from '../../EditPopupFiles/EditComponent';
+import EditInstituton from '../../EditPopupFiles/EditComponent';
 
 
 
@@ -2636,7 +2636,7 @@ function ComponentTable() {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "3%" }}> </td>
+                                                                                    <td style={{ width: "3%" }}>  {popupStatus ? <EditInstituton item={item} /> : null}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
@@ -2734,7 +2734,7 @@ function ComponentTable() {
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                            <td style={{ width: "3%" }}></td>
+                                                                                                            <td style={{ width: "3%" }}>{popupStatus ? <EditInstituton item={childitem} /> : null}</td>
                                                                                                         </tr>
                                                                                                     </table>
                                                                                                 </td>
