@@ -9,8 +9,8 @@ const Tabs: React.FC<Props> = ({ children }) => {
   const [selectedTab, setSelectedTab] = React.useState(0)
 
   return (
-    <div className="nav nav-tabs nav nav-pills " >
-      <ul>
+    <div >
+      <ul className="nav nav-tabs nav nav-pills " >
         {children.map((item, index) => (
           <TabTitle
             key={index}

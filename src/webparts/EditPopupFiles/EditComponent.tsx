@@ -248,13 +248,11 @@ function EditInstitution(item: any) {
                                     &times;
                                 </button>
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body bg-f5f5 clearfix">
                                 <form name="ItemForm" noValidate role="form">
-                                    <div id="table-wrapper">
-                                        <div id="table-scroll">
-                                            <div id="itemtabs" className="exTab3">
+                         
+                                            <div id="itemtabs" className="exTab3 Dashboard_Tab_Content">
 
-                                                <div className="tab-content clearfixnew">
                                                     <Tabs>
                                                         <Tab title="BASIC INFORMATION">
 
@@ -581,10 +579,10 @@ function EditInstitution(item: any) {
                                                             </div>
                                                         </Tab>
                                                     </Tabs>
-                                                </div>
+                                          
                                             </div>
-                                        </div>
-                                    </div>
+                                   
+                                  
                                 </form>
                                 {/* <!--<item-info></item-info>--> */}
 

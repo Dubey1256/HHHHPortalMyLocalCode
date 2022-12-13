@@ -9,7 +9,7 @@ type Props = {
 const TabTitle: React.FC<Props> = ({ title, setSelectedTab, index }) => {
 
   return (
-      <button type='button' onClick={() => setSelectedTab(index)}>{title}</button>
+      <li onClick={() => setSelectedTab(index)}>{title}</li>
   )
 }
 
