@@ -3,19 +3,26 @@ import * as $ from 'jquery';
 import '../../cssFolder/foundation.scss';
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
-import Tabs from "./Tabs/Tabs";
-import Tab from "./Tabs/Tab";
+import Tabs from "../../taskDashboard/components/Tabs/Tabs";
+import Tab from "../../taskDashboard/components/Tabs/Tab";
 import * as Moment from 'moment';
-import './Tabs/styles.css';
-import './TaskDashboard.module.scss';
-import '../../cssFolder/foundationmin.scss'
+import '../Tabs/styles.css';
+import '../../taskDashboard/components/TaskDashboard.scss'
+import '../../cssFolder/foundation.scss';
 import ComponentMail from './Componentmail';
 import { HiPencil } from 'react-icons/Hi';
 import axios, { AxiosResponse } from 'axios';
 import TeamComposition from './TeamComposition';
+// import Picker from "../../taskDashboard/components/SmartMetaDataPicker";
 import Picker from "./SmartMetaDataPicker";
-import {useRef,forwardRef,useImperativeHandle} from 'react'
-import FloraEditor from "./TextEditor";
+import { useRef, forwardRef, useImperativeHandle } from 'react'
+//import FloraEditor from "./TextEditor";
+// import FloaraEditor from "./FloaraEditor";
+// import FloraEditor from "./TextEditor";
+import Example from "./MY";
+//import ImageTask from "./ImageTask";
+import ImageUploading, { ImageListType } from "react-images-uploading";
+
 
 // import { Editor } from "react-draft-wysiwyg";
 //import { Editor, EditorState, ContentState } from "react-draft-wysiwyg";
@@ -24,14 +31,18 @@ import FloraEditor from "./TextEditor";
 
 
 
-
-const EditInstitution=(Items: any)=> {
+var IsShowFullViewImage = false;
+const EditTaskPopup = (Items: any) => {
     // Id:any
 
 
-
+    const [images, setImages] = React.useState([]);
+    const maxNumber = 69;
 
     const [Editdata, setEditdata] = React.useState([]);
+    const [state, setState] = React.useState([]);
+    const [ImageSection, setImageSection] = React.useState([]);
+
     const [Description, setDescription] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(false);
@@ -42,13 +53,23 @@ const EditInstitution=(Items: any)=> {
     const setModalIsOpenToTrue = () => {
         setModalIsOpen(true)
     }
+    React.useEffect(() => {
+        Descriptions();
+    }, [])
 
-
+    const onChange = (
+        imageList: ImageListType,
+        addUpdateIndex: number[] | undefined
+    ) => {
+        // data for submit
+        console.log(imageList, addUpdateIndex);
+        setImages(imageList as never[]);
+    };
 
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false)
     }
-   
+
     const openTaskStatusUpdatePoup = () => {
         setTaskStatuspopup(true)
     }
@@ -58,91 +79,54 @@ const EditInstitution=(Items: any)=> {
     const closeTaskStatusUpdatePoup = () => {
         setTaskStatuspopup(false)
     }
+    function Descriptions() {
 
-   
-    // React.useEffect(() => {
-    //     function InstitutionData() {
-    //         var institute: any = []
-    //         var url = (Items.Items.SiteUrl + "/_api/web/lists/getbyid( '" + Items.Items.listId + "')/items?$select=Id,Title,Priority_x0020_Rank,EstimatedTime,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title,Approver/Title,Approver/Id,Approver/Name&$expand=AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,Approver&$top=4999?$filter=Id eq'" + Items.Items.Id + "'");
-
-
-    //         $.ajax({
-
-    //             url: url,
-
-    //             method: "GET",
-
-    //             headers: {
-
-    //                 "Accept": "application/json; odata=verbose"
-
-    //             },
-
-    //             success: function (data) {
-
-    //                 institute = data.d.results;
-    //                 console.log(institute);
-
-    //                 setEditdata(institute)
-    //             },
-
-    //             error: function (error) {
+        var institute: any = []
+        var DescriptionFields: any = []
+        var DescriptionItem: any = []
+        var DataDescription: any = []
+        var FeedbackColumncount: any = []
+        var selectedAdminImageUrl: any = []
+        var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('091889BD-5339-4D11-960E-A8FF38DF414B')/items?$select=Id,Title,OffshoreImageUrl,FeedBack,Categories,PercentComplete");
 
 
-    //             }
-    //         });
-    //     }
-    //     InstitutionData();
-    // },
-    //     []);
- var count =0;
-const addsubColumn=()=>{
-    count ++
-    setComentBox(true)
-    }
-   
+        $.ajax({
 
-const DeletesubColumn=()=>{
-    setComentBox(false)
-}
-function Descriptions() {
-            var institute: any = []
-            var DescriptionFields:any =[]
-            var DescriptionItem:any=[]
-           var DataDescription:any=[]
-            var FeedbackColumncount:any =[]
-            var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid( '091889BD-5339-4D11-960E-A8FF38DF414B')/items?$select=Id,Title,FeedBack,Categories,PercentComplete");
+            url: url,
 
+            method: "GET",
 
-            $.ajax({
+            headers: {
 
-                url: url,
+                "Accept": "application/json; odata=verbose"
 
-                method: "GET",
+            },
 
-                headers: {
+            success: function (data) {
 
-                    "Accept": "application/json; odata=verbose"
+                institute = data.d.results;
 
-                },
+                $.each(institute, function (index: any, item: any) {
 
-                success: function (data) {
-
-                    institute = data.d.results;
-                    console.log(institute);
-                    $.each(institute,function(index:any,item:any){
-
-                        var FeedBackParse = JSON.parse(item.FeedBack)
-                    if (FeedBackParse != undefined  && FeedBackParse[0].FeedBackDescriptions != undefined) {
+                    var FeedBackParse = JSON.parse(item.FeedBack)
+                    if (FeedBackParse != undefined && FeedBackParse[0].FeedBackDescriptions != undefined) {
                         DescriptionFields = FeedBackParse[0].FeedBackDescriptions
                     }
-                    if (FeedBackParse != undefined && FeedBackParse.length>0) {
-                       
+                    var addcounter = 0;
+                    if (item.OffshoreImageUrl != undefined && item.OffshoreImageUrl != null && item.OffshoreImageUrl != "[]") {
+                        selectedAdminImageUrl = JSON.parse(item.OffshoreImageUrl);
+                        $.each(selectedAdminImageUrl, function (val: any) {
+                            addcounter = val.counter;
+                        })
+                        setImageSection(selectedAdminImageUrl)
+                    }
+                    if (FeedBackParse != undefined && FeedBackParse.length > 0) {
+
                         // var SubDescriptionFields = { text: '', Completed: false };
                         if (FeedBackParse[0].FeedBackDescriptions != undefined) {
                             var FeedbackColumncount = 0;
-                           // var FeedBackParse = JSON.parse(item.FeedBack)
-                            $.each(FeedBackParse[0].FeedBackDescriptions, function(index:any,item:any) {
+                            // var FeedBackParse = JSON.parse(item.FeedBack)
+                            $.each(FeedBackParse[0].FeedBackDescriptions, function (index: any, item: any) {
                                 item.isAddComment = false;
                                 item.isShowComment = true;
                                 item.isPageType = 'taskpopup'
@@ -156,12 +140,12 @@ function Descriptions() {
                                 DescriptionFields.push(item);
                                 FeedbackColumncount = index;
                             })
-                            var commentItem:any = [];
-                            $.each(DescriptionFields, function (inddex:any,comments:any) {
+                            var commentItem: any = [];
+                            $.each(DescriptionFields, function (inddex: any, comments: any) {
                                 if ((comments.Comments == undefined) || (comments.Comments != undefined && comments.Comments.length == 0)) {
                                     comments.isShowComment = false;
                                 }
-                                $.each(comments.Comments, function (index:any,item:any) {
+                                $.each(comments.Comments, function (index: any, item: any) {
                                     item.isShowComment = true;
                                     item.Title = item.Title.replace(/\n/g, '<br/>');
                                     //item.Created = new Date(item.Created).format('dd MMM yyyy HH:mm');
@@ -172,16 +156,16 @@ function Descriptions() {
                                     }
                                     commentItem.push(item);
                                     if (comments.Subtext != undefined && comments.Subtext.length > 0) {
-                                        $.each(comments.Subtext, function (sub:any) {
+                                        $.each(comments.Subtext, function (sub: any) {
                                             sub.isShowComment = true;
-        
+
                                         })
                                     }
                                 });
-                               // if (comments != undefined && comments.Comments != undefined && comments.Comments.length > 0)
-                                   // SharewebCommonFactoryService.DynamicSortitems(comments.Comments, 'NewestCreated', 'Number', 'Descending');
+                                // if (comments != undefined && comments.Comments != undefined && comments.Comments.length > 0)
+                                // SharewebCommonFactoryService.DynamicSortitems(comments.Comments, 'NewestCreated', 'Number', 'Descending');
                                 if (comments.Subtext != undefined && comments.Subtext.length > 0) {
-                                    $.each(comments.Subtext, function (sub:any) {
+                                    $.each(comments.Subtext, function (sub: any) {
                                         if (sub.Comments == undefined || (sub.Comments != undefined && sub.Comments.length == 0)) {
                                             sub.isShowComment = false;
                                         }
@@ -190,21 +174,21 @@ function Descriptions() {
                                     })
                                 }
                                 DescriptionFields.Comments = commentItem;
-        
-                            });
-                            var Descriptiondata=''
 
-                        //        if(DescriptionFields != undefined && DescriptionFields.length>0){
-                        //  DataDescription = DescriptionFields[0];
-                        //    //var DescriptionItem = $.parseHTML(DataDescription.Title);
-                        //     DescriptionItem = DataDescription.Title.replace(/(<([^>]+)>)/ig, '');
-                        //     $.each(DescriptionItem, function (indx:any,description:any) {
-                        //         Descriptiondata = Descriptiondata != '' ? Descriptiondata + '; ' + description.innerText : description.innerText;
-        
-                        //     });
-                        //        }
-                              
-                           
+                            });
+                            var Descriptiondata = ''
+
+                            //        if(DescriptionFields != undefined && DescriptionFields.length>0){
+                            //  DataDescription = DescriptionFields[0];
+                            //    //var DescriptionItem = $.parseHTML(DataDescription.Title);
+                            //     DescriptionItem = DataDescription.Title.replace(/(<([^>]+)>)/ig, '');
+                            //     $.each(DescriptionItem, function (indx:any,description:any) {
+                            //         Descriptiondata = Descriptiondata != '' ? Descriptiondata + '; ' + description.innerText : description.innerText;
+
+                            //     });
+                            //        }
+
+
                             //var CountId = DescriptionFields[DescriptionFields.length - 1];
                             // $.each(DescriptionFields, function (item:any, index) {
                             //     if (item.Title != "" && item.Title != undefined) {
@@ -225,22 +209,52 @@ function Descriptions() {
                     }
                 })
 
-                    setDescription(DescriptionFields)
-                },
+                setDescription(DescriptionFields)
+            },
 
-                error: function (error) {
+            error: function (error) {
 
 
-                }
+            }
+        });
+    }
+
+
+    var count = 0;
+    const addsubColumn = (item: any, index: any) => {
+
+        var subIndex = index;
+        var SubField = { Subtext: '', Completed: false };
+        if (item.Subtext == undefined)
+            item.Subtext = [];
+        item.Subtext.push(SubField);
+        if (!IsShowFullViewImage) {
+            $(".addsubbox").click(function () {
+                var x = $(window).scrollTop();
+                $(window).scrollTop(x + 800);
             });
         }
-        Descriptions();
+        else if (IsShowFullViewImage) {
+            $(".addsubbox").click(function () {
+                var x = $('.editsectionscroll').scrollTop();
+                $('.editsectionscroll').scrollTop(x + 600);
+            });
+        }
+
+    }
+
+
+    const DeletesubColumn = () => {
+        setComentBox(false)
+    }
+
+
     return (
         <>
             <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue()}
                 src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />
 
-            
+
             <Modal
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
@@ -408,7 +422,7 @@ function Descriptions() {
             >
 
                 <div id="EditGrueneContactSearch">
-                    <div className="modal-dailog modal-lg">
+                    <div className="modal-dailog modal-lg" style={{ width: "1250px" }}>
                         <div className="panel panel-default" ng-cloak>
                             <div className="modal-header">
                                 <h3 className="modal-title">
@@ -443,6 +457,7 @@ function Descriptions() {
                                                                             ng-checked="Item.IsTodaysTask==1"
                                                                             ng-click="checkTodayTask(isChecked)"
                                                                             className="mt-0 mr-5" />
+
                                                                         <span
 
                                                                             className="no-padding ">workingToday</span>
@@ -563,7 +578,7 @@ function Descriptions() {
                                                                         <span className="toltrip"
                                                                             ng-hide="(ServicesmartComponent.length>0 || smartComponent.length>0)">
 
-                                                                               <Picker/>
+                                                                            <Picker />
                                                                         </span>
                                                                     </div>
 
@@ -595,7 +610,7 @@ function Descriptions() {
                                                                                             ng-src="/_layouts/images/delete.gif" />
                                                                                     </a>
                                                                                 </div> */}
-                                                                               
+
                                                                             </div>
 
                                                                         </div>
@@ -610,12 +625,12 @@ function Descriptions() {
                                                                             </label>
                                                                             <input type="text" className="form-control"
                                                                                 id="txtCategories" />
-                                                                                 <span className="toltrip"
-                                                                                    ng-show="(ServicesmartComponent.length>0 || smartComponent.length>0)">
-                                                                                       
-                                                                                   <Picker/>
-                                                                                  
-                                                                                </span>
+                                                                            <span className="toltrip"
+                                                                                ng-show="(ServicesmartComponent.length>0 || smartComponent.length>0)">
+
+                                                                                <Picker />
+
+                                                                            </span>
                                                                         </div>
 
                                                                     </div>
@@ -629,16 +644,16 @@ function Descriptions() {
 
                                                                                     type="checkbox"
                                                                                     ng-click="selectRootLevelTerm(item,type)" />
-                                                                                    Phone
-                                                                            </div> 
+                                                                                Phone
+                                                                            </div>
 
-                                                                              <div ng-show="item.Title=='Email Notification'"
+                                                                            <div ng-show="item.Title=='Email Notification'"
                                                                                 className="checkbox">
                                                                                 <input ng-checked="isMainTermSelected(item)"
 
                                                                                     type="checkbox"
                                                                                     ng-click="selectRootLevelTerm(item)" />
-                                                                                    Email Notification
+                                                                                Email Notification
                                                                                 <span><i ng-show="showEmailSubCategory && CurrentSubSiteName !='ksl'"
                                                                                     ng-click="openCategoryUpdatePoup(item.Title)"
                                                                                     className="fa fa-pencil ml-10"
@@ -652,7 +667,7 @@ function Descriptions() {
 
                                                                                     type="checkbox"
                                                                                     ng-click="selectRootLevelTerm(item)" />
-                                                                                    Immmediate
+                                                                                Immmediate
                                                                                 <span><i ng-show="showEmailSubCategory && CurrentSubSiteName !='ksl'"
                                                                                     ng-click="openCategoryUpdatePoup(item.Title)"
                                                                                     className="fa fa-pencil ml-10"
@@ -673,12 +688,12 @@ function Descriptions() {
                                                                                 <img ng-src="/_layouts/images/delete.gif" />
                                                                             </a>
                                                                         </div> */}
-                                                                         <div className="col-sm-12 pad0">
+                                                                        <div className="col-sm-12 pad0">
                                                                             <hr className="bdrtop  mb-5 mt-10" />
                                                                         </div>
                                                                         <div className="col-sm-12" ng-if="item.SmartSuggestions"
                                                                             ng-repeat="item in AllCategories">
-                                                                            
+
                                                                             <div ng-show="item.Title=='Approval'"
                                                                                 className="checkbox">
                                                                                 <input ng-checked="isMainTermSelected(item)"
@@ -713,11 +728,11 @@ function Descriptions() {
                                                                                             value="{{child.Title}}"
                                                                                             ng-click="selectRootLevelTerm(child)"
                                                                                             ng-model="ApprovalCategoriesType" />
-                                                                                       Quick Approval
+                                                                                        Quick Approval
                                                                                     </label>
                                                                                 </div>
                                                                             </div>
-                                                                        </div> 
+                                                                        </div>
 
                                                                     </div>
                                                                 </div>
@@ -800,7 +815,7 @@ function Descriptions() {
 
                                                                         </span>
                                                                         <span className="toltrip">
-                                                                           <Picker/>
+                                                                            <Picker />
                                                                         </span>
                                                                     </div>
 
@@ -913,16 +928,7 @@ function Descriptions() {
                                                                                         </td>
                                                                                     </tr>
                                                                                 </table>
-                                                                                <div className="block"
-                                                                                    ng-repeat="item in smartComponentCategory track by $index">
-                                                                                    <a className="hreflink" target="_blank"
-                                                                                        ng-href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}">item.Title</a>
-                                                                                    <a className="hreflink"
-                                                                                        ng-click="removesmartComponentCategory(item.Id)">
-                                                                                        <img
-                                                                                            ng-src="/_layouts/images/delete.gif" />
-                                                                                    </a>
-                                                                                </div>
+                                                                               
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -1211,779 +1217,100 @@ function Descriptions() {
 
 
 
-
-
-
-
                                                 <div className="col-sm-12 pad0">
-                                                    <div ng-show="selectedAdminImageUrl != undefined && selectedAdminImageUrl != ''"
-                                                        ng-repeat="BasicImageUrl in selectedAdminImageUrl">
-                                                        {/* <div ng-show="BasicImageUrl.AdminTab=='Basic'" className="col-sm-12  mt-5">
-                                                            <span className="">
-                                                                BasicImageUrl.ImageName
-                                                                <a title="Delete" data-toggle="modal"
-                                                                    ng-click="deleteCurrentImage('Basic',BasicImageUrl.ImageName)">
-                                                                    <img ng-src="/_layouts/images/delete.gif" />
-                                                                </a>
+                                                    {ImageSection.map(function (Image: any) {
+                                                        return (
 
-                                                            </span>
 
-                                                            <div className="img">
-                                                                <a className="sit-preview hreflink preview" target="_blank"
-                                                                    rel="{{BasicImageUrl.Url}}" href="{{BasicImageUrl.Url}}">
-                                                                    <img id="sit-sharewebImagePopup-demo"
-                                                                        ng-src="{{BasicImageUrl.Url}}?RenditionID=12"
-                                                                        data-toggle="popover" data-trigger="hover"
-                                                                        data-content="{{attachedFile.FileLeafRef}}"
-                                                                    />
-                                                                </a>
+                                                            <div ng-show="selectedAdminImageUrl != undefined && selectedAdminImageUrl != ''"
+                                                            >
+                                                                <div ng-show="BasicImageUrl.AdminTab=='Basic'" className="col-sm-12  mt-5">
+                                                                    <span className="">
+                                                                        {Image.ImageName}
+                                                                        <a title="Delete" data-toggle="modal"
+                                                                            ng-click="deleteCurrentImage('Basic',BasicImageUrl.ImageName)">
+                                                                            <img ng-src="/_layouts/images/delete.gif" />
+                                                                        </a>
+
+                                                                    </span>
+
+                                                                    <div className="img">
+                                                                        <a className="sit-preview hreflink preview" target="_blank"
+                                                                            rel="{{BasicImageUrl.Url}}" href="{{BasicImageUrl.Url}}">
+                                                                            <img id="sit-sharewebImagePopup-demo"
+                                                                                ng-src="{{BasicImageUrl.Url}}?RenditionID=12"
+                                                                                data-toggle="popover" data-trigger="hover"
+                                                                                data-content="{{attachedFile.FileLeafRef}}"
+                                                                            />
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div> */}
-                                                    </div>
+                                                        )
+                                                    })
+                                                    }
                                                     <div
-                                                        className="{{IsShowFullViewImage!=true?'col-sm-3 padL-0 DashboardTaskPopup-Editor above':'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}}">
-                                                        <div className="mt-5 comnt"
-                                                            ng-show="attachments.length > 0 && IsShowFullViewImage!=true"
-                                                            ng-repeat="attachedFiles in attachments|orderBy:'Desc'">
-                                                            {/* <div ng-show="ImageName != attachedFiles.FileName">
-                                                                <div className="mt-10" style={{ width: "285px" }}
-                                                                    id="sit-sharewebImagePopup-demo"
-                                                                    ng-if="attachedFiles.FileName.toLowerCase().indexOf('.png'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.jpg'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.bmp'.toLowerCase())> -1">
-
-
-                                                                    <a ng-if="Item.siteType!='Offshore Tasks'"
-                                                                        className="sit-preview" target="_blank"
-                                                                        href="{{CurrentSiteUrl}}/Lists/{{TasksiteType}}/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}">
-                                                                        <img ng-if="deleteAttachedFile = true"
-                                                                            alt="{{attachedFiles.FileName}}"
-                                                                            ng-src="{{CurrentSiteUrl}}/Lists/{{Item.siteType}}/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}?updated={{param}}"
-                                                                            data-preview-url="{{CurrentSiteUrl}}/Lists/{{Item.siteType}}/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}" />
-                                                                    </a>
-
-
-                                                                    <a ng-if="Item.siteType=='Offshore Tasks'"
-                                                                        className="sit-preview" target="_blank"
-                                                                        href="{{CurrentSiteUrl}}/Lists/SharewebQA/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}" >
-                                                                        <img ng-if="deleteAttachedFile = true"
-                                                                            alt="{{attachedFiles.FileName}}"
-                                                                            ng-src="{{CurrentSiteUrl}}/Lists/SharewebQA/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}?updated={{param}}"
-                                                                            data-preview-url="{{CurrentSiteUrl}}/Lists/SharewebQA/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}" />
-                                                                    </a>
-
-                                                                    <div className="col-md-12  created-bg">
-                                                                        <div className="d-flex">
-                                                                            <span
-                                                                                className="mr-5"> attachedFiles.newFileName </span>
-                                                                            <span className="font11 mr-5"
-                                                                                ng-show="attachedFiles.FileName==imageInfo.ImageName"
-                                                                                ng-repeat="imageInfo in BasicImageInfo">
-                                                                                <span
-                                                                                    className="mr-5"> imageInfo.UploadeDate </span>
-                                                                                By
-                                                                                <img className="wid14 upwh mr-5"
-                                                                                    title="{{imageInfo.UserName}}"
-                                                                                    data-trigger="hover"
-                                                                                    ng-src="{{imageInfo.UserImage}}" />
-                                                                            </span>
-                                                                            <span className="mx-auto"
-                                                                                ng-show="attachedFiles.FileName==imageInfo.ImageName"
-                                                                                ng-repeat="imageInfo in BasicImageInfo">
-                                                                                <a ng-show="Item.siteType=='Offshore Tasks' &&  pagesType == 'Component-Portfolio'"
-                                                                                    target="_blank">
-                                                                                    <i ng-click="IsShowFullViewImage!=true? ShowInFullView(attachedFiles):CancelShowInFullView()"
-                                                                                        className="fa fa-expand "
-                                                                                        title="Customize the width of page"
-                                                                                        aria-hidden="true"></i>
-
-
-                                                                                </a>
-                                                                                <a ng-show="Item.siteType=='Offshore Tasks' && pagesType == 'Service-Portfolio'"
-                                                                                    target="_blank">
-                                                                                    <i ng-click="IsShowFullViewImage!=true? ShowInFullView(attachedFiles):CancelShowInFullView()"
-                                                                                        className="fa fa-expand "
-                                                                                        title="Customize the width of page"
-                                                                                        aria-hidden="true"></i>
-
-                                                                                </a>
-                                                                                <a ng-show="Item.siteType!='Offshore Tasks'&& pagesType == 'Component-Portfolio'"
-                                                                                    target="_blank">
-                                                                                    <i ng-click="IsShowFullViewImage!=true? ShowInFullView(attachedFiles):CancelShowInFullView()"
-                                                                                        className="fa fa-expand "
-                                                                                        title="Customize the width of page"
-                                                                                        aria-hidden="true"></i>
-
-                                                                                </a>
-                                                                                <a ng-show=" Item.siteType!='Offshore Tasks' && pagesType == 'Service-Portfolio'"
-                                                                                    target="_blank">
-                                                                                    <i ng-click="IsShowFullViewImage!=true? ShowInFullView(attachedFiles):CancelShowInFullView()"
-                                                                                        className="fa fa-expand "
-                                                                                        title="Customize the width of page"
-                                                                                        aria-hidden="true"></i>
-
-                                                                                </a>
-
-                                                                                | <a className="hreflink" title="Replace Image"
-                                                                                    ng-click="editImage(attachedFiles)">
-                                                                                    <i className="fa fa-random"
-                                                                                        aria-hidden="true"></i>
-                                                                                </a>
-                                                                                | <a title="Delete" data-toggle="modal"
-                                                                                    ng-click="deleteFile(attachedFiles)">
-                                                                                    <img ng-src="/_layouts/images/delete.gif" />
-                                                                                </a>
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div> */}
-                                                        </div>
-                                                        <div className="mt-5"
-                                                            ng-show="attachments.length > 0 && attachedFiles.IsshowFullView==true && IsShowFullViewImage==true"
-                                                            ng-repeat="attachedFiles in attachments|orderBy:'Desc'">
-                                                            <div ng-show="ImageName != attachedFiles.FileName">
-                                                                <div className="mt-10" id="sit-sharewebImagePopup-demo"
-                                                                    ng-if="attachedFiles.FileName.toLowerCase().indexOf('.png'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.jpg'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.bmp'.toLowerCase())> -1">
-
-
-                                                                    <a ng-if="Item.siteType!='Offshore Tasks'" className="taskimg"
-                                                                        target="_blank"
-                                                                        ng-click="ShowInFullView(attachedFiles)">
-                                                                        <img ng-if="deleteAttachedFile = true"
-                                                                            alt="{{attachedFiles.FileName}}"
-                                                                            ng-src="{{CurrentSiteUrl}}/Lists/{{Item.siteType}}/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}?updated={{param}}"
-                                                                            data-preview-url="{{CurrentSiteUrl}}/Lists/{{Item.siteType}}/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}" />
-                                                                    </a>
-
-                                                                    <a ng-if="Item.siteType=='Offshore Tasks'" className="taskimg"
-                                                                        target="_blank"
-                                                                        ng-click="ShowInFullView(attachedFiles)">
-                                                                        <img ng-if="deleteAttachedFile = true"
-                                                                            alt="{{attachedFiles.FileName}}"
-                                                                            ng-src="{{CurrentSiteUrl}}/Lists/SharewebQA/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}?updated={{param}}"
-                                                                            data-preview-url="{{CurrentSiteUrl}}/Lists/SharewebQA/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}" />
-                                                                    </a>
-                                                                    <div className="col-md-12  created-bg">
-                                                                        <div className="d-flex">
-                                                                            <span className="mr-5">
-                                                                                attachedFiles.newFileName
-                                                                            </span>
-
-                                                                            <span className="font11 mr-5"
-                                                                                ng-show="attachedFiles.FileName==imageInfo.ImageName"
-                                                                                ng-repeat="imageInfo in BasicImageInfo">
-
-                                                                                <span
-                                                                                    className="mr-5">imageInfo.UploadeDate</span>
-                                                                                By
-                                                                                <img className="wid14 upwh mr-5"
-                                                                                    title="{{imageInfo.UserName}}"
-                                                                                    data-trigger="hover"
-                                                                                    ng-src="{{imageInfo.UserImage}}" />
-
-                                                                            </span>
-                                                                            <span className="mx-auto"
-                                                                                ng-show="attachedFiles.FileName==imageInfo.ImageName"
-                                                                                ng-repeat="imageInfo in BasicImageInfo">
-                                                                                <a ng-show="Item.siteType=='Offshore Tasks' &&  pagesType == 'Component-Portfolio'"
-                                                                                    target="_blank">
-                                                                                    <i ng-click="IsShowFullViewImage!=true? ShowInFullView(attachedFiles):CancelShowInFullView()"
-                                                                                        className="fa fa-compress mr-5"
-                                                                                        aria-hidden="true"></i>
-
-                                                                                </a>
-                                                                                <a ng-show="Item.siteType=='Offshore Tasks' && pagesType == 'Service-Portfolio'"
-                                                                                    target="_blank">
-                                                                                    <i ng-click="IsShowFullViewImage!=true? ShowInFullView(attachedFiles):CancelShowInFullView()"
-                                                                                        className="fa fa-compress mr-5"
-                                                                                        aria-hidden="true"></i>
-
-                                                                                </a>
-                                                                                <a ng-show="Item.siteType!='Offshore Tasks'&& pagesType == 'Component-Portfolio'"
-                                                                                    target="_blank">
-                                                                                    <i ng-click="IsShowFullViewImage!=true? ShowInFullView(attachedFiles):CancelShowInFullView()"
-                                                                                        className="fa fa-compress "
-                                                                                        aria-hidden="true"></i>
-
-                                                                                </a>
-                                                                                <a ng-show=" Item.siteType!='Offshore Tasks' && pagesType == 'Service-Portfolio'"
-                                                                                    target="_blank">
-                                                                                    <i ng-click="IsShowFullViewImage!=true? ShowInFullView(attachedFiles):CancelShowInFullView()"
-                                                                                        className="fa fa-compress "
-                                                                                        aria-hidden="true"></i>
-
-                                                                                </a>
-
-                                                                                | <a className="hreflink" title="Replace Image"
-                                                                                    ng-click="editImage(attachedFiles)">
-                                                                                    <i className="fa fa-random"
-                                                                                        aria-hidden="true"></i>
-                                                                                </a>
-                                                                                | <a title="Delete" data-toggle="modal"
-                                                                                    ng-click="deleteFile(attachedFiles)">
-                                                                                    <img ng-src="/_layouts/images/delete.gif" />
-                                                                                </a>
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                        <div className="col-sm-12 padLR0 md2">
-                                                            <div ng-show="$index+1==CopyPastImg.length&&attachments.length>0"
-                                                                className="col-sm-5 no-padding">
-                                                                <a
-                                                                    ng-click="ADDCopyPastColumn()"
-                                                                    ng-bind-html="GetColumnDetails('addNewImg') | trustedHTML"></a>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-sm-12 pad0">
-                                                            <div className="col-md-6 pad0">
-                                                                <a className=" hreflink" ng-click="TagItems();">
-                                                                    Upload
-                                                                    item-images
-                                                                </a>
-                                                            </div>
-                                                            <div className="col-md-6 padR-0 text-right">
-
-                                                                <span ng-if="CopyPastImg.length==0">
-                                                                    <a ng-click="ADDCopyPastColumn()"
-                                                                        ng-bind-html="GetColumnDetails('addNewImg') | trustedHTML"></a>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-
-
-                                                        <div ng-repeat="item in CopyPastImg" id="PreventRightClick"
-                                                            className="priority">
-                                                            <div className="col-sm-11 PreventRightClick"
-
-                                                                ng-paste="UploadImageItems()"></div>
-
-
-                                                        </div>
-
-                                                    </div>
-
-                                                    <div
-                                                        className="{{IsShowFullViewImage!=true?'col-sm-9 toggle-task':'col-sm-6 editsectionscroll toggle-task'}} ">
-                                                            
-
-                                                               
-                                                        <div className="mt-5"
-                                                            ng-init="outerIndex=$index">
-                                                            <div className="col-sm-12 PadR0">
-                                                                <span ng-if="Item.Categories.indexOf('Approval')>-1" className="MR5"
-                                                                    ng-disabled="Item.PercentComplete >= 80">
-                                                                    <span title="Rejected"
-                                                                        id="SmartLightReject{{item.Id}}{{item.isPageType}}"
-                                                                        ng-click="UpdateTrafficLight(item,item.Title,'SmartLight','Reject')"
-                                                                        className="circlelight br_red pull-left ml5 {{item.isShowLight == 'Reject'?'red':''}}"
-                                                                    ></span>
-                                                                    <span title="Maybe"
-                                                                        id="SmartLightMaybe{{item.Id}}{{item.isPageType}}"
-                                                                        ng-click="UpdateTrafficLight(item,item.Title,'SmartLight','Maybe')"
-                                                                        className="circlelight br_yellow pull-left {{item.isShowLight == 'Maybe'?'yellow':''}}"
-                                                                    ></span>
-                                                                    <span title="Approved"
-                                                                        id="SmartLightApprove{{item.Id}}{{item.isPageType}}"
-                                                                        ng-click="UpdateTrafficLight(item,item.Title,'SmartLight','Approve')"
-                                                                        className="circlelight br_green pull-left {{item.isShowLight == 'Approve'?'green':''}}"
-                                                                    ></span>
-                                                                </span>
-                                                                <span className="pull-right">
-                                                                    <span ng-if="$index>0" className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.SeeAbove"
-                                                                            ng-click="AddPointToSeeImage(item,item.SeeAbove,$index)" />
-                                                                    </span>
-                                                                    <span ng-if="$index>0">
-                                                                        See Above
-                                                                    </span>
-                                                                    <span ng-if="$index>0">|</span>
-                                                                    <span className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.Phone"
-                                                                            ng-click="checkCompleted(Completed,'Phone',item.Phone)" />
-                                                                    </span>
-                                                                    <span>
-                                                                        Phone
-                                                                    </span>
-                                                                    <span>|</span>
-                                                                    <span className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.LowImportance"
-                                                                            ng-click="checkCompleted(Completed)" />
-                                                                    </span>
-                                                                    <span>
-                                                                        Low Importance
-                                                                    </span>
-                                                                    <span>|</span>
-
-                                                                    <span className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.HighImportance"
-                                                                            ng-click="checkCompleted(Completed)" />
-                                                                    </span>
-                                                                    <span>
-                                                                        High Importance
-                                                                    </span>
-                                                                    <span>|</span>
-
-                                                                    <span className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.Completed"
-                                                                            ng-click="checkCompleted(item.Completed,'markAsCompleted',item)" />
-                                                                    </span>
-                                                                    <span
-                                                                        > Mark As Completed
-                                                                    </span>
-                                                                    <span>|</span>
-                                                                    <span className="">
-                                                                        <a className=" m-2"
-                                                                            ng-click="showCommentBox(item)"
-                                                                            ng-bind-html="GetColumnDetails('addComment') | trustedHTML">Add Comment</a>
-
-                                                                    </span>
-                                                                    
-                                                                    <span className=""
-                                                                        ng-if="$index!=0&&DescriptionFields[$index].Title!=undefined">
-                                                                        <a className=" md2" ng-if="Item.siteType!='Offshore Tasks'"
-                                                                            target="_blank"
-                                                                            ng-href="{{pageContext}}/SitePages/CreateTask.aspx"
-                                                                            ng-click="opencreatetask($index)"
-                                                                            ng-bind-html="GetColumnDetails('CreateTask') | trustedHTML"></a>
-                                                                        <a className=" md2" ng-if="Item.siteType=='Offshore Tasks'"
-                                                                            target="_blank"
-                                                                            ng-href="{{pageContext}}/SitePages/CreateOffshoreTask.aspx"
-                                                                            ng-click="opencreatetask($index)"
-                                                                            ng-bind-html="GetColumnDetails('CreateTask') | trustedHTML"></a>
-                                                                    </span>
-
-                                                                    <span className="">
-                                                                        <a ng-if="$index>0"
-                                                                            title="Delete" data-toggle="modal"
-                                                                            ng-click="RemoveFeedbackColumn(DescriptionFields,$index)">
-                                                                            <img className="" ng-src="/_layouts/images/delete.gif" />
-                                                                        </a>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                            <div className="mt-1 no-padding" >
-
-                                                            </div>
-                                                            <div className="col-sm-11 mt1 Doc-align"
-
-                                                                ng-if='$index==0'>
-                                                                <div className="forFullScreenButton" id="editDescriptionbody"
-                                                                    ng-model="item.Title"></div>
-                                                            </div>
-                                                            <div className="col-sm-11 mt1 Doc-align" ng-if="$index!=0"
-                                                            style={{float:"right"}}>   
-   
-                                                                    <FloraEditor />
-                                                            </div>
-                                                            <span className="pull-right addsubbox" style={{ cursor: "pointer" }}>
-                                                                    <a onClick={()=>addsubColumn()}>
-                                                                        Add Sub-Text Box
-                                                                    </a>
-                                                                </span>
-                                                               
-                                                           
-                                                           
-                                                            <span className="pull-right">
-                                                                    <span ng-if="$index>0" className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.SeeAbove"
-                                                                            ng-click="AddPointToSeeImage(item,item.SeeAbove,$index)" />
-                                                                    </span>
-                                                                    <span ng-if="$index>0">
-                                                                        See Above
-                                                                    </span>
-                                                                    <span ng-if="$index>0">|</span>
-                                                                    <span className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.Phone"
-                                                                            ng-click="checkCompleted(Completed,'Phone',item.Phone)" />
-                                                                    </span>
-                                                                    <span>
-                                                                        Phone
-                                                                    </span>
-                                                                    <span>|</span>
-                                                                    <span className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.LowImportance"
-                                                                            ng-click="checkCompleted(Completed)" />
-                                                                    </span>
-                                                                    <span>
-                                                                        Low Importance
-                                                                    </span>
-                                                                    <span>|</span>
-
-                                                                    <span className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.HighImportance"
-                                                                            ng-click="checkCompleted(Completed)" />
-                                                                    </span>
-                                                                    <span>
-                                                                        High Importance
-                                                                    </span>
-                                                                    <span>|</span>
-
-                                                                    <span className="m-2">
-                                                                        <input type="checkbox" id=""
-                                                                            name="chkCompleted" ng-model="item.Completed"
-                                                                            ng-click="checkCompleted(item.Completed,'markAsCompleted',item)" />
-                                                                    </span>
-                                                                    <span
-                                                                        > Mark As Completed
-                                                                    </span>
-                                                                    <span>|</span>
-                                                                    <span className="">
-                                                                        <a className=" m-2"
-                                                                            ng-click="showCommentBox(item)"
-                                                                            ng-bind-html="GetColumnDetails('addComment') | trustedHTML">Add Comment</a>
-
-                                                                    </span>
-                                                                    
-                                                                    <span className=""
-                                                                        ng-if="$index!=0&&DescriptionFields[$index].Title!=undefined">
-                                                                        <a className=" md2" ng-if="Item.siteType!='Offshore Tasks'"
-                                                                            target="_blank"
-                                                                            ng-href="{{pageContext}}/SitePages/CreateTask.aspx"
-                                                                            ng-click="opencreatetask($index)"
-                                                                            ng-bind-html="GetColumnDetails('CreateTask') | trustedHTML"></a>
-                                                                        <a className=" md2" ng-if="Item.siteType=='Offshore Tasks'"
-                                                                            target="_blank"
-                                                                            ng-href="{{pageContext}}/SitePages/CreateOffshoreTask.aspx"
-                                                                            ng-click="opencreatetask($index)"
-                                                                            ng-bind-html="GetColumnDetails('CreateTask') | trustedHTML"></a>
-                                                                    </span>
-
-                                                                    <span className="">
-                                                                        <a ng-if="$index>0"
-                                                                            title="Delete" data-toggle="modal"
-                                                                            onClick={()=>DeletesubColumn()}>
-                                                                            <img className="" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" />
-                                                                        </a>
-                                                                    </span>
-                                                                    </span>
-
-
-                                                                    {ComentBox == true && {count} ?
-                                                                    <>
-                                                                    <textarea className={`addCommentBox${count}`} cols={15} rows={4}>
-                                                                    </textarea> 
-                                                                    <span ng-show="$index+1==DescriptionFields.length"
-                                                                         className="ml-10">
-                                                                         <a className="btn btn-primary btn-sm" onClick={()=>addsubColumn()}
-                                                                        >Add New Test Box</a>
-                                                                     </span>
-                                                                    </>
-                                                                     : <div className="col-sm-6 comnt ">
-                                                                     <span ng-show="$index+1==DescriptionFields.length"
-                                                                         className="ml-10">
-                                                                         <a className="btn btn-primary btn-sm" onClick={()=>addsubColumn()}
-                                                                        >Add New Test Box</a>
-                                                                     </span>
- 
-                                                                 </div>
-                                                                    }
-                                                            {/* <div className="col-sm-12 mt1 padLR0">
-                                                                <div className="col-sm-6 comnt"></div>
-                                                                <div className="col-sm-6 padLR0" style={{ display: "none" }}
-                                                                    ng-if="item.Comments.length>2 && $index>0  ">
-                                                                    <a className="all_cmt_pos  morelink" title="Click to Reply"
-                                                                        style={{ cursor: "pointer" }}
-                                                                        ng-click="ShowAllComments(item)"
-                                                                        ng-bind-html="GetColumnDetails('allComments') | trustedHTML"></a>
-                                                                    <a className="all_pipe_pos morelink">|</a>
-                                                                </div>
-                                                            </div>
-                                                            <div className="feedbackcomment col-sm-offset-1 col-sm-11 no-padding"
-                                                                ng-if="item.isShowComment">
-                                                                <div
-                                                                    ng-repeat="comment in item.Comments | orderBy:'-NewestCreated' | date:'dd MMM yyyy HH:mm'">
-                                                                    <span className="pull-right">
-                                                                        <a className="" style={{ cursor: "pointer" }}
-                                                                            ng-click="clearComment(item.Comments,comment)">
-                                                                            Delete Comment
-
-                                                                            <img className="" ng-src="/_layouts/images/delete.gif"
-                                                                                src="/_layouts/images/delete.gif" />
-                                                                        </a>
-                                                                    </span>
-                                                                    <div className=" col-sm-12 mb-2 add_cmnt panel-body">
-                                                                        <div id="" className="pad_top_btm3">
-                                                                            <div ng-show="comment.AuthorImage!=undefined"
-                                                                                className="col-sm-1">
-                                                                                <img className="AssignUserPhoto2"
-                                                                                    title="{{comment.AuthorName}}"
-                                                                                    data-toggle="popover" data-trigger="hover"
-                                                                                    ng-src="{{comment.AuthorImage}}" />
-                                                                            </div>
-                                                                            <div ng-show="comment.AuthorImage==undefined"
-                                                                                className="col-sm-1 padL-0 wid35">
-                                                                                <img ng-show="comment.AuthorImage==undefined"
-                                                                                    className="AssignUserPhoto1 bdrbox"
-                                                                                    ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/icon_user.jpg" />
-                                                                            </div>
-
-                                                                            <div className="toggle-task">
-                                                                                <div className="comment_header">
-
-                                                                                    <a className="hreflink"
-                                                                                        ng-click="editsavecomment(item,$index);">
-                                                                                        <img
-                                                                                            ng-src="{{baseUrl}}//SiteCollectionImages/ICONS/32/edititem.gif" />
-                                                                                    </a>
-                                                                                </div>
-
-                                                                            </div>
-                                                                            <div className="right_comment break_url ng-binding"
-                                                                                ng-bind-html="comment.Title | trustedHTML">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-11 ">
-                                                                    <textarea id="searchcomment" style={{ width: "100%" }}
-                                                                        ng-required="true"
-                                                                        className="form-control"></textarea>
+                                                        className={IsShowFullViewImage != true ? 'col-sm-3 padL-0 DashboardTaskPopup-Editor above' : 'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}>
 
 
 
-
-
-                                                                    <div ng-repeat='child in item.Subtext' className="mt-5"
-                                                                        ng-init="innerIndex=$index">
-                                                                        <div className="col-sm-12 PadR0">
-                                                                            <span ng-if="Item.Categories.indexOf('Approval')>-1"
-                                                                                className="MR5" ng-disabled="Item.PercentComplete >= 80">
-                                                                                <span title="Rejected" id="SmartLightReject{{child.Id}}"
-                                                                                    ng-click="UpdateTrafficLight(child,child.Title,'SmartLight','Reject')"
-                                                                                    className="circlelight br_red pull-left ml5 {{child.isShowLight == 'Reject'?'red':''}}"
-                                                                                ></span>
-                                                                                <span title="Maybe" id="SmartLightMaybe{{child.Id}}"
-                                                                                    ng-click="UpdateTrafficLight(child,child.Title,'SmartLight','Maybe')"
-                                                                                    className="circlelight br_yellow pull-left {{child.isShowLight == 'Maybe'?'yellow':''}}"
-                                                                                ></span>
-                                                                                <span title="Approved"
-                                                                                    id="SmartLightApprove{{child.Id}}"
-                                                                                    ng-click="UpdateTrafficLight(child,child.Title,'SmartLight','Approve')"
-                                                                                    className="circlelight br_green pull-left {{child.isShowLight == 'Approve'?'green':''}}"
-                                                                                ></span>
-                                                                            </span>
-                                                                            <span className="pull-right">
-                                                                                <span ng-if="$index>0" className="md2">
-                                                                                    <input type="checkbox" id=""
-                                                                                        name="chkCompleted"
-                                                                                        ng-model="child.SeeAbove"
-                                                                                        ng-click="AddPointToSeeImage(child,child.SeeAbove,outerIndex+1,$index)" />
-                                                                                </span>
-                                                                                <span ng-if="$index>0">
-                                                                                    See Above
-                                                                                </span>
-                                                                                <span ng-if="$index>0">|</span>
-                                                                                <span className="md2">
-                                                                                    <input type="checkbox" id=""
-                                                                                        name="chkCompleted"
-                                                                                        ng-model="child.Phone"
-                                                                                        ng-click="checkCompleted(Completed,'Phone',child.Phone)" />
-                                                                                </span>
-                                                                                <span>
-                                                                                    Phone
-                                                                                </span>
-                                                                                <span>|</span>
-                                                                                <span className="md2">
-                                                                                    <input type="checkbox" id=""
-                                                                                        name="chkCompleted"
-                                                                                        ng-model="child.LowImportance"
-                                                                                        ng-click="checkCompleted(Completed)" />
-                                                                                </span>
-                                                                                <span>
-                                                                                    Low Importance
-                                                                                </span>
-                                                                                <span>|</span>
-
-                                                                                <span className="md2">
-                                                                                    <input type="checkbox" id=""
-                                                                                        name="chkCompleted"
-                                                                                        ng-model="child.HighImportance"
-                                                                                        ng-click="checkCompleted(Completed)" />
-                                                                                </span>
-                                                                                <span>
-                                                                                    High Importance
-                                                                                </span>
-                                                                                <span>|</span>
-
-                                                                                <span className="md2">
-                                                                                    <input type="checkbox" id=""
-                                                                                        name="chkCompleted"
-                                                                                        ng-model="child.Completed"
-                                                                                        ng-click="checkCompleted(Completed)" />
-                                                                                </span>
-                                                                                <span
-                                                                                    ng-bind-html="GetColumnDetails('markAsCompleted') | trustedHTML">
-                                                                                </span>
-                                                                                <span>|</span>
-                                                                                <span className="">
-                                                                                    <a className=" md2"
-                                                                                        ng-click="showCommentBox(child)"
-                                                                                        ng-bind-html="GetColumnDetails('addComment') | trustedHTML"></a>
-
-                                                                                </span>
-                                                                                <span ng-if="$index>=0">|</span>
-                                                                                <span className=""
-                                                                                    ng-if="item.Subtext[$index].Title!=undefined">
-
-                                                                                    <a className=" md2"
-                                                                                        ng-if="Item.siteType!='Offshore Tasks'"
-                                                                                        style={{ cursor: "pointer" }} target="_blank"
-                                                                                        ng-href="{{pageContext}}/SitePages/CreateTask.aspx"
-                                                                                        ng-click="opencreatetask($index)"
-                                                                                        ng-bind-html="GetColumnDetails('CreateTask') | trustedHTML"></a>
-                                                                                    <a className=" md2"
-                                                                                        ng-if="Item.siteType=='Offshore Tasks'"
-                                                                                        style={{ cursor: "pointer" }} target="_blank"
-                                                                                        ng-href="{{pageContext}}/SitePages/CreateOffshoreTask.aspx"
-                                                                                        ng-click="opencreatetask($index)"
-                                                                                        ng-bind-html="GetColumnDetails('CreateTask') | trustedHTML"></a>
-                                                                                </span>
-                                                                                <span className="">
-
-                                                                                    <a style={{ cursor: "pointer" }} title="Delete"
-                                                                                        data-toggle="modal"
-                                                                                        ng-click="RemoveFeedbackColumn(item.Subtext,$index)">
-                                                                                        <img className=""
-                                                                                            ng-src="/_layouts/images/delete.gif" />
-                                                                                    </a>
-                                                                                </span>
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="mt-1 no-padding" style={{ width: "3%" }}>
-
-                                                                        </div>
-
-                                                                        <div className="col-sm-11 mt1 Doc-align"
+                                                        <div className="image-uplod">
+                                                            <ImageUploading
+                                                                multiple
+                                                                value={images}
+                                                                onChange={onChange}
+                                                                maxNumber={maxNumber}
+                                                            >
+                                                                {({
+                                                                    imageList,
+                                                                    onImageUpload,
+                                                                    onImageRemoveAll,
+                                                                    onImageUpdate,
+                                                                    onImageRemove,
+                                                                    isDragging,
+                                                                    dragProps
+                                                                }: any) => (
+                                                                    // write your building UI
+                                                                    <div className="upload__image-wrapper">
+                                                                        <a
+                                                                            style={isDragging ? { color: "red" } : {color:"darkblue"}}
+                                                                            onClick={onImageUpload}
+                                                                            {...dragProps}
                                                                         >
-
-                                                                            <textarea
-
-                                                                                id="txtSubdescription" style={{ width: "111%;" }}
-                                                                                className="form-control"
-                                                                                ng-model="child.Title"></textarea>
-
-                                                                        </div>
-                                                                        <div className="col-sm-12 mt1 padLR0">
-                                                                            <div className="col-sm-6 comnt"></div>
-                                                                            <div className="col-sm-6 padLR0" style={{ display: "none" }}
-                                                                                ng-if="child.Comments.length>2 && $index>0  ">
-                                                                                <a className="all_cmt_pos  morelink" title="Click to Reply"
-                                                                                    style={{ cursor: "pointer" }}
-                                                                                    ng-click="ShowAllComments(child)"
-                                                                                    ng-bind-html="GetColumnDetails('allComments') | trustedHTML"></a>
-                                                                                <a className="all_pipe_pos morelink">|</a>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="feedbackcomment col-sm-offset-1 col-sm-11 no-padding"
-                                                                            ng-if="child.isShowComment">
-                                                                            <div
-                                                                                ng-repeat="comment in child.Comments | orderBy:'NewestCreated':true | date:'dd MMM yyyy HH:mm'">
-                                                                                <span className="pull-right">
-                                                                                    <a className="" style={{ cursor: "pointer" }}
-                                                                                        ng-click="clearComment(child.Comments,comment)">
-                                                                                        Delete Comment
-
-                                                                                        <img className=""
-                                                                                            ng-src="/_layouts/images/delete.gif"
-                                                                                            src="/_layouts/images/delete.gif" />
-                                                                                    </a>
-                                                                                </span>
-                                                                                <div className=" col-sm-12 mb-2 add_cmnt panel-body">
-                                                                                    <div id="" className="pad_top_btm3">
-                                                                                        <div ng-show="comment.AuthorImage!=undefined"
-                                                                                            className="col-sm-1">
-                                                                                            <img className="AssignUserPhoto2"
-                                                                                                title="{{comment.AuthorName}}"
-                                                                                                data-toggle="popover"
-                                                                                                data-trigger="hover"
-                                                                                                ng-src="{{comment.AuthorImage}}" />
-                                                                                        </div>
-                                                                                        <div ng-show="comment.AuthorImage==undefined"
-                                                                                            className="col-sm-1 padL-0 wid35">
-                                                                                            <img ng-show="comment.AuthorImage==undefined"
-                                                                                                className="AssignUserPhoto1 bdrbox"
-                                                                                                ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/icon_user.jpg" />
-                                                                                        </div>
-
-                                                                                        <div className="toggle-task">
-                                                                                            <div className="comment_header">
-
-                                                                                                <a className="hreflink"
-                                                                                                    ng-click="editsavecomment(child,$index);">
-                                                                                                    <img
-                                                                                                        ng-src="{{baseUrl}}//SiteCollectionImages/ICONS/32/edititem.gif" />
-                                                                                                </a>
-
-                                                                                            </div>
-
-                                                                                        </div>
-                                                                                        <div className="right_comment"
-                                                                                            ng-bind-html="comment.Title | trustedHTML">
-                                                                                        </div>
-                                                                                    </div>
+                                                                            Upload Image
+                                                                        </a>
+                                                                        &nbsp;
+                                                                        <a  style={{color:"darkblue",margin:"3px"}} onClick={onImageRemoveAll}>Remove all images</a>
+                                                                        <span className="ImageBox">
+                                                                        {imageList.map((image: any, index: any) => (
+                                                                            <div key={index} className="image-item">
+                                                                                <img src={image.dataURL} alt="" width="100%" className="ImageBox"/>
+                                                                                <div className="image-item__btn-wrapper">
+                                                                                    <a onClick={() => onImageUpdate(index)}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /></a>
+                                                                                    <a style={{margin:"3px"}} onClick={() => onImageRemove(index)}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" /></a>
+                                                                                    
                                                                                 </div>
                                                                             </div>
-                                                                            <div className="col-sm-11 ">
-                                                                                <textarea id="searchcomment" style={{ width: "100%;" }}
-                                                                                    ng-required="true"
-                                                                                    className="form-control"></textarea>
-
-                                                                            </div>
-
-                                                                            <div className="col-sm-1 no-padding ">
-                                                                                <button type="button"
-                                                                                    className="post btn btn-primary pull-right"
-                                                                                    ng-disabled="FeedbackForm.$error.required"
-                                                                                    ng-click="PostFeedback(child)"
-                                                                                    ng-bind-html="GetColumnDetails('post') | trustedHTML"></button>
-
-                                                                            </div>
-
-                                                                        </div>
+                                                                        ))}
+                                                                        </span>
                                                                     </div>
-                                                                    <div className="clearfix"></div>
-                                                                </div>
-                                                                <span className="pull-right addsubbox" style={{ cursor: "pointer" }}>
-                                                                    <a ng-click="addsubColumn(item,$index+1)">
-                                                                        Add Sub-Text Box
-                                                                    </a>
-                                                                </span>
-                                                                <div className="col-sm-6 comnt ">
-                                                                    <span ng-show="$index+1==DescriptionFields.length"
-                                                                        className="ml-10">
-                                                                        <a className="btn btn-primary btn-sm" ng-click="addColumn(item)"
-                                                                            ng-bind-html="GetColumnDetails('addNewTextBox') | trustedHTML"></a>
-                                                                    </span>
-
-                                                                </div>
-
-                                                                <div className="clearfix"></div>
-                                                            </div>
-                                                            <div ng-repeat-end>
-
-                                                            </div>
-                                                            <div ng-repeat="item in DescriptionFields">
-
-                                                            </div> */}
-                                                            <div className="clearfix"></div>
+                                                                )}
+                                                            </ImageUploading>
                                                         </div>
-                                                        
-                                                      
+
+
+
                                                     </div>
-                                                </div>
-                                                {/* <div className="form-group">
+
+                                                    <div
+                                                        className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
+                                                        {/* <FloraEditor /> */}
+                                                        <Example />
+
+
+
+                                                    </div>
+                                                    {/* <div className="form-group">
                                                     <div className="col-sm-6">
                                                         <div ng-if="attachments.length > 0"
                                                             ng-repeat="attachedFiles in attachments">
@@ -2002,15 +1329,18 @@ function Descriptions() {
                                                     </div>
                                                     <div className="clearfix"></div>
                                                 </div> */}
+                                                    {/* </div>
+
+                                     </div> */}
+                                                </div>
                                             </div>
-
-
                                         </div>
+
                                     </Tab>
                                     <Tab title="TIME SHEET">
-                                          <TeamComposition props={Items}/>
+                                        <TeamComposition props={Items} />
 
-                                         <div className="container mt-0 pad0">
+                                        <div className="container mt-0 pad0">
                                             <div className="col-sm-12 pad0" style={{ width: "1000px" }}>
                                                 <span ng-if="Item!=undefined">
 
@@ -3186,123 +2516,103 @@ function Descriptions() {
                                                 </div>
                                             </div>
 
-                                        </div> 
+                                        </div>
                                     </Tab>
                                 </Tabs>
 
                                 <div className="modal-footer">
-                                    <div className="col-sm-12">
-                                        <div className="row">
-                                            <div className="ItemInfo col-sm-6">
-
-                                            </div>
-                                            <div className="col-sm-6 ItemInfo-right">
-                                                <div className="pull-right">
-
-
-                                                    <button type="button" className="btn btn-primary" ng-click="SaveItem()">Save</button>
-                                                    <button type="button" className="btn btn-default" ng-click="cancelItem()">Cancel</button>
-                                                </div>
-                                            </div>
+                                    <div className="text-left col-sm-4 pad0">
+                                        <div>
+                                            Created <span>{Items.Items.Created}</span> by <span
+                                                className="siteColor">{Items.Items.Author.Title}</span>
+                                        </div>
+                                        <div>
+                                            Last modified <span>{Items.Items.Modified}</span> by <span
+                                                className="siteColor">{Items.Items.Editor.Title}</span>
+                                        </div>
+                                        <div>
+                                            <a ng-if="isOwner==true" className="hreflink">
+                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" /> Delete this item
+                                            </a>
+                                            <span ng-show="CurrentSubSiteName.toLowerCase()=='sp'"> |</span>
+                                            <a ng-show="CurrentSubSiteName.toLowerCase()=='sp'" className="hreflink" ng-click="OpenCopyItem();">
+                                                Copy
+                                                Task
+                                            </a>
+                                            <span ng-show="CurrentSubSiteName.toLowerCase()=='sp'"> |</span>
+                                            <a ng-show="CurrentSubSiteName.toLowerCase()=='sp'" className="hreflink"
+                                                ng-click="OpenCopyItem('Move Task');"> Move Task</a> |
+                                            <span>
+                                                <img ng-show="Item.Portfolio_x0020_Type!='Service'" className="hreflink" title="Version History"
+                                                    ng-click="GetitemsVersionhistory(Item,Item.Id)"
+                                                    ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/Shareweb/Version_H.png" />
+                                                <img ng-show="Item.Portfolio_x0020_Type=='Service'" className="hreflink" title="Version History"
+                                                    ng-click="GetitemsVersionhistory(Item,Item.Id)"
+                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Version_HG.png" />
+                                            </span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div id="getDivisionPopUp" className="modal fade in" tabIndex={-1} role="dialog" aria-labelledby="myModalLabel"
-                                aria-hidden="false" style={{ display: "none" }}>
-                                <div className="modal-dialog">
-                                    <div className="modal-content">
-                                        <form name="createInstitutionForm" noValidate role="form">
-                                            <div className="panel-title">
-                                                <button type="button" className="close ml-2" style={{ minWidth: "10px" }} data-dismiss="modal"
-                                                    ng-click="cancelDivisionpopup()">
-                                                    &times;
-                                                </button>
-                                                {/* <page-settings-info webpartid="'CreateContactPopupItem'"></page-settings-info> */}
-                                                <h3 className="">Add Division</h3>
-                                            </div>
-                                            <div className="modal-body">
-                                                <div className="col-sm-12 tab-content phase mb-10 mt-10  PadR0">
-                                                    <div className="form-group">
-                                                        <div className="form-group col-sm-12 padL-0">
-                                                            <label ng-bind-html="GetColumnDetails('InstitutionTitle') | trustedHTML">
-                                                            </label>
-                                                            <div>
-                                                                <input type="text" ng-model="Title"
-                                                                    className="form-control" ng-required="true" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="modal-footer">
-                                                <div className="col-sm-12 mt-10">
-                                                    {/* <!--<button type="button" ng-show="IsTitleSelected" className="btn btn-primary" ng-click="createJoinInstitution()">Ok</button>--> */}
-                                                    <button type="button" className="btn btn-primary"
-                                                        ng-click="saveDivision()">
-                                                        Save
-                                                    </button>
-                                                    <button type="button" className="btn btn-default" ng-click="setModalIsOpenToFalse()">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="modalAllCovers" className="modal fade in" tabIndex={-1} role="dialog" aria-labelledby="myModalLabel"
-                                aria-hidden="false" style={{ display: "none" }}>
-                                <div className="modal-dialog" style={{ width: "90%" }}>
-                                    <div className="modal-content">
-                                        <div className="modal-header">
-                                            <button type="button" className="close" style={{ minWidth: "10px" }} ng-click="cancelItemCover()"
-                                                title="Click to exit">
-                                                &times;
-                                            </button>
-                                            <h4 className="modal-title">Select Item Cover</h4>
-                                            <div className="pull-right">
-                                                <button type="button" ng-disabled="rowPosition <= 115" className="btn btn-primary"
-                                                    style={{ marginRight: "10px", marginTop: "-35px" }} ng-click="LoadPrevCovers(rowPosition)"
-                                                    title="Click to load prev 100 Covers">
-                                                    Prev
-                                                </button>
-                                                <button type="button" ng-disabled="rowPosition >= AllImages.length" className="btn btn-primary"
-                                                    style={{ marginRight: "30px", marginTop: "-35px" }} ng-click="LoadNextCovers(rowPosition)"
-                                                    title="Click to load next 100 Covers">
-                                                    Next
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="modal-body">
-                                            <div id="coverImagesPopup">
-                                                <img title="{{img.FileLeafRef}}" id="{{img.Id}}_imagepopup"
-                                                    ng-src="{{img.EncodedAbsUrl}}?RenditionID=9" ng-click="selectImagePopup(img)"
-                                                    className="morecovers" ng-repeat="img in Images" />
-                                            </div>
-                                        </div>
-                                        <div className="modal-footer">
-                                            <button type="button" className="btn btn-primary" ng-click="cancelItemCover()"
-                                                title="Save changes & exit">
-                                                Save
-                                            </button>
-                                            <button type="button" className="btn btn-default" ng-click="cancelItemCover()"
-                                                title="Discard unsaved changes & exit" onClick={setModalIsOpenToFalse}>
+                                    <div className="col-md-8">
+                                        <span>
+                                            <a className="ForAll hreflink" target="_blank" ng-if="Item.siteType!='Master Tasks'"
+                                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${Items.Items.Id}&Site=${Items.Items.siteType}`}>
+                                                Go
+                                                to
+                                                profile
+                                                page
+                                            </a>
+
+                                        </span>||
+                                        <span>
+                                            <a className="hreflink" ng-click="EditTimeSheet(Item)">
+                                                Save & Add Timesheet
+                                            </a>
+                                        </span>||
+                                        <a
+                                            ng-href="mailto:?subject=[{{Item.siteType}}-Tasks] {{Item.Title}}&body={{Descriptiondata}}%0A{{pageContext}}/SitePages/Task-Profile.aspx?taskId={{backupItem.Id}}%26Site={{Allsitetype}}">
+                                            <img className="mail-width"
+                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />Share
+                                            this
+                                            task
+                                        </a> ||<a target="_blank" ng-if="Item.siteType!='Offshore Tasks'"
+                                            ng-href="{{CurrentSiteUrl}}/Lists/{{Item.siteType}}/EditForm.aspx?ID={{backupItem.Id}}">
+                                            Open out-of-the-box
+                                            form
+                                        </a>
+                                        <a target="_blank" ng-if="Item.siteType=='Offshore Tasks'"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/SharewebQA/EditForm.aspx?ID=${Items.Items.Id}`}>
+                                            Open out-of-the-box
+                                            form
+                                        </a>
+
+                                        <button ng-show="!IsShowFullViewImage" type="button" className="btn btn-primary"
+                                            ng-click="IsShowFullViewImage!=true? updateTaskRecords('UpdateTask',Item):CancelShowInFullView()">
+                                            Save
+                                        </button>
+                                        <button ng-show="IsShowFullViewImage" type="button" className="btn btn-default"
+                                            ng-click="IsShowFullViewImage!=true? updateTaskRecords('UpdateTask',Item):CancelShowInFullView()">
+                                            Close
+                                        </button>
+                                        {/* <button ng-show="!IsShowFullViewImage" type="button" className="btn btn-default" data-dismiss="modal"
+                                                ng-click="IsShowFullViewImage!=true? cancelEditItem():CancelShowInFullView()">
                                                 Cancel
-                                            </button>
-                                        </div>
+                                            </button> */}
                                     </div>
+
                                 </div>
                             </div>
+
 
 
 
 
                         </div>
-                    </div>
-                </div>
-            </Modal>
+                    </div >
+                </div >
+            </Modal >
 
 
         </>
     )
 }
-export default React.memo(EditInstitution)
+export default React.memo(EditTaskPopup)

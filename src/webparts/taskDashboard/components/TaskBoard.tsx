@@ -1282,7 +1282,7 @@ const TaskDashboards = (props: any) => {
                                                                             <td><span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span></td>
                                                                             <td>{item.PercentComplete}</td>
   
-                                                                            <td><EditInstitution Items={item}/></td>
+                                                                            <td></td>
                                                                             
                                                                            
                                                                             {/* {isComponentVisible ? <EditInstitution/> : null} */}

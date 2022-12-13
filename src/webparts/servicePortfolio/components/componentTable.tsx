@@ -2717,8 +2717,12 @@ function ComponentTable() {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
+<<<<<<< HEAD
                                                                                     {/* <td style={{ width: "3%" }}> {popupStatus ? <PopupFunction/> : null}</td> */}
                                                                                     {/* <EditInstituton item={item} /> */}
+=======
+                                                                                    <td style={{ width: "3%" }}>  {popupStatus ? <EditInstituton item={item} /> : null}</td>
+>>>>>>> 3a9cc057695c6c2c955e79f644c633bcf150d908
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
@@ -2816,7 +2820,7 @@ function ComponentTable() {
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                            <td style={{ width: "3%" }}>{childitem.siteType == "Master Tasks" && popupStatus ? <EditInstituton item={childitem} /> : null}</td>
+                                                                                                            <td style={{ width: "3%" }}>{popupStatus ? <EditInstituton item={childitem} /> : null}</td>
                                                                                                         </tr>
                                                                                                     </table>
                                                                                                 </td>

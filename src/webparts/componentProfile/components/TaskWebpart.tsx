@@ -6,7 +6,9 @@ import { Modal } from 'office-ui-fabric-react';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import Tooltip from './Tooltip';
-export default function ComponentTable() {
+import { create } from 'lodash';
+
+export default function ComponentTable({props}:any) {
 
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
     // const [Editpopup, setEditpopup] = React.useState(false)
@@ -46,6 +48,16 @@ export default function ComponentTable() {
     const [ItemRankmodalIsOpen, setItemRankmodalIsOpen] = React.useState(false);
     const [StatusmodalIsOpen, setStatusmodalIsOpen] = React.useState(false);
 
+
+
+
+//    Array For Status
+const AllItems = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
+// Array of Rank
+const AllItemRank = [{ 'Title': 1, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 2, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 3, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 4, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 5, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 6, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 7, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 8, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 9, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 10, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }];
+// Array of SmartTime
+const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 'Selected': false }];
+ 
     //    Get query string id
     function getQueryVariable(variable: any) {
         var query = window.location.search.substring(1);
@@ -274,8 +286,8 @@ export default function ComponentTable() {
     }
     let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
         setSearch(e.target.value.toLowerCase());
-        var Title = titleName;
-
+        var Title = titleName;  
+ 
         var AllFilteredTagNews = [];
         var filterglobal = e.target.value.toLowerCase();
         if (filterglobal != undefined && filterglobal.length >= 1) {
@@ -338,7 +350,7 @@ export default function ComponentTable() {
             // setData(data => ([...maidataBackup]));
             setData(maidataBackup);
             //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
-        }
+        } 
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
 
     };
@@ -357,7 +369,7 @@ export default function ComponentTable() {
         $(' #SpfxProgressbar').hide();
     }
     React.useEffect(() => {
-
+            console.log("Use effect is running")
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------
@@ -445,7 +457,7 @@ export default function ComponentTable() {
                         }
                         if (newsite.Title != "Master Tasks" || newsite.Title != "Foundation")
                             siteConfig.push(newsite);
-                    })
+                    }) 
                     $.each(MetaData, function (newitem: any, item) {
                         if (item.TaxType != 'Status' && item.TaxType != 'Admin Status' && item.TaxType != 'Task Type' && item.TaxType != 'Time' && item.Id != 300 && item.TaxType != 'Portfolio Type' && item.TaxType != 'Task Types') {
                             if (item.TaxType == 'Sites') {
@@ -1052,9 +1064,13 @@ export default function ComponentTable() {
              }
         })
         //maidataBackup.push(ComponentsData)
-
-        setmaidataBackup(arrys[1])
-        setData(arrys[1]);
+        arrys.map((item: any)=>{
+            if(item.length>0){
+                setmaidataBackup(item)
+                setData(item);
+            }
+        })
+       
 
         showProgressHide();
 
@@ -1155,6 +1171,8 @@ export default function ComponentTable() {
                             item.flag = true;
                             item.siteType = config.Title;
                             item.childs = [];
+                            item.TeamLeaderUser=[]
+                            item.CreatedDateImg=[]
 
                             if (item.SharewebCategories.results != undefined) {
                                 if (item.SharewebCategories.results.length > 0) {
@@ -1171,9 +1189,13 @@ export default function ComponentTable() {
                         // var result = $.grep(AllTasks, function (mPho, index) {
                         //     {return mPho.isDrafted == false};
                         // });
+                        // $.each(AllTasks,function(index:any,item:any){
+                        //     item.TeamLeaderUser=[]
+
+                        // })
                         if (Counter == 18) {
                             $.each(AllTasks, function (index: any, result: any) {
-                                result.TeamLeaderUser = []
+                                //result.TeamLeaderUser = []
                                 result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
 
                                 if (result.DueDate == 'Invalid date' || '') {
@@ -1211,6 +1233,19 @@ export default function ComponentTable() {
                                             })
                                         }
                                     })
+                                }
+                                if (result.Author != undefined) {
+                                    
+                                        if (result.Author.Id != undefined) {
+                                            $.each(TaskUsers, function (index: any, users: any) {
+                                                if (result.Author.Id != undefined && users.AssingedToUserId != undefined && result.Author.Id == users.AssingedToUserId) {
+                                                    users.ItemCover = users.Item_x0020_Cover;
+                                                    result.CreatedDateImg.push(users);
+                                                }
+
+                                            })
+                                        }
+                                    
                                 }
                                 result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
                                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
@@ -1843,9 +1878,7 @@ export default function ComponentTable() {
                                                     </select>
                                                 </div>
                                                 <div className="col-md-12 mb-10 mt-10">
-                                                    <input type="date" 
-                                                           ng-change="clickInteger(Item3)" className="form-control full-width"
-                                                           id="txtSmartTime" ng-model="Item3" />
+                                                <input type="text" placeholder="Effort" ng-change="clickInteger(Item3)" className="form-control full-width ng-pristine ng-untouched ng-valid ng-empty" id="txtSmartTime" ng-model="Item3"/>
                                                 </div>
                                                 <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
                                                     <button type="button" ng-click="FilterData('SmartTime')"
@@ -1998,65 +2031,120 @@ export default function ComponentTable() {
                                                         </span>
                                                     </div>
                                                 </div>
+                                               
                                                 <div className="col-sm-12 PadR0 ml5">
-                                                    <ul ng-if="filterItem.TaxType=='Team Members'" className=""
-                                                        ng-repeat="filterItem in AllItems" style={{maxWidth: "96%"}}>
-                                                        <li className="for-lis padding-0">
-                                                            <div className="" style={{width: "8%"}}>
-                                                                <span className="hreflink "
-                                                                      ng-show="filterItem.childs.length>0 && !filterItem.expanded"
-                                                                      ng-click="loadMoreFiltersColumn(filterItem);">
-                                                                    <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/right-list-icon.png"/>
-                                                                </span>
-                                                                <span className="hreflink "
-                                                                      ng-show="filterItem.childs.length>0 && filterItem.expanded"
-                                                                      ng-click="loadMoreFiltersColumn(filterItem);">
-                                                                    <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/list-icon.png"/>
-                                                                </span>
-                                                            </div>
-                                                            <div className="" style={{width: "8%"}}>
-                                                                <input type="checkbox"
-                                                                       className="icon-input mt--2 ml0"
-                                                                       ng-model="filterItem.Selected"
-                                                                       ng-click="SelectFilterFunction(filterItem.TaxType,AllItems)" />
-                                                            </div>
-                                                            <div className="no-padding" style={{width: "84%"}}>
-                                                                {/* {{filterItem.Title}} */}
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <ul id="columnId_{{filterItem.Id}}"
-                                                                ng-show="filterItem.childs.length>0&&filterItem.expanded"
-                                                                className="ml5" style={{maxWidth:"95%"}}>
-                                                                <li className="for-lis ml5 padding-0"
-                                                                    ng-repeat="child1 in filterItem.childs">
-                                                                    <div className="" style={{width: "8%"}}>
-                                                                        <span className="hreflink "
-                                                                              ng-show="child1.childs.length>0 && !child1.expanded"
-                                                                              ng-click="loadMoreFiltersColumn(child1);">
-                                                                            <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/right-list-icon.png"/>
-                                                                        </span>
-                                                                        <span className="hreflink "
-                                                                              ng-show="child1.childs.length>0 && child1.expanded"
-                                                                              ng-click="loadMoreFiltersColumn(child1);">
-                                                                            <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/list-icon.png"/>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="" style={{width: "8%"}}>
-                                                                        <input type="checkbox" className="icon-input mt--2 ml0"
-                                                                               ng-model="child1.Selected"
-                                                                               ng-click="SelectFilterFunction(child1.TaxType,filterItem.childs)" />
-                                                                    </div>
-                                                                    <div className="no-padding" style={{width: "84%"}}>
-                                                                    child1
-                                                                        {/* {{child1.Title}} */}
-                                                                    </div>
-                                                                </li>
+                                                  
+                                                    {filterGroups.map(function (item) {
+                                                return (
+                                                    
+                                                    <>
+                                                             {item == 'Team Members' &&
+                                                        <td valign="top">
+                                                            <fieldset>
+                                                                <legend>{item == 'Team Members' && <span>{item}</span>}</legend>
+                                                                <legend>{item == 'teamSites' && <span>Sites</span>}</legend>
+                                                            </fieldset>
+                                                            {filterItems.map(function (ItemType, index) {
+                                                                return (
+                                                                    <>
+                                                                        <div style={{ display: "block" }}> {ItemType.Group == item &&
+                                                                            <>
+                                                                                <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
+                                                                                    {ItemType.childs.length > 0 &&
+                                                                                        <a className='hreflink'
+                                                                                            title="Tap to expand the childs">
+                                                                                            {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
 
-                                                            </ul>
-                                                        </li>
-                                                    </ul>
+                                                                                        </a>}
+                                                                                </span>
+                                                                                {ItemType.TaxType != 'Status' &&
+                                                                                    <span className="ml-1">
+
+
+                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+
+                                                                                        <span className="ml-2">
+                                                                                            {ItemType.Title}
+
+                                                                                        </span>
+
+                                                                                    </span>
+                                                                                }
+                                                                                {ItemType.TaxType == 'Status' &&
+                                                                                    <span className="ml-2">
+
+
+                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <span className="ml-2">
+                                                                                            {ItemType.Title}
+
+                                                                                        </span>
+
+                                                                                    </span>
+                                                                                }
+                                                                                <ul id="id_{ItemType.Id}"
+                                                                                    className="subfilter width-85">
+                                                                                    <span>
+                                                                                        {ItemType.show && (
+                                                                                            <>
+                                                                                                {ItemType.childs.map(function (child1: any, index: any) {
+                                                                                                    return (
+                                                                                                        <>
+                                                                                                            <div style={{ display: "block" }}>
+                                                                                                                {child1.childs.length > 0 && !child1.expanded &&
+                                                                                                                    <span className="plus-icon hreflink"
+                                                                                                                        ng-click="loadMoreFilters(child1);">
+                                                                                                                        <img
+                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                                                                                                    </span>
+                                                                                                                }
+                                                                                                                {child1.childs.length > 0 && child1.expanded &&
+                                                                                                                    <span className="plus-icon hreflink"
+                                                                                                                        ng-click="loadMoreFilters(child1);">
+                                                                                                                        <img
+                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                    </span>
+                                                                                                                }
+                                                                                                                <input type="checkbox" className="icon-input mr0" ng-model="child1.Selected"
+                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
+
+                                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
+                                                                                                                >
+                                                                                                                    {child1.childs.map(function (child2: any) {
+                                                                                                                        <li>
+                                                                                                                            <input type="checkbox"
+
+                                                                                                                                ng-model="child2.Selected"
+                                                                                                                                onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
+                                                                                                                        </li>
+                                                                                                                    })}
+                                                                                                                </ul>
+                                                                                                            </div>
+                                                                                                        </>
+                                                                                                    )
+
+                                                                                                })}
+                                                                                            </>
+                                                                                        )}
+                                                                                    </span>
+                                                                                </ul>
+
+                                                                            </>
+
+                                                                        }
+                                                                        </div>
+                                                                    </>
+                                                                )
+                                                            })}
+
+                                                        </td>
+                                                    }
+                                                    </>
+                                                )
+                                            })}
                                                 </div>
+                                            
                                                 <div className="col-md-12 text-center padL-0 PadR0 mb-10 mt-10">
                                                     <button type="button" ng-click="FilterData('Team Members')"
                                                             className="btn btn-primary">
@@ -2095,15 +2183,19 @@ export default function ComponentTable() {
                                                                ng-click="SelectAll(selectAll,'ItemRank')"/><span className="f-500">Select All</span>
                                                     </div>
                                                 </div>
+                                                {AllItemRank.map(item=>{
+                                                    return(
                                                 <div className="col-sm-12 PadR0 ml5">
                                                     <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
                                                          ng-if="obj.TaxType =='ItemRank'" ng-repeat="obj in AllItems">
                                                         <input ng-model="obj.Selected" type="checkbox"
                                                                name="ItemRank"/><span className="">
-                                                                {/* {{obj.Title}} */}
+                                                                {item.Title}
                                                                 </span>
                                                     </div>
                                                 </div>
+                                                )
+                                            })}
                                                 <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
                                                     <button type="button" ng-click="FilterData('ItemRank')"
                                                             className="btn btn-primary">
@@ -2145,22 +2237,28 @@ export default function ComponentTable() {
                                                 </h4>
                                                 <div className="col-sm-12 padL-0 ml5">
                                                     <div className="checkbox mb0 ml15 f-500">
+                                                        <span className="">
                                                         <input ng-model="selectAll" type="checkbox"
                                                                name="PercentComplete1"
-                                                               ng-click="SelectAll(selectAll,'PercentComplete')"/><span className="">
+                                                            //    ng-click="SelectAll(selectAll,'PercentComplete')"
+                                                               />
                                                             Select All
                                                         </span>
                                                     </div>
                                                 </div>
                                                 <div className="col-sm-12 PadR0 ml5">
+                                                    {AllItems.map(items=>{
+                                                        return(
                                                     <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
                                                          ng-if="obj.TaxType =='PercentComplete'"
                                                          ng-repeat="obj in AllItems">
                                                         <input ng-model="obj.Selected" type="checkbox"
                                                                name="PercentComplete"/><span className="">
-                                                                {/* {{obj.Title}}% */}
+                                                                {items.Title}%
                                                                 </span>
                                                     </div>
+                                                )    
+                                                })}
                                                 </div>
                                                 <div className="col-md-12 padL-0 PadR0 text-center mb-10 mt-10">
                                                     <button type="button" ng-click="FilterData('PercentComplete')"
@@ -2199,7 +2297,7 @@ export default function ComponentTable() {
                         <span>
                             {/* {data.map(item => <a>{item.Title}</a>)} */}
                             {/* <a>Contact Database</a> */}
-                            {/* <a>{props.title}</a> */}
+                            <a>{props}</a>
                         </span>
                     </label>
                                         <span className="g-search">
@@ -2253,12 +2351,15 @@ export default function ComponentTable() {
                                                         <th style={{ width: "2%" }}>
                                                             <div></div>
                                                         </th>
-                                                        <th style={{ width: "2%" }}>
+                                                        <th style={{ width: "3%" }}>
+                                                            <div></div>
+                                                        </th>
+                                                        <th style={{ width: "3%" }}>
                                                             <div></div>
                                                         </th>
                                                         {/* <th style={{ width: "2%" }}></th> */}
                                                         <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "6%" }} className="smart-relative">
+                                                            <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input type="search" placeholder="TaskId" className="full_width searchbox_height" 
                                                                 // onChange={(e)=>SearchVale(e,"TaskId")} 
                                                                 />
@@ -2284,8 +2385,8 @@ export default function ComponentTable() {
 
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "12%" }}>
-                                                            <div style={{ width: "12%" }} className="smart-relative">
+                                                        <th style={{ width: "7%" }}>
+                                                            <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                     onChange={(e)=>handleChange(e,"ClientCategory")}  />
@@ -2296,7 +2397,7 @@ export default function ComponentTable() {
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "8%" }} className="smart-relative">
+                                                            <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="%"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                     onChange={(e)=>handleChange(e,"ClientCategory")}  />
@@ -2319,8 +2420,8 @@ export default function ComponentTable() {
                                                                 
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "13%" }}>
-                                                            <div style={{ width: "12%" }} className="smart-relative">
+                                                        <th style={{ width: "7%" }}>
+                                                            <div style={{ width: "6%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="ItemRank"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                     onChange={(e)=>handleChange(e,"ClientCategory")}  />
@@ -2342,8 +2443,8 @@ export default function ComponentTable() {
 
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "12%" }}>
-                                                            <div style={{ width: "11%" }} className="smart-relative">
+                                                        <th style={{ width: "10%" }}>
+                                                            <div style={{ width: "9%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                     onChange={(e)=>handleChange(e,"Team")}/>
@@ -2365,8 +2466,8 @@ export default function ComponentTable() {
 
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "10%" }}>
-                                                            <div style={{ width: "9%" }} className="smart-relative">
+                                                        <th style={{ width: "9%" }}>
+                                                            <div style={{ width: "8%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Due Date"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                     onChange={(e)=>handleChange(e,"Status")} />
@@ -2390,8 +2491,8 @@ export default function ComponentTable() {
 
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "10%" }}>
-                                                            <div style={{ width: "9%" }} className="smart-relative">
+                                                        <th style={{ width: "9%" }}>
+                                                            <div style={{ width: "8%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                     onChange={(e)=>handleChange(e,"ItemRank")} />
@@ -2399,12 +2500,22 @@ export default function ComponentTable() {
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
+                                                                <span className="dropdown filer-icons">
+                                                <span className="filter-iconfil"
+                                                //  href="#myDropdown1"
+                                                onClick={setCreatedmodalIsOpenToTrue}
+                                                //   ng-click="myFunction('myDropdown1','PercentComplete')"
+                                                  >
+                                                    <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue}/></i>
+                                                </span>
+                                            </span>
+                                                                
                                                             </div>
                                                         </th>
                                                     
                                                         
-                                                        <th style={{ width: "10%" }}>
-                                                            <div style={{ width: "9%" }} className="smart-relative">
+                                                        <th style={{ width: "7%" }}>
+                                                            <div style={{ width: "6%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Smart Time"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                     onChange={(e)=>handleChange(e,"Due")} />
@@ -2427,7 +2538,9 @@ export default function ComponentTable() {
                                                             </div>
                                                         </th>
                                                         
-                                                        <th style={{ width: "3%" }}></th>
+                                                        <th style={{ width: "2%" }}></th>
+                                                        <th style={{ width: "2%" }}></th>
+                                                        <th style={{ width: "2%" }}></th>
                                                         {/* <th style={{ width: "2%" }}></th>
                                                         <th style={{ width: "2%" }}></th>
                                                         <th style={{ width: "2%" }}></th> */}
@@ -2446,7 +2559,7 @@ export default function ComponentTable() {
                                                             return (
                                                                 <>
                                                                     <tr >
-                                                                        <td className="pad0" colSpan={9}>
+                                                                        <td className="pad0" colSpan={12}>
                                                                             <table className="table" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
 
@@ -2463,8 +2576,10 @@ export default function ComponentTable() {
                                                                                         </div>
 
                                                                                     </td>
-
-                                                                                    <td style={{ width: "7%" }}>
+                                                                                    <td style={{ width: "3%" }}><input  type="checkbox"  /></td>    
+                                                                                     {/*className="ng-pristine ng-untouched ng-valid ng-empty mt--2"  */}
+                                                                                    {/* <td><input style={{ width: "3%" }} type="checkbox" ng-click="setSelectTasks(item,item.select);" ng-model="item.select" className="ng-pristine ng-untouched ng-valid ng-empty mt--2"/></td>                                              */}
+                                                                                    <td style={{ width: "3%" }}>
                                                                                         <div className="">
                                                                                             <span>
                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
@@ -2472,11 +2587,11 @@ export default function ComponentTable() {
                                                                                                     
                                                                                                 </a>
                                                                                             </span>
-                                                                                            <span className="ml-2">{item.Shareweb_x0020_ID}</span>
+                                                                                           
                                                                                         </div>
                                                                                     </td>
-                                                                                    
-                                                                                    <td style={{ width: "20%" }}>
+                                                                                    <td style={{ width: "7%" }}><span className="ml-2">{item.Shareweb_x0020_ID}</span></td>
+                                                                                    <td style={{ width: "30%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
                                                                                         >{item.Title}
@@ -2501,7 +2616,7 @@ export default function ComponentTable() {
                                                                                             </span>
                                                                                         }
                                                                                     </td>
-                                                                                    <td style={{ width: "18%" }}>
+                                                                                    <td style={{ width: "7%" }}>
                                                                                         <div>
                                                                                             {(item.ClientCategory.length > 0 && item.ClientCategory != undefined)
                                                                                                 &&
@@ -2514,26 +2629,37 @@ export default function ComponentTable() {
                                                                                                     )
                                                                                                 })}</div>
                                                                                     </td>
-                                                                                    <td style={{ width: "20%" }}>
-                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                    <td style={{ width: "7%" }}>
+                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1:any) {
                                                                                             return (
-                                                                                                <span className="ClientCategory-Usericon"
-                                                                                                    title={client1.Title}>
+                                                                                                <span 
+                                                                                                   title={client1.Title}>
+                                                                                                        
 
-                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                    {/* <a>{client1.Title.slice(0, 2).toUpperCase()}</a> */}
+                                                                                                    <img  className="ClientCategory-Usericon" src={client1.ItemCover.Url}/>
 
                                                                                                 </span>
                                                                                             )
                                                                                         })}</div></td>
-                                                                                    <td style={{ width: "10%" }}>{item.PercentComplete}</td>
+                                                                                    <td style={{ width: "7%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
-                                                                                    <td style={{ width: "10%" }}>{item.DueDate}</td>
+                                                                                    <td style={{ width: "9%" }}>{item.DueDate}</td>
                                                                                    
-                                                                                    <td style={{ width: "3%" }}>{item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                    <td style={{ width: "9%" }}>
+                                                                                        {item.CreatedDateImg!=null?item.CreatedDateImg.map((Creates:any)=>{
+                                                                                                 return(
+                                                                                                       <span>
+                                                                                                           {Creates.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+                                                                                                           <img className='ClientCategory-Usericon' title={Creates.Title} src={Creates.Item_x0020_Cover.Description}/>
+                                                                                                       </span>                                       
+                                                                                                        )}):""}
+                                                                                    </td>
+                                                                                    <td style={{ width: "7%" }}></td>
                                                                                     {/* <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td> */}
-                                                                                    <td></td>
-                                                                                    <td></td>
-                                                                                    <td></td>
+                                                                                    <td style={{ width: "2%" }}></td>
+                                                                                    <td style={{ width: "2%" }}></td>
+                                                                                    <td style={{ width: "2%" }}></td>
                                                                                 </tr>
                                                                             </table>
                                                                         </td>
@@ -2545,10 +2671,10 @@ export default function ComponentTable() {
                                                                             {item.childs.map(function (childitem: any) {
                                                                                 if (childitem.flag == true) {
                                                                                     return (
-
+ 
                                                                                         <>
                                                                                             <tr >
-                                                                                                <td className="pad0" colSpan={9}>
+                                                                                                <td className="pad0" colSpan={12}>
                                                                                                     <table className="table" style={{ width: "100%" }}>
                                                                                                         <tr className="for-c02">
                                                                                                             <td style={{ width: "2%" }}>
@@ -2631,7 +2757,7 @@ export default function ComponentTable() {
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             {/* <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => editProfile(childitem)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td> */}
-                                                                                                            <td>{childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                                            <td>{childitem.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</td>
                                                                                                             <td></td>
                                                                                                             <td></td>
                                                                                                             <td></td>
