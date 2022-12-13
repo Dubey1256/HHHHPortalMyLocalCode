@@ -2717,12 +2717,7 @@ function ComponentTable() {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-<<<<<<< HEAD
-                                                                                    {/* <td style={{ width: "3%" }}> {popupStatus ? <PopupFunction/> : null}</td> */}
-                                                                                    {/* <EditInstituton item={item} /> */}
-=======
                                                                                     <td style={{ width: "3%" }}>  {popupStatus ? <EditInstituton item={item} /> : null}</td>
->>>>>>> 3a9cc057695c6c2c955e79f644c633bcf150d908
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
