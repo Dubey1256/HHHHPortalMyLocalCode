@@ -3,12 +3,14 @@ import * as $ from 'jquery';
 import * as Moment from 'moment';
 import '../../cssFolder/foundation.scss' ;
 import { Modal } from 'office-ui-fabric-react';
-//import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
 //import SmartFilter from './SmartFilter';
 import '../../cssFolder/foundation.scss' ;
+import '../../cssFolder/Style.scss'
+import '../../cssFolder/site_color.scss'
 import { map } from 'jquery';
 import { concat } from 'lodash';
 import EditInstituton from '../../EditPopupFiles/EditComponent';
@@ -2376,6 +2378,85 @@ function ComponentTable() {
                     </div>
                 </section>
             </div>
+<section className='TableContent'>
+    <div className='container'>
+      <div className="tbl-header bg-th header-space-between ">
+                                    <span>
+                                        <label>
+                                            Showing {ComponentsData.length} of {ComponentsData.length} Components
+                                        </label>
+                                        <label> | </label>
+                                        <label>
+                                            {SubComponentsData.length} of {SubComponentsData.length} SubComponents
+                                        </label>
+                                        <label> | </label>
+                                        <label>
+                                            {FeatureData.length} of {FeatureData.length} Features
+                                        </label>
+                                        <span >
+                                            <input type="text" className="form-control" id="globalSearch" placeholder="search all" />
+                                            <span className="gsearch-btn" ><i><FaSearch /></i></span>
+                                        </span>
+                                        <span>
+                                            <select className="ml2 searchbox_height">
+                                                <option value="All Words">All Words</option>
+                                                <option value="Any Words">Any Words</option>
+                                                <option value="Exact Phrase">Exact Phrase</option>
+
+                                            </select>
+                                        </span>
+                                    </span>
+                                    <span className="toolbox mx-auto">
+                                        <button type="button" className="btn btn-primary"
+                                            ng-disabled="(isOwner!=true) || ( SelectedTasks.length > 0 || compareComponents[0].Item_x0020_Type =='Feature') "
+                                            onClick={addModal} title=" Add Structure">
+                                            Add Structure
+                                        </button>
+
+                                        <button type="button"
+                                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
+                                            ng-click="openActivity()"
+                                            disabled={true}>
+
+                                            <MdAdd />
+                                            Add Activity-Task
+                                        </button>
+
+
+                                        <button type="button"
+                                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
+                                            ng-click="openRestructure()"
+                                            disabled={true}>
+                                            Restructure
+                                        </button>
+                                        <a onClick={Prints}>
+                                            <i className="print"><FaPrint /></i>
+                                        </a>
+                                        <a>
+                                            <CSVLink data={getCsvData()} >
+                                                <i className="excal"><FaFileExcel /></i>
+                                            </CSVLink>
+                                        </a>
+                                        <a onClick={clearSearch}>
+                                            <i className="brush"><FaPaintBrush /></i>
+                                        </a>
+                                        {/* <span>
+                                        <ExpandTable/>
+                                        </span> */}
+                                    </span>
+                                </div>
+    </div>
+
+
+</section>
+
+
+
+
+
+
+
+
             <section className="TableContentSection">
                 <div className="container-fluid">
                     <section className="TableSection">
@@ -2636,7 +2717,12 @@ function ComponentTable() {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
+<<<<<<< HEAD
+                                                                                    {/* <td style={{ width: "3%" }}> {popupStatus ? <PopupFunction/> : null}</td> */}
+                                                                                    {/* <EditInstituton item={item} /> */}
+=======
                                                                                     <td style={{ width: "3%" }}>  {popupStatus ? <EditInstituton item={item} /> : null}</td>
+>>>>>>> 3a9cc057695c6c2c955e79f644c633bcf150d908
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>

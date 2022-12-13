@@ -1,15 +1,23 @@
 import * as React from 'react';
 import * as $ from 'jquery';
-import '../../cssFolder/foundation.scss';
-import '../../cssFolder/foundationmin.scss';
 import "bootstrap/dist/css/bootstrap.min.css";
+import '../../cssFolder/Style.scss'
+import '../../cssFolder/site_color.scss'
 import * as Moment from 'moment';
-
+//import Groupby from './TaskWebpart';
 import Tooltip from './Tooltip';
 import ComponentTable from './TaskWebpart';
-   
+import { FaHome } from 'react-icons/fa';
 
-function Portfolio({ID}:any) {
+import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import { SPComponentLoader } from '@microsoft/sp-loader';
+SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css');
+SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js');
+
+
+
+
+function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
     const [array, setArray] = React.useState([])
@@ -52,9 +60,9 @@ function Portfolio({ID}:any) {
     };
 
 
-   
+
     React.useEffect(() => {
-           
+
         var url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
         var response: any = [];  // this variable is used for storing list items
         function GetListItems() {
@@ -82,759 +90,494 @@ function Portfolio({ID}:any) {
     },
         []);
 
-        var myarray: any = [];
-        var myarray1: any = [];
-        var myarray2: any = [];
-        
-      
-        
+    var myarray: any = [];
+    var myarray1: any = [];
+    var myarray2: any = [];
 
-    
-        data.map(item => {
-            if(item.Sitestagging!=null){
+    data.map(item => {
+        if (item.Sitestagging != null) {
             myarray.push(JSON.parse(item.Sitestagging));
         }
-            if(myarray.length!=0){
+        if (myarray.length != 0) {
             myarray[0].map((items: any) => {
-    
-    
-                if (items.SiteImages != undefined && items.SiteImages != '' ) {
+
+
+                if (items.SiteImages != undefined && items.SiteImages != '') {
                     items.SiteImages = items.SiteImages.replace('https://www.hochhuth-consulting.de', 'https://hhhhteams.sharepoint.com/sites/HHHH')
                     myarray1.push(items)
-                    
-    
+
+
                 }
                 console.log(myarray1);
-    
+
                 // if (items.ClienTimeDescription != undefined) {
                 //     items.ClienTimeDescription = parseFloat(item.ClienTimeDescription);
                 //     myarray1.push(items)
-    
+
                 // }
-                
-    
+
+
             })
         }
-    
-        if(item.ClientCategory.results.length!=0){
-            item.ClientCategory.results.map((terms: any)=>{
-            //     if(myarray2.length!=0 && myarray2[0].title==terms.title){
-            //                ""
-            //     }else{
-            //    myarray2.push(terms);
-            // }
-            myarray2.push(terms);
-           })
 
-       }
-    //    const letters = new Set([myarray2]);
-        
-            console.log(myarray2)
-        
-      
+        if (item.ClientCategory.results.length != 0) {
+            item.ClientCategory.results.map((terms: any) => {
+                //     if(myarray2.length!=0 && myarray2[0].title==terms.title){
+                //                ""
+                //     }else{
+                //    myarray2.push(terms);
+                // }
+                myarray2.push(terms);
+            })
+
+        }
+        //    const letters = new Set([myarray2]);
+
+        console.log(myarray2)
+
+
         // myarray.push();
     })
-     
-    var name;
     return (
         <div>
-           
-            <div className="col-lg-12 pad0">
-                <section className="ContentSection">
-                    <div className="container">
-                        <div className="col-sm-9 left-col">
-                            <div className="row">
-                                <div className="col-sm-12 col-sm-12 pad0">
-                                    <div className="col-sm-12 no-padding"
-                                        ng-if="(Task.Item_x0020_Type=='Component Category')">
-                                        <ul className="">
-                                            <li>
-                                                <span>
-                                                    <a ng-if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')"
-                                                        href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">
-                                                        Component-Portfolio<span>{'>'}</span>
-                                                    </a>
-                                                </span>
-                                                <span className="">
-                                                    {data.map(item => <a>{item.Title}</a>)}
-                                                    
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div className="task-title mb-10" style={{ verticalAlign: "top" }}>
-                                        <h1 className="mb-5">
+            {/* breadcrumb & title */}
+            <section>
+                <div className='container'>
+
+                    <div className='row'>
+                        <div className='p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
+                            <ul className="spfxbreadcrumb m-0 p-0">
+                                <li><a href='#'><FaHome /> </a></li>
+                                <li>
+                                    <a ng-if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')"
+                                        href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">
+                                        Component-Portfolio
+                                    </a>
+                                </li>
+                                <li> {data.map(item => <a>{item.Title}</a>)}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className='row'>
+                        <div className='p-0' style={{ verticalAlign: "top" }}>
+                            <h2 className='headign'>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />   {data.map(item => <a>{item.Title}</a>)}
+                            </h2>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            {/* left bar  & right bar */}
+            <section>
+                <div className='container'>
+                    <div className='row'>
+                        <div className='col-md-9 bg-white'>
+                            <div className='team_member row  py-2'>
+                                <div className='col-md-4 ps-2'>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Due Date</dt>
+                                        <dd className='bg-light'>
+
                                             <span>
-                                                <img style={{ height: "24px", width: "24px", marginTop: "-2px" }}
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
-                                            </span>
-                                            <span>
-                                                {data.map(item => <a>{item.Title}</a>)}
-                                            </span>
-                                            {/* <img className="icon-sites-img" ng-show="Task.isNewItem"
-                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/NewItemIcon-green.png" /> */}
-                                            {/* <a ng-if="isMemberOwner==true  isOwner==true" className="hreflink"
-                                                title="EditTask" ng-click="EditTask(Task)">
-                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif" />
-                                            </a>
-                                            <a ng-if="isMemberOwner==true  Task.WebpartItemId!=undefined"
-                                                className="hreflink" title="Portfolio Description" target="_blank"
-                                                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PortfolioDescriptionForm.aspx?taskId={{Task.WebpartItemId}}">
-                                                <img className="wid-20"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/help_Icon.png" />
-                                            </a> */}
-                                        </h1>
-                                    </div>
-                                </div>
-                                <div className="col-lg-12 pad0">
-                                    <div className="col-lg-8 left-col pad0">
-                                        <div className="">
-                                            <div className="col-sm-12 pad0">
-                                                <div className="involve_actor">
-                                                    <div className="tmvalue impact-info53" title="due date">
-                                                        <label className="full_width">Due Date</label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII">
-                                                        <span>
-                                                            {/* <i> 02/12/2019</i> */}
-                                                            {data.map(item =>
-                                                                <a>{item.DueDate != null ? Moment(item.DueDate).format('DD/MM/YYYY') : ""}</a>
-                                                            )}
-                                                            {/* {data.map(item =>  <i>{item.DueDate}</i>)} */}
-                                                        </span>
-                                                        <span
-                                                            className="hreflink pull-right" title="Edit Inline"
-                                                            ng-click="EditContents(Task,'editableDueDate')">
-                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                        </span>
-                                                    </div>
-                                                    <div className="tmvalue impact-info53" title="Priority of Task">
-                                                        <label className="full_width">Priority</label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII "
-                                                    >
-                                                        {data.map(item =>
-                                                            <a>{item.Priority != null ? item.Priority : ""}</a>)}
-                                                        <span
-                                                            className="hreflink pull-right" title="Edit Inline"
-                                                            ng-click="EditContents(Task,'editablePriority')">
-                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-12 pad0">
-                                                <div className="involve_actor">
-                                                    <div className="tmvalue impact-info53">
-                                                        <label className="full_width">Start Date</label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII">
-                                                        {data.map(item =>
-                                                            <a>{item.StartDate != null ? Moment(item.StartDate).format('DD/MM/YYYY') : ""}</a>
-                                                        )}
-                                                        <span
-                                                            className="hreflink pull-right" title="Edit Inline"
-                                                            ng-click="EditContents(Task,'editableStartDate')">
-                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                        </span>
-                                                    </div>
-                                                    <div className="tmvalue impact-info53">
-                                                        <label className="full_width">Completion Date</label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII"
-                                                    >
-                                                        {data.map(item =>
-                                                            <a>{item.CompletedDate != null ? Moment(item.CompletedDate).format('DD/MM/YYYY') : ""}</a>)}
-                                                        <span
-                                                            className="hreflink pull-right" title="Edit Inline"
-                                                        >
-                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-12 pad0">
-                                                <div className="involve_actor">
-                                                    <div className="tmvalue impact-info53" title="Status">
-                                                        <label className="full_width">Status</label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII ">
-                                                        {data.map(item => <a>{item.Status}</a>)}
-                                                        
-                                                    </div>
-                                                    <div className="tmvalue impact-info53" title="Task Category">
-                                                        <label className="full_width">Categories </label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII ">
-                                                        {data.map(item => <a>{item.Categories}</a>)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-12 pad0">
-                                                <div className="involve_actor blocks">
-                                                    <div className="tmvalue impact-info53" title="Assigned Person">
-                                                        <label className="full_width">Team Members</label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII">
-                                                        <span>
-                                                            {/* <img className="AssignUserPhoto userimgsize1 " title="Pravesh Kumar" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/PraveshKumar.png" data-themekey="#" /> */}
-                                                        </span>
-                                                    </div>
-                                                    <div className="tmvalue impact-info53" title="% Complete">
-                                                        <label className="full_width">% Complete</label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII "
-                                                    >
-                                                        {data.map(item => <a>{item.PercentComplete}</a>)}
-                                                        <span className="pull-right">
-                                                            <span className="pencil_icon">
-                                                                <span ng-show="isOwner" className="hreflink"
-                                                                    title="Edit Inline"
-                                                                >
-                                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
-                                                                </span>
-                                                            </span>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-12 pad0">
-                                                <div className="involve_actor ">
-                                                    <div className="tmvalue" style={{ flexBasis: "20.5%"}}
-                                                        title="Item Rank">
-                                                        <label className="full_width">Item Rank</label>
-                                                    </div>
-                                                    <div className="tlvalue impact-infoII"
-                                                    >
-                                                        {data.map(item => <a>{item.ItemRank}</a>)}
-                                                        <span className="pull-right">
-                                                            <span className="hreflink"
-                                                                title="Edit Inline"
-                                                                ng-click="EditContents(Task,'editableItemRank')">
-                                                                <i className="fa fa-pencil siteColor"
-                                                                    aria-hidden="true"></i>
-                                                            </span>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="col-lg-4 pad0">
-                                        <div className="col-sm-12 pad0">
-                                            <div className="involve_actor">
-                                                <div ng-show="Task.Portfolio_x0020_Type=='Component'"
-                                                    className="tmvalue impact-info53" title="ServicePortfolio">
-                                                    <label className="full_width">Service Portfolio</label>
-                                                </div>
-                                                
-                                                {data.map(item=>    
-                                                 <>
-                                                 {item.ServicePortfolio.Title != undefined &&
-                                                <div ng-show="Task.Portfolio_x0020_Type=='Component'"
-                                                    className="tlvalue impact-infoII ">
-                                                        
-                                                    <div className="hreflink block ng-binding">
-                                                        <a className="hreflink block ng-binding" style={{border:"0px"}}target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a>
-                                                    </div>
-                                                   
-                                                </div>
-                                                }
-                                                </>
-                                     ) }
-                                            </div>
-                                        </div>
-                                        
-                                        <div
-                                            className="col-sm-12 pad0 dashboard-sm-12">
-                                            <div className="panel panel-primary-head blocks"
-                                                style={{ boxShadow: "none", transition: "none" }} id="t_draggable1">
-                                                <div className="panel-heading profileboxclr clearfix"
-                                                    style={{ backgroundColor: "#f5f5f5", padding: "7px" }}>
-                                                    <a className="panel-title" >
-                                                        
-                                                        <span className="pull-left mr-5">
-                                                          {/* {myarray.length!=0?myarray[0].map((items: any)=>  */}
-                                                           {data.map(item =>
-                                                                <span className="accordian-header" onClick={() => handleOpen3(item)}>
-                                                                     <a className='hreflink'
-                                                                        title="Tap to expand the childs">
-                                                                        <span className="sign">{item.showk ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                            : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}</span></a>
-                                                                    <label className="lbltitleclr">
-                                                        
-                                                        Site
-                                                        Composition
-                                                    </label>
-                                                    <a className="hreflink ng-scope" title="Analyse Site Composition" >
-                                                        <img className="wid-20"  data-themekey="#" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/analyze.png" />
-                                                    </a>
-                                                      
-                                                                </span>
-                                                           )}
-                                                            {/* <span ng-if="Task.expanded2 &amp;&amp;Task.Portfolio_x0020_Type=='Component'" style={{ cursor: "pointer" }} ng-click="toggle2Smart(Task)" className="ng-scope">
-                                                        <img style={{ width: "10px" }}  data-themekey="#" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                        </span> */}
-                                                        </span>
-
-
-
-                                                    </a>
-                                                </div>
+                                                {/* <i> 02/12/2019</i> */}
                                                 {data.map(item =>
-                                                <div className='accordion-content'>
-                                                {item.showk &&
-                                                                           
-                                                                           <ul className="list-unstyled mb-0 fortablee" style={{ fontWeight: "normal" }}>
-                                                                           {myarray1.length!=0?myarray1.map((item: any)=>
-                                                                               
-                                                                                <li
-                                                                                   className="SiteCompositionlist for-lis">
-                                                                                   <div className="SiteCompositionlist-SiteImage" style={{width:"10%"}}>
-                                                                                       <img style={{ width: "22px" }} src={item.SiteImages} data-themekey="#" />
-                                                                                   </div>
-                                                                                   <div style={{width:"15%"}} className="SiteCompositionlist-ClienTimeDescription">
-                                                                                       {/* {{item.ClienTimeDescription.substring(0,2)}}% */}
-                                                                                       {/* {data.map(item =><i>{item.ClienTimeDescription.substring(0,2)}%</i>)} */}
-                                                                                       {(item.ClienTimeDescription!=undefined)&&
-                                                                                       <span className="ng-binding">
-                                                                                       {/* {item.ClienTimeDescription}% */}
-                                                                                                 
-                                                                                                   {parseInt(item.ClienTimeDescription)}%
-                                                                                       
-                                                                                       </span>
-                                                                                }
-                                                                                   </div>
-                                                                                  {item.Title=='EPS' &&
-                                                                                   <div 
-                                                                                       className="SiteCompositionlist-ClientTitle">
-                                                                                           {myarray2.length!=0? myarray2.map((client: any)=>{
-                                                                                                       return( 
-                                                                                       <div className="Members-Item">
-                                                                                     
-                                                                                           <div ng-show="client.siteName=='EPS'"
-                                                                                               className="user-Member-img"
-                                                                                               ng-repeat="client in Task.ClientCategory.results">
-                                                                                                    {(client.Title=="Kontakt Verwaltung" ||client.Title==" Steuerungsbericht der Direktion"||client.Title== "Shareweb Maintenance"||client.Title== "Newsletter Einbindung"||client.Title=="PSE-Partnerschaften")  &&
-                                                                                               <span> 
-                                                                                                  
-                                                                                                   {client.Title} 
-                                                                                              
-                                                                                                   </span>
-                                                                                                   }
-                                                                                           </div>
-                                                                                       </div>
-                                                                                   )
-                                                                               }):""} 
-                                                                                   </div>
-                                                                                   }
-                                                                                    {item.Title=='Education' &&
-                                                                                   <div 
-                                                                                       className="SiteCompositionlist-ClientTitle">
-                                                                                           {myarray2.length!=0? myarray2.map((client: any)=>{
-                                                                                                       return( 
-                                                                                       <div className="Members-Item">
-                                                                                     
-                                                                                           <div 
-                                                                                               className="user-Member-img"
-                                                                                               ng-repeat="client in Task.ClientCategory.results">
-                                                                                                    {(client.Title=="Contact Management" )  &&
-                                                                                               <span> 
-                                                                                                  
-                                                                                                   {client.Title} 
-                                                                                              
-                                                                                                   </span>
-                                                                                                   }
-                                                                                           </div>
-                                                                                       </div>
-                                                                                   )
-                                                                               }):""} 
-                                                                                   </div>
-                                                                                   }
-                                                                                   {item.Title=='EI'&&
-                                                                                   <div ng-show="item.Title=='EI'"
-                                                                                       className="SiteCompositionlist-ClientTitle">
-                                                                                            { myarray2.length!=0?myarray2.map((client: any)=>{
-                                                                                               return(
-                                                                                       <div className="Members-Item">
-                                                                                           <div ng-show="client.siteName=='EI'"
-                                                                                               className="user-Member-img"
-                                                                                               ng-repeat="client in Task.ClientCategory.results">
-                                                                                                     {(client.Title=="Nutzer Verwaltung" ||client.Title== "Shareweb Maintenance"||client.Title== "EI fachspezifische Aufgaben"||client.Title== "EI Projekt-Übersicht"||client.Title=="Mithilfe Zugriffsrechte-Konzepts") &&
-                                                                                               <span> 
-                                                                                                  
-                                                                                                   {client.Title}
-                                                                                                    </span>
-                                                                                            }
-                                                                                           </div>
-                                                                                               
-                                                                                       </div>
-                                                                                          ) }):""} 
-                                                                                   </div>
-                                                                                   }
-                                                                               </li>
-                                                                           ):""}
-                                                                           </ul>
-                                                                      }
-                                                </div>
+                                                    <a>{item.DueDate != null ? Moment(item.DueDate).format('DD/MM/YYYY') : ""}</a>
                                                 )}
-                                            </div>
-                                        </div>
-                                        
-                                        
-                                    </div>
-                                   
-                                    
-                                    {/*  Short Description */}
-                                    {data.map(item =>
-                                    <div className="col-sm-8 mt-10 pad0 teamdashboard_col-sm-12 ng-scope">
-                                         
-                                        {item.Short_x0020_Description_x0020_On !== null &&
-                                         
-                                         
-                                        <div className="panel panel-default" id="t_draggable1">
-                                            <div className="panel-heading">
-                                           
-                                                    <h3 className="panel-title">
-                                                    <span className="accordian-header" onClick={() => handleOpen(item)}>
-                                                            <span>
-                                                            <a className='hreflink'
-                                                  title="Tap to expand the childs">
-                                                  <span className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                      : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />} </span>
-                                                      </a>
-                                                                <label htmlFor="identifier-3" className="no-padding">
-                                                                    Short
-                                                                    Description
-                                                                </label>
-                                                                
-                                                                </span>
-                                                           
-                                                            </span>       
-                                                            </h3>
-                                                               
-                                            </div>
-                                            <div className="accordian-content">
-                                                                 
-                                                                 {item.show &&
-                                                                     <div className="boxbdrdesign" id="testDiv1">
-                                                                         {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
-                                                                         {data.map(item =>
-                                                                     <span className="ng-binding" dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}}>
-                                                                          {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
-                                                                          </span>)}
-                                                                     </div>
-                                                                     }
-                                                                 
-                                                            
-                                                     </div>
-                                           
-                                        </div>
-                                        
-                                       
-                                        }
-                                        
-                                        </div>
-                                        )}
-                                    
-                                    {/* Background */}
-                                    {data.map(item =>
-                                    <div className="col-sm-8 pad0 teamdashboard_col-sm-12 ng-scope">
-                                         {item.Background !== null &&
-                                        <div className="panel panel-default" id="t_draggable1">
-                                            <div className="panel-heading">
-                                                
-                                                    <h3 className="panel-title">
-                                                    <span className="accordian-header" onClick={() => handleOpen1(item)}>
-                                                            <span>
-                                                                
-                                                            <a className='hreflink'
-                                                  title="Tap to expand the childs">
-                                                  <span className="sign">{item.showl ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                      : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />} </span>
-                                                      </a>
-                                                                <label htmlFor="identifier-3" className="no-padding ng-binding" ng-bind-html="GetColumnDetails('Background') | trustedHTML">Background</label>
-                                                                
-                                                                            </span>
-                                                                            </span>
-                                                                           
-                                                                      
-                                                               
-                                                      
-                                                    </h3>
-                                               
-                                            </div>
-                                            <div className="accordian-content">
-                                                                   
-                                                                   {item.showl &&
-                                                                           <div className="boxbdrdesign" id="testDiv1">
-                                                                           <span className="ng-binding" >{data.map(item =>  <a>{item.Background}</a>)}</span>
-                                                                           </div>
-                                                                           }
-                                                                      
-                                                                   </div>
-                                        </div>
-                                          }
-                                          
-                                    </div>
-                                    
-                                    )}
-                                     
-                                    {/* Idea */}
-                                    {data.map(item =>
-                                    <div className="col-sm-8 pad0 teamdashboard_col-sm-12 ng-scope">
-                                        {item.Idea !== null &&
-                                        <div className="panel panel-default" id="t_draggable1">
-                                            <div className="panel-heading">
-                                                
-                                                    <h3 className="panel-title">
-                                                    <span className="accordian-header" onClick={() => handleOpen2(item)}>
-                                                            <span>
-                                                                
-                                                            <a className='hreflink'
-                                                  title="Tap to expand the childs">
-                                                  <span className="sign">{item.shows ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                      : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />} </span>
-                                                      </a>
-                                                                <label htmlFor="identifier-3" className="no-padding ng-binding" ng-bind-html="GetColumnDetails('Idea') | trustedHTML">Idea</label>
-                                                              
-                                                                
-                                                                </span>
-                                                            </span>
-                                                       
-                                                    </h3>
-                                                
-                                            </div>
-                                            <div className="accordian-content">
-                                                                   
-                                                                   {item.shows &&
-                                                                           <div className="boxbdrdesign" id="testDiv1">
-                                                                           <span className="ng-binding" >{data.map(item =>  <a>{item.Idea}</a>)}</span>
-                                                                           </div>
-                                                                           }
-                                                                      
-                                                                   </div>
-                                        </div>
-                                        }
-                                        
-                     
-                                </div>
-                                )}
-
-                                               
-                                {/* Value Added */}
-
-                                  
-                                {data.map(item =>
-                                    <div className="col-sm-8 pad0 teamdashboard_col-sm-12 ng-scope">
-                                        {item.ValueAdded !== null &&
-                                        <div className="panel panel-default" id="t_draggable1">
-                                            <div className="panel-heading">
-                                               
-                                                    <h3 className="panel-title">
-                                                    <span className="accordian-header" onClick={() => handleOpen4(item)}>
-                                                            <span>
-                                                            <a className='hreflink'
-                                                  title="Tap to expand the childs">
-                                                  <span className="sign">{item.showj ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                      : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />} </span>
-                                                      </a>
-                                                                <label htmlFor="identifier-3" className="no-padding">
-                                                                Value Added
-                                                                </label>
-                                                               
-                                                                        
-                                                                </span>
-                                                            </span></h3>
-                                               
-                                            </div>
-                                            <div className="accordion-content">
-                                                                {item.showj &&
-                                                                                    <div className="boxbdrdesign" id="testDiv1">
-                                                                                  
-                                                                                        <span className="ng-binding" > {data.map(item =><a>{item.ValueAdded}</a>)} </span> 
-                                                                                    </div>
-}
-                                                                            </div>
-                                        </div>
-                                        }
-                                    </div>
-                                     )}
-
-
-
-{/* Deliverables */}
-{data.map(item =>
-                                    <div className="col-sm-8 pad0 teamdashboard_col-sm-12 ng-scope">
-                                        {item.Deliverables !== null &&
-                                        <div className="panel panel-default" id="t_draggable1">
-                                            <div className="panel-heading">
-                                               
-                                                    <h3 className="panel-title">
-                                                    <span className="accordian-header" onClick={() => handleOpen5(item)}>
-                                                            <span>
-                                                            <a className='hreflink'
-                                                  title="Tap to expand the childs">
-                                                  <span className="sign">{item.showm ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                      : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />} </span>
-                                                      </a>
-                                                                <label htmlFor="identifier-3" className="no-padding">
-                                                                Deliverables
-                                                                </label>
-                                                                
-                                                                       
-                                                                
-                                                            </span>
-                                                            </span></h3>
-                                               
-                                            </div>
-                                            <div className="accordion-content">
-                                                                {item.showm &&
-                                                                                    <div className="boxbdrdesign" id="testDiv1">
-                                                                                    {data.map(item => 
-                                                                                        <span className="ng-binding" dangerouslySetInnerHTML={{__html: item.Deliverables}}></span>)}
-                                                                                    </div>}
-                                                                                
-                                                                            </div>
-                                        </div>
-                                        }
-                                    </div>
-                                     )}
-
-                            </div>
-                        </div>
-                        </div>
-                        <div className='col-sm-3 padL-25 mt60' >
-                            <div className="panel panel-default">
-                                <div className="panel-heading">
-                                    <h3 className="panel-title">
-                                        Smart Information
-                                        <span className="panel-title-right">
-                                            <Tooltip />
-                                        </span>
-                                    </h3>
-                                </div>
-                                <div id="updateId" className="panel-body">
-                                    <ul className="SmartNotes-ContractPanel customlist-style1 list-unstyled">
-                                    </ul>
-                                    <a className="pull-right mr-5 " title="+ Add SmartInformation" ng-click="editSmartInfoItem(item,'add')">+ Add SmartInformation</a>
-                                </div>
-                            </div>
-                            {/* Add and Connect */}
-                            <div className="panel panel-default displayhide  ng-scope" ng-if="isOwner==true">
-                                <div className="panel-heading">
-                                    <label className="blue-clr">
-                                        Add &amp; Connect Tool
-                                    </label>
-                                    <span className="addtoggle pull-right">
-                                        <span className="dropdown">
-                                            <Tooltip />
-                                        </span>
-                                    </span>
-                                </div>
-                                <div className="panel-body">
-                                    <div className=" col-sm-12 Doc-align inner-tabb">
-                                        <a className="hreflink padding-left" ng-click="TagItems();">
-                                            Click here to add more content
-                                        </a>
-                                        <div className="clearfix"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* Main Folder */}
-                            
-                            <div className="panel panel-default displayhide mt-25 ng-scope" ng-show="Folders!=undefined" ng-if="isOwner==true">
-                                <div className="panel-heading" title="Main Folder">
-                                    <label className="full_width blue-clr">
-                                        Main Folder
-                                        <span className="addtoggle pull-right">
-                                            <span className="dropdown">
-                                                <Tooltip />
+                                                {/* {data.map(item =>  <i>{item.DueDate}</i>)} */}
                                             </span>
-                                        </span>
-                                    </label>
+                                            <span
+                                                className="pull-right" title="Edit Inline"
+                                                ng-click="EditContents(Task,'editableDueDate')">
+                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                            </span>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Start Date</dt>
+                                        <dd className='bg-light'>
+                                            {data.map(item =>
+                                                <a>{item.StartDate != null ? Moment(item.StartDate).format('DD/MM/YYYY') : ""}</a>
+                                            )}
+                                            <span
+                                                className="hreflink pull-right" title="Edit Inline"
+                                                ng-click="EditContents(Task,'editableStartDate')">
+                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                            </span>
+
+
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Status</dt>
+                                        <dd className='bg-light'>{data.map(item => <a>{item.Status}</a>)}</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Team Members</dt>
+                                        <dd className='bg-light'>02/12/2019</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Item Rank</dt>
+                                        <dd className='bg-light'>
+                                            {data.map(item => <a>{item.ItemRank}</a>)}
+
+                                            <span className="hreflink"
+                                                title="Edit Inline"
+                                                ng-click="EditContents(Task,'editableItemRank')">
+                                                <i className="fa fa-pencil siteColor"
+                                                    aria-hidden="true"></i>
+                                            </span>
+
+                                        </dd>
+                                    </dl>
                                 </div>
-                                <div className="panel-body">
-                                    <div style={{ width: "100%" }} className="panel1 panel-default">
-                                        <div className="col-sm-12 padL-0 mb-10">
-                                        {data.map(item =>
-                                            <div className="col-sm-12 pad0">
-                                                <img ng-src="/_layouts/15/images/folder.gif?rev=23" data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
-                                            <a className="hreflink ng-binding" target="_blank"  href={`/sites/HHHH/SP/Documents/COMPONENT-PORTFOLIO/${item.Title}`}>
-                                            {item.Title}
+                                <div className='col-md-4'>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Priority</dt>
+                                        <dd className='bg-light'>
+                                            {data.map(item =>
+                                                <a>{item.Priority != null ? item.Priority : ""}</a>)}
+                                            <span
+                                                className="hreflink pull-right" title="Edit Inline"
+                                                ng-click="EditContents(Task,'editablePriority')">
+                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                            </span>
+
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Completion Date</dt>
+                                        <dd className='bg-light'>
+                                            {data.map(item =>
+                                                <a>{item.CompletedDate != null ? Moment(item.CompletedDate).format('DD/MM/YYYY') : ""}</a>)}
+                                            <span
+                                                className="hreflink pull-right" title="Edit Inline"
+                                            >
+                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                            </span>
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Categories</dt>
+                                        <dd className='bg-light'>{data.map(item => <a>{item.Categories}</a>)}</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt className='bg-fxdark'>% Complete</dt>
+                                        <dd className='bg-light'>
+                                            {data.map(item => <a>{item.PercentComplete}</a>)}
+                                            <span className="pull-right">
+                                                <span className="pencil_icon">
+                                                    <span ng-show="isOwner" className="hreflink"
+                                                        title="Edit Inline"
+                                                    >
+                                                        <i className="fa fa-pencil" aria-hidden="true"></i>
+                                                    </span>
+                                                </span>
+                                            </span>
+
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div className='col-md-4'>
+                                    <dl>
+                                        <dt className='bg-fxdark'>Service Portfolio</dt>
+                                        <dd className='bg-light'>02/12/2019</dd>
+                                    </dl>
+                                    <dl className='Sitecomposition'>
+                                        <div className="dropdown">
+                                            {data.map(item =>
+                                                <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
+
+                                                    <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition <span><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/analyze.png" /></span>
+
                                                 </a>
-                                            </div>
-)}
+                                            )}
+                                            {data.map(item =>
+                                                <div className='spxdropdown-menu'>
+                                                    {item.showk &&
+
+                                                        <ul>
+                                                            {myarray1.length != 0 ? myarray1.map((item: any) =>
+
+                                                                <li className="dropdown-item">
+                                                                    <span>
+                                                                        <img style={{ width: "22px" }} src={item.SiteImages} data-themekey="#" />
+                                                                    </span>
+                                                                    <span >
+                                                                        {/* {{item.ClienTimeDescription.substring(0,2)}}% */}
+                                                                        {/* {data.map(item =><i>{item.ClienTimeDescription.substring(0,2)}%</i>)} */}
+                                                                        {(item.ClienTimeDescription != undefined) &&
+                                                                            <span className="ng-binding">
+                                                                                {/* {item.ClienTimeDescription}% */}
+
+                                                                                {parseInt(item.ClienTimeDescription)}%
+
+                                                                            </span>
+                                                                        }
+                                                                    </span>
+                                                                    {item.Title == 'EPS' &&
+                                                                        <span>
+                                                                            {myarray2.length != 0 ? myarray2.map((client: any) => {
+                                                                                return (
+                                                                                    <div className="Members-Item">
+
+                                                                                        <div ng-show="client.siteName=='EPS'" className="user-Member-img"   ng-repeat="client in Task.ClientCategory.results">
+                                                                                            {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
+                                                                                                <span>
+
+                                                                                                    {client.Title}
+
+                                                                                                </span>
+                                                                                            }
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            }) : ""}
+                                                                        </span>
+                                                                    }
+                                                                    {item.Title == 'Education' &&
+                                                                        <span>
+                                                                            {myarray2.length != 0 ? myarray2.map((client: any) => {
+                                                                                return (
+                                                                                    <div className="Members-Item">
+
+                                                                                        <div className="user-Member-img" ng-repeat="client in Task.ClientCategory.results">
+                                                                                            {(client.Title == "Contact Management") &&
+                                                                                                <span>
+
+                                                                                                    {client.Title}
+
+                                                                                                </span>
+                                                                                            }
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            }) : ""}
+                                                                        </span>
+                                                                    }
+                                                                    {item.Title == 'EI' &&
+                                                                        <span  ng-show="item.Title=='EI'" >
+                                                                            {myarray2.length != 0 ? myarray2.map((client: any) => {
+                                                                                return (
+                                                                                    <div className="Members-Item">
+                                                                                        <div ng-show="client.siteName=='EI'" className="user-Member-img"
+                                                                                            ng-repeat="client in Task.ClientCategory.results">
+                                                                                            {(client.Title == "Nutzer Verwaltung" || client.Title == "Shareweb Maintenance" || client.Title == "EI fachspezifische Aufgaben" || client.Title == "EI Projekt-Übersicht" || client.Title == "Mithilfe Zugriffsrechte-Konzepts") &&
+                                                                                                <span>
+
+                                                                                                    {client.Title}
+                                                                                                </span>
+                                                                                            }
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                )
+                                                                            }) : ""}
+                                                                        </span>
+                                                                    }
+                                                                </li>
+                                                            ) : ""}
+                                                        </ul>
+                                                    }
+                                                </div>
+                                            )}
+
+                                        </div>
+
+
+
+
+
+                                    </dl>
+                                </div>
+                            </div>
+                            <section className='accordionbox'>
+
+                                <div className="accordion  overflow-hidden">
+                                    {data.map(item =>
+                                        <div className="card shadow-none  mb-2">
+                                            {item.Short_x0020_Description_x0020_On !== null &&
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+
+                                                        {item.show &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                {data.map(item =>
+                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Short_x0020_Description_x0020_On }}>
+                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                    </p>)}
+                                                            </div>
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    )}
+
+                                    {data.map(item =>
+                                        <div className="card shadow-none  mb-2">
+                                            {item.Background !== null &&
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen1(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900" ng-bind-html="GetColumnDetails('Background') | trustedHTML"> Background</span></button></div>
+                                                    <div className="accordion-collapse collapse show" >
+
+
+                                                        {item.showl &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" >{data.map(item => <a>{item.Background}</a>)}</p>
+                                                            </div>
+                                                        }
+
+
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    )}
+
+                                    {data.map(item =>
+                                        <div className="card shadow-none mb-2">
+                                            {item.Idea !== null &&
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900" ng-bind-html="GetColumnDetails('Idea') | trustedHTML"> Idea</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+
+                                                        {item.shows &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" >{data.map(item => <a>{item.Idea}</a>)}</p>
+                                                            </div>
+                                                        }
+
+
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+
+
+
+
+                            </section>
+                        </div>
+                        <div className='col-md-3'>
+                            <aside>
+                                <div className='mb-3 card'>
+                                    <div className='card-header'>
+                                        <div className='card-actions float-end'>  <Tooltip /></div>
+                                        <div className="mb-0 card-title h5">Smart Information</div>
+                                    </div>
+                                    <div className='card-body'>
+                                        <div className="border-bottom pb-2"><a title="+ Add SmartInformation" ng-click="editSmartInfoItem(item,'add')">+ Add SmartInformation</a></div>
+                                    </div>
+                                </div>
+                                <div className='mb-3 card' ng-if="isOwner==true">
+                                    <div className='card-header'>
+                                        <div className='card-actions float-end'>  <Tooltip /></div>
+                                        <div className="mb-0 card-title h5">Add & Connect Tool</div>
+                                    </div>
+                                    <div className='card-body'>
+                                        <div className="border-bottom pb-2"> <a ng-click="TagItems();">
+                                            Click here to add more content
+                                        </a></div>
+                                    </div>
+                                </div>
+
+                                <div className='mb-3 card'>
+                                    <div className='card-header'>
+                                        <div className='card-actions float-end'>  <Tooltip /></div>
+                                        <div className="mb-0 card-title h5">Main Folder</div>
+                                    </div>
+                                    <div className='card-body'>
+                                        <div className="border-bottom pb-2">
+                                            {data.map(item =>
+                                                <div>
+                                                    <img ng-src="/_layouts/15/images/folder.gif?rev=23" data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
+                                                    <a className="hreflink ng-binding" target="_blank" href={`/sites/HHHH/SP/Documents/COMPONENT-PORTFOLIO/${item.Title}`}>
+                                                        {item.Title}
+                                                    </a>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            {/* Comment */}
-                            <div className="panel panel-default mt-25">
-                                <div className="panel-heading">
-                                    <h3 className="panel-title">Comments
-                                        <span className="panel-title-right">
-                                            <Tooltip />
-                                        </span>
-                                    </h3>
-                                </div>
-                                <div className="panel-body">
-                                    <div className="TopRecipients">
-                                        <span className="mt-2 mr-5"> <strong>To:</strong>  </span>
-                                        <span className="Recipients ng-scope" ng-repeat="item in UserForQuickComment">
-                                            <a className="hreflink" target="_blank">
-                                                <img className="circularImage" title="Deepak Trivedi" data-toggle="popover" data-trigger="hover" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Deepak.jpg" data-themekey="#" />
-                                            </a>
-                                        </span>
-                                        <span className="Recipients ng-scope" ng-repeat="item in UserForQuickComment">
-                                            <a className="hreflink" target="_blank">
-                                                <img ng-show="item.Item_x0020_Cover!=undefined || item.Item_x0020_Cover!= null" className="circularImage" title="Stefan Hochhuth" data-toggle="popover" data-trigger="hover" ng-click="topCommentrs(item)" ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Stefan.jpg" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Stefan.jpg" data-themekey="#" />
-                                            </a>
-                                        </span>
-                                        <span className="Recipients ng-scope" ng-repeat="item in UserForQuickComment">
-                                            <a className="hreflink" target="_blank">
-                                                <img ng-show="item.Item_x0020_Cover!=undefined || item.Item_x0020_Cover!= null" className="circularImage" title="Robert Ungethuem" data-toggle="popover" data-trigger="hover" ng-click="topCommentrs(item)" ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Robert%20Ungethuem.png" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Robert%20Ungethuem.png" data-themekey="#" />
-                                            </a>
-                                        </span>
-                                        <span className="Recipients ng-scope">
-                                            <a className="hreflink" target="_blank">
-                                                <img className="circularImage" title="Mattis Hahn" data-toggle="popover" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Mattis_Hahn.jpg' data-trigger="hover" data-themekey="#" />
-                                            </a>
-                                        </span>
-                                        <span className="RecipientsNameField mt-0  mb-5" style={{ position: "absolute", width: "48%" }}>
-                                            <textarea style={{ height: "26px" }} placeholder="Recipients Name" className="form-control ng-pristine ng-untouched ng-valid ng-empty ui-autocomplete-input" id="portfolioprofile"></textarea><span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
-                                        </span>
+                                <div className='mb-3 card'>
+                                    <div className='card-header'>
+                                        <div className='card-actions float-end'>  <Tooltip /></div>
+                                        <div className="mb-0 card-title h5">Comments</div>
                                     </div>
-                                    <div className="RecipientsCommentsField ">
-                                        <textarea style={{ height: "76px", marginTop: "10px" }} className="form-control ui-autocomplete-input ng-pristine ng-untouched ng-valid ng-empty" placeholder="Enter your comments here"  ></textarea>
-                                        {/* <p className="ng-hide">
+                                    <div className='card-body'>
+                                        <div className="comment-box  mb-2">
+                                            <span> <strong>To:</strong>  </span>
+                                            <span ng-repeat="item in UserForQuickComment ms-2">
+                                                <a target="_blank">
+                                                    <img className="circularImage rounded-circle " title="Deepak Trivedi" data-toggle="popover" data-trigger="hover" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Deepak.jpg" data-themekey="#" />
+                                                </a>
+                                            </span>
+                                            <span ng-repeat="item in UserForQuickComment">
+                                                <a target="_blank">
+                                                    <img ng-show="item.Item_x0020_Cover!=undefined || item.Item_x0020_Cover!= null" className="circularImage rounded-circle " title="Stefan Hochhuth" data-toggle="popover" data-trigger="hover" ng-click="topCommentrs(item)" ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Stefan.jpg" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Stefan.jpg" data-themekey="#" />
+                                                </a>
+                                            </span>
+                                            <span ng-repeat="item in UserForQuickComment">
+                                                <a target="_blank">
+                                                    <img ng-show="item.Item_x0020_Cover!=undefined || item.Item_x0020_Cover!= null" className="circularImage rounded-circle " title="Robert Ungethuem" data-toggle="popover" data-trigger="hover" ng-click="topCommentrs(item)" ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Robert%20Ungethuem.png" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Robert%20Ungethuem.png" data-themekey="#" />
+                                                </a>
+                                            </span>
+                                            <span>
+                                                <a target="_blank">
+                                                    <img className="circularImage rounded-circle " title="Mattis Hahn" data-toggle="popover" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Mattis_Hahn.jpg' data-trigger="hover" data-themekey="#" />
+                                                </a>
+                                            </span>
+                                            <span className='ms-2'>
+                                                <textarea style={{ height: "26px" }} placeholder="Recipients Name" className="form-control" id="portfolioprofile"></textarea><span role="status" aria-live="polite" ></span>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <textarea placeholder="Enter your comments here" className='form-control' ></textarea>
+                                            {/* <p className="ng-hide">
                                             <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
                                             Comment shouldn't be empty
                                         </p> */}
-                                        <button title="Post comment" type="button" className="btn btn-primary pull-right mt-5 mb-5">
-                                            Post
-                                        </button>
+                                            <button title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
+                                                Post
+                                            </button>
+                                        </div>
+
                                     </div>
-                                    <div className="clearfix"></div>
-                                    
                                 </div>
-                            </div>
+
+
+                            </aside>
+
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
+
+            {/* table secation artical */}
+            <div className="col-lg-12 pad0">
+
                 <section className="TableContentSection">
                     <div className="container-fluid">
                         <section className="TableSection">
                             <div className="container">
-                            {/* {data.map(item => (
+                                {/* {data.map(item => (
                                 <Groupbyt  title={item.Title} level={item.PortfolioLevel}/>))} */}
                                 {/* <Groupby/> */}
-                                {data.map(item => (
-                                // <Groupby Id={item.Id} level={item.PortfolioLevel}/>
-                                <ComponentTable props={item.Title}/>
-                                ))}
+                                {/* {data.map(item => (
+                                <Groupby Id={item.Id} level={item.PortfolioLevel}/>
+                                ))} */}
+                                <ComponentTable />
                             </div>
 
                         </section>
