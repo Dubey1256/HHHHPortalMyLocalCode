@@ -183,6 +183,12 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       CommenttoUpdate:''
     });
   }
+
+  private ConvertStringToHTML(str:any) {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(str, 'text/html');
+    return doc.body;
+ }
   
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
@@ -210,7 +216,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
 
             <div className="col-sm-12 mb-5 ml2 tmvalue impact-info95 padLR bdrbox">
-              <span className="ng-binding">{this.state.fbData['Title'].replace(/<[^>]*>/g, '')}</span>
+              <span className="ng-binding" dangerouslySetInnerHTML={{ __html: this.state.fbData['Title'] }}></span>
               <div className="feedbackcomment col-sm-12 PadR0 mt-10">
               {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments'].map( (fbComment:any,k:any)=> {
                 return <div className="col-sm-12 mb-2 add_cmnt ng-scope">

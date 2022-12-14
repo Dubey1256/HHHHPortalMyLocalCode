@@ -444,6 +444,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             <div className="clearfix"></div>
 
             <div className="commentMedia">
+            {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 &&
               <div className="card">
                 <ul className="list-unstyled">
                 {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 && this.state.Result["Comments"].slice(0,3).map( (cmtData:any,i:any)=> {
@@ -483,6 +484,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   </div>
                 }
               </div>
+              }
             </div>
           </div>
         </div>
