@@ -24,13 +24,14 @@ function EditInstitution(item: any) {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [AllComponents, setComponentsData] = React.useState([]);
     const setModalIsOpenToTrue = (e: any) => {
-        e.preventDefault()
+        // e.preventDefault()
         setModalIsOpen(true)
     }
 
 
 
     const setModalIsOpenToFalse = () => {
+        EditComponentCallback();
         setModalIsOpen(false)
     }
 
@@ -123,7 +124,7 @@ function EditInstitution(item: any) {
     //     }
     // }
     var getMasterTaskListTasks = function () {
-        var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.item.Id + "";
+        var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
         $.ajax({
             url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
             method: "GET",
@@ -159,6 +160,8 @@ function EditInstitution(item: any) {
                         }
                     }
                     item.assigned = getMultiUserValues(item);
+                    if (item.ItemRank != undefined)
+                        item.ItemRankTitle = TaskItemRank[0].filter((option: { rank: any; }) => option.rank == item.ItemRank)[0].rankTitle;
                     item.PercentComplete = item.PercentComplete <= 1 ? item.PercentComplete * 100 : item.PercentComplete;
                     if (item.PercentComplete != undefined) {
                         item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
@@ -182,7 +185,9 @@ function EditInstitution(item: any) {
                 });
                 //  deferred.resolve(Tasks);
                 setComponent(Tasks);
-              //  setModalIsOpenToTrue();
+                setModalIsOpenToTrue(true)
+
+                //  setModalIsOpenToTrue();
             },
 
             error: function (error) {
@@ -200,29 +205,31 @@ function EditInstitution(item: any) {
     const [state, setState] = React.useState("state");
 
     const loadDataOnlyOnce = React.useCallback(() => {
-      console.log(`I need ${state}!!`);
+        console.log(`I need ${state}!!`);
     }, [state]);
-  
+
     var Item: any = '';
+    const TaskItemRank: any = [];
     React.useEffect(() => {
         var initLoading = function () {
-            if (item.item != undefined && item.item.siteType != undefined) {
-                var Item = item.item;
+            if (item.props != undefined && item.props.siteType != undefined) {
+                var Item = item.props;
                 if (Item.siteType == 'HTTPS:') {
                     Item.siteType = 'HHHH';
                 }
                 getMasterTaskListTasks();
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
-                setSharewebItemRank([{ rankTitle: '(8) Top Highlights', rank: '8' }, { rankTitle: '(7) Featured Item', rank: '7' }, { rankTitle: '(6) Key Item', rank: '6' }, { rankTitle: '(5) Relevant Item', rank: '5' }, { rankTitle: '(4) Background Item', rank: '4' }, { rankTitle: '(2) to be verified', rank: '2' }, { rankTitle: '(1) Archive', rank: '1' }, { rankTitle: '(0) No Show', rank: '0' }]);
-                if(useeffectdata ==false)
-                setuseeffectdata(true);
-                else  setuseeffectdata(false);
+                TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: 67677 }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
+                setSharewebItemRank(TaskItemRank[0]);
+                if (useeffectdata == false)
+                    setuseeffectdata(true);
+                else setuseeffectdata(false);
                 //loadColumnDetails();
             }
         }
         initLoading();
- 
+
     },
         []);
     const EditComponent = (item: any, title: any) => {
@@ -247,7 +254,12 @@ function EditInstitution(item: any) {
 
         console.log(componentDetails);
     }
-    let mentionUsers:any =[];
+    function EditComponentCallback() {
+
+        item.Call();
+
+    }
+    let mentionUsers: any = [];
     //  mentionUsers = this.taskUsers.map((i:any)=>{      
     //     return({id : i.Title,display: i.Title})
     // });
@@ -417,385 +429,419 @@ function EditInstitution(item: any) {
     //     });
     // }
 
-   
+
     return (
         <>
-            <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
-                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />
+            {/* <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
+                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> */}
             <Modal
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 isBlocking={false}
             // {width:"1250px"}
             >
-                {CompoenetItem != undefined && CompoenetItem.map(institution =>
+                {CompoenetItem != undefined && CompoenetItem.map(item =>
                     <div id="EditGrueneContactSearch">
-                        <div className="panel panel-default" ng-cloak>
-                            <div className="modal-header">
-                                <h3 className="modal-title">
-                                    <img style={{ width: "22px" }} ng-if="selectedImageUrl != undefined" id="selectedimage"
-                                        ng-src="{{selectedImageUrl}}?RenditionID=12" />
-                                    <img style={{ width: "22px" }} ng-if="selectedImageUrl == undefined"
-                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg" />
-                                    Edit Institution-
-                                    {institution.Title}
-                                    <span className="pull-right">
-                                        {/* <page-settings-info webpartid="'EditInstitutionPopup'"></page-settings-info> */}
-                                        {/* <Tooltip /> */}
-                                    </span>
-                                </h3>
-                                <button type="button" style={{ minWidth: "10px" }} className="close" data-dismiss="modal"
-                                    onClick={setModalIsOpenToFalse}>
-                                    &times;
-                                </button>
-                            </div>
-                            <div className="modal-body bg-f5f5 clearfix">
-                                <form name="ItemForm" noValidate role="form">
-                         
-                                            <div id="itemtabs" className="exTab3 Dashboard_Tab_Content">
+                        <div className="modal-dailog modal-lg">
+                            <div className="modal-content" ng-cloak>
+                                <div className="modal-header">
+                                    <h3 className="modal-title">
+                                        Service-Portfolio<span > {">"} </span>
+                                        {item.Title}
+                                        <span className="pull-right">
+                                        </span>
+                                    </h3>
+                                    <button type="button" style={{ minWidth: "10px" }} className="close" data-dismiss="modal"
+                                        onClick={setModalIsOpenToFalse}>
+                                        &times;
+                                    </button>
+                                </div>
+                                <div className="modal-body">
+                                    <form name="ItemForm" noValidate role="form">
 
-                                                    <Tabs>
-                                                        <Tab title="BASIC INFORMATION">
+                                        <div id="itemtabs" className="exTab3 Dashboard_Tab_Content">
 
+                                            <Tabs>
+                                                <Tab title="BASIC INFORMATION">
+                                                    <div>
+                                                        <div className="col-sm-5 mt-10">
+                                                            <div className="row form-group">
+                                                                <div className="col-sm-6">
+                                                                    <label className="full_width">Title</label>
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.Title != undefined ? item.Title : ""} />
+                                                                </div>
+                                                                <div className="col-sm-6 padL-0" title="Email">
+                                                                    <label className="full_width">Item Rank</label>
+                                                                    <select className="full_width searchbox_height" value={item.ItemRankTitle}>
+                                                                        {
+                                                                            SharewebItemRank &&
+                                                                            SharewebItemRank.map((h: any, i: any): JSX.Element => {
+                                                                                return (
+                                                                                    (
+                                                                                        <option key={i} defaultValue={item.ItemRankTitle == h.rankTitle ? item.ItemRankTitle : h.rankTitle} >{item.ItemRankTitle == h.rankTitle ? item.ItemRankTitle : h.rankTitle}</option>)
+                                                                                )
+                                                                            }
+                                                                            )
+                                                                        }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="row form-group">
+                                                                <div className="col-sm-6">
+                                                                    <div className="col-sm-11 padL-0 PadR0">
+                                                                        <label className="full_width">
+                                                                            Component Portfolio
+                                                                        </label>
+                                                                        <input style={{ width: "100%" }} type="text"
+                                                                            className="full_width searchbox_height" id="txtSmartCountries" defaultValue={item.Priority_x0020_Rank != undefined ? item.Priority_x0020_Rank : ""} />
 
-                                                            <div id="basicinfo">
-                                                                <div className="col-sm-12">
-                                                                    <div className="row form-group">
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Title</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Title != undefined ? institution.Title : ""} />
-                                                                        </div>
-                                                                        <div className="row form-group">
-                                                                            <div className="col-sm-6">
-                                                                                <div className="col-sm-11 padL-0 PadR0">
-                                                                                    <label className="full_width">
-                                                                                        Component Portfolio
-                                                                                    </label>
-                                                                                    <input style={{ width: "100%" }} type="text"
-                                                                                        className="full_width searchbox_height" id="txtSmartCountries" defaultValue={item.Priority_x0020_Rank != undefined ? item.Priority_x0020_Rank : ""} />
-
-                                                                                </div>
-                                                                                <div className="col-sm-1 PadR0">
-                                                                                    <label className="full_width">&nbsp;</label>
-                                                                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                                        onClick={(e) => EditComponent(item, 'Componet')} />
-                                                                                </div>
-                                                                                <div className="col-sm-11 padL-0 PadR0 inner-tabb">
-                                                                                    <div className="row">
-                                                                                        <div className="col-sm-12 PadR0">
-                                                                                            {item != undefined && item.smartComponent != undefined && item.smartComponent.map((childinew: any) =>
-                                                                                                < div className="block bgsiteColor"
-                                                                                                    ng-mouseover="HoverIn(item);"
-                                                                                                    ng-mouseleave="ComponentTitle.STRING='';"
-                                                                                                    title="{{ ComponentTitle.STRING }}"
-                                                                                                >
-                                                                                                    <a className="hreflink" target="_blank"
-                                                                                                        ng-href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{childinew.Title}</a>
-                                                                                                    <a className="hreflink"
-                                                                                                        ng-click="removeSmartComponent(item.Id)">
-                                                                                                        <img ng-src="/_layouts/images/delete.gif"></img>
-                                                                                                    </a>
-                                                                                                </div>
-                                                                                            )}
-                                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-sm-1 PadR0">
+                                                                        <label className="full_width">&nbsp;</label>
+                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                            onClick={(e) => EditComponent(item, 'Componet')} />
+                                                                    </div>
+                                                                    <div className="col-sm-11 padL-0 PadR0 inner-tabb">
+                                                                        <div className="row">
+                                                                            <div className="col-sm-12 PadR0">
+                                                                                {item != undefined && item.smartComponent != undefined && item.smartComponent.map((childinew: any) =>
+                                                                                    < div className="block bgsiteColor"
+                                                                                        ng-mouseover="HoverIn(item);"
+                                                                                        ng-mouseleave="ComponentTitle.STRING='';"
+                                                                                        title="{{ ComponentTitle.STRING }}"
+                                                                                    >
+                                                                                        <a className="hreflink" target="_blank"
+                                                                                            ng-href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{item.Title}</a>
+                                                                                        <a className="hreflink"
+                                                                                            ng-click="removeSmartComponent(item.Id)">
+                                                                                            <img ng-src="/_layouts/images/delete.gif"></img>
+                                                                                        </a>
                                                                                     </div>
-                                                                                </div>
-
+                                                                                )}
                                                                             </div>
-                                                                            <div className="col-sm-6 padL-0">
-                                                                                <label className="full_width">Deliverable-Synonyms</label>
-
-                                                                                <input type="text" className="full_width searchbox_height"
-                                                                                    defaultValue={item.WorkAddress != undefined ? item.WorkAddress : ""} />
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0" title="Categories">
-                                                                            <label className="full_width">Priority</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Categories != undefined ? institution.Categories : ""} />
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input" name="radioPriority"
-                                                                                        type="radio" value="(1) High" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'High'}></input>High
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input" name="radioPriority"
-                                                                                        type="radio" value="(2) Normal" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'Normal'}></input>Normal
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input" name="radioPriority"
-                                                                                        type="radio" value="(3) Low" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'Low'}></input>Low
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-
-                                                                    </div>
-                                                                    <div className="row form-group">
-
-                                                                        <div className="col-sm-3">
-                                                                            <div className="col-sm-11 padL-0 PadR0">
-                                                                                <label className="full_width">
-                                                                                    Component Portfolio
-                                                                                </label>
-                                                                                <input style={{ width: "100%" }} type="text"
-                                                                                    className="form-control" id="txtSmartCountries" />
-
-                                                                            </div>
-                                                                            <div className="col-sm-1 PadR0">
-                                                                                <label className="full_width">&nbsp;</label>
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/PublishingImages/Logos/EMMCopyTerm.png"
-                                                                                    ng-click="openSmartTaxonomy('Countries');" />
-                                                                            </div>
-                                                                            <div className="col-sm-11 padL-0 PadR0 inner-tabb">
-                                                                                <div className="block mt-5" >
-
-                                                                                    {institution.SmartCountries.length != 0 ? institution.SmartCountries.Title : ""}
-
-
-                                                                                    <a className="hreflink"
-                                                                                        ng-click="removeSmartCountry(item.Id,Item)">
-                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                    </a>
-                                                                                </div>
-                                                                            </div>
-
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Deliverable-Synonyms</label>
-
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.WorkAddress != undefined ? institution.WorkAddress : ""} />
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            {/* <label className="full_width">Institution Type</label>
-
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.InstitutionType != undefined ? institution.InstitutionType : ""} /> */}
-                                                                        </div>
-                                                                        <div className="col-sm-3">
-                                                                            <form name="validURLFormforWebPage">
-                                                                                {/* <label className="full_width">Website</label>
-                                                                                <input type="text" name="validUrl"
-                                                                                    ng-pattern="/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,7}(:[0-9]{1,7})?(\/.*)?$/"
-                                                                                    className="form-control form-group"
-
-                                                                                    defaultValue={institution.WebPage != null ? institution.WebPage.Description : ""}
-                                                                                /> */}
-                                                                            </form>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="col-sm-4 padL-0 mt-10">
-                                                                        <CommentCard siteUrl={item.siteUrl} userDisplayName={item.userDisplayName} listName={item.siteType} itemID={item.Id}></CommentCard>
-                                                                        {/* <div className="panel panel-default mt-25">
-                                                                            <div className="panel-heading">
-                                                                                <h3 className="panel-title">Comments</h3>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='In Preparation'"
-                                                                                        name="In Preparation" type="radio"
-                                                                                        value="In Preparation"
-                                                                                        ng-click="Adminstatus('In Preparation')"
-                                                                                        ng-model="AdminStatusChecked"></input> In Preparation
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='In Development'"
-                                                                                        name="In Development" type="radio"
-                                                                                        value="In Development"
-                                                                                        ng-click="Adminstatus('In Development')"
-                                                                                        ng-model="AdminStatusChecked"></input> In Development
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='Active'" name="Active"
-                                                                                        type="radio" value="Active"
-                                                                                        ng-click="Adminstatus( 'Active')"
-                                                                                        ng-model="AdminStatusChecked"></input> Active
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='Archived'"
-                                                                                        name="Archived" type="radio" value="Archived"
-                                                                                        ng-click="Adminstatus('Archived')"
-                                                                                        ng-model="AdminStatusChecked"></input> Archived
-                                                                                </label>
-                                                                            </div>
-                                                                        </div> */}
-                                                                    </div>
-                                                                    <div className="col-sm-12">
-                                                                        <label className="full_width">Url</label>
-                                                                        <div className="forFullScreenButton" id="itemDescription" ng-model="localaboutdescription">
 
-                                                                        </div>
+                                                                </div>
+                                                                <div className="col-sm-6 padL-0">
+                                                                    <label className="full_width">Deliverable-Synonyms</label>
+
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.WorkAddress != undefined ? item.WorkAddress : ""} />
+                                                                </div>
+                                                            </div>
+                                                            <div className="row form-group">
+                                                                <div className="col-sm-4">
+                                                                    <label className="full_width">Start Date</label>
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.CellPhone != null ? item.CellPhone : ""}
+                                                                    />
+                                                                </div>
+                                                                <div className="col-sm-4 padL-0">
+                                                                    <label className="full_width">Due Date</label>
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.HomePhone != null ? item.HomePhone : ""} />
+                                                                </div>
+
+                                                                <div className="col-sm-4 padL-0">
+                                                                    <label className="full_width">
+                                                                        Completion Date <a className="hreflink" href={item.LinkedIn != null ? item.LinkedIn.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-linkedin"></i></span></a></label>
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.LinkedIn != null ? item.LinkedIn.Description : ""} />
+                                                                </div>
+                                                            </div>
+                                                            <div className="row form-group">
+                                                                <div className="col-sm-4">
+                                                                    <label className="full_width">Synonyms <a className="hreflink" href={item.Instagram != null ? item.Instagram.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.Instagram != null ? item.Instagram.Description : ""} />
+                                                                </div>
+
+                                                                <div className="col-sm-4 padL-0">
+                                                                    <label className="full_width">Client Activity <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
+                                                                </div>
+
+                                                                <div className="col-sm-4 padL-0">
+                                                                    <label className="full_width">Package <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
+                                                                </div>
+                                                            </div>
+                                                            <div className="row form-group">
+                                                                <div className="col-sm-6">
+                                                                    <label className="full_width">Status</label>
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input className="form-check-input"
+                                                                                ng-checked="Item.AdminStatus=='Not Started'"
+                                                                                name="Not Started" type="radio" value="Not Started"
+                                                                                defaultChecked={item.Status === "Not Started"} ng-click="Adminstatus('Not Started')"
+                                                                            ></input> Not Started
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input className="form-check-input"
+                                                                                name="In Preparation" type="radio"
+                                                                                value="In Preparation"
+                                                                                ng-click="Adminstatus('In Preparation')"
+                                                                                defaultChecked={item.Status === "In Preparation"}></input> In Preparation
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input className="form-check-input"
+                                                                                name="In Development" type="radio"
+                                                                                value="In Development"
+                                                                                ng-click="Adminstatus('In Development')"
+                                                                                defaultChecked={item.Status === "In Development"}></input> In Development
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input className="form-check-input" name="Active"
+                                                                                type="radio" value="Active"
+                                                                                ng-click="Adminstatus( 'Active')"
+                                                                                defaultChecked={item.Status === "Active"}></input> Active
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input className="form-check-input"
+                                                                                name="Archived" type="radio" value="Archived"
+                                                                                ng-click="Adminstatus('Archived')"
+                                                                                defaultChecked={item.Status === "Archived"}></input> Archived
+                                                                        </label>
                                                                     </div>
                                                                 </div>
-                                                                <div className="clearfix"></div>
+                                                                <div className="col-sm-6 padL-0">
+                                                                    <label className="full_width">Time <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                    <input type="text" className="full_width searchbox_height"
+                                                                        defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input name="radioTime" defaultChecked={item.Mileage === "05"}
+                                                                                type="radio" ng-click="SelectTime('05')"></input>Very Quick
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input name="radioTime" defaultChecked={item.Mileage === "15"}
+                                                                                type="radio" ng-click="SelectTime('15')"></input>Quick
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input name="radioTime" defaultChecked={item.Mileage === "60"}
+                                                                                type="radio" ng-click="SelectTime('60')"></input>Medium
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="radio">
+                                                                        <label>
+                                                                            <input name="radioTime" defaultChecked={item.Mileage === "240"}
+                                                                                type="radio" ng-click="SelectTime('240')"></input>Long
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </Tab>
+                                                        </div>
+                                                        <div className="col-sm-3 mt-10">
+                                                            <div className="col-sm-12 padL-0" title="Priority">
+                                                                <label className="full_width">Priority</label>
+                                                                <input type="text" className="full_width searchbox_height"
+                                                                    defaultValue={item.Priority_x0020_Rank != undefined ? item.Priority_x0020_Rank : ""} />
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input className="form-check-input" name="radioPriority"
+                                                                            type="radio" value="(1) High" ng-click="SelectPriority()"
+                                                                            defaultChecked={item.Priority === "(1) High"}></input>High
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input className="form-check-input" name="radioPriority"
+                                                                            type="radio" value="(2) Normal" ng-click="SelectPriority()"
+                                                                            defaultChecked={item.Priority === "(2) Normal"}></input>Normal
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input className="form-check-input" name="radioPriority"
+                                                                            type="radio" value="(3) Low" ng-click="SelectPriority()"
+                                                                            defaultChecked={item.Priority === "(3) Low"}></input>Low
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-sm-12 padL-0">
+                                                                <label className="full_width">Categories <a className="hreflink" href={item.Facebook != null ? item.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
+                                                                <input type="text" className="full_width searchbox_height"
+                                                                    defaultValue={item.Facebook != null ? item.Facebook.Description : ""} />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-sm-4 padL-0 mt-10">
+                                                            <CommentCard siteUrl={item.siteUrl} userDisplayName={item.userDisplayName} listName={item.siteType} itemID={item.Id}></CommentCard>
 
-                                                        <Tab title="IMAGES INFOMATION">
-                                                            {/* <div id="ImageInfo">
+
+                                                        </div>
+                                                        <div className="col-sm-8 mb-10">
+                                                            <label className="full_width">Url</label>
+                                                            <input type="text" className="full_width searchbox_height" placeholder="Url" ng-model="Item.component_x0020_link.Url"></input>
+
+                                                        </div>
+                                                    </div>
+                                                </Tab>
+
+                                                <Tab title="IMAGES INFOMATION">
+                                                    {/* <div id="ImageInfo">
                                                                 <ImagesC id={null} />
                                                             </div> */}
-                                                        </Tab>
+                                                </Tab>
 
-                                                        <Tab title="DIVISION">
-                                                            <div id="Institution" className="tab-pane fade">
-                                                                <div className="divPanelBody clearfix">
-                                                                    <div className="col-sm-12 clearfix">
-                                                                        <ul id="main-menu" className="new">
-                                                                            <li>
-                                                                                <a className="hreflink" ng-click="editDivisionpopup()">
-                                                                                    <img src="https://kathabeck.sharepoint.com/sites/42/SiteCollectionImages/ICONS/Shareweb/Add-New.png"
-                                                                                        alt="" title="Add Taxonomy Item"
-                                                                                        className="img-icon" />
-                                                                                </a>
-                                                                            </li>
-                                                                            <li id="node_{{item.Id}}" ng-repeat="item in AllDivisions">
-                                                                                <a target="_blank" className="hreflink"
-                                                                                    ng-href="{{CurrentSiteUrl}}/SitePages/Institution-Profile.aspx?contactId={{item.Id}}&name={{item.Title}}">
-                                                                                    {/* {{item.Title}} */}
-                                                                                </a>
-                                                                                <a style={{ padding: "0px 6px" }}
-                                                                                    className="hreflink pull-right"
-                                                                                    ng-click="deleteitem(item);">
-                                                                                    <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                </a>
-                                                                            </li>
+                                                <Tab title="DIVISION">
+                                                    <div id="Institution" className="tab-pane fade">
+                                                        <div className="divPanelBody clearfix">
+                                                            <div className="col-sm-12 clearfix">
+                                                                <ul id="main-menu" className="new">
+                                                                    <li>
+                                                                        <a className="hreflink" ng-click="editDivisionpopup()">
+                                                                            <img src="https://kathabeck.sharepoint.com/sites/42/SiteCollectionImages/ICONS/Shareweb/Add-New.png"
+                                                                                alt="" title="Add Taxonomy Item"
+                                                                                className="img-icon" />
+                                                                        </a>
+                                                                    </li>
+                                                                    <li id="node_{{item.Id}}" ng-repeat="item in AllDivisions">
+                                                                        <a target="_blank" className="hreflink"
+                                                                            ng-href="{{CurrentSiteUrl}}/SitePages/Institution-Profile.aspx?contactId={{item.Id}}&name={{item.Title}}">
+                                                                            {/* {{item.Title}} */}
+                                                                        </a>
+                                                                        <a style={{ padding: "0px 6px" }}
+                                                                            className="hreflink pull-right"
+                                                                            ng-click="deleteitem(item);">
+                                                                            <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
+                                                                        </a>
+                                                                    </li>
 
-                                                                        </ul>
-                                                                    </div>
-
-                                                                </div>
+                                                                </ul>
                                                             </div>
-                                                        </Tab>
 
-                                                        <Tab title="SYNONYMS">
-                                                            <div id="AddSynonyms" className="tab-pane fade">
-                                                                <div className="fixed-divPanelBody clearfix">
-                                                                    <div className="col-sm-12">
-                                                                        <span className="pull-right mb-10 mt-10">
-                                                                            <button type="button" className="btn btn-primary" ng-click="addsynonyms()">
-                                                                                Add
-                                                                                Synonyms
-                                                                            </button>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="col-sm-12">
-                                                                        <div ng-if="Item['Synonyms'].length==0">
-                                                                            <div className="current_commnet">No Synonyms Available</div>
-                                                                        </div>
-                                                                        <div ng-if="Item['Synonyms'].length>0">
-                                                                            <div className="section-event">
-                                                                                <div className="container-new">
-                                                                                    <table className="table  compare_item" style={{ width: "100%" }}>
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th style={{ width: "80%" }}>
-                                                                                                    <div className="text" style={{ width: "80%" }}>
-                                                                                                        Title
-                                                                                                    </div>
-                                                                                                </th>
-                                                                                                <th style={{ width: "10%" }}>
-                                                                                                    <div style={{ width: "10%" }}></div>
-                                                                                                </th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr ng-repeat="val in Item['Synonyms']">
-                                                                                                <td style={{ width: "95%" }}>
-                                                                                                    <input className="form-control" type="text"
-                                                                                                        ng-model="val.Title"
-                                                                                                        ng-disabled="val.status" />
-                                                                                                </td>
-                                                                                                <td>
-                                                                                                    <span ng-if="!val.status"
-                                                                                                        ng-click="val.status=!val.status"
-                                                                                                        title="Save">
-                                                                                                        <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png" />
-                                                                                                    </span>
-                                                                                                    <span ng-if="val.status"
-                                                                                                        ng-click="val.status=!val.status"
-                                                                                                        title="Edit">
-                                                                                                        <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png" />
-                                                                                                    </span>
-                                                                                                    <a className="hreflink"
-                                                                                                        ng-click="Item['Synonyms'].splice($index,1);">
-                                                                                                        <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                                    </a>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Tab>
+
+                                                <Tab title="SYNONYMS">
+                                                    <div id="AddSynonyms" className="tab-pane fade">
+                                                        <div className="fixed-divPanelBody clearfix">
+                                                            <div className="col-sm-12">
+                                                                <span className="pull-right mb-10 mt-10">
+                                                                    <button type="button" className="btn btn-primary" ng-click="addsynonyms()">
+                                                                        Add
+                                                                        Synonyms
+                                                                    </button>
+                                                                </span>
+                                                            </div>
+                                                            <div className="col-sm-12">
+                                                                <div ng-if="Item['Synonyms'].length==0">
+                                                                    <div className="current_commnet">No Synonyms Available</div>
+                                                                </div>
+                                                                <div ng-if="Item['Synonyms'].length>0">
+                                                                    <div className="section-event">
+                                                                        <div className="container-new">
+                                                                            <table className="table  compare_item" style={{ width: "100%" }}>
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th style={{ width: "80%" }}>
+                                                                                            <div className="text" style={{ width: "80%" }}>
+                                                                                                Title
+                                                                                            </div>
+                                                                                        </th>
+                                                                                        <th style={{ width: "10%" }}>
+                                                                                            <div style={{ width: "10%" }}></div>
+                                                                                        </th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    <tr ng-repeat="val in Item['Synonyms']">
+                                                                                        <td style={{ width: "95%" }}>
+                                                                                            <input className="form-control" type="text"
+                                                                                                ng-model="val.Title"
+                                                                                                ng-disabled="val.status" />
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <span ng-if="!val.status"
+                                                                                                ng-click="val.status=!val.status"
+                                                                                                title="Save">
+                                                                                                <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png" />
+                                                                                            </span>
+                                                                                            <span ng-if="val.status"
+                                                                                                ng-click="val.status=!val.status"
+                                                                                                title="Edit">
+                                                                                                <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png" />
+                                                                                            </span>
+                                                                                            <a className="hreflink"
+                                                                                                ng-click="Item['Synonyms'].splice($index,1);">
+                                                                                                <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
+                                                                                            </a>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </Tab>
-                                                    </Tabs>
-                                          
-                                            </div>
-                                   
-                                  
-                                </form>
-                                {/* <!--<item-info></item-info>--> */}
+                                                        </div>
+                                                    </div>
+                                                </Tab>
+                                            </Tabs>
 
-                            </div>
-                            <div className="modal-footer">
-                                <div className="col-sm-12">
-                                    <div className="row">
-                                        <div className="ItemInfo col-sm-6">
-                                            <div className="text-left">
-                                                Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{institution.Created != null ? moment(institution.Created).format('DD/MM/YYYY') : ""}</span> by
-                                                <span className="footerUsercolor">
-                                                    {/* {{Item.Author.Title}} */}
-                                                    {institution.Author.Title != undefined ? institution.Author.Title : ""}
-                                                </span>
-                                            </div>
-                                            <div className="text-left">
-                                                Last modified <span ng-bind="Item.Modified | date:'dd/MM/yyyy hh:mm'">{institution.Modified != null ? moment(institution.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
-                                                    {/* {{Item.Editor.Title}} */}
-                                                    {institution.Editor.Title != undefined ? institution.Editor.Title : ""}
-                                                </span>
-                                            </div>
-                                            <div className="text-left">
-                                                <a className="hreflink" ng-click="removeItem(institution.Id)">
-                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
-                                                </a>
-                                            </div>
                                         </div>
-                                        <div className="col-sm-6 ItemInfo-right">
-                                            <div className="pull-right">
-                                                <span>
-                                                    <a className="ForAll hreflink" target="_blank"
-                                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/Institution-Profile.aspx?contactId=${institution.Id}&name=${institution.Title}`}>
-                                                        <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
-                                                            ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
+
+
+                                    </form>
+                                    {/* <!--<item-info></item-info>--> */}
+
+                                </div>
+                                <div className="modal-footer">
+                                    <div className="col-sm-12">
+                                        <div className="row">
+                                            <div className="ItemInfo col-sm-6">
+                                                <div className="text-left">
+                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{item.Created != null ? moment(item.Created).format('DD/MM/YYYY') : ""}</span> by
+                                                    <span className="footerUsercolor">
+                                                        {/* {{Item.Author.Title}} */}
+                                                        {item.Author.Title != undefined ? item.Author.Title : ""}
+                                                    </span>
+                                                </div>
+                                                <div className="text-left">
+                                                    Last modified <span ng-bind="Item.Modified | date:'dd/MM/yyyy hh:mm'">{item.Modified != null ? moment(item.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
+                                                        {/* {{Item.Editor.Title}} */}
+                                                        {item.Editor.Title != undefined ? item.Editor.Title : ""}
+                                                    </span>
+                                                </div>
+                                                <div className="text-left">
+                                                    <a className="hreflink" ng-click="removeItem(institution.Id)">
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
                                                     </a>
-                                                </span>
-                                                <span>|</span>
-                                                <a ng-href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/Lists/Institutions/EditForm.aspx?ID=${institution.Id}`}
-                                                    target="_blank">Open out-of-the-box form</a>
-                                                <button type="button" className="btn btn-primary" ng-click="SaveItem()">Save</button>
-                                                <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 PadR0 ItemInfo-right">
+                                                <div className="pull-right">
+                                                    <span>
+                                                        <a className="ForAll hreflink" target="_blank"
+                                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Id}&name=${item.Title}`}>
+                                                            <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
+                                                                ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
+                                                        </a>
+                                                    </span>
+                                                    <span className="ml5">|</span>
+                                                    <a className="ml5" ng-href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${item.Id}`}
+                                                        target="_blank">Open out-of-the-box form</a>
+                                                    <button type="button" className="btn btn-primary ml5" ng-click="SaveItem()">Save</button>
+                                                    <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

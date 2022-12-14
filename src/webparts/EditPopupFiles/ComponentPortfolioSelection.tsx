@@ -27,7 +27,7 @@ const ComponentPortPolioPopup = (item: any) => {
     }
     const setModalIsOpenToOK = () => {
 
-        if (item.props.smartComponent.length == 0)
+        if (item.props.smartComponent !=undefined && item.props.smartComponent.length == 0)
             item.props.smartComponent = CheckBoxdata;
         else {
             item.props.smartComponent = [];
