@@ -7,7 +7,7 @@ import { Web } from "sp-pnp-js";
 function TimeEntryPopup(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
-    const [AllMetadata, setMetadata] = React.useState([]);
+   // const [AllMetadata, setMetadata] = React.useState([]);
     const [EditTaskItemitle, setEditItem] = React.useState('');
     const [collapseItem, setcollapseItem] = React.useState(true);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -21,10 +21,11 @@ function TimeEntryPopup(item: any) {
             .top(4999)
             .get();
         AllUsers = taskUsers;
-        EditData(item);
+        EditData(item.props);
         //console.log(this.taskUsers);
 
     }
+    var AllMetadata: [] = [];
     const GetSmartMetadata = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let MetaData = [];
@@ -33,7 +34,7 @@ function TimeEntryPopup(item: any) {
             .items
             .top(4999)
             .get();
-        setMetadata(MetaData);
+            AllMetadata = MetaData;
         await GetTaskUsers();
 
     }
@@ -138,7 +139,7 @@ function TimeEntryPopup(item: any) {
     }
     function TimeCallBack(callBack: any) {
 
-        item.TimeEntryCallBack();
+        item.CallBackTimeEntry();
 
     }
    
@@ -339,6 +340,7 @@ function TimeEntryPopup(item: any) {
         })
     }
     const setModalTimmeIsOpenToFalse = () => {
+        TimeCallBack(false);
         setTimeModalIsOpen(false)
     }
     const openexpendTime = () => {

@@ -60,19 +60,7 @@ function ComponentTable() {
     const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([])
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-    // const editProfile = (itemData: any) => {
-    //     console.log('test')
-    //     setPopupItem(true);
-    //     setPopupcount(popupcount+1);
-    //     setItemData(['']);
-    //     itemData.popupcount=popupcount +1;
-    //    // => ([...itemData]));
-
-    //      setItemData(itemData);
-    //     // itemData.preventDefault();
-    // }
-
-
+   
     const SingleLookDatatest = (e: any, item: any, value: any) => {
         const { checked } = e.target;
         if (checked) {
