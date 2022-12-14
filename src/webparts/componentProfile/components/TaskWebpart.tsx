@@ -1,12 +1,14 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
-import '../../cssFolder/foundation.scss';
+import '../../cssFolder/Style.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import Tooltip from './Tooltip';
 import { create } from 'lodash';
+import '../../cssFolder/foundation.scss'
+import '../../cssFolder/foundationmin.scss'
 
 export default function ComponentTable({props}:any) {
 
@@ -1236,17 +1238,17 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                 }
                                 if (result.Author != undefined) {
                                     
-                                        if (result.Author.Id != undefined) {
-                                            $.each(TaskUsers, function (index: any, users: any) {
-                                                if (result.Author.Id != undefined && users.AssingedToUserId != undefined && result.Author.Id == users.AssingedToUserId) {
-                                                    users.ItemCover = users.Item_x0020_Cover;
-                                                    result.CreatedDateImg.push(users);
-                                                }
+                                    if (result.Author.Id != undefined) {
+                                        $.each(TaskUsers, function (index: any, users: any) {
+                                            if (result.Author.Id != undefined && users.AssingedToUserId != undefined && result.Author.Id == users.AssingedToUserId) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.CreatedDateImg.push(users);
+                                            }
 
-                                            })
-                                        }
-                                    
-                                }
+                                        })
+                                    }
+                                
+                            }
                                 result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
                                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
                                     $.each(result.Team_x0020_Members, function (index: any, catego: any) {
@@ -2601,7 +2603,8 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                         >{item.Title}
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
-                                                                                            <span>({item.childs.length})</span>
+                                                                                        
+                                                                                            <span>{item.childs.length==0?"":<span>({item.childs.length})</span>}</span>
                                                                                         }
 
                                                                                         {item.Short_x0020_Description_x0020_On != null &&
@@ -2645,7 +2648,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                     <td style={{ width: "7%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
-                                                                                   
                                                                                     <td style={{ width: "9%" }}>
                                                                                         {item.CreatedDateImg!=null?item.CreatedDateImg.map((Creates:any)=>{
                                                                                                  return(
@@ -2690,19 +2692,22 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
 
                                                                                                                 </div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "3%" }}><input  type="checkbox"  /></td>  
-                                                                                                            <td style={{ width: "3%" }}><div className="">
-                                                                                            <span>
-                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                                                                                    <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
-                                                                                                    
-                                                                                                </a>
-                                                                                            </span>
-                                                                                           
-                                                                                        </div></td>  
-                                                                                        <td style={{ width: "7%" }}><span className="ml-2">{childitem.Shareweb_x0020_ID}</span></td>
-                                                                                                           
-                                                                                                            <td style={{ width: "30%" }}>
+                                                                                                            {/* <td style={{ width: "2%" }}></td> */}
+                                                                                                            <td style={{ width: "7%" }}>  <div className="d-flex">
+                                                                                                                <span>
+
+                                                                                                                    <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                                        <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
+                                                                                                                        {/* <img className="icon-sites-img"
+                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
+                                                                                                                    </a>
+
+                                                                                                                </span>
+                                                                                                                <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
+                                                                                                            </div>
+                                                                                                            </td>
+
+                                                                                                            <td style={{ width: "20%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                 >{childitem.Title}
@@ -2754,18 +2759,10 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             {/* <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => editProfile(childitem)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td> */}
-                                                                                                            <td  style={{ width: "9%" }}>  {item.CreatedDateImg!=null?item.CreatedDateImg.map((Creates:any)=>{
-                                                                                                 return(
-                                                                                                       <span>
-                                                                                                           {Creates.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                                                           <img className='ClientCategory-Usericon' title={Creates.Title} src={Creates.Item_x0020_Cover.Description}/>
-                                                                                                       </span>                                       
-                                                                                                        )}):""}</td>
-                                                                                                            <td style={{ width: "7%" }}></td>
-                                                                                    {/* <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td> */}
-                                                                                    <td style={{ width: "2%" }}></td>
-                                                                                    <td style={{ width: "2%" }}></td>
-                                                                                    <td style={{ width: "2%" }}></td>
+                                                                                                            <td>{childitem.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                                            <td></td>
+                                                                                                            <td></td>
+                                                                                                            <td></td>
 
                                                                                                             
                                                                                                         </tr>
