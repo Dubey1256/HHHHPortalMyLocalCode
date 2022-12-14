@@ -19,18 +19,21 @@ export interface ITaskprofileState {
   Display: string;
   showcomment: string;
   updateComment: boolean;
+  showComposition: boolean;
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
   
   private taskUsers : any = [];
   private currentUser: any;
+  private oldTaskLink:any;
   public constructor(props:ITaskprofileProps,state:ITaskprofileState){
     super(props);
     const params = new URLSearchParams(window.location.search);    
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
 
+    this.oldTaskLink = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId="+ params.get('taskId') +"&Site="+ params.get('Site');
     this.state ={
       Result:{},
       listName: params.get('Site'),
@@ -39,7 +42,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       imageInfo : {},
       Display : 'none',
       showcomment : 'none',
-      updateComment : false
+      updateComment : false,
+      showComposition: true
     }
 
     this.GetResult();
@@ -58,8 +62,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title")
-      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType")
+      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Title")
+      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component")
       .get()
       
     console.log(taskDetails);
@@ -68,7 +72,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.currentUser = this.GetUserObject(this.props.userDisplayName);
 
     let tempTask = {
-      SiteIcon : this.GetSiteIcon(),
+      SiteIcon : this.GetSiteIcon(this.state.listName),
       ID: 'T'+taskDetails["ID"],
       Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"],
@@ -86,7 +90,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       component_url: taskDetails["component_x0020_link"],
       BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
-      SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : ''      
+      SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : '',
+      ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
+      Component:  taskDetails["Component"]  
     };
     
     console.log(tempTask);
@@ -111,33 +117,33 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   }
 
-  private GetSiteIcon(){
+  private GetSiteIcon(listName:string){
     let siteicon = '';
-    if (this.state.listName.toLocaleLowerCase() == 'migration') {
+    if (listName.toLowerCase() == 'migration') {
       siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png';
     }
-    if (this.state.listName.toLocaleLowerCase() == 'eps') {
+    if (listName.toLowerCase() == 'eps') {
       siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_eps.png';
     }
-    if (this.state.listName.toLocaleLowerCase() == 'ei') {
+    if (listName.toLowerCase() == 'ei') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png';
     }
-    if (this.state.listName.toLocaleLowerCase() == 'qa') {
+    if (listName.toLowerCase() == 'qa') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_qa.png';
     }
-    if (this.state.listName.toLocaleLowerCase() == 'gender') {
+    if (listName.toLowerCase() == 'gender') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_gender.png';
     }
-    if (this.state.listName.toLocaleLowerCase() == 'education') {
+    if (listName.toLowerCase() == 'education') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png';
     }
-    if (this.state.listName.toLocaleLowerCase() == 'development-effectiveness' || this.state.listName.toLocaleLowerCase() == 'de') {
+    if (listName.toLowerCase() == 'development-effectiveness' || listName.toLowerCase() == 'de') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png';
     }
-    if (this.state.listName.toLocaleLowerCase() == 'cep') {
+    if (listName.toLowerCase() == 'cep') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/icon_cep.png';
     }
-    if (this.state.listName.toLocaleLowerCase() == 'alakdigital') {
+    if (listName.toLowerCase() == 'alakdigital') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png';
     }
     return siteicon;
@@ -221,14 +227,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     });
   }
 
-  private showhideCommentBox(){    
-    if (this.state.showcomment == 'none'){
+  private showhideComposition(){    
+    if (this.state.showComposition){
       this.setState({ 
-        showcomment:'block'
+        showComposition:false
       });
     }else{
       this.setState({ 
-        showcomment:'none'
+        showComposition:true
       });
     }
     
@@ -273,6 +279,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         <div className='col-sm-12 pad0'>
           <div className='col-lg-9 left-col'>
           <div className="row data-align">
+            <div className='col-sm-12 pad0'>
+            <span className="pull-right">
+              <a className="hreflink ng-binding"
+              target='_blank' href={this.oldTaskLink}
+              style={{cursor: "pointer"}}>Old Task Profile</a></span>
+            </div>
             <div className="col-sm-8 pad0">
               <div className="col-sm-12 pad0">
                 <div className="involve_actor">
@@ -413,9 +425,71 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </div>
                 </div>
                 
-              </div>
+              </div>            
 
-              <div className="col-sm-12 pad0">
+            </div>
+
+            <div className="col-sm-4 pad0">
+              <div className="col-md-12 pad0">
+                <div className="involve_actor">
+                  <div className="tmvalue ng-hide" title="Tagged Component">
+                    <label className="full_width">Portfolio</label>
+                  </div>
+                  <div className="tlvalue impact-infoII">
+                  {this.state.Result["Component"] != null && this.state.Result["Component"].length>0 && this.state.Result["Component"].map( (componentdt:any,i:any)=> {
+                    return <div className="col-sm-12 padL-0 ng-scope" title="">
+                              <div className="">
+                                <a className="hreflink ng-binding" target="_blank" href="">{componentdt.Title}</a>
+                              </div>
+                            </div> 
+                  })}                
+                              
+                  </div>
+                </div>
+              </div>
+              {this.state.Result["ClientTime"] !=null && this.state.Result["ClientTime"].length > 0 &&
+              <div className="col-sm-12 pad0 dashboard-sm-12">
+                <div  className="panel panel-primary-head blocks" style={{boxShadow: 'none', transition: 'none'}} id="t_draggable1">
+                  <div  className="profileboxclr" style={{backgroundColor: '#f5f5f5', borderColor: '#ddd', padding: '7px'}}>
+                    <h3  className="panel-title" style={{textAlign: 'inherit'}}>
+                      <label className="lbltitleclr">Site Composition</label>
+                      <span className="pull-left">
+                        <span onClick={()=>this.showhideComposition()} ng-if="!expand_collapseSiteComosition  &amp;&amp;Task.Portfolio_x0020_Type=='Component'" style={{cursor:"pointer"}} className="ng-scope">
+                          <img style={{width:"10px"}} 
+                            src={this.state.showComposition ? 
+                              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" :
+                              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"
+                              } />
+                        </span>
+                      </span>
+                    </h3>
+                  </div>
+                  <div id="testDiv1" style={{display:this.state.showComposition ? 'block': 'none'}}>
+                    <ul  className="table table-hover">
+                    {this.state.Result["ClientTime"].map( (cltime:any,i:any)=> { 
+                      return <li className="for-lis project_active ng-scope">
+                        <div style={{width:"1%"}}></div>
+                        <div style={{width:"12%", float:'left'}}  className="padLR">
+                          <img style={{width:"22px"}} src={this.GetSiteIcon(cltime.SiteName)} />
+                        </div>
+                        <div className="padLR">
+                          {cltime.ClienTimeDescription !=undefined &&
+                          <div  className="mt-2 ng-binding" ng-show="item.ClienTimeDescription!=undefined">
+                            {cltime.ClienTimeDescription}%
+                          </div>
+                          }
+                        </div>
+                      </li>
+                    })}  
+                    </ul>
+                  </div>
+                </div>
+                              
+              </div>
+              }
+            </div>
+
+            <div className="col-sm-12 pad0">
                 <div className="involve_actor">
                   <div className="tmvalue" title="Task Id">
                     <label className="full_width">Url</label>
@@ -430,9 +504,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                  
                 </div>
                 
-              </div>
-
             </div>
+
           </div>
 
           <div className="row">
@@ -503,7 +576,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
           </div>
           <div className='col-md-3'>
-            <CommentCard siteUrl={this.props.siteUrl} userDisplayName={this.props.userDisplayName}></CommentCard>
+            <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
           </div>
         </div>
       </div>

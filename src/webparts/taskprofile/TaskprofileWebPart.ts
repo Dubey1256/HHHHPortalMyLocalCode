@@ -41,7 +41,8 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        siteUrl: this.context.pageContext.web.absoluteUrl
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        Context: this.context
       }
     );
 

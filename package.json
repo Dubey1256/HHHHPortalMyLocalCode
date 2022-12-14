@@ -9,12 +9,17 @@
     "test": "gulp test"
   },
   "dependencies": {
+    "@fluentui/react": "^8.103.7",
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@microsoft/sp-core-library": "1.15.2",
     "@microsoft/sp-lodash-subset": "1.15.2",
     "@microsoft/sp-office-ui-fabric-core": "1.15.2",
     "@microsoft/sp-property-pane": "1.15.2",
     "@microsoft/sp-webpart-base": "1.15.2",
+    "@pnp/common": "^2.11.0",
+    "@pnp/logging": "^2.11.0",
+    "@pnp/odata": "^2.11.0",
+    "@pnp/sp": "^2.15.0",
     "@types/jquery": "^3.5.14",
     "@types/moment": "^2.13.0",
     "axios": "^1.2.0",
