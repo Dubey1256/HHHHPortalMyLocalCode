@@ -360,7 +360,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           } 
           */
            /*testing*/
-           if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de')>0){
+           if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de')>0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de')>0){
             mention_To.push(allMention[index].replace('{','').replace('}','').trim());   
             }                      
           }        
