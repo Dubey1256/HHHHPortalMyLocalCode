@@ -332,7 +332,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                     <td style={{ width: "7%" }}>
                                                                                         <div className="">
                                                                                             {/* <span><input type="checkbox" name="Active" checked={item.checked} onClick={() => setCompareComponents(item)} ></input></span> */}
-                                                                                            <span><input type="checkbox" name="Active"   onClick={() => {item.checked = !item.checked; setcheckbox(item)}} ></input></span>
+                                                                                            <span><input type="checkbox" name="Active" checked={item.Id ==( CheckBoxdata.length >0 && CheckBoxdata[0]["Id"]? CheckBoxdata[0]["Id"]  :CheckBoxdata) ?true :false }   onClick={() => {item.checked = !item.checked; setcheckbox([item.Title ==( CheckBoxdata.length >0 ? CheckBoxdata[0]["Title"] :CheckBoxdata) ? [] :item])}} ></input></span>
                                                                                             <span>
                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                     <img className="icon-sites-img"
@@ -420,7 +420,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                                             </div>
                                                                                                         </td>
                                                                                                         <td style={{ width: "7%" }}>  <div className="d-flex">
-                                                                                                            <span><input type="checkbox" name="Active" onChange={() => setCompareComponents(childitem)} ></input></span>
+                                                                                                            <span><input type="checkbox" name="Active" checked={childitem.Id ==( CheckBoxdata.length >0 && CheckBoxdata[0]["Id"]? CheckBoxdata[0]["Id"]  :CheckBoxdata) ?true :false }   onClick={() => {childitem.checked = !childitem.checked; setcheckbox([childitem.Title ==( CheckBoxdata.length >0 ? CheckBoxdata[0]["Title"] :CheckBoxdata) ? [] :childitem])}} ></input></span>
                                                                                                             <span>
 
                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
@@ -500,7 +500,7 @@ const ComponentPortPolioPopup = (item: any) => {
 
 
                                                                                                                         <td style={{ width: "7%" }}> <div className="d-flex">
-                                                                                                                            <span><input type="checkbox" name="Active" onChange={() => setCompareComponents(item)} ></input></span>
+                                                                                                                            <span><input type="checkbox" name="Active" checked={childinew.Id ==( CheckBoxdata.length >0 && CheckBoxdata[0]["Id"]? CheckBoxdata[0]["Id"]  :CheckBoxdata) ?true :false }   onClick={() => {childinew.checked = !childinew.checked; setcheckbox([childinew.Title ==( CheckBoxdata.length >0 ? CheckBoxdata[0]["Title"] :CheckBoxdata) ? [] :childinew])}}  ></input></span>
                                                                                                                             <span>
 
                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
