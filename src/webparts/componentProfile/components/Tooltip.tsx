@@ -1,13 +1,16 @@
 import * as React from 'react';
 import Popup from 'reactjs-popup';
+import "bootstrap/dist/css/bootstrap.min.css";
+import '../../cssFolder/Style.scss'
 import {FaCommentAlt,FaQuestion,FaBars  } from 'react-icons/fa';
+import { BiMenu } from 'react-icons/bi';
 function Tooltip() {
     // const [isShown, setIsShown] = React.useState(false);
  
     return (
  <Popup
   trigger={
-    <button type='button' style={{fontSize: "15px",background: "none",border: "none"}} className='sorting'><FaBars/></button>
+    <button type='button'><BiMenu/></button>
   }
   position="left top"
       on="hover"
@@ -19,32 +22,20 @@ function Tooltip() {
   
 >
 {/* {isShown && ( */}
-  <table className='menu'>
-    <tr>
-    <td><a href="#" className='rmunderline'><FaCommentAlt/>HHHH Feedback SP</a></td>
-    </tr>
-    <tr>
-    <td><a href="#" className='rmunderline'><FaCommentAlt/>HHHH Bug</a></td>
-    </tr>
-    <tr>
-    <td><a href="#" className='rmunderline'><FaCommentAlt/>HHHH Design</a></td>
-    </tr>
-    <tr>
-    <td><a href="#" className='rmunderline'><FaCommentAlt/>HHHH Quick</a></td>
-    </tr>
-    <tr>
-    <td><a href="#" className='rmunderline'><FaCommentAlt/>HHHH Component Page</a></td>
-    </tr>
-    <tr>
-    <td><a href="#" className='rmunderline'><FaCommentAlt/>Call Notes</a></td>
-    </tr>
-    <tr>
-    <td><a href="#" className='rmunderline'><FaQuestion/>Admin Help</a></td>
-    </tr>
-    <tr>
-    <td><a href="#" className='rmunderline'><FaQuestion/>Help</a></td>
-    </tr>
-  </table> 
+  <div className='dropdown-menu show dropdown-menu-end toolmenu'>
+
+  <a href="#" className='dropdown-item'><FaCommentAlt/> HHHH Feedback SP</a>
+  <a href="#" className='dropdown-item'><FaCommentAlt/> HHHH Bug</a>
+  <a href="#" className='dropdown-item'><FaCommentAlt/> HHHH Design</a>
+<a href="#" className='dropdown-item'><FaCommentAlt/> HHHH Quick</a>
+
+<a href="#" className='dropdown-item'><FaCommentAlt/> HHHH Component Page</a>
+<a href="#" className='dropdown-item'><FaCommentAlt/> Call Notes</a>
+
+<a href="#" className='dropdown-item'><FaQuestion/> Admin Help</a>
+  <a href="#" className='dropdown-item'><FaQuestion/> Help</a>
+
+  </div> 
 </Popup>
  
    )
