@@ -503,7 +503,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
           </div>
           <div className='col-md-3'>
-            <CommentCard siteUrl={this.props.siteUrl} userDisplayName={this.props.userDisplayName}></CommentCard>
+            <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
           </div>
         </div>
       </div>

@@ -9,21 +9,13 @@
     "test": "gulp test"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
-    "@microsoft/sp-core-library": "1.15.2",
-    "@microsoft/sp-lodash-subset": "1.15.2",
-    "@microsoft/sp-office-ui-fabric-core": "1.15.2",
-    "@microsoft/sp-property-pane": "1.15.2",
-    "@microsoft/sp-webpart-base": "1.15.2",
-=======
     "@fluentui/react": "^8.103.7",
     "@microsoft/sp-core-library": "1.14.0",
     "@microsoft/sp-lodash-subset": "1.14.0",
     "@microsoft/sp-office-ui-fabric-core": "1.14.0",
     "@microsoft/sp-property-pane": "1.14.0",
     "@microsoft/sp-webpart-base": "1.14.0",
->>>>>>> 3a9cc057695c6c2c955e79f644c633bcf150d908
     "@types/jquery": "^3.5.14",
     "@types/moment": "^2.13.0",
     "axios": "^1.2.0",
@@ -41,7 +33,11 @@
     "react-mentions": "^4.4.7",
     "reactjs-popup": "^2.0.5",
     "sp-pnp-js": "^3.0.10",
-    "tslib": "2.3.1"
+    "tslib": "2.3.1",
+    "@pnp/common": "^2.11.0",
+    "@pnp/logging": "^2.11.0",
+    "@pnp/odata": "^2.11.0",
+    "@pnp/sp": "^2.11.0"
   },
   "devDependencies": {
     "@microsoft/eslint-config-spfx": "1.15.2",
