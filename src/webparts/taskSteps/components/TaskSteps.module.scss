@@ -32,3 +32,14 @@
     }
   }
 }
+
+.tabletaskSteps {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.tabletaskSteps td, .tabletaskSteps th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}

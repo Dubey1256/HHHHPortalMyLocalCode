@@ -4,10 +4,13 @@ import { ITaskStepsProps } from './ITaskStepsProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { Web } from "sp-pnp-js";
 
+
+
 export interface ITaskStepsState {  
   Result : any;
   listName : string;
   itemID : number;
+  maxChildCount: number;
 }
 
 export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskStepsState> {
@@ -21,12 +24,14 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
     this.state ={
       Result:{},
       listName: params.get('Site'),
-      itemID : Number(params.get('taskId'))      
+      itemID : Number(params.get('taskId')),
+      maxChildCount : 0      
     }
 
     this.GetResult();
   }
 
+ 
   private async GetResult() {
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let taskInfo = [];    
@@ -54,56 +59,73 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
         Title: i.Title,
         SharewebID : i.Shareweb_x0020_ID,      
         SharewebTaskType : i.SharewebTaskType,
-        ParentTask: i.ParentTask != undefined ? i.ParentTask : {Title : ''},
+        ParentTask: i.ParentTask != undefined ? i.ParentTask : null,
         Component:  i.Component,
         SharewebTaskLevel1No : i.SharewebTaskLevel1No,
         SharewebTaskLevel2No : i.SharewebTaskLevel2No
     })});  
 
-    const array = [
-      { id: 919, parentid: 456, name: "Terriers" },
-      { id: 456, parentid: 123, name: "Dogs" },
-      { id: 214, parentid: 456, name: "Labradors" },
-      { id: 810, parentid: 456, name: "Pugs" },
-      { id: 123, parentid: 0, name: "Mammals" },
-    ];
-    
-    let tree:any = [], arrayDictionary:any = {};    
-    // First map the nodes of the array to an object/dictionary where the key is their id
-    tempTask.forEach((cat:any) => {
-      arrayDictionary[cat.ID] = cat;
-      arrayDictionary[cat.ID]["children"] = [];
-    });   
-    
-    // for each entry in the dictionary
-    for (var entry in arrayDictionary) {
-      // get all the data for this entry in the dictionary
-      const mappedElem = arrayDictionary[entry];
+    let arrayDictionary:any = {};
 
-      // if the element has a parent, add it
-      if (
-        mappedElem.ParentTask && // the dictionary has a parent
-        arrayDictionary[mappedElem["ParentTask"].Title] // and that parent exists
-        ) {
-
-        arrayDictionary[mappedElem["ID"]]["children"].push(mappedElem);
-      }
-      // else is at the root level (parentid = null or 0)
-      else {
-        tree.push(mappedElem);
+    //set parent element
+    for (let index = 0; index < tempTask.length; index++) {
+      const element = tempTask[index];
+      if (tempTask[index].ParentTask == null){
+        arrayDictionary = tempTask[index];
+        arrayDictionary["children"] = [];
+        break;
+      }      
+    }
+   
+    //get All the child of 2nd level
+    for (let index = 0; index < tempTask.length; index++) {
+      const element = tempTask[index];
+      if (tempTask[index].ParentTask != null){
+        if (arrayDictionary.Title == tempTask[index].ParentTask.Title){  
+          let temp = tempTask[index];
+          temp["children"] = [];    
+          arrayDictionary["children"].push(tempTask[index]);        
+        } 
+      }     
+    }
+    //console.log(arrayDictionary);
+    
+    //get all the child of 3rd level
+    for (let i = 0; i < arrayDictionary["children"].length; i++){
+      let childelement = arrayDictionary["children"][i]
+      for (let j = 0; j < tempTask.length; j++){
+        if(tempTask[j].ParentTask != null){
+          if(childelement.Title == tempTask[j].ParentTask.Title){
+            arrayDictionary["children"][i]["children"].push(tempTask[j])
+          }
+        }        
       }
     }
+
+    //console.log(arrayDictionary);
+    let maxChildCount:any = 0;
+    if(arrayDictionary != undefined){       
+       for (let i = 0; i < arrayDictionary["children"].length; i++) {
+        const element = arrayDictionary["children"][i];
+        if(element.children != undefined)
+        {
+          maxChildCount = (element.children.length > maxChildCount) ? element.children.length : maxChildCount
+        }
+       }
+    }
     
-    console.log(tree);
-
-
-    
-    console.log(tempTask);   
-
+   
     this.setState({
-      Result : tempTask
-    });
-    
+      Result : arrayDictionary,
+      maxChildCount : maxChildCount
+    }, () => {
+      console.log(this.state.Result);
+      console.log("max child count" + this.state.maxChildCount);
+    }
+    );     
+  }
+
+  private getParentTask(){
     
   }
 
@@ -117,30 +139,48 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
     } = this.props;
 
     return (
-      <section className={`${styles.taskSteps} ${hasTeamsContext ? styles.teams : ''}`}>
-        <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
-          <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
-        </div>
-        <div>
-          <h3>Welcome to SharePoint Framework!</h3>
-          <p>
-            The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It's the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-          </p>
-          <h4>Learn more about SPFx development:</h4>
-          <ul className={styles.links}>
-            <li><a href="https://aka.ms/spfx" target="_blank">SharePoint Framework Overview</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank">Use Microsoft Graph in your solution</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank">Build for Microsoft Teams using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank">Publish SharePoint Framework applications to the marketplace</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank">SharePoint Framework API reference</a></li>
-            <li><a href="https://aka.ms/m365pnp" target="_blank">Microsoft 365 Developer Community</a></li>
-          </ul>
-        </div>
-      </section>
+      <div>
+        {this.state.Result != null &&
+          <div>
+            <table className={styles.tabletaskSteps}>
+              <tr>
+                <td>
+                  <b>{this.state.Result.Title}</b>
+                </td>
+                {this.state.Result.children != undefined && 
+                  this.state.Result.children.length >0 &&
+                  this.state.Result.children.map( (children:any,i:any)=> {                    
+                    if (children.SharewebTaskType.Title == "Task"){
+                      return <td>
+                            {children.Title}
+                          </td>
+                    }            
+                    
+                })}                
+                
+              </tr>
+              {this.state.Result.children != undefined && 
+                  this.state.Result.children.length >0 &&
+                  this.state.Result.children.map( (children:any,i:any)=> { 
+                    if (children.SharewebTaskType.Title != "Task"){
+                      return <tr>
+                              <td>
+                                <b>{children.Title}</b>
+                              </td>
+                            {children.children != undefined &&
+                            children.children.length > 0 &&
+                            children.children.map((child:any,j:any)=>{
+                              return <td>
+                                {child.Title}
+                              </td>
+                            })}
+                          </tr>
+                    }  
+                  })}
+            </table>
+          </div>
+        }
+      </div>
     );
   }
 }
