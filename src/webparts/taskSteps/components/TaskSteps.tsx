@@ -3,6 +3,7 @@ import styles from './TaskSteps.module.scss';
 import { ITaskStepsProps } from './ITaskStepsProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { Web } from "sp-pnp-js";
+import { ThemeSettingName } from 'office-ui-fabric-react';
 
 
 
@@ -15,6 +16,8 @@ export interface ITaskStepsState {
 
 export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskStepsState> {
 
+  private totalCount = 0;
+  private needtorun = 0;
   public constructor(props:ITaskStepsProps,state:ITaskStepsState){
     super(props);
     const params = new URLSearchParams(window.location.search);    
@@ -43,6 +46,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       .get();
       
     console.log("SharewebTaskLevel1No - " +taskInfo['SharewebTaskLevel1No']);
+    console.log('12345');
    
     let taskDetails = [];    
     taskDetails = await web.lists
@@ -151,12 +155,20 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
                   this.state.Result.children.length >0 &&
                   this.state.Result.children.map( (children:any,i:any)=> {                    
                     if (children.SharewebTaskType.Title == "Task"){
+                      this.totalCount = i+1
                       return <td>
                             {children.Title}
                           </td>
-                    }            
+                      }
+                                
                     
-                })}                
+                })}
+                {(this.state.maxChildCount - this.totalCount) > 0 && [...Array(this.state.maxChildCount - this.totalCount)].map((i:any) =>{
+                     return <td>
+                           </td>
+               
+                }) 
+                }                
                 
               </tr>
               {this.state.Result.children != undefined && 
@@ -170,10 +182,18 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
                             {children.children != undefined &&
                             children.children.length > 0 &&
                             children.children.map((child:any,j:any)=>{
+                              this.totalCount = j+1
                               return <td>
                                 {child.Title}
                               </td>
                             })}
+
+                            {(this.state.maxChildCount - this.totalCount) > 0 && [...Array(this.state.maxChildCount - this.totalCount)].map((i:any) =>{
+                              return <td>
+                              </td>
+               
+                            })}
+
                           </tr>
                     }  
                   })}
