@@ -5,8 +5,12 @@
 .ms-CommandBar-primaryCommand .ms-OverflowSet-item {
     display: none;
 }
+// REmove during live the project
 .t_e_8474018e{
     max-width: 1924px;
+}
+.CanvasComponent.LCS .CanvasZone {
+  margin: 0 auto !important;
 }
 .spfxbreadcrumb {
     list-style: none;
@@ -213,3 +217,62 @@ aside .card-title {
 
 
 
+.tabmenu .nav{
+
+   
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  padding-left: 0;
+
+  margin-bottom: 0;
+
+  list-style: none;
+
+}
+
+.tabmenu .nav-tabs {
+
+border-bottom: 1px solid #dee2e6;
+
+}
+
+.tabmenu .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+
+color: #495057;
+
+background-color: #fff;
+
+border-color: #dee2e6 #dee2e6 #fff;
+
+}
+
+.tabmenu .nav-tabs .nav-link {
+
+margin-bottom: -1px;
+
+background: 0 0;
+
+border-top-left-radius: 0.25rem;
+
+border-top-right-radius: 0.25rem;
+
+}
+
+
+
+.tabmenu .nav-link {
+
+display: block;
+
+padding: 0.5rem 1rem;
+
+color: #0d6efd;
+
+text-decoration: none;
+
+transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+
+}

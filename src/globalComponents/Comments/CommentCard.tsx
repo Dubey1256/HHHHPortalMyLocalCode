@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { escape } from '@microsoft/sp-lodash-subset';
 import { Web } from "sp-pnp-js";
 import '../../webparts/cssFolder/foundation.scss'
 import '../../webparts/cssFolder/foundationmin.scss';
@@ -12,7 +11,7 @@ import mentionClass from './mention.module.scss';
 
 import { sp } from "@pnp/sp";
 import "@pnp/sp/sputilities";
-
+ 
 export interface ICommentCardProps {
   siteUrl? : string;
   userDisplayName? : string;

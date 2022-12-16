@@ -5,9 +5,10 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "gulp bundle",
+    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=8096\" gulp bundle",
     "clean": "gulp clean",
     "test": "gulp test"
-  },
+  }, 
   "dependencies": {
     "@fluentui/react": "^8.103.7",
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
