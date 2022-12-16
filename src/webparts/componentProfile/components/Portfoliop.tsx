@@ -12,6 +12,7 @@ import { FaHome } from 'react-icons/fa';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SPComponentLoader } from '@microsoft/sp-loader';
 import { NavItem } from 'react-bootstrap';
+import CommentCard from '../../../globalComponents/Comments/CommentCard';
 
 SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css');
 SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js');
@@ -28,6 +29,7 @@ function Portfolio({ ID }: any) {
     const [datak, setdatak] = React.useState([])
     const [dataj, setdataj] = React.useState([])
     const [datams, setdatams] = React.useState([])
+    const [FolderData, SetFolderData] = React.useState([]);
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
         setIsActive(true);
@@ -65,9 +67,10 @@ function Portfolio({ ID }: any) {
 
 
     React.useEffect(() => {
-
+        var folderId:any="";
         var url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
-        var response: any = [];  // this variable is used for storing list items
+        var response: any = []; 
+        var responsen:any=[]; // this variable is used for storing list items
         function GetListItems() {
             $.ajax({
                 url: url,
@@ -77,6 +80,34 @@ function Portfolio({ ID }: any) {
                 },
                 success: function (data) {
                     response = response.concat(data.d.results);
+                    response.map((item:any)=>{
+                        if(item.FolderID != undefined){
+                            folderId= item.FolderID;
+
+                            var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+                            $.ajax({
+                                url: urln,
+                                method: "GET",
+                                headers: {
+                                    "Accept": "application/json; odata=verbose"
+                                },
+                                success: function (data) {
+                                    responsen = responsen.concat(data.d.results);
+                                    if (data.d.__next) {
+                                        urln = data.d.__next;
+                                       
+                                    } else SetFolderData(responsen);
+                                    console.log(responsen);
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                    // error handler code goes here
+                                }
+                            });
+                        }
+                        console.log(folderId)
+                    })
+                    
                     if (data.d.__next) {
                         url = data.d.__next;
                         GetListItems();
@@ -89,13 +120,27 @@ function Portfolio({ ID }: any) {
                 }
             });
         }
+
+       
+        var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+        var responsen:any=[];// this variable is used for storing list items
+      
+  
+      
+      
+        
+  
         GetListItems();
     },
         []);
 
+
+     
+
     var myarray: any = [];
     var myarray1: any = [];
     var myarray2: any = [];
+    var FolderID:any='';
 
     data.map(item => {
         if (item.Sitestagging != null) {
@@ -141,6 +186,15 @@ function Portfolio({ ID }: any) {
 
         // myarray.push();
     })
+
+
+  //    Get Folder data
+
+
+
+
+  
+
     return (
         <div>
             {/* breadcrumb & title */}
@@ -556,69 +610,43 @@ function Portfolio({ ID }: any) {
                                         </a></div>
                                     </div>
                                 </div>
+                                
 
+                                {FolderData!=undefined&&
+                                <>
+                                  {FolderData.map(item =>{
+                                    return(
                                 <div className='mb-3 card'>
                                     <div className='card-header'>
                                         <div className='card-actions float-end'>  <Tooltip /></div>
                                         <div className="mb-0 card-title h5">Main Folder</div>
                                     </div>
+                                  
                                     <div className='card-body'>
                                         <div className="border-bottom pb-2">
-                                            {data.map(item =>
+                                            
                                                 <div>
-                                                    <img ng-src="/_layouts/15/images/folder.gif?rev=23" data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
-                                                    <a className="hreflink ng-binding" target="_blank" href={`/sites/HHHH/SP/Documents/COMPONENT-PORTFOLIO/${item.Title}`}>
-                                                        {item.Title}
+                                                    <img  data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
+                                                    <a className="hreflink ng-binding" target="_blank" href={item.EncodedAbsUrl}>
+                                                        {item.FileLeafRef}
                                                     </a>
                                                 </div>
-                                            )}
+                                          
                                         </div>
                                     </div>
-                                </div>
-                                <div className='mb-3 card'>
-                                    <div className='card-header'>
-                                        <div className='card-actions float-end'>  <Tooltip /></div>
-                                        <div className="mb-0 card-title h5">Comments</div>
-                                    </div>
-                                    <div className='card-body'>
-                                        <div className="comment-box  mb-2">
-                                            <span> <strong>To:</strong>  </span>
-                                            <span ng-repeat="item in UserForQuickComment ms-2">
-                                                <a target="_blank">
-                                                    <img className="circularImage rounded-circle " title="Deepak Trivedi" data-toggle="popover" data-trigger="hover" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Deepak.jpg" data-themekey="#" />
-                                                </a>
-                                            </span>
-                                            <span ng-repeat="item in UserForQuickComment">
-                                                <a target="_blank">
-                                                    <img ng-show="item.Item_x0020_Cover!=undefined || item.Item_x0020_Cover!= null" className="circularImage rounded-circle " title="Stefan Hochhuth" data-toggle="popover" data-trigger="hover" ng-click="topCommentrs(item)" ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Stefan.jpg" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Stefan.jpg" data-themekey="#" />
-                                                </a>
-                                            </span>
-                                            <span ng-repeat="item in UserForQuickComment">
-                                                <a target="_blank">
-                                                    <img ng-show="item.Item_x0020_Cover!=undefined || item.Item_x0020_Cover!= null" className="circularImage rounded-circle " title="Robert Ungethuem" data-toggle="popover" data-trigger="hover" ng-click="topCommentrs(item)" ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Robert%20Ungethuem.png" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Robert%20Ungethuem.png" data-themekey="#" />
-                                                </a>
-                                            </span>
-                                            <span>
-                                                <a target="_blank">
-                                                    <img className="circularImage rounded-circle " title="Mattis Hahn" data-toggle="popover" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Mattis_Hahn.jpg' data-trigger="hover" data-themekey="#" />
-                                                </a>
-                                            </span>
-                                            <span className='ms-2'>
-                                                <textarea style={{ height: "26px" }} placeholder="Recipients Name" className="form-control" id="portfolioprofile"></textarea><span role="status" aria-live="polite" ></span>
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <textarea placeholder="Enter your comments here" className='form-control' ></textarea>
-                                            {/* <p className="ng-hide">
-                                            <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
-                                            Comment shouldn't be empty
-                                        </p> */}
-                                            <button title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
-                                                Post
-                                            </button>
-                                        </div>
 
-                                    </div>
+                                </div>
+                            )})} </>
+                               } 
+                                <div className='mb-3 card'>
+                                    <>
+                                    {data.map(item =>
+
+                                <CommentCard siteUrl={"https://hhhhteams.sharepoint.com/sites/HHHH/SP"} userDisplayName={item.userDisplayName} listName={"Master Tasks"} itemID={item.Id}></CommentCard>
+                                    
+)}
+</>
+                                  
                                 </div>
 
 

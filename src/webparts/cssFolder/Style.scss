@@ -5,8 +5,12 @@
 .ms-CommandBar-primaryCommand .ms-OverflowSet-item {
     display: none;
 }
+// REmove during live the project
 .t_e_8474018e{
     max-width: 1924px;
+}
+.CanvasComponent.LCS .CanvasZone {
+  margin: 0 auto !important;
 }
 .spfxbreadcrumb {
     list-style: none;
