@@ -11,7 +11,7 @@ import { FaHome } from 'react-icons/fa';
 
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SPComponentLoader } from '@microsoft/sp-loader';
-import { NavItem } from 'react-bootstrap';
+// import { NavItem } from 'react-bootstrap';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 
 SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css');
@@ -32,8 +32,8 @@ function Portfolio({ ID }: any) {
     const [FolderData, SetFolderData] = React.useState([]);
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
-        setIsActive(true);
-        item.show = item.show = item.show == true ? false : true;
+        setIsActive(false);
+        item.show = item.show == true ? false : true;
         setArray(array => ([...array]));
     };
     const handleOpen1 = (item: any) => {
@@ -131,10 +131,22 @@ function Portfolio({ ID }: any) {
         
   
         GetListItems();
+        open();
+        
     },
         []);
 
 
+        function open(){
+            data.map((item:any)=>{
+                handleOpen(item);
+                handleOpen1(item);
+                handleOpen2(item);
+                handleOpen3(item);
+                handleOpen4(item);
+
+            })
+        }
      
 
     var myarray: any = [];

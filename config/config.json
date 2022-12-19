@@ -73,6 +73,14 @@
           "manifest": "./src/webparts/taskSteps/TaskStepsWebPart.manifest.json"
         }
       ]
+    },
+    "hr-tool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hrTool/HrToolWebPart.js",
+          "manifest": "./src/webparts/hrTool/HrToolWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -102,6 +110,7 @@
     "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js",
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
-    "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js"
+    "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
+    "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js"
   }
 }
