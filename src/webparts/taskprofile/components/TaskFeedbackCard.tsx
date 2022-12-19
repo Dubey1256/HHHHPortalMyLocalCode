@@ -193,15 +193,15 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
       <div>
-        <div className="col-sm-12  pad0 manage_gap ng-scope" style={{width: '100%'}}>
-          <span className="pull-right">
-            <a className="md2 ng-binding" style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBox()}>Add Comment</a>
+        <div className="row">
+          <span className="text-end">
+            <a style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBox()}>Add Comment</a>
           </span>
 
-          <div className="col-sm-12 pad0" style={{width:'100%' , display:'flex'}}>
-            <div className="col-sm-1 mb-5 tmvalue impact-info5 pad0 bdrbox back-fb">
-              <span className="ng-binding">{this.state.index}.</span>
-              <ul className="padL-0 list-non">
+          <div className="d-flex">
+            <div className="border p-2">
+              <span>{this.state.index}.</span>
+              <ul>
               <li>
               {this.state.fbData['Completed'] != null && this.state.fbData['Completed'] &&
                 <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
@@ -215,23 +215,23 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               </ul>
             </div>
 
-            <div className="col-sm-12 mb-5 ml2 tmvalue impact-info95 padLR bdrbox">
-              <span className="ng-binding" dangerouslySetInnerHTML={{ __html: this.state.fbData['Title'] }}></span>
-              <div className="feedbackcomment col-sm-12 PadR0 mt-10">
+            <div className="border p-2 full-width">
+              <span  dangerouslySetInnerHTML={{ __html: this.state.fbData['Title'] }}></span>
+              <div className="row">
               {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments'].map( (fbComment:any,k:any)=> {
-                return <div className="col-sm-12 mb-2 add_cmnt ng-scope">
+                return <div className="row">
                           <div>
-                            <div className="col-sm-1 padL-0 wid35">
+                            <div className="col-sm-1">
                               <img className="AssignUserPhoto1" src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
                                   fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
                             </div>
-                            <div className="col-sm-11 pad0">
-                              <div className="ng-binding">
+                            <div className="col-sm-11 p-0">
+                              <div>
                               {fbComment.AuthorName} - {fbComment.Created}
                                 <a onClick={()=>this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
                                 <a onClick={()=>this.clearComment(false, k, 0)}><img src='/_layouts/images/delete.gif'></img></a>
                               </div>
-                              <div className="ng-binding">{fbComment.Title}</div>
+                              <div>{fbComment.Title}</div>
                             </div>
                           </div>
                         </div>
@@ -240,25 +240,24 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
           </div>
 
-          <div  className="col-sm-11  ng-scope" style={{display: this.state.showcomment}}>
-            <textarea id="txtComment" onChange={(e)=>this.handleInputChange(e)} style={{width:'100%'}} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
+          <div  className="col-sm-11 mt-2" style={{display: this.state.showcomment}}>
+            <textarea id="txtComment" onChange={(e)=>this.handleInputChange(e)}  className="form-control full-width" ></textarea>
           </div>
 
-          <div  className="col-sm-1 pad0  ng-scope" style={{display: this.state.showcomment}}>
+          <div  className="col-sm-1 p-0 mt-2 " style={{display: this.state.showcomment}}>
             <button type="button"  className="post btn btn-primary pull-right ng-binding" onClick={()=>this.PostButtonClick()}>Post</button>
           </div>
 
-          <div className="clearfix"></div>
         </div>
               
         {this.state.fbData['Subtext'] != null && this.state.fbData['Subtext'].length > 0 && this.state.fbData['Subtext'].map( (fbSubData:any,j:any)=> {
-        return <div className="col-sm-12 pad0 manage_gap ng-scope" style={{width: '100%'}}>
-            <span className="pull-right">
-            <a className="md2 ng-binding" style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBoxOfSubText()}>Add Comment</a>
+        return <div className="col-sm-12 p-0" style={{width: '100%'}}>
+            <span className="text-end">
+            <a  style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBoxOfSubText()}>Add Comment</a>
           </span>
 
-          <div className="col-sm-12 pad0" style={{width:'100%' , display:'flex'}}>
-            <div className="col-sm-1 mb-5 tmvalue impact-info5 pad0 bdrbox back-fb">
+          <div className="d-flex">
+            <div className="border p-2">
               <span className="ng-binding">{this.state.index}.{j+1}</span>
               <ul className="padL-0 list-non">
               <li>
@@ -274,7 +273,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               </ul>
             </div>
 
-            <div className="col-sm-12 mb-5 ml2 tmvalue impact-info95 padLR bdrbox">
+            <div className="border p-2 full-width">
               <span className="ng-binding">{fbSubData.Title.replace(/<[^>]*>/g, '')}</span>
               <div className="feedbackcomment col-sm-12 PadR0 mt-10">
               {fbSubData.Comments != null && fbSubData.Comments.length > 0 && fbSubData.Comments.map( (fbComment:any,k:any)=> {
@@ -299,17 +298,15 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
           </div>
 
-          <div  className="col-sm-11  ng-scope" style={{display: this.state.showcomment_subtext}}>
+          <div  className="col-sm-11 " style={{display: this.state.showcomment_subtext}}>
             <textarea id="txtCommentSubtext" onChange={(e)=>this.handleInputChange(e)} style={{width:'100%'}} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
           </div>
 
-          <div  className="col-sm-1 pad0  ng-scope" style={{display: this.state.showcomment_subtext}}>
-            <button type="button"  className="post btn btn-primary pull-right ng-binding" onClick={()=>this.SubtextPostButtonClick(j)}>Post</button>
+          <div  className="col-sm-1" style={{display: this.state.showcomment_subtext}}>
+            <button type="button"  className="post btn btn-primary" onClick={()=>this.SubtextPostButtonClick(j)}>Post</button>
           </div>
 
-          <div className="clearfix"></div>
-
-
+        
         </div>
         })}
 
