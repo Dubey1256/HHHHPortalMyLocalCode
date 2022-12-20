@@ -4,20 +4,28 @@ import { ITaskStepsProps } from './ITaskStepsProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { Web } from "sp-pnp-js";
 import { ThemeSettingName } from 'office-ui-fabric-react';
-
-
+import { Modal } from 'office-ui-fabric-react';
+import '../../cssFolder/foundation.scss';
+import '../../cssFolder/foundationmin.scss';
 
 export interface ITaskStepsState {  
   Result : any;
   listName : string;
   itemID : number;
   maxChildCount: number;
+  rows: any;
+  planData: any;
+  isModalOpen: boolean;
+  inputTaskTitle: string;
+  AllTask : any;
+  ParentTaskOnModal : any;
+  suggestions : any;
+  selectedText : string;
+  selectedID : number;
 }
 
 export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskStepsState> {
-
-  private totalCount = 0;
-  private needtorun = 0;
+  
   public constructor(props:ITaskStepsProps,state:ITaskStepsState){
     super(props);
     const params = new URLSearchParams(window.location.search);    
@@ -28,14 +36,23 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       Result:{},
       listName: params.get('Site'),
       itemID : Number(params.get('taskId')),
-      maxChildCount : 0      
+      maxChildCount : 0,
+      rows: [],   
+      planData:[],
+      isModalOpen: false,
+      inputTaskTitle:'' ,
+      AllTask : [],
+      ParentTaskOnModal : [],
+      suggestions: [],
+      selectedText : '',
+      selectedID : 0 
     }
-
     this.GetResult();
+    this.GetAllTask();
   }
 
  
-  private async GetResult() {
+  private async GetResult() {   
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let taskInfo = [];    
     taskInfo = await web.lists
@@ -46,14 +63,14 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       .get();
       
     console.log("SharewebTaskLevel1No - " +taskInfo['SharewebTaskLevel1No']);
-    console.log('12345');
+    console.log('test again 2');
    
     let taskDetails = [];    
     taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .filter("SharewebTaskLevel1No eq '"+ taskInfo['SharewebTaskLevel1No'] +"'")
-      .select("ID","Title","Shareweb_x0020_ID","SharewebTaskType/Title","Component/Title","ParentTask/Title","SharewebTaskLevel1No","SharewebTaskLevel2No")
+      .select("ID","Title","Shareweb_x0020_ID","SharewebTaskType/Title","Component/Title","ParentTask/Id","ParentTask/Title","SharewebTaskLevel1No","SharewebTaskLevel2No")
       .expand("SharewebTaskType","Component","ParentTask")
       .get();
 
@@ -71,24 +88,26 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
 
     let arrayDictionary:any = {};
 
+    
     //set parent element
     for (let index = 0; index < tempTask.length; index++) {
       const element = tempTask[index];
       if (tempTask[index].ParentTask == null){
-        arrayDictionary = tempTask[index];
+        arrayDictionary = tempTask[index];       
         arrayDictionary["children"] = [];
         break;
       }      
-    }
+    }   
+
    
     //get All the child of 2nd level
     for (let index = 0; index < tempTask.length; index++) {
-      const element = tempTask[index];
+      const element = tempTask[index];    
       if (tempTask[index].ParentTask != null){
-        if (arrayDictionary.Title == tempTask[index].ParentTask.Title){  
+        if (arrayDictionary.Title == tempTask[index].ParentTask.Title){          
           let temp = tempTask[index];
           temp["children"] = [];    
-          arrayDictionary["children"].push(tempTask[index]);        
+          arrayDictionary["children"].push(tempTask[index]);          
         } 
       }     
     }
@@ -106,7 +125,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       }
     }
 
-    //console.log(arrayDictionary);
+    console.log(arrayDictionary);
     let maxChildCount:any = 0;
     if(arrayDictionary != undefined){       
        for (let i = 0; i < arrayDictionary["children"].length; i++) {
@@ -116,22 +135,181 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
           maxChildCount = (element.children.length > maxChildCount) ? element.children.length : maxChildCount
         }
        }
+
+       let childOfMainParent = arrayDictionary["children"].filter(function (item:any, i:any){       
+            return item.SharewebTaskType.Title == "Task"
+        })
+
+        maxChildCount = (maxChildCount > childOfMainParent.length) ? maxChildCount : childOfMainParent.length;       
     }
     
+    let plannedData = [];
+    let plandt:any = {}
+
+    //set 1 row 1 column
+    plandt = {
+      ID : arrayDictionary.ID,
+      TaskTitle : arrayDictionary.Title,
+      SharewebTaskLevel1No : arrayDictionary.SharewebTaskLevel1No,
+      child:[]
+    }
+    plannedData.push(plandt);
+    
+    for (let i = 0; i < arrayDictionary["children"].length; i++){
+      const children = arrayDictionary["children"][i];
+      if (children.SharewebTaskType.Title == "Task")
+      {
+        let child = {
+          SubTitle : children.Title,
+          ParentTask : children.ParentTask
+        }
+        plannedData[0].child.push(child);
+      }
+      else{
+        let plandt = {
+          ID : children.ID,
+          TaskTitle : children.Title,
+          SharewebTaskLevel1No : children.SharewebTaskLevel1No,
+          child:[] as any[]
+        }
+        plannedData.push(plandt);
+      }
+    }
+
+    for (let index = 0; index < plannedData.length; index++) {
+      const element = plannedData[index];
+      if(index != 0){
+        for (let i = 0; i < arrayDictionary["children"].length; i++){
+          const childs = arrayDictionary["children"][i];         
+            for (let j = 0; j < childs["children"].length; j++) {
+              const element = childs["children"][j];
+              if(plannedData[index].TaskTitle == element.ParentTask.Title){
+                let child = {
+                  SubTitle : element.Title,
+                  ParentTask : element.ParentTask
+                }
+                plannedData[index].child.push(child);
+              }        
+            }         
+          }
+      }      
+    }
+
+    for (let index = 0; index < plannedData.length; index++) {
+      if (maxChildCount > plannedData[index].child.length){
+        let itemToRun = maxChildCount - plannedData[index].child.length;
+        for (let j=0; j< itemToRun; j++)
+        {
+          console.log(j);
+          plannedData[index].child.push(null);
+        }
+          //plannedData[index].child = [...plannedData[index].child, (maxChildCount - plannedData[index].child.length)]
+      }
+    }
    
+    console.log(plannedData);
+
     this.setState({
-      Result : arrayDictionary,
+      Result : plannedData,
       maxChildCount : maxChildCount
     }, () => {
       console.log(this.state.Result);
       console.log("max child count" + this.state.maxChildCount);
+      
     }
     );     
   }
 
-  private getParentTask(){
+  private async GetAllTask(){
+    let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
+    let taskInfo = [];    
+    taskInfo = await web.lists
+      .getByTitle(this.state.listName)     
+      .items
+      .filter("SharewebTaskType/Title eq 'Task'")
+      .select("ID","Title","SharewebTaskType/Title","ParentTask/Title")
+      .expand("SharewebTaskType","ParentTask")
+      .getAll(4000);
+
+    console.log('All Item Count - '+taskInfo.length);
+    this.setState({
+      AllTask : taskInfo
+    })
+  }
+
+  private AddColumn(){
+    let plannedDT = this.state.Result;
+    plannedDT.forEach((element:any) => {
+      element.child.push(null);
+    });
+
+    this.setState({
+      Result : plannedDT
+    })
+  }
+
+  private openModal(item:any){
+    console.log(item);
+    this.setState({
+      isModalOpen : true,
+      ParentTaskOnModal : item
+    })
+  }
+
+  //close the model
+  private CloseModal(e:any) {
+    e.preventDefault();
+    this.setState({ 
+      isModalOpen:false,
+      ParentTaskOnModal : []
+    });
+  }
+
+  private handleTitle(e:any){
+    const value = e.target.value;
+    let suggestions = [];
+    if(value.length > 0){   
+        suggestions = this.state.AllTask.filter(function (item:any, i:any){
+            if(item["Title"] != null){
+                return item["Title"].toLowerCase().indexOf(value.toLowerCase().trim()) > -1
+            }            
+            
+        });
+        console.log(suggestions);
+    }
+    this.setState({ suggestions, selectedText: value })
+  }
+
+  private suggestionSelected(item:any){
+    console.log(item);
+    this.setState({
+        selectedText : item.Title,
+        selectedID : item.ID,  
+        suggestions : []
+    })
+  }
+
+  private async AttachTask(){
+    if(this.state.selectedText != "" ){
+      let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
+      const i = await web.lists.getByTitle(this.state.listName)
+              .items
+              .getById(this.state.selectedID).update({
+                ParentTaskId: this.state.ParentTaskOnModal.ID,
+                SharewebTaskLevel1No : this.state.ParentTaskOnModal.SharewebTaskLevel1No
+              });
+      this.setState({
+        selectedText : "",
+        isModalOpen:false,
+        selectedID:0
+      }, ()=> this.GetResult())
+    }
+    else{
+      alert('Please select any task to attach.')
+    }
     
   }
+
 
   public render(): React.ReactElement<ITaskStepsProps> {
     const {
@@ -146,60 +324,65 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       <div>
         {this.state.Result != null &&
           <div>
-            <table className={styles.tabletaskSteps}>
-              <tr>
-                <td>
-                  <b>{this.state.Result.Title}</b>
-                </td>
-                {this.state.Result.children != undefined && 
-                  this.state.Result.children.length >0 &&
-                  this.state.Result.children.map( (children:any,i:any)=> {                    
-                    if (children.SharewebTaskType.Title == "Task"){
-                      this.totalCount = i+1
-                      return <td>
-                            {children.Title}
-                          </td>
-                      }
-                                
-                    
-                })}
-                {(this.state.maxChildCount - this.totalCount) > 0 && [...Array(this.state.maxChildCount - this.totalCount)].map((i:any) =>{
-                     return <td>
-                           </td>
-               
-                }) 
-                }                
-                
-              </tr>
-              {this.state.Result.children != undefined && 
-                  this.state.Result.children.length >0 &&
-                  this.state.Result.children.map( (children:any,i:any)=> { 
-                    if (children.SharewebTaskType.Title != "Task"){
-                      return <tr>
-                              <td>
-                                <b>{children.Title}</b>
-                              </td>
-                            {children.children != undefined &&
-                            children.children.length > 0 &&
-                            children.children.map((child:any,j:any)=>{
-                              this.totalCount = j+1
-                              return <td>
-                                {child.Title}
-                              </td>
-                            })}
-
-                            {(this.state.maxChildCount - this.totalCount) > 0 && [...Array(this.state.maxChildCount - this.totalCount)].map((i:any) =>{
-                              return <td>
-                              </td>
-               
-                            })}
-
-                          </tr>
-                    }  
-                  })}
-            </table>
+            <div className='col-sm-12 pad0'>
+              <span className="pull-right">
+                <img src={require('../assets/plus.png')} onClick={()=> this.AddColumn() } />
+              </span>
+            </div>
+            <div className='col-sm-12 pad0'>
+              <table className={styles.tabletaskSteps}>
+                {this.state.Result.length > 0 &&
+                 this.state.Result.map( (row:any,i:any)=> { 
+                  return <tr>
+                    <td>
+                    <b>{row.TaskTitle}</b>
+                    </td>
+                    {
+                      row.child != null &&
+                      row.child.length > 0 &&
+                      row.child.map( (col:any,i:any)=> { 
+                        return <td>
+                          {(col != null) ? col.SubTitle : 
+                            <span className="pull-right">
+                              <a onClick={()=>this.openModal(row)}>Add task</a>
+                            </span>
+                          }
+                        </td>
+                      })
+                    }
+                  </tr>
+                 })}                
+              </table> 
+            </div>            
           </div>
         }
+        <Modal isOpen={this.state.isModalOpen} isBlocking={false}>
+          <div className='modal-dialog modal-help'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                  <h3 className='modal-title'>Attach the Task</h3>
+                  <button type="button" className='close' style={{minWidth: "10px"}} onClick={(e) =>this.CloseModal(e) }>x</button>
+              </div>
+              <div className='modal-body'>
+              <div className={styles.AutoCompleteText}>
+                <input type="text" className="form-control" value={this.state.selectedText}
+                    placeholder="Task Name" onChange={(e)=>this.handleTitle(e)}/>
+                <ul>    
+                {this.state.suggestions.length > 0 && this.state.suggestions != undefined && this.state.suggestions.length > 0 &&
+                 this.state.suggestions.map( (item:any,i:any)=> { 
+                    return <li onClick={()=>this.suggestionSelected(item)}>{item.Title}</li>
+                 })
+                }
+                </ul>
+            </div>                   
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-primary" onClick={() =>this.AttachTask() } >Save</button>
+                <button type="button" className="btn btn-default" onClick={(e) =>this.CloseModal(e) }>Cancel</button>
+              </div>
+            </div>
+          </div>          
+          </Modal>
       </div>
     );
   }
