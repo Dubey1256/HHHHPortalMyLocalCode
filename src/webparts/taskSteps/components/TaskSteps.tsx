@@ -22,6 +22,7 @@ export interface ITaskStepsState {
   suggestions : any;
   selectedText : string;
   selectedID : number;
+  cellNo: number;
 }
 
 export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskStepsState> {
@@ -45,7 +46,8 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       ParentTaskOnModal : [],
       suggestions: [],
       selectedText : '',
-      selectedID : 0 
+      selectedID : 0, 
+      cellNo : 0
     }
     this.GetResult();
     this.GetAllTask();
@@ -70,7 +72,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       .getByTitle(this.state.listName)
       .items
       .filter("SharewebTaskLevel1No eq '"+ taskInfo['SharewebTaskLevel1No'] +"'")
-      .select("ID","Title","Shareweb_x0020_ID","SharewebTaskType/Title","Component/Title","ParentTask/Id","ParentTask/Title","SharewebTaskLevel1No","SharewebTaskLevel2No")
+      .select("ID","Title","Shareweb_x0020_ID","SharewebTaskType/Title","Component/Title","ParentTask/Id","ParentTask/Title","SharewebTaskLevel1No","SharewebTaskLevel2No","StepNo")
       .expand("SharewebTaskType","Component","ParentTask")
       .get();
 
@@ -83,22 +85,27 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
         ParentTask: i.ParentTask != undefined ? i.ParentTask : null,
         Component:  i.Component,
         SharewebTaskLevel1No : i.SharewebTaskLevel1No,
-        SharewebTaskLevel2No : i.SharewebTaskLevel2No
+        SharewebTaskLevel2No : i.SharewebTaskLevel2No,
+        StepNo : i.StepNo != null ? i.StepNo : 1
     })});  
 
     let arrayDictionary:any = {};
-
+    let maxStepNo = 1;
     
     //set parent element
     for (let index = 0; index < tempTask.length; index++) {
       const element = tempTask[index];
+
       if (tempTask[index].ParentTask == null){
         arrayDictionary = tempTask[index];       
         arrayDictionary["children"] = [];
-        break;
-      }      
+        //break;
+      }
+      //set max count value
+      maxStepNo = (maxStepNo > tempTask[index].StepNo) ? maxStepNo : tempTask[index].StepNo;
     }   
 
+    console.log('max step count - '+ maxStepNo);
    
     //get All the child of 2nd level
     for (let index = 0; index < tempTask.length; index++) {
@@ -140,9 +147,12 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
             return item.SharewebTaskType.Title == "Task"
         })
 
-        maxChildCount = (maxChildCount > childOfMainParent.length) ? maxChildCount : childOfMainParent.length;       
+        maxChildCount = (maxChildCount > childOfMainParent.length) ? maxChildCount : childOfMainParent.length; 
+        maxChildCount = (maxChildCount > maxStepNo) ? maxChildCount : maxStepNo;
+        
     }
     
+    console.log("max child count - "+maxChildCount);
     let plannedData = [];
     let plandt:any = {}
 
@@ -155,13 +165,16 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
     }
     plannedData.push(plandt);
     
+    //set child Task of main element
     for (let i = 0; i < arrayDictionary["children"].length; i++){
       const children = arrayDictionary["children"][i];
       if (children.SharewebTaskType.Title == "Task")
       {
         let child = {
+          ID : children.ID,
           SubTitle : children.Title,
-          ParentTask : children.ParentTask
+          ParentTask : children.ParentTask,
+          StepNo : children.StepNo
         }
         plannedData[0].child.push(child);
       }
@@ -176,6 +189,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       }
     }
 
+    //set child Task of workstream element
     for (let index = 0; index < plannedData.length; index++) {
       const element = plannedData[index];
       if(index != 0){
@@ -185,8 +199,10 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
               const element = childs["children"][j];
               if(plannedData[index].TaskTitle == element.ParentTask.Title){
                 let child = {
+                  ID : element.ID,
                   SubTitle : element.Title,
-                  ParentTask : element.ParentTask
+                  ParentTask : element.ParentTask,
+                  StepNo : element.StepNo
                 }
                 plannedData[index].child.push(child);
               }        
@@ -195,16 +211,29 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       }      
     }
 
+    //add blank element if child count is less than max count
     for (let index = 0; index < plannedData.length; index++) {
       if (maxChildCount > plannedData[index].child.length){
         let itemToRun = maxChildCount - plannedData[index].child.length;
         for (let j=0; j< itemToRun; j++)
         {
-          console.log(j);
-          plannedData[index].child.push(null);
-        }
-          //plannedData[index].child = [...plannedData[index].child, (maxChildCount - plannedData[index].child.length)]
+          //console.log(j);
+          plannedData[index].child.push({StepNo : maxChildCount- (j+1)});
+        }         
       }
+    }
+
+    //sort child element based on step no
+    for (let index = 0; index < plannedData.length; index++) {
+      //const element = plannedData[index].child;
+      plannedData[index].child.sort(function(a:any, b:any) {
+        let keyA = a.StepNo,
+          keyB = b.StepNo;
+        // Compare the 2 values
+        if (keyA > keyB) return 1;
+        if (keyA < keyB) return -1;
+        return 0;
+      });
     }
    
     console.log(plannedData);
@@ -240,20 +269,24 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
   private AddColumn(){
     let plannedDT = this.state.Result;
     plannedDT.forEach((element:any) => {
-      element.child.push(null);
+      element.child.push({StepNo : this.state.maxChildCount + 1});
     });
 
     this.setState({
-      Result : plannedDT
+      Result : plannedDT,
+      maxChildCount : this.state.maxChildCount + 1
     })
   }
 
-  private openModal(item:any){
+  private openModal(item:any, stepNo:number){
     console.log(item);
+   
     this.setState({
       isModalOpen : true,
-      ParentTaskOnModal : item
-    })
+      ParentTaskOnModal : item,
+      cellNo : stepNo + 1
+    }, ()=> console.log('Cell no - '+ this.state.cellNo))
+    
   }
 
   //close the model
@@ -261,7 +294,8 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
     e.preventDefault();
     this.setState({ 
       isModalOpen:false,
-      ParentTaskOnModal : []
+      ParentTaskOnModal : [],
+      cellNo : 0
     });
   }
 
@@ -296,18 +330,20 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
               .items
               .getById(this.state.selectedID).update({
                 ParentTaskId: this.state.ParentTaskOnModal.ID,
-                SharewebTaskLevel1No : this.state.ParentTaskOnModal.SharewebTaskLevel1No
+                SharewebTaskLevel1No : this.state.ParentTaskOnModal.SharewebTaskLevel1No,
+                StepNo : this.state.cellNo
               });
       this.setState({
         selectedText : "",
         isModalOpen:false,
-        selectedID:0
+        selectedID:0,
+        ParentTaskOnModal : [],
+        cellNo : 0
       }, ()=> this.GetResult())
     }
     else{
       alert('Please select any task to attach.')
-    }
-    
+    }    
   }
 
 
@@ -326,7 +362,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
           <div>
             <div className='col-sm-12 pad0'>
               <span className="pull-right">
-                <img src={require('../assets/plus.png')} onClick={()=> this.AddColumn() } />
+                <img src={require('../assets/plus.png')} onClick={()=> this.AddColumn() } style={{marginRight:'5px'}} />
               </span>
             </div>
             <div className='col-sm-12 pad0'>
@@ -340,11 +376,12 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
                     {
                       row.child != null &&
                       row.child.length > 0 &&
-                      row.child.map( (col:any,i:any)=> { 
+                      row.child.map( (col:any,i:number)=> { 
                         return <td>
-                          {(col != null) ? col.SubTitle : 
-                            <span className="pull-right">
-                              <a onClick={()=>this.openModal(row)}>Add task</a>
+                          {(col.ID != null) ? col.SubTitle : 
+                            <span className="pull-right" style={{cursor:'pointer' }}>
+                              {/*<a className='hreflink' onClick={()=>this.openModal(row, i)}>Add task</a> */}
+                              <img src={require('../assets/attach.png')} onClick={()=> this.openModal(row, i) } />
                             </span>
                           }
                         </td>
