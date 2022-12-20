@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios, { AxiosResponse } from 'axios';
-import { BiTime, BiCalendar } from 'react-icons/Bi';
+import { BiTime, BiCalendar } from 'react-icons/bi';
 import '../../cssFolder/foundation.scss';
 import '../../cssFolder/foundationmin.scss';
 
