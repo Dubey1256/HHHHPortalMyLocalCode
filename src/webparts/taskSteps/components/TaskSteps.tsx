@@ -72,7 +72,7 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
       .getByTitle(this.state.listName)
       .items
       .filter("SharewebTaskLevel1No eq '"+ taskInfo['SharewebTaskLevel1No'] +"'")
-      .select("ID","Title","Shareweb_x0020_ID","SharewebTaskType/Title","Component/Title","ParentTask/Id","ParentTask/Title","SharewebTaskLevel1No","SharewebTaskLevel2No","StepNo")
+      .select("ID","Title","DueDate","PercentComplete","Shareweb_x0020_ID","SharewebTaskType/Title","Component/Title","ParentTask/Id","ParentTask/Title","SharewebTaskLevel1No","SharewebTaskLevel2No","StepNo")
       .expand("SharewebTaskType","Component","ParentTask")
       .get();
 
@@ -86,8 +86,10 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
         Component:  i.Component,
         SharewebTaskLevel1No : i.SharewebTaskLevel1No,
         SharewebTaskLevel2No : i.SharewebTaskLevel2No,
-        StepNo : i.StepNo != null ? i.StepNo : 1
-    })});  
+        StepNo : i.StepNo != null ? i.StepNo : 1,
+        PercentComplete : i.PercentComplete * 100,
+        DueDate : i.DueDate != null ? (new Date(i.DueDate)).toLocaleDateString() : '',
+    })});   
 
     let arrayDictionary:any = {};
     let maxStepNo = 1;
@@ -174,7 +176,9 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
           ID : children.ID,
           SubTitle : children.Title,
           ParentTask : children.ParentTask,
-          StepNo : children.StepNo
+          StepNo : children.StepNo,
+          PercentComplete : children.PercentComplete,
+          DueDate : children.DueDate
         }
         plannedData[0].child.push(child);
       }
@@ -202,7 +206,9 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
                   ID : element.ID,
                   SubTitle : element.Title,
                   ParentTask : element.ParentTask,
-                  StepNo : element.StepNo
+                  StepNo : element.StepNo,
+                  PercentComplete : element.PercentComplete,
+                  DueDate : element.DueDate
                 }
                 plannedData[index].child.push(child);
               }        
@@ -326,20 +332,37 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
   private async AttachTask(){
     if(this.state.selectedText != "" ){
       let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
-      const i = await web.lists.getByTitle(this.state.listName)
+      if (this.state.selectedID != 0){
+        const i = await web.lists.getByTitle(this.state.listName)
               .items
               .getById(this.state.selectedID).update({
                 ParentTaskId: this.state.ParentTaskOnModal.ID,
                 SharewebTaskLevel1No : this.state.ParentTaskOnModal.SharewebTaskLevel1No,
                 StepNo : this.state.cellNo
               });
+      }
+      else{
+      const i = await web.lists.getByTitle(this.state.listName)
+              .items
+              .add({
+                Title: this.state.selectedText,
+                ParentTaskId: this.state.ParentTaskOnModal.ID,
+                SharewebTaskLevel1No : this.state.ParentTaskOnModal.SharewebTaskLevel1No,
+                StepNo : this.state.cellNo,
+                SharewebTaskTypeId : 2
+              });
+      }      
+
       this.setState({
         selectedText : "",
         isModalOpen:false,
         selectedID:0,
         ParentTaskOnModal : [],
         cellNo : 0
-      }, ()=> this.GetResult())
+      }, ()=> {
+        this.GetResult();
+        this.GetAllTask();
+      })
     }
     else{
       alert('Please select any task to attach.')
@@ -378,10 +401,11 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
                       row.child.length > 0 &&
                       row.child.map( (col:any,i:number)=> { 
                         return <td>
-                          {(col.ID != null) ? col.SubTitle : 
+                         {(col.ID != null) ? 
+                           <div><div>{col.SubTitle + " ("+col.PercentComplete+"%)"}</div><div>{col.DueDate != null && (col.DueDate)}</div></div>   :
                             <span className="pull-right" style={{cursor:'pointer' }}>
                               {/*<a className='hreflink' onClick={()=>this.openModal(row, i)}>Add task</a> */}
-                              <img src={require('../assets/attach.png')} onClick={()=> this.openModal(row, i) } />
+                              <img src={require('../assets/plus-math.png')} onClick={()=> this.openModal(row, i) } />
                             </span>
                           }
                         </td>
