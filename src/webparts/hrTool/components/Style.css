@@ -109,7 +109,7 @@ button.btn.btn-primary.btn-sm {
 }
 .Salaryheading{
     color: #000b5c;
-    border-bottom: 2px solid #000b5c;
+    border-bottom: 1px solid #000b5c;
     width: 100%;
 }
 .CreateSalarySlip {
@@ -691,3 +691,79 @@ color: #fff;
     }
 
  /*************** HTAB ENDS *************/
+
+
+
+/*************** Edit EmployeeInfo Popup Start *************/
+
+ /* #BASICINFORMATION:checked~section .BASICINFORMATION,
+#IMAGEINFORMATION:checked~section .IMAGEINFORMATION,
+#BANKINFORMATION:checked~section .BANKINFORMATION,
+#TAXINFORMATION:checked~section .TAXINFORMATION,
+#SOCIALSECURITYINFORMATION:checked~section .SOCIALSECURITYINFORMATION,
+#EDITQUALIFICATIONS:checked~section .EDITQUALIFICATIONS {
+    display: block;
+}
+
+#BASICINFORMATION:checked~nav .BASICINFORMATION,
+#IMAGEINFORMATION:checked~nav .IMAGEINFORMATION,
+#BANKINFORMATION:checked~nav .BANKINFORMATION,
+#TAXINFORMATION:checked~nav .TAXINFORMATION,
+#SOCIALSECURITYINFORMATION:checked~nav .SOCIALSECURITYINFORMATION,
+#EDITQUALIFICATIONS:checked~nav .EDITQUALIFICATIONS {
+    color: #000069;
+}
+
+#BASICINFORMATION:checked~nav .BASICINFORMATION label,
+#IMAGEINFORMATION:checked~nav .IMAGEINFORMATION label,
+#BANKINFORMATION:checked~nav .BANKINFORMATION label,
+#TAXINFORMATION:checked~nav .TAXINFORMATION label,
+#SOCIALSECURITYINFORMATION:checked~nav .SOCIALSECURITYINFORMATION label,
+#EDITQUALIFICATIONS:checked~nav .EDITQUALIFICATIONS label {
+    background: white;
+    color: #000069;
+    position: relative;
+}
+
+#BASICINFORMATION:checked~nav .BASICINFORMATION label:before,
+#IMAGEINFORMATION:checked~nav .IMAGEINFORMATION label:before,
+#BANKINFORMATION:checked~nav .BANKINFORMATION label:before,
+#TAXINFORMATION:checked~nav .TAXINFORMATION label:before,
+#SOCIALSECURITYINFORMATION:checked~nav .SOCIALSECURITYINFORMATION label:before,
+#EDITQUALIFICATIONS:checked~nav .EDITQUALIFICATIONS label:before {
+    border-top: 3px solid #000069;
+    content: "";
+    display: block;
+    position: absolute;
+    height: 2px;
+    top: -1px;
+    width: 100%;
+    left: 0;
+}
+
+#BASICINFORMATION:checked~nav .BASICINFORMATION label:after,
+#IMAGEINFORMATION:checked~nav .IMAGEINFORMATION label:after,
+#BANKINFORMATION:checked~nav .BANKINFORMATION label:after,
+#TAXINFORMATION:checked~nav .TAXINFORMATION label:after,
+#SOCIALSECURITYINFORMATION:checked~nav .SOCIALSECURITYINFORMATION label:after,
+#EDITQUALIFICATIONS:checked~nav .EDITQUALIFICATIONS label:after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: #ffffff;
+    left: 0;
+    bottom: -1px;
+}
+.emp-tab ul li label {
+    float: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-bottom: 0;
+    background: #f8f8f8;
+    color: #444;
+    text-transform: uppercase;
+    font-size: 13px;
+} */
+
