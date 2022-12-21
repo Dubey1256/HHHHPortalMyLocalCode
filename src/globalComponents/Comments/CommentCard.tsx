@@ -75,7 +75,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
    
     await this.GetTaskUsers();
 
-    this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
+    //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
 
     let tempTask = {      
       ID: 'T'+taskDetails["ID"],

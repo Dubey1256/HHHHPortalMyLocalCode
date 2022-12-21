@@ -1,11 +1,13 @@
 import * as React from 'react';
-import './styles.css';
+//import './styles.css';
+import "../../cssFolder/Style.scss";
+import "../../cssFolder/site_color.scss";
 type Props = {
   title: string
 }
 
 const Tab = ({ children }:any) => {
-  return <div className="nav nav-tabs nav nav-pills " >{children}</div>
+  return <div className="tab-content border border-top-0 clearfix" >{children}</div>
 }
 
 export default Tab

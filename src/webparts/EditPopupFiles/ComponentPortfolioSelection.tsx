@@ -18,7 +18,7 @@ const ComponentPortPolioPopup = (item: any) => {
         []);
     function Example(callBack: any) {
 
-        item.Call();
+        item.Call(callBack.props);
 
     }
     const setModalIsOpenToFalse = () => {
