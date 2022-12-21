@@ -307,7 +307,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 <dd className='bg-light'></dd>
               </dl>
             </div>
-            <div className='col-md-4'>
+            <div className='col-md-4 p-0'>
             <dl>
                 <dt className='bg-fxdark'>Team Members</dt>
                 <dd className='bg-light'>
@@ -374,7 +374,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               
 
             </div>
-            <div className='col-md-4'>
+            <div className='col-md-4 p-0'>
             <dl className='d-grid text-right'><span className="pull-right"> <a  target='_blank' href={this.oldTaskLink} style={{cursor: "pointer"}}>Old Task Profile</a></span></dl>
             <dl>
 
@@ -391,7 +391,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <dl className="Sitecomposition">
                 {this.state.Result["ClientTime"] !=null && this.state.Result["ClientTime"].length > 0 &&
                   <div className='dropdown'>
-                 <a className="btn btn-secondary" onClick={()=>this.showhideComposition()}>
+                 <a className="btn btn-secondary bg-fxdark " onClick={()=>this.showhideComposition()}>
                       <span >{this.state.showComposition ?<IoMdArrowDropdown /> :  <IoMdArrowDropright />}</span><span>Site Composition</span>
                     </a>
                   <div  className="spxdropdown-menu"  style={{display:this.state.showComposition ? 'block': 'none'}}>
@@ -422,7 +422,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           <div className='row'>
           <div className="d-flex p-0">
              <div className='bg-fxdark p-2'><label>Url</label></div> 
-              <div className='bg-light p-2'>
+              <div className='bg-light p-2 text-break'>
               {this.state.Result["component_url"] != null &&
                       <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a> 
                     }
