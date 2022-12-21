@@ -9,8 +9,8 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'TaskDashboardWebPartStrings';
-import TaskDashboard from './components/TaskDashboard';
-import { ITaskDashboardProps } from './components/ITaskDashboardProps';
+import TaskDashboard from './components/Dashboard';
+import { IDashboardProps } from './components/IDashboardProps';
 
 export interface ITaskDashboardWebPartProps {
   description: string;
@@ -22,7 +22,7 @@ export default class TaskDashboardWebPart extends BaseClientSideWebPart<ITaskDas
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ITaskDashboardProps> = React.createElement(
+    const element: React.ReactElement<IDashboardProps> = React.createElement(
       TaskDashboard,
       {
         description: this.properties.description,
