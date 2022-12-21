@@ -3,7 +3,7 @@ import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
 //import { IDashboardProps } from './IDashboardProps';
 import axios, { AxiosResponse } from 'axios';
-import { BiTime, BiCalendar } from 'react-icons/Bi';
+import { BiTime, BiCalendar } from 'react-icons/bi';
 import '../../cssFolder/foundation.scss'
 import Clienttask from './ClientTask';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
