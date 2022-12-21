@@ -1,42 +1,38 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
-//import { IDashboardProps } from './IDashboardProps';
 import axios, { AxiosResponse } from 'axios';
-import { BiTime, BiCalendar } from 'react-icons/bi';
-import '../../cssFolder/foundation.scss'
+//import { BiTime, BiCalendar } from 'react-icons/Bi';
 import Clienttask from './ClientTask';
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
-//import Calendar from 'react-calendar';
+import { FaAngleDown, FaAngleUp} from 'react-icons/fa';
 import * as Moment from 'moment';
 import { HiOutlineDocumentText } from 'react-icons/Hi';
 import './TaskDashboard.scss';
-import EditInstitution from './EditInstitution';
-//import { Items } from 'sp-pnp-js';
-import TeamComposition from './TeamComposition';
+import EditTaskPopup from './EditTaskPopup/EditTaskPopup'
 
 
 
-const TaskDashboards = (props: any) => {
+
+const TaskDashboard = (props: any) => {
     var CurrentDay = Moment().format("dddd");
 
     var CurrentDate = Moment().format("D");
     var CurrentMonth = Moment().format("MMM");
     var SiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH';
     var CurrentUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/sp';
-    var isCreatedByFilter = false;
-    var isModifiedByFilter = false;
-    var isTeamLeaderByFilter = false;
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [order, setOrder] = React.useState('ASC');
 
     const [users, setUserList] = React.useState([]);
     const [AllTasks, setAllTasks] = React.useState([]);
-     const [isComponentVisible, setIsComponentVisible] = React.useState(false);
+    const [isComponentVisible, setIsComponentVisible] = React.useState(false);
     const [values, setValues] = React.useState([]);
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [taskUser, settaskUser] = React.useState([]);
+    const[isOpenEditPopup,setisOpenEditPopup] = React.useState(false)
     const [value, onChange] = React.useState(new Date());
+    const [clickBtnShow, setClickBtnShow] = React.useState(true);
+    const [passdata, setpassdata] = React.useState('');
     var AllMetaData: any = []
     var taskUsers: any = []
     var SitesConfig: any = []
@@ -47,15 +43,13 @@ const TaskDashboards = (props: any) => {
     React.useEffect(() => {
         showProgressBar();
         LoadMetaData();
-        
-
 
     }, []);
 
     let handleChange = (e: { target: { value: any; }; }, item: any) => {
         setSearch(e.target.value.toLowerCase());
 
-        if (item == 'Title') {
+        if (item === 'Title') {
             let searcjQery = e.target.value.toLowerCase(),
                 displayedContacts = AllTasks.filter((el) => {
                     let searchValue = (el.Title.toLowerCase())
@@ -63,7 +57,7 @@ const TaskDashboards = (props: any) => {
                 })
             setAllTasks(displayedContacts)
         }
-        if (item == 'Shareweb_x0020_ID') {
+        if (item === 'Shareweb_x0020_ID') {
             let searcjQery = e.target.value.toLowerCase(),
                 displayedContacts = AllTasks.filter((el) => {
                     let searchValue = (el.Shareweb_x0020_ID.toLowerCase())
@@ -71,7 +65,7 @@ const TaskDashboards = (props: any) => {
                 })
             setAllTasks(displayedContacts)
         }
-        if (item == 'PercentComplete') {
+        if (item === 'PercentComplete') {
             let searcjQery = e.target.value,
                 displayedContacts = AllTasks.filter((el) => {
 
@@ -83,7 +77,7 @@ const TaskDashboards = (props: any) => {
         }
     }
     const sortBy = (col: any) => {
-
+        setClickBtnShow(false);
         if (order === 'ASC') {
             const sorted = [...AllTasks].sort((a, b) =>
                 a[col] > b[col] ? 1 : -1
@@ -93,7 +87,15 @@ const TaskDashboards = (props: any) => {
 
         }
     }
+    const EditPopup=React.useCallback((item:any)=>{
+        setisOpenEditPopup(true)
+        setpassdata(item)
+    },[])
+    const CallBack =React.useCallback(()=>{
+        setisOpenEditPopup(false)
+    },[])
     const sortByDes = (col: any) => {
+        setClickBtnShow(true);
         if (order === 'DSC') {
             const sorted = [...AllTasks].sort((a, b) =>
                 a[col] < b[col] ? 1 : -1
@@ -129,7 +131,7 @@ const TaskDashboards = (props: any) => {
                     item.Group = filterItem.TaxType;
                     item.TaxType = filterItem.TaxType;
                     item.expanded = false;
-                    if (filterItem.ParentID == 0) {
+                    if (filterItem.ParentID === 0) {
                         getChilds(item, ClientCategoryData);
                         if (!isItemExists(ClientCategoryData, item))
                             ClientCategoryData.push(item);
@@ -137,17 +139,17 @@ const TaskDashboards = (props: any) => {
                 })
                 var PriorityRank = getSmartMetadataItemsByTaxType(AllMetaData, 'Priority Rank');
                 metadatItem.map(function (index: any, item: any) {
-                    if (item.Title == 'Task' && item.TaxType == 'Categories') {
+                    if (item.Title === 'Task' && item.TaxType === 'Categories') {
                         metadatItem.splice(index, 1);
                     }
                 })
 
-                if (CurrentSiteType == '/team')
+                if (CurrentSiteType === '/team')
                     CurrentTaskType = 'teamSites';
                 else
                     CurrentTaskType = 'Sites';
                 AllMetaData.map(function (item: any) {
-                    if (item.TaxType != undefined && (item.TaxType == 'Categories' || item.TaxType == 'Followup' || item.TaxType == 'Priority Rank' || item.TaxType == 'Timing' || item.TaxType == CurrentTaskType)) {
+                    if (item.TaxType != undefined && (item.TaxType === 'Categories' || item.TaxType === 'Followup' || item.TaxType === 'Priority Rank' || item.TaxType === 'Timing' || item.TaxType === CurrentTaskType)) {
                         TaskTypeItems.push(item);
                     }
                 })
@@ -158,16 +160,16 @@ const TaskDashboards = (props: any) => {
 
                 var GroupCategories = [];
                 $.each(AllMetaData, (item: any) => {
-                    if (item.Id == 13 || item.Id == 12 || item.Id == 11 || item.Id == 282 || item.Id == 191) {
-                        if (item.Title == 'Development') {
+                    if (item.Id === 13 || item.Id === 12 || item.Id === 11 || item.Id === 282 || item.Id === 191) {
+                        if (item.Title === 'Development') {
                             item.newsortOrder = 1;
-                        } else if (item.Title == 'Implementation') {
+                        } else if (item.Title === 'Implementation') {
                             item.newsortOrder = 2;
-                        } else if (item.Title == 'Bug') {
+                        } else if (item.Title === 'Bug') {
                             item.newsortOrder = 3;
-                        } else if (item.Title == 'Design') {
+                        } else if (item.Title === 'Design') {
                             item.newsortOrder = 4;
-                        } else if (item.Title == 'Improvement') {
+                        } else if (item.Title === 'Improvement') {
                             item.newsortOrder = 5;
                         }
                         item.expanded = false;
@@ -177,10 +179,10 @@ const TaskDashboards = (props: any) => {
                     }
                 });
                 GroupCategories.push({ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(322)", "uri": "https://www.hochhuth-consulting.de/sp/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(322)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 322, "Title": "Others", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": null, "TaxType": "TimesheetCategories", "Selectable": true, "ParentID": null, "SmartSuggestions": false, "ID": null, "expanded": false, "childs": [], "flag": true, newsortOrder: 6 });
-               
-        loadGmBHTaskUsers();
-        loadAdminConfigurations();
-        loadTaskUsers();
+
+                loadGmBHTaskUsers();
+                loadAdminConfigurations();
+                loadTaskUsers();
 
             },
                 function (data) {
@@ -190,7 +192,7 @@ const TaskDashboards = (props: any) => {
     const getChilds = (item: any, items: any) => {
         item.childs = [];
         items.map(function (childItem: any) {
-            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
+            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) === item.ID) {
                 item.childs.push(childItem);
                 getChilds(childItem, items);
             }
@@ -199,7 +201,7 @@ const TaskDashboards = (props: any) => {
     const isItemExists = (array: any, Id: any) => {
         var isExists = false;
         array.map(function (index: any, item: any) {
-            if (item.Id == Id && item.siteType != undefined) {
+            if (item.Id === Id && item.siteType != undefined) {
                 isExists = true;
                 return false;
             }
@@ -207,8 +209,8 @@ const TaskDashboards = (props: any) => {
         return isExists;
     }
 
-    const Searchtasks =()=> {
-       
+    const Searchtasks = () => {
+
         setIsComponentVisible(!isComponentVisible)
     }
     let currentUsers = [
@@ -253,7 +255,7 @@ const TaskDashboards = (props: any) => {
     const getSmartMetadataItemsByTaxType = (metadataItems: any, taxType: any) => {
         var Items: any = [];
         $.each(metadataItems, function (index: any, taxItem: any) {
-            if (taxItem.TaxType == taxType)
+            if (taxItem.TaxType === taxType)
                 Items.push(taxItem);
         });
         return Items;
@@ -292,10 +294,10 @@ const TaskDashboards = (props: any) => {
                 $.each(taskUsers, function (index: any, user: any) {
                     var ApproverUserItem = '';
                     var UserApproverMail: any = []
-                    if (user.Title != undefined && user.IsShowTeamLeader == true) {
+                    if (user.Title != undefined && user.IsShowTeamLeader === true) {
                         if (user.Approver != undefined) {
                             $.each(user.Approver.results, function (ApproverUser: any, index) {
-                                ApproverUserItem += ApproverUser.Title + (index == user.Approver.results.length - 1 ? '' : ',');
+                                ApproverUserItem += ApproverUser.Title + (index === user.Approver.results.length - 1 ? '' : ',');
                                 UserApproverMail.push(ApproverUser.Name.split('|')[2]);
                             })
                             user['UserManagerName'] = ApproverUserItem;
@@ -356,7 +358,7 @@ const TaskDashboards = (props: any) => {
         var AllTask: any = [];
         var smartCategories = [];
         let allCalls = [];
-        var uniqueNames:any=[]
+        var uniqueNames: any = []
         var arraycount = 0;
         Tasks = [{ "Title": "Task Dashboard", Childs: [], expanded: false, col: 12, "NewTitle": "taskdashboard", "DueDateWidth": 9, "SecondaryDueDateWidth": 7, "PriorityWidth": 8, "SecondaryPriorityWidth": 6, "TitleWidth": 23, "SecondaryTitleWidth": 21, "CreatedDateWidth": 9, "SecondaryCreatedDateWidth": 7, "SortProperty": "TaskDashboard", "SearchProperty": "SearchTaskDashboard" }, { "Title": "Working on Today", Childs: [], expanded: true, col: 12, "NewTitle": "workingontoday", "DueDateWidth": 9, "SecondaryDueDateWidth": 8, "PriorityWidth": 6, "SecondaryPriorityWidth": 5, "TitleWidth": 24, "SecondaryTitleWidth": 23, "SortProperty": "WorkingOnToday", "SearchProperty": "SearchWorkingOnToday" }, { "Title": "Created By", Childs: [], expanded: false, col: 6, "NewTitle": "createdby", "DueDateWidth": 15, "SecondaryDueDateWidth": 13, "CreatedDateWidth": 16, "SecondaryCreatedDateWidth": 14, "PriorityWidth": 11, "SecondaryPriorityWidth": 9, "TitleWidth": 34, "SecondaryTitleWidth": 33, "SortProperty": "CreatedBy", "SearchProperty": "SearchCreatedBy" }, { "Title": "Due This Week", Childs: [], expanded: false, col: 6, "NewTitle": "thisweek", "DueDateWidth": 15, "SecondaryDueDateWidth": 13, "CreatedDateWidth": 16, "SecondaryCreatedDateWidth": 14, "PriorityWidth": 11, "SecondaryPriorityWidth": 9, "TitleWidth": 35, "SecondaryTitleWidth": 33, "SortProperty": "DueThisWeek", "SearchProperty": "SearchDueThisWeek" }, { "Title": "Shareweb Task", Childs: [], expanded: false, col: 12, "NewTitle": "sharewebtask", "DueDateWidth": 9, "SecondaryDueDateWidth": 7, "PriorityWidth": 8, "SecondaryPriorityWidth": 6, "TitleWidth": 23, "SecondaryTitleWidth": 20, "CreatedDateWidth": 9, "SecondaryCreatedDateWidth": 7, "SortProperty": "SharewebTask", "SearchProperty": "SearchSharewebTask" }];
         SitesConfig.map(function (site: any) {
@@ -410,7 +412,7 @@ const TaskDashboards = (props: any) => {
                                 item.Responsible_x0020_TeamTitle = "";
                                 item.Responsible_x0020_TeamID = "";
                             }
-                            if (item.EstimatedTime == undefined || item.EstimatedTime == '')
+                            if (item.EstimatedTime === undefined || item.EstimatedTime === '')
                                 item.EstimatedTime = 0;
 
                             if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
@@ -418,7 +420,7 @@ const TaskDashboards = (props: any) => {
                                 item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
                             }
 
-                            if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == '')
+                            if (item.Priority_x0020_Rank === undefined || item.Priority_x0020_Rank === '')
                                 item.Priority_x0020_Rank = 4;
 
                             if (item.SharewebCategories.results != undefined) {
@@ -427,7 +429,7 @@ const TaskDashboards = (props: any) => {
                                     if (categories.Title != "Normal Approval" && categories.Title != "Complex Approval" && categories.Title != "Quick Approval") {
                                         item.Categories += categories.Title + ';';
                                     }
-                                    if (categories.Title == "Normal Approval" || categories.Title == "Complex Approval" || categories.Title == "Quick Approval") {
+                                    if (categories.Title === "Normal Approval" || categories.Title === "Complex Approval" || categories.Title === "Quick Approval") {
                                         item["Is" + categories.Title.replace(" ", "")] = true;
                                     }
                                 });
@@ -435,6 +437,8 @@ const TaskDashboards = (props: any) => {
                                     item.Categories = item.Categories.slice(0, -1);
                             }
                             item.AuthorTitle = item.Author.Title.replace('  ', ' ');
+                            item.DueDate = Moment(item.Created).format('DD/MM/YYYY HH mm')
+                            item.Modified = Moment(item.Modified).format('DD/MM/YYYY ')
                             item.EditorTitle = item.Editor.Title.replace('  ', ' ');
                             item.Team_x0020_MembersTitle = "";
                             item.Team_x0020_MembersId = "";
@@ -461,7 +465,7 @@ const TaskDashboards = (props: any) => {
                                 $.each(item.AssignedTo, function (index: any, newitem: any) {
                                     var newuserdata: any = {};
                                     $.each(taskUsers, function (index: any, user: any) {
-                                        if (newitem.Id == user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
+                                        if (newitem.Id === user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
                                             newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
                                             newuserdata['Suffix'] = user.Suffix;
                                             newuserdata['Title'] = user.Title;
@@ -475,7 +479,7 @@ const TaskDashboards = (props: any) => {
                             if (item.Author.Title != undefined && item.Author.Title.length > 0) {
                                 let newuserdata: any = {};
                                 $.each(taskUsers, function (index: any, user: any) {
-                                    if (item.Author.Id == user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
+                                    if (item.Author.Id === user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
                                         newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
                                         newuserdata['Suffix'] = user.Suffix;
                                         newuserdata['Title'] = user.Title;
@@ -488,7 +492,7 @@ const TaskDashboards = (props: any) => {
                             if (item.Editor.Title != undefined && item.Editor.Title.length > 0) {
                                 let newuserdata: any = {};
                                 $.each(taskUsers, function (index: any, user: any) {
-                                    if (item.Editor.Id == user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
+                                    if (item.Editor.Id === user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
                                         newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
                                         newuserdata['Suffix'] = user.Suffix;
                                         newuserdata['Title'] = user.Title;
@@ -502,7 +506,7 @@ const TaskDashboards = (props: any) => {
                                 $.each(item.Team_x0020_Members, function (index: any, teamnewitem: any) {
                                     var teamnewuserdata: any = {};
                                     $.each(taskUsers, function (index: any, teamuser: any) {
-                                        if (teamnewitem.Id == teamuser.AssingedToUserId && teamuser.Item_x0020_Cover != undefined) {
+                                        if (teamnewitem.Id === teamuser.AssingedToUserId && teamuser.Item_x0020_Cover != undefined) {
                                             teamnewuserdata['useimageurl'] = teamuser.Item_x0020_Cover.Url;
                                             teamnewuserdata['Suffix'] = teamuser.Suffix;
                                             teamnewuserdata['Title'] = teamuser.Title;
@@ -530,17 +534,17 @@ const TaskDashboards = (props: any) => {
                                 })
                             }
                             item['Companytype'] = 'Alltask';
-                            if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
+                            if (item.siteType != undefined && item.siteType === 'Offshore Tasks') {
                                 item['Companytype'] = 'Offshoretask';
                             }
                             // if (item.Author != undefined) {
                             //     $.each(taskUsers, function (index:any,newuser:any) {
 
-                            //         if (item.Author.Title == newuser.AssingedToUser.Title) {
+                            //         if (item.Author.Title === newuser.AssingedToUser.Title) {
                             //             if (newuser.Item_x0020_Cover != undefined)
                             //                 item['autherimage'] = newuser.Item_x0020_Cover.Url;
                             //         }
-                            //         if (item.Editor.Title == newuser.AssingedToUser.Title) {
+                            //         if (item.Editor.Title === newuser.AssingedToUser.Title) {
                             //             if (newuser.Item_x0020_Cover != undefined)
                             //                 item['editoreimage'] = newuser.Item_x0020_Cover.Url;
                             //         }
@@ -587,7 +591,7 @@ const TaskDashboards = (props: any) => {
                             item.ClientCategoryItem = "";
                             if (item.ClientCategory != undefined && item.ClientCategory.results != undefined && item.ClientCategory.results.length > 0) {
                                 $.each(item.ClientCategory.results, function (category: any, index) {
-                                    if (index == 0)
+                                    if (index === 0)
                                         item.ClientCategoryItem = item.ClientCategoryItem != undefined ? item.ClientCategoryItem + category.Title : category.Title;
                                     else
                                         item.ClientCategoryItem = item.ClientCategoryItem != undefined ? item.ClientCategoryItem + ';' + category.Title : category.Title;
@@ -607,44 +611,45 @@ const TaskDashboards = (props: any) => {
                             item.componentString = item.Component != undefined && item.Component.results != undefined && item.Component.results.length > 0 ? getComponentasString(item.Component.results) : '';
                             item.Shareweb_x0020_ID = getSharewebId(item);
 
-                            $.each(item.AssignedTo.results,function(index:any,items:any){
-                            if (item.siteType != "Master Tasks" && items.Title == props.props && valuess.length == 0 && item.IsTodaysTask == true){
-                                AllTask.push(item);
-                            }
+                            $.each(item.AssignedTo.results, function (index: any, items: any) {
+                                if (item.siteType != "Master Tasks" && items.Title === props.props && valuess.length === 0 && item.IsTodaysTask === true) {
+                                    AllTask.push(item);
+                                }
                                 AllTask = AllTask.filter(
-                                    (element:any, i:any) => i === AllTask.indexOf(element)
-                                  );
+                                    (element: any, i: any) => i === AllTask.indexOf(element)
+                                );
                             })
 
-                               if (item.Team_x0020_Members.results != undefined && props.props != "")
-                            $.each(item.Team_x0020_Members.results,function(index:any,items:any){
-                                      if(item.siteType != "Master Tasks" && items.Title == props.props && item.IsTodaysTask == true){
+                            if (item.Team_x0020_Members.results != undefined && props.props != "")
+                                $.each(item.Team_x0020_Members.results, function (index: any, items: any) {
+                                    if (item.siteType != "Master Tasks" && items.Title === props.props && item.IsTodaysTask === true) {
                                         AllTask.push(item);
-                                       
-                                      }
+
+                                    }
+                                })
+
+                            if (item.Team_x0020_Members.results != undefined && props.props === "")
+                                $.each(item.Team_x0020_Members.results, function (index: any, items: any) {
+                                    if (item.siteType != "Master Tasks" && items.Title === valuess && valuess.length > 0 && item.IsTodaysTask === true) {
+                                        AllTask.push(item); 2
+
+                                    }
+                                })
+
+
+
+                            $.each(item.AssignedTo.results, function (index: any, items: any) {
+                                if (item.siteType != "Master Tasks" && items.Title === valuess && valuess.length > 0 && item.IsTodaysTask === true)
+                                    AllTask.push(item);
                             })
 
-                            if (item.Team_x0020_Members.results != undefined && props.props == "")
-                            $.each(item.Team_x0020_Members.results,function(index:any,items:any){
-                                      if(item.siteType != "Master Tasks" && items.Title == valuess &&  valuess.length > 0 && item.IsTodaysTask == true){
-                                        AllTask.push(item);2
-
-                                      }
-                            })
-                           
-                        
-                            $.each(item.AssignedTo.results,function(index:any,items:any){
-                            if (item.siteType != "Master Tasks" && items.Title == valuess && valuess.length > 0 && item.IsTodaysTask == true)
-                                AllTask.push(item);
-                            })  
-                               
 
                         });
-                        
 
 
 
-                        if (arraycount == SitesConfig.length) {
+
+                        if (arraycount === SitesConfig.length) {
                             setAllTasks(AllTask)
                             setmaidataBackup(AllTask)
                             showProgressHide();
@@ -682,7 +687,7 @@ const TaskDashboards = (props: any) => {
                 userarray = item.AssignedTo.results;
             for (var i = 0; i < userarray.length; i++) {
                 $.each(Categories, function (index: any, user: any) {
-                    if (userarray[i].Id == user.AssingedToUserId) {
+                    if (userarray[i].Id === user.AssingedToUserId) {
                         users += user.Title + ', ';
                         isuserexists = true;
                         return false;
@@ -700,7 +705,7 @@ const TaskDashboards = (props: any) => {
             if (Item.SharewebCategories != undefined) {
                 $.each(Item.SharewebCategories.results, function (index: any, category: any) {
                     $.each(AllTaxonomyItems, function (index: any, taxonomyItem: any) {
-                        if (taxonomyItem.Title == category.Title && (taxonomyItem.TaxType == "Categories" || taxonomyItem.TaxType == 'Category')) {
+                        if (taxonomyItem.Title === category.Title && (taxonomyItem.TaxType === "Categories" || taxonomyItem.TaxType === 'Category')) {
                             var item: any = {};
                             item.Title = taxonomyItem.Title;
                             item.Id = category.Id;
@@ -723,10 +728,10 @@ const TaskDashboards = (props: any) => {
 
     //     // if (GlobalFilter) {
     //     //     console.log(GlobalFilter);
-    //     //     if (GlobalFilter.advanceValueAll == 'Allwords') {
+    //     //     if (GlobalFilter.advanceValueAll === 'Allwords') {
     //     //         var testItemstoFilter = $scope.AllTasks;
     //     //         angular.forEach(GlobalFilter.GlobalSearch.split(' '), function (word) {
-    //     //             if (GlobalFilter.updateFilterAll == "Allfields") {
+    //     //             if (GlobalFilter.updateFilterAll === "Allfields") {
     //     //                 temptask = $filter('filter')(testItemstoFilter, word);
     //     //                 testItemstoFilter = temptask;
     //     //             } else {
@@ -739,10 +744,10 @@ const TaskDashboards = (props: any) => {
     //     //         })
 
     //     //         $scope.finalFilterAfterGlobalSearch(testItemstoFilter);
-    //     //     } else if (GlobalFilter.advanceValueAll == 'Anywords') {
+    //     //     } else if (GlobalFilter.advanceValueAll === 'Anywords') {
     //     //         var testItemstoFilter = $scope.AllTasks;
     //     //         angular.forEach(GlobalFilter.GlobalSearch.split(' '), function (word) {
-    //     //             if (GlobalFilter.updateFilterAll == "Allfields") {
+    //     //             if (GlobalFilter.updateFilterAll === "Allfields") {
     //     //                 temptask = $.merge(temptask, $filter('filter')(testItemstoFilter, word));
     //     //             } else {
     //     //                 var filter1 = {};
@@ -752,9 +757,9 @@ const TaskDashboards = (props: any) => {
     //     //         })
     //     //         testItemstoFilter = $scope.removeDuplicates(temptask);
     //     //         $scope.finalFilterAfterGlobalSearch(testItemstoFilter);
-    //     //     } else if (GlobalFilter.advanceValueAll == 'ExactPhrase') {
+    //     //     } else if (GlobalFilter.advanceValueAll === 'ExactPhrase') {
     //     //         var testItemstoFilter = $scope.AllTasks;
-    //     //         if (GlobalFilter.updateFilterAll == "Allfields") {
+    //     //         if (GlobalFilter.updateFilterAll === "Allfields") {
     //     //             temptask = $.merge(temptask, $filter('filter')(testItemstoFilter, GlobalFilter.GlobalSearch));
     //     //         } else {
     //     //             var filter1 = {};
@@ -778,7 +783,7 @@ const TaskDashboards = (props: any) => {
     //     var flag = false;
     //     var IsCompletedTaskItem = false;
     //     angular.forEach(highFilters, function (filter) {
-    //         if (filter.name == "Team Member") {
+    //         if (filter.name === "Team Member") {
     //             flag = true;
     //         }
     //     })
@@ -789,7 +794,7 @@ const TaskDashboards = (props: any) => {
     //         // userFilter.childs.push(_spPageContextInfo.userId);
     //         if ($scope.UrlbasedFilterName != undefined && $scope.UrlbasedFilterName != '') {
     //             angular.forEach($scope.AllTaskusers, function (ValUser) {
-    //                 if (ValUser.Title == $scope.UrlbasedFilterName) {
+    //                 if (ValUser.Title === $scope.UrlbasedFilterName) {
     //                     userFilter.childs.push(ValUser.AssingedToUserId);
     //                 }
     //             })
@@ -804,23 +809,23 @@ const TaskDashboards = (props: any) => {
     //         }
     //     }
     //     angular.forEach($scope.highFilters, function (fil) {
-    //         if (fil.name == "Type") {
+    //         if (fil.name === "Type") {
     //             isType = true;
     //         }
-    //         if (fil.name == "Portfolio Type") {
+    //         if (fil.name === "Portfolio Type") {
     //             isPType = true;
     //         }
     //     })
     //     if (isType && isPType) {
     //         angular.forEach($scope.highFilters, function (fil) {
 
-    //             if (fil.name == "Portfolio Type") {
+    //             if (fil.name === "Portfolio Type") {
     //                 fil.name = "Portfolio Task"
     //             }
     //         })
     //     }
     //     angular.forEach($scope.highFilters, function (high) {
-    //         if (high.name == 'Sites') {
+    //         if (high.name === 'Sites') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -829,7 +834,7 @@ const TaskDashboards = (props: any) => {
     //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter, true));
     //             })
     //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name == 'Categories') {
+    //         } else if (high.name === 'Categories') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -838,7 +843,7 @@ const TaskDashboards = (props: any) => {
     //             })
     //             $scope.tempAllTask = tempdata;
     //         }
-    //         else if (high.name == 'Client Category') {
+    //         else if (high.name === 'Client Category') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -847,7 +852,7 @@ const TaskDashboards = (props: any) => {
     //             })
     //             $scope.tempAllTask = tempdata;
     //         }
-    //         else if (high.name == 'Priority') {
+    //         else if (high.name === 'Priority') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -856,7 +861,7 @@ const TaskDashboards = (props: any) => {
     //             })
     //             $scope.tempAllTask = tempdata;
     //         }
-    //         else if (high.name == 'Portfolio Type') {
+    //         else if (high.name === 'Portfolio Type') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -868,7 +873,7 @@ const TaskDashboards = (props: any) => {
     //                 tempdata = $.merge(tempdata, $filter('filter')(tempval, tempfilter));
     //             })
     //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name == 'Type') {
+    //         } else if (high.name === 'Type') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -880,7 +885,7 @@ const TaskDashboards = (props: any) => {
     //                 tempdata = $.merge(tempdata, $filter('filter')(tempval, tempfilter));
     //             })
     //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name == 'Portfolio Task') {
+    //         } else if (high.name === 'Portfolio Task') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -888,18 +893,18 @@ const TaskDashboards = (props: any) => {
     //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
     //             })
     //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name == 'Status') {
+    //         } else if (high.name === 'Status') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
     //                 tempfilter.PercentComplete = filter;
-    //                 if (filter == 99 || filter == 100) {
+    //                 if (filter === 99 || filter === 100) {
     //                     IsCompletedTaskItem = true;
     //                 }
     //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter, true));
     //             })
     //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name == 'Team Member') {
+    //         } else if (high.name === 'Team Member') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -939,7 +944,7 @@ const TaskDashboards = (props: any) => {
     //             })
     //             $scope.tempAllTask = tempdata;
     //         }
-    //         else if (high.name == 'Url') {
+    //         else if (high.name === 'Url') {
     //             var tempdata = [];
     //             angular.forEach(high.childs, function (filter) {
     //                 var tempfilter = {};
@@ -957,15 +962,15 @@ const TaskDashboards = (props: any) => {
     // }
     const getSharewebId = (item: any) => {
         var Shareweb_x0020_ID = undefined;
-        if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title == undefined) {
+        if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title === undefined) {
             Shareweb_x0020_ID = 'T' + item.Id;
         }
-        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No === undefined && item.SharewebTaskLevel2No === undefined) {
             Shareweb_x0020_ID = 'T' + item.Id;
-            if (item.SharewebTaskType.Title == 'MileStone')
+            if (item.SharewebTaskType.Title === 'MileStone')
                 Shareweb_x0020_ID = 'M' + item.Id;
         }
-        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Activities' || item.SharewebTaskType.Title === 'Project') && item.SharewebTaskLevel1No != undefined) {
             if (item.Component != undefined) {
                 if (item.Component.results != undefined && item.Component.results.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
@@ -985,14 +990,14 @@ const TaskDashboards = (props: any) => {
                 if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
                     Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
                 }
-            if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
+            if (item.Component === undefined && item.Events === undefined && item.Services === undefined) {
                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
             }
-            if (item.SharewebTaskType.Title == 'Project')
+            if (item.SharewebTaskType.Title === 'Project')
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
 
         }
-        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Workstream' || item.SharewebTaskType.Title == 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Workstream' || item.SharewebTaskType.Title === 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
             if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
                 if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
                     Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
@@ -1013,14 +1018,14 @@ const TaskDashboards = (props: any) => {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
-            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+            if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
             }
-            if (item.SharewebTaskType.Title == 'Step')
+            if (item.SharewebTaskType.Title === 'Step')
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
 
         }
-        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
             if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
                 if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
                     Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
@@ -1041,14 +1046,14 @@ const TaskDashboards = (props: any) => {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
-            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+            if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
             }
-            if (item.SharewebTaskType.Title == 'MileStone') {
+            if (item.SharewebTaskType.Title === 'MileStone') {
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
             }
         }
-        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No == undefined) {
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No === undefined) {
             if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
                 if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
                     Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
@@ -1069,10 +1074,10 @@ const TaskDashboards = (props: any) => {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
-            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+            if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
             }
-            if (item.SharewebTaskType.Title == 'MileStone') {
+            if (item.SharewebTaskType.Title === 'MileStone') {
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
             }
 
@@ -1111,23 +1116,23 @@ const TaskDashboards = (props: any) => {
 
     return (
         <>
-        
+
             <div className="container-fluid">
-            <div className='col-md-12 pad0 clearfix'>
-                        <span className='pull-right'>
-                            <select className='searchbox_height' value={values} onChange={(e) => ChangeDropdown(e)}>
-                                <option value="Select">{props.props}{values}</option>
-                                {currentUsers.map(function (item: any) {
-                                    return (
-                                        <option value={item.Title}>{item.Title}</option>
-                                    )
-                                })}
-                            </select>
-                        </span>
-                    </div>
+                <div className='col-md-12 pad0 clearfix'>
+                    <span className='pull-right'>
+                        <select className='searchbox_height' value={values} onChange={(e) => ChangeDropdown(e)}>
+                            <option value="Select">{props.props}{values}</option>
+                            {currentUsers.map(function (item: any) {
+                                return (
+                                    <option value={item.Title}>{item.Title}</option>
+                                )
+                            })}
+                        </select>
+                    </span>
+                </div>
 
                 <div className="row flex-nowrap">
-                   
+
                     <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-siteColor">
                         <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white">
                             <a href="/" className="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
@@ -1148,10 +1153,10 @@ const TaskDashboards = (props: any) => {
                             <div className="col-sm-6 side-opt">Timesheets <BiTime /></div> */}
                             <a href="https://hochhuth-consulting.de/"><div className="col-sm-6 side-opt">WebSites</div></a>
                             <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/ApprovalPage.aspx"><div className="col-sm-6 side-opt">Approval<HiOutlineDocumentText /></div></a>
-                            <a href="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/TeamCalendar.aspx?OR=Teams-HL&CT=1668424287203&clickparams=eyJBcHBOYW1lIjoiVGVhbXMtRGVza3RvcCIsIkFwcFZlcnNpb24iOiIyNy8yMjEwMjgwNzIwMCIsIkhhc0ZlZGVyYXRlZFVzZXIiOmZhbHNlfQ%3D%3D"><div className="col-sm-6 side-opt">Calendar <BiCalendar /></div></a>
+                            <a href="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/TeamCalendar.aspx?OR=Teams-HL&CT=1668424287203&clickparams=eyJBcHBOYW1lIjoiVGVhbXMtRGVza3RvcCIsIkFwcFZlcnNpb24iOiIyNy8yMjEwMjgwNzIwMCIsIkhhc0ZlZGVyYXRlZFVzZXIiOmZhbHNlfQ%3D%3D"><div className="col-sm-6 side-opt">Calendar </div></a>
                             <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Contacts-Overview.aspx?OR=Teams-HL&CT=1664521610471&clickparams=eyJBcHBOYW1lIjoiVGVhbXMtRGVza3RvcCIsIkFwcFZlcnNpb24iOiIyNy8yMjA5MDQwMDcxMiIsIkhhc0ZlZGVyYXRlZFVzZXIiOmZhbHNlfQ%3D%3D"><div className="col-sm-6 side-opt">Contact Database</div></a>
                         </div>
-                       
+
                     </div>
                     <div className="col py-3">
 
@@ -1175,28 +1180,30 @@ const TaskDashboards = (props: any) => {
                                                                 </th>
                                                                 <th style={{ width: "24%" }}>
                                                                     <div className="headcontainer smart-relative" style={{ width: "23%" }}>
+                                                                        <span style={{ color: "#000" }}>Task Id</span>
 
-                                                                        <input type="text" id="searchTaskId" className="searchbox_height full_width"
+                                                                        {/* <input type="text" id="searchTaskId" className="searchbox_height full_width"
 
-                                                                            placeholder="Search Id" ng-model="searchName" onChange={(e) => handleChange(e, 'Shareweb_x0020_ID')} />
-
+                                                                            placeholder="Search Id" ng-model="searchName" onChange={(e) => handleChange(e, 'Shareweb_x0020_ID')} /> */}
+                                                                        {/* 
                                                                         <span ng-show="searchName.length>0" className="searchclear"
 
-                                                                            onClick={() => ClearSearch('Shareweb_x0020_ID')}>X</span>
+                                                                            onClick={() => ClearSearch('Shareweb_x0020_ID')}>X</span> */}
 
-                                                                        <span className="sorticon">
-
-                                                                            <span>
+                                                                        <span className='sorticon'>
+                                                                            {clickBtnShow ? <span>
 
                                                                                 <i onClick={() => sortBy('Shareweb_x0020_ID')}><FaAngleUp /></i>
 
-                                                                            </span>
-
-                                                                            <span>
+                                                                            </span> : <span>
 
                                                                                 <i onClick={() => sortByDes('Shareweb_x0020_ID')}><FaAngleDown /></i>
 
-                                                                            </span>
+                                                                            </span>}
+
+
+
+
 
                                                                         </span>
 
@@ -1206,29 +1213,23 @@ const TaskDashboards = (props: any) => {
                                                                 </th>
                                                                 <th style={{ width: "50%" }}>
                                                                     <div className="headcontainer smart-relative" style={{ width: "49%" }}>
+                                                                        <span style={{ color: "#000" }}>Title</span>
 
-                                                                        <input type="text" id="searchTitle" className="searchbox_height full_width"
+                                                                        {/* <input type="text" id="searchTitle" className="searchbox_height full_width"
 
-                                                                            placeholder="Search Title" ng-model="searchName" onChange={(e) => handleChange(e, 'Title')} />
+                                                                            placeholder="Search Title" ng-model="searchName" onChange={(e) => handleChange(e, 'Title')} /> */}
 
-                                                                        <span ng-show="searchName.length>0" className="searchclear"
+                                                                        {/* <span ng-show="searchName.length>0" className="searchclear"
 
-                                                                            onClick={() => ClearSearch('Title')}>X</span>
+                                                                            onClick={() => ClearSearch('Title')}>X</span> */}
 
-                                                                        <span className="sorticon">
-
-                                                                            <span>
-
+                                                                        <span className='sorticon'>
+                                                                            {clickBtnShow ? <span >
                                                                                 <i onClick={() => sortBy('Title')}><FaAngleUp /></i>
-
-                                                                            </span>
-
-                                                                            <span>
-
-                                                                                <i onClick={() => sortByDes('Title')}><FaAngleDown /></i>
-
-                                                                            </span>
-
+                                                                            </span> :
+                                                                                <span>
+                                                                                    <i onClick={() => sortByDes('Title')}><FaAngleDown /></i>
+                                                                                </span>}
                                                                         </span>
 
 
@@ -1237,28 +1238,30 @@ const TaskDashboards = (props: any) => {
                                                                 </th>
                                                                 <th style={{ width: "20%" }}>
                                                                     <div className="headcontainer smart-relative" style={{ width: "19%" }}>
+                                                                        <span style={{ color: "#000" }}>%</span>
 
-                                                                        <input type="text" id="searchPercentComplete" className="searchbox_height full_width"
+                                                                        {/* <input type="text" id="searchPercentComplete" className="searchbox_height full_width"
 
-                                                                            placeholder="%" ng-model="searchName" onChange={(e) => handleChange(e, 'PercentComplete')} />
+                                                                            placeholder="%" ng-model="searchName" onChange={(e) => handleChange(e, 'PercentComplete')} /> */}
 
-                                                                        <span ng-show="searchName.length>0" className="searchclear"
+                                                                        {/* <span ng-show="searchName.length>0" className="searchclear"
 
-                                                                            onClick={() => ClearSearch('PercentComplete')}>X</span>
+                                                                            onClick={() => ClearSearch('PercentComplete')}>X</span> */}
 
-                                                                        <span className="sorticon">
-
-                                                                            <span>
+                                                                        <span>
+                                                                            {clickBtnShow ? <span>
 
                                                                                 <i onClick={() => sortBy('PercentComplete')}><FaAngleUp /></i>
 
-                                                                            </span>
-
-                                                                            <span>
+                                                                            </span> : <span>
 
                                                                                 <i onClick={() => sortByDes('PercentComplete')}><FaAngleDown /></i>
 
-                                                                            </span>
+                                                                            </span>}
+
+
+
+
 
                                                                         </span>
 
@@ -1271,7 +1274,7 @@ const TaskDashboards = (props: any) => {
                                                         </thead>
                                                         <tbody>
                                                             {AllTasks.map(function (item: any) {
-                                                                //  if (search == "" || item.Title.toLowerCase().includes(search.toLowerCase()) || item.Shareweb_x0020_ID.toLowerCase().includes(search.toLowerCase()))  {
+                                                                //  if (search === "" || item.Title.toLowerCase().includes(search.toLowerCase()) || item.Shareweb_x0020_ID.toLowerCase().includes(search.toLowerCase()))  {
                                                                 return (
                                                                     <>
 
@@ -1281,12 +1284,12 @@ const TaskDashboards = (props: any) => {
                                                                             <td>{item.Shareweb_x0020_ID}</td>
                                                                             <td><span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span></td>
                                                                             <td>{item.PercentComplete}</td>
-  
-                                                                            <td></td>
-                                                                            
-                                                                           
+
+                                                                            <td onClick={()=>EditPopup(item)}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img></td>
+
+
                                                                             {/* {isComponentVisible ? <EditInstitution/> : null} */}
-                                                                          
+
                                                                         </tr>
 
 
@@ -1324,7 +1327,7 @@ const TaskDashboards = (props: any) => {
                                             return(
                                                 <>
                                                 
-                                                {item.IsTodaysTask  == true && 
+                                                {item.IsTodaysTask  === true && 
                                                
                                                  
                                                 <tr>
@@ -1351,9 +1354,11 @@ const TaskDashboards = (props: any) => {
                     </div>
                 </div>
             </div>
+            {isOpenEditPopup ? <EditTaskPopup Items={passdata} Call={CallBack}/>:''}
         </>
+
     )
 }
-export default TaskDashboards;
+export default TaskDashboard;
 
 

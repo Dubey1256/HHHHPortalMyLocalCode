@@ -3,7 +3,7 @@
   "solution": {
     "name": "hhhh-portal-client-side-solution",
     "id": "27fb8e2e-b470-4fc2-a52c-f4040c2c78d2",
-    "version": "1.0.0.0",
+    "version": "1.0.0.3",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

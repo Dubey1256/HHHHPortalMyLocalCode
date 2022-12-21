@@ -75,6 +75,7 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }
+  
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {

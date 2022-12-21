@@ -11,6 +11,9 @@ import { FaHome } from 'react-icons/fa';
 
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SPComponentLoader } from '@microsoft/sp-loader';
+// import { NavItem } from 'react-bootstrap';
+import CommentCard from '../../../globalComponents/Comments/CommentCard';
+
 SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css');
 SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js');
 
@@ -26,17 +29,19 @@ function Portfolio({ ID }: any) {
     const [datak, setdatak] = React.useState([])
     const [dataj, setdataj] = React.useState([])
     const [datams, setdatams] = React.useState([])
+    const [FolderData, SetFolderData] = React.useState([]);
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
-        setIsActive(true);
-        item.show = item.show = item.show == false ? true : false;
+        setIsActive(false);
+        item.show = item.show == true ? false : true;
         setArray(array => ([...array]));
     };
     const handleOpen1 = (item: any) => {
-        item.showl = item.showl = item.showl == false ? true : false;
+        item.showl = item.showl = item.showl == true ? false : true;
         setdatam(datam => ([...datam]));
     };
     const handleOpen2 = (item: any) => {
+        
         item.shows = item.shows = item.shows == true ? false : true;
         setdatas(datas => ([...datas]));
     };
@@ -62,9 +67,10 @@ function Portfolio({ ID }: any) {
 
 
     React.useEffect(() => {
-
-        var url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
-        var response: any = [];  // this variable is used for storing list items
+        var folderId:any="";
+        var url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
+        var response: any = []; 
+        var responsen:any=[]; // this variable is used for storing list items
         function GetListItems() {
             $.ajax({
                 url: url,
@@ -74,6 +80,34 @@ function Portfolio({ ID }: any) {
                 },
                 success: function (data) {
                     response = response.concat(data.d.results);
+                    response.map((item:any)=>{
+                        if(item.FolderID != undefined){
+                            folderId= item.FolderID;
+
+                            var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+                            $.ajax({
+                                url: urln,
+                                method: "GET",
+                                headers: {
+                                    "Accept": "application/json; odata=verbose"
+                                },
+                                success: function (data) {
+                                    responsen = responsen.concat(data.d.results);
+                                    if (data.d.__next) {
+                                        urln = data.d.__next;
+                                       
+                                    } else SetFolderData(responsen);
+                                    console.log(responsen);
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                    // error handler code goes here
+                                }
+                            });
+                        }
+                        console.log(folderId)
+                    })
+                    
                     if (data.d.__next) {
                         url = data.d.__next;
                         GetListItems();
@@ -86,13 +120,39 @@ function Portfolio({ ID }: any) {
                 }
             });
         }
+
+       
+        var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+        var responsen:any=[];// this variable is used for storing list items
+      
+  
+      
+      
+        
+  
         GetListItems();
+        open();
+        
     },
         []);
+
+
+        function open(){
+            data.map((item:any)=>{
+                handleOpen(item);
+                handleOpen1(item);
+                handleOpen2(item);
+                handleOpen3(item);
+                handleOpen4(item);
+
+            })
+        }
+     
 
     var myarray: any = [];
     var myarray1: any = [];
     var myarray2: any = [];
+    var FolderID:any='';
 
     data.map(item => {
         if (item.Sitestagging != null) {
@@ -138,6 +198,15 @@ function Portfolio({ ID }: any) {
 
         // myarray.push();
     })
+
+
+  //    Get Folder data
+
+
+
+
+  
+
     return (
         <div>
             {/* breadcrumb & title */}
@@ -145,7 +214,7 @@ function Portfolio({ ID }: any) {
                 <div className='container'>
 
                     <div className='row'>
-                        <div className='p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
+                        <div className='d-flex justify-content-between p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
                             <ul className="spfxbreadcrumb m-0 p-0">
                                 <li><a href='#'><FaHome /> </a></li>
                                 <li>
@@ -156,6 +225,7 @@ function Portfolio({ ID }: any) {
                                 </li>
                                 <li> {data.map(item => <a>{item.Title}</a>)}</li>
                             </ul>
+                            <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                         </div>
                     </div>
 
@@ -176,7 +246,7 @@ function Portfolio({ ID }: any) {
                     <div className='row'>
                         <div className='col-md-9 bg-white'>
                             <div className='team_member row  py-2'>
-                                <div className='col-md-4 ps-2'>
+                                <div className='col-md-4 p-0'>
                                     <dl>
                                         <dt className='bg-fxdark'>Due Date</dt>
                                         <dd className='bg-light'>
@@ -216,7 +286,7 @@ function Portfolio({ ID }: any) {
                                     </dl>
                                     <dl>
                                         <dt className='bg-fxdark'>Team Members</dt>
-                                        <dd className='bg-light'>02/12/2019</dd>
+                                        <dd className='bg-light'></dd>
                                     </dl>
                                     <dl>
                                         <dt className='bg-fxdark'>Item Rank</dt>
@@ -225,7 +295,7 @@ function Portfolio({ ID }: any) {
 
                                             <span className="hreflink"
                                                 title="Edit Inline"
-                                                ng-click="EditContents(Task,'editableItemRank')">
+                                                >
                                                 <i className="fa fa-pencil siteColor"
                                                     aria-hidden="true"></i>
                                             </span>
@@ -233,7 +303,7 @@ function Portfolio({ ID }: any) {
                                         </dd>
                                     </dl>
                                 </div>
-                                <div className='col-md-4'>
+                                <div className='col-md-4 p-0'>
                                     <dl>
                                         <dt className='bg-fxdark'>Priority</dt>
                                         <dd className='bg-light'>
@@ -241,7 +311,7 @@ function Portfolio({ ID }: any) {
                                                 <a>{item.Priority != null ? item.Priority : ""}</a>)}
                                             <span
                                                 className="hreflink pull-right" title="Edit Inline"
-                                                ng-click="EditContents(Task,'editablePriority')">
+                                              >
                                                 <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
                                             </span>
 
@@ -280,26 +350,33 @@ function Portfolio({ ID }: any) {
                                         </dd>
                                     </dl>
                                 </div>
-                                <div className='col-md-4'>
+                                <div className='col-md-4 p-0'>
+                                {data.map((item:any)=>{
+                                    return(
                                     <dl>
                                         <dt className='bg-fxdark'>Service Portfolio</dt>
-                                        <dd className='bg-light'>02/12/2019</dd>
+                                        <dd className='bg-light'><a  style={{border:"0px"}}target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></dd>
                                     </dl>
+                                )})}
+                                {myarray1.length != 0 &&
                                     <dl className='Sitecomposition'>
                                         <div className="dropdown">
                                             {data.map(item =>
-                                                <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
+                                                <a className="btn btn-secondary  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
 
-                                                    <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition <span><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/analyze.png" /></span>
+                                                    <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition 
 
                                                 </a>
                                             )}
                                             {data.map(item =>
+                                            <>
+                                            {item.showk &&
+                                            
                                                 <div className='spxdropdown-menu'>
-                                                    {item.showk &&
+                                                    
 
                                                         <ul>
-                                                            {myarray1.length != 0 ? myarray1.map((item: any) =>
+                                                            {  myarray1.map((item: any) =>
 
                                                                 <li className="dropdown-item">
                                                                     <span>
@@ -378,10 +455,11 @@ function Portfolio({ ID }: any) {
                                                                         </span>
                                                                     }
                                                                 </li>
-                                                            ) : ""}
+                                                            ) }
                                                         </ul>
-                                                    }
+                                                    
                                                 </div>
+                                           }</>
                                             )}
 
                                         </div>
@@ -391,17 +469,20 @@ function Portfolio({ ID }: any) {
 
 
                                     </dl>
+                                }
                                 </div>
                             </div>
-                            <section className='accordionbox'>
+                            <section className='row  accordionbox'>
 
-                                <div className="accordion  overflow-hidden">
+                                <div className="accordion p-0  overflow-hidden">
+                                    {/* Short description */}
                                     {data.map(item =>
+                                    <>
+                                    {item.Short_x0020_Description_x0020_On !== null &&
                                         <div className="card shadow-none  mb-2">
-                                            {item.Short_x0020_Description_x0020_On !== null &&
                                                 <div className="accordion-item border-0" id="t_draggable1">
                                                     <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
                                                     <div className="accordion-collapse collapse show"  >
 
                                                         {item.show &&
@@ -416,16 +497,19 @@ function Portfolio({ ID }: any) {
 
                                                     </div>
                                                 </div>
-                                            }
+                                            
                                         </div>
-                                    )}
-
+                                     } </>  )}
+{/* Background */}
                                     {data.map(item =>
+                                    <>
+                                    {item.Background !== null &&
+                                    
                                         <div className="card shadow-none  mb-2">
-                                            {item.Background !== null &&
+                                            
                                                 <div className="accordion-item border-0" id="t_draggable1">
                                                     <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen1(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="fw-medium font-sans-serif text-900" ng-bind-html="GetColumnDetails('Background') | trustedHTML"> Background</span></button></div>
+                                                    <span className="sign">{item.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
                                                     <div className="accordion-collapse collapse show" >
 
 
@@ -438,30 +522,80 @@ function Portfolio({ ID }: any) {
 
                                                     </div>
                                                 </div>
-                                            }
+                                            
                                         </div>
-                                    )}
-
+                                    }</>)}
+{/* Idea */}
                                     {data.map(item =>
+                                    <>
+                                    {item.Idea !== null &&
+                                    
                                         <div className="card shadow-none mb-2">
-                                            {item.Idea !== null &&
+                                            
                                                 <div className="accordion-item border-0" id="t_draggable1">
                                                     <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="fw-medium font-sans-serif text-900" ng-bind-html="GetColumnDetails('Idea') | trustedHTML"> Idea</span></button></div>
+                                                    <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" ng-bind-html="GetColumnDetails('Idea') | trustedHTML"> Idea</span></button></div>
                                                     <div className="accordion-collapse collapse show"  >
 
                                                         {item.shows &&
                                                             <div className="accordion-body pt-1" id="testDiv1">
-                                                                <p className="m-0" >{data.map(item => <a>{item.Idea}</a>)}</p>
+                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Idea }}></p>
                                                             </div>
                                                         }
 
 
                                                     </div>
                                                 </div>
-                                            }
+                                            
                                         </div>
-                                    )}
+                                    }</> )}
+{/* Value Added */}
+                                 {data.map(item =>
+                                 <>
+                                 {item.ValueAdded !== null &&
+                                        <div className="card shadow-none mb-2">
+                                            
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen4(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                    <span className="sign">{item.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+
+                                                        {item.showj &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.ValueAdded }}></p>
+                                                            </div>
+                                                        }
+
+
+                                                    </div>
+                                                </div>
+                                            
+                                        </div>
+                                 }</>)}
+{/* Deliverables */}
+                                 {data.map(item =>
+                                 <>
+                                 {item.Deliverables !== null &&
+                                 
+                                        <div className="card shadow-none mb-2">
+                                            
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen5(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                    <span className="sign">{item.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+
+                                                        {item.showm &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Deliverables }}></p>
+                                                            </div>
+                                                        }
+
+
+                                                    </div>
+                                                </div>
+                                            
+                                        </div>
+                                 }</>)}
                                 </div>
 
 
@@ -491,69 +625,43 @@ function Portfolio({ ID }: any) {
                                         </a></div>
                                     </div>
                                 </div>
+                                
 
+                                {FolderData!=undefined&&
+                                <>
+                                  {FolderData.map(item =>{
+                                    return(
                                 <div className='mb-3 card'>
                                     <div className='card-header'>
                                         <div className='card-actions float-end'>  <Tooltip /></div>
                                         <div className="mb-0 card-title h5">Main Folder</div>
                                     </div>
+                                  
                                     <div className='card-body'>
                                         <div className="border-bottom pb-2">
-                                            {data.map(item =>
+                                            
                                                 <div>
-                                                    <img ng-src="/_layouts/15/images/folder.gif?rev=23" data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
-                                                    <a className="hreflink ng-binding" target="_blank" href={`/sites/HHHH/SP/Documents/COMPONENT-PORTFOLIO/${item.Title}`}>
-                                                        {item.Title}
+                                                    <img  data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
+                                                    <a className="hreflink ng-binding" target="_blank" href={item.EncodedAbsUrl}>
+                                                        {item.FileLeafRef}
                                                     </a>
                                                 </div>
-                                            )}
+                                          
                                         </div>
                                     </div>
-                                </div>
-                                <div className='mb-3 card'>
-                                    <div className='card-header'>
-                                        <div className='card-actions float-end'>  <Tooltip /></div>
-                                        <div className="mb-0 card-title h5">Comments</div>
-                                    </div>
-                                    <div className='card-body'>
-                                        <div className="comment-box  mb-2">
-                                            <span> <strong>To:</strong>  </span>
-                                            <span ng-repeat="item in UserForQuickComment ms-2">
-                                                <a target="_blank">
-                                                    <img className="circularImage rounded-circle " title="Deepak Trivedi" data-toggle="popover" data-trigger="hover" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Deepak.jpg" data-themekey="#" />
-                                                </a>
-                                            </span>
-                                            <span ng-repeat="item in UserForQuickComment">
-                                                <a target="_blank">
-                                                    <img ng-show="item.Item_x0020_Cover!=undefined || item.Item_x0020_Cover!= null" className="circularImage rounded-circle " title="Stefan Hochhuth" data-toggle="popover" data-trigger="hover" ng-click="topCommentrs(item)" ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Stefan.jpg" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Stefan.jpg" data-themekey="#" />
-                                                </a>
-                                            </span>
-                                            <span ng-repeat="item in UserForQuickComment">
-                                                <a target="_blank">
-                                                    <img ng-show="item.Item_x0020_Cover!=undefined || item.Item_x0020_Cover!= null" className="circularImage rounded-circle " title="Robert Ungethuem" data-toggle="popover" data-trigger="hover" ng-click="topCommentrs(item)" ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Robert%20Ungethuem.png" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Robert%20Ungethuem.png" data-themekey="#" />
-                                                </a>
-                                            </span>
-                                            <span>
-                                                <a target="_blank">
-                                                    <img className="circularImage rounded-circle " title="Mattis Hahn" data-toggle="popover" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/portrait_Mattis_Hahn.jpg' data-trigger="hover" data-themekey="#" />
-                                                </a>
-                                            </span>
-                                            <span className='ms-2'>
-                                                <textarea style={{ height: "26px" }} placeholder="Recipients Name" className="form-control" id="portfolioprofile"></textarea><span role="status" aria-live="polite" ></span>
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <textarea placeholder="Enter your comments here" className='form-control' ></textarea>
-                                            {/* <p className="ng-hide">
-                                            <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
-                                            Comment shouldn't be empty
-                                        </p> */}
-                                            <button title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
-                                                Post
-                                            </button>
-                                        </div>
 
-                                    </div>
+                                </div>
+                            )})} </>
+                               } 
+                                <div className='mb-3 card'>
+                                    <>
+                                    {data.map(item =>
+
+                                <CommentCard siteUrl={"https://hhhhteams.sharepoint.com/sites/HHHH/SP"} userDisplayName={item.userDisplayName} listName={"Master Tasks"} itemID={item.Id}></CommentCard>
+                                    
+)}
+</>
+                                  
                                 </div>
 
 
@@ -577,23 +685,32 @@ function Portfolio({ ID }: any) {
                                 {/* {data.map(item => (
                                 <Groupby Id={item.Id} level={item.PortfolioLevel}/>
                                 ))} */}
-                                <ComponentTable />
+                                {data.map(item => (
+                                <ComponentTable props={item.Title} />
+                                ))}
                             </div>
 
                         </section>
                     </div>
                 </section>
                 <div className="col-sm-12 pad0">
+                {data.map((item:any )=> {
+                        return(
                     <div className="col-sm-6 padL-0 ItemInfo mb-20" style={{ paddingTop: "15px" }}>
+                    
                         <div>
-                            Created <span></span> by <span className="footerUsercolor"></span>
-                            {/* {{DateCreated}}  {{Author}}*/}
+                            Created <span>{Moment(item.Created).format('DD/MM/YYYY hh:mm')}</span> by <span className="footerUsercolor">{item.Author.Title}</span>
+                         
                         </div>
+                      
                         <div>
-                            Last modified <span></span> by <span className="footerUsercolor"></span>
+                            Last modified <span>{Moment(item.Modified).format('DD/MM/YYYY hh:mm')}</span> by <span className="footerUsercolor">{item.Editor.Title}</span>
                             {/* {{ModifiedDate}} {{Editor}}*/}
                         </div>
+                        
                     </div>
+                      )
+                    })}
                 </div>
             </div>
         </div>

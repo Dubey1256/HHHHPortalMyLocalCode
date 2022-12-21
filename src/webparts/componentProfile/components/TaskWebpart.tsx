@@ -2,11 +2,15 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import '../../cssFolder/Style.scss'
+import '../../cssFolder/site_color.scss'
 import { Modal } from 'office-ui-fabric-react';
+import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import Tooltip from './Tooltip';
 import { create } from 'lodash';
+// import '../../cssFolder/foundation.scss'
+// import '../../cssFolder/foundationmin.scss'
 
 export default function ComponentTable({props}:any) {
 
@@ -1236,17 +1240,17 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                 }
                                 if (result.Author != undefined) {
                                     
-                                        if (result.Author.Id != undefined) {
-                                            $.each(TaskUsers, function (index: any, users: any) {
-                                                if (result.Author.Id != undefined && users.AssingedToUserId != undefined && result.Author.Id == users.AssingedToUserId) {
-                                                    users.ItemCover = users.Item_x0020_Cover;
-                                                    result.CreatedDateImg.push(users);
-                                                }
+                                    if (result.Author.Id != undefined) {
+                                        $.each(TaskUsers, function (index: any, users: any) {
+                                            if (result.Author.Id != undefined && users.AssingedToUserId != undefined && result.Author.Id == users.AssingedToUserId) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.CreatedDateImg.push(users);
+                                            }
 
-                                            })
-                                        }
-                                    
-                                }
+                                        })
+                                    }
+                                
+                            }
                                 result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
                                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
                                     $.each(result.Team_x0020_Members, function (index: any, catego: any) {
@@ -1256,50 +1260,50 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                 result['Shareweb_x0020_ID'] = getSharewebId(result);
                                 if (result['Shareweb_x0020_ID'] == undefined) {
                                     result['Shareweb_x0020_ID'] = "";
-                                }
+                                } 
                                 TasksItem.push(result);
-                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
+                                if (result.ClientCategory != undefined && result.ClientCategory.results != undefined && result.ClientCategory.results.length > 0) {
+ 
+                                    $.each(result.ClientCategory.results, function (index: any, clientcategory: any) {
+                                        result.ClientCategoryTitle = result.ClientCategoryTitle + ';' + clientcategory.Title;
+                                    })
+                                    $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
+                                        $.each(result.ClientCategory.results, function (index: any, clientcategory: any) {
+                                            if (clientcategory.ParentClientCategoryStructure == undefined)
+                                                clientcategory.ParentClientCategoryStructure = '';
+                                            if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
+                                                clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
+                                            }
+                                            else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
+                                                clientcategory.ParentClientCategoryStructure = firstLevel.Title;
+                                            }
+                                        })
+                                        if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
+                                            $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
+                                                $.each(result.ClientCategory.results, function (index: any, clientcategory: any) {
+                                                    if (clientcategory.ParentClientCategoryStructure == undefined)
+                                                        clientcategory.ParentClientCategoryStructure = '';
+                                                    if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
+                                                        clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
+                                                    }
+                                                })
+                                                if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
+                                                    $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
+                                                        $.each(result.ClientCategory.results, function (index: any, clientcategory: any) {
+                                                            if (clientcategory.ParentClientCategoryStructure == undefined)
+                                                                clientcategory.ParentClientCategoryStructure = '';
+                                                            if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
+                                                                clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
+                                                            }
+                                                        })
+                                                    })
 
-                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
-                                //     })
-                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
-                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                 clientcategory.ParentClientCategoryStructure = '';
-                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
-                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
-                                //             }
-                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
-                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
-                                //             }
-                                //         })
-                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
-                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
-                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                         clientcategory.ParentClientCategoryStructure = '';
-                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
-                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
-                                //                     }
-                                //                 })
-                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
-                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
-                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                                 clientcategory.ParentClientCategoryStructure = '';
-                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
-                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
-                                //                             }
-                                //                         })
-                                //                     })
+                                                }
+                                            })
 
-                                //                 }
-                                //             })
-
-                                //         }
-                                //     })
-                                // } else task.ClientCategory = [];
+                                        }
+                                    })
+                                } else result.ClientCategory = [];
 
                                 // task['Item_x0020_Type'] = 'Task';
                                 // task['flag'] = true;
@@ -2597,11 +2601,12 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                         >{item.Title}
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         >{item.Title}
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
-                                                                                            <span>({item.childs.length})</span>
+                                                                                        
+                                                                                            <span>{item.childs.length==0?"":<span>({item.childs.length})</span>}</span>
                                                                                         }
 
                                                                                         {item.Short_x0020_Description_x0020_On != null &&
@@ -2645,7 +2650,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                     <td style={{ width: "7%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
-                                                                                   
                                                                                     <td style={{ width: "9%" }}>
                                                                                         {item.CreatedDateImg!=null?item.CreatedDateImg.map((Creates:any)=>{
                                                                                                  return(
@@ -2711,7 +2715,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-Spfx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.childs != undefined &&
@@ -2815,7 +2819,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-Spfx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.childs != undefined &&
@@ -2914,7 +2918,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-Spfx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs != undefined &&

@@ -1,8 +1,7 @@
 import * as React from "react";
 // import ImagesC from "./Images";
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
-import Tabs from "./Tabs/Tabs";
-import Tab from "./Tabs/Tab";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
@@ -440,10 +439,10 @@ function EditInstitution(item: any) {
     //         }
     //     });
     // }
-    const setPriority = function (item:any, val: number) {
-        item.Priority_x0020_Rank =val;
-     
-     setComponent(CompoenetItem => ([...item]));
+    const setPriority = function (item: any, val: number) {
+        item.Priority_x0020_Rank = val;
+
+        setComponent(CompoenetItem => ([...item]));
     }
 
     return (
@@ -686,21 +685,21 @@ function EditInstitution(item: any) {
                                                             <div className="radio">
                                                                 <label>
                                                                     <input className="form-check-input" name="radioPriority"
-                                                                        type="radio" value="(1) High" onChange={(e) => setPriority(item,8)}
+                                                                        type="radio" value="(1) High" onChange={(e) => setPriority(item, 8)}
                                                                         defaultChecked={item.Priority === "(1) High"}></input>High
                                                                 </label>
                                                             </div>
                                                             <div className="radio">
                                                                 <label>
                                                                     <input className="form-check-input" name="radioPriority"
-                                                                        type="radio" value="(2) Normal" onChange={(e) => setPriority(item,4)}
+                                                                        type="radio" value="(2) Normal" onChange={(e) => setPriority(item, 4)}
                                                                         defaultChecked={item.Priority === "(2) Normal"}></input>Normal
                                                                 </label>
                                                             </div>
                                                             <div className="radio">
                                                                 <label>
                                                                     <input className="form-check-input" name="radioPriority"
-                                                                        type="radio" value="(3) Low" onChange={(e) => setPriority(item,1)}
+                                                                        type="radio" value="(3) Low" onChange={(e) => setPriority(item, 1)}
                                                                         defaultChecked={item.Priority === "(3) Low"}></input>Low
                                                                 </label>
                                                             </div>

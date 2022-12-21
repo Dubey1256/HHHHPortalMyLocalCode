@@ -2,12 +2,14 @@
     margin: 0px;
     padding: 0px;
 }
-.ms-CommandBar-primaryCommand .ms-OverflowSet-item {
-    display: none;
-}
 .t_e_8474018e{
     max-width: 1924px;
 }
+.root-61 {
+
+  background-color: #f5f5f5;
+  color: #323130;
+ }
 .spfxbreadcrumb {
     list-style: none;
     display: inline-block;
@@ -109,9 +111,14 @@ margin: 0px;
     
 }
 .Sitecomposition .btn-secondary {
-    width: 100%;
-    border-radius: 0px;
-    text-align: left;
+  width: 100%;
+  border-radius: 0;
+  text-align: left;
+  color: #000;
+  font-weight: 600;
+}
+.Sitecomposition .btn-secondary:hover{
+  color: #fff;
 }
 
 .spxdropdown-menu {
@@ -149,6 +156,9 @@ margin: 0px;
     padding: 0 4px;
     line-height: 26px;
     font-size: 14px;
+}
+.taskimage .images img {
+  width: 100%;
 }
 
 
@@ -211,6 +221,7 @@ aside .card-title {
     color: #000;
 }
 
+<<<<<<< HEAD
 /*-----------------------
 tab menu popup 
 ------------------------ */
@@ -218,6 +229,51 @@ tab menu popup
 .modal-lg, .modal-xl {
     --bs-modal-width: auto;
 }
+=======
+/* --------------tab css------------*/
+.tabmenu .nav{
+
+   
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  padding-left: 0;
+
+  margin-bottom: 0;
+
+  list-style: none;
+
+}
+
+.tabmenu .nav-tabs {
+
+border-bottom: 1px solid #dee2e6;
+
+}
+
+.tabmenu .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+
+color: #495057;
+
+background-color: #fff;
+
+border-color: #dee2e6 #dee2e6 #fff;
+
+}
+
+.tabmenu .nav-tabs .nav-link {
+
+margin-bottom: -1px;
+
+background: 0 0;
+
+border-top-left-radius: 0.25rem;
+
+border-top-right-radius: 0.25rem;
+
+>>>>>>> 741b4ffa06434f266274429b0e2503cae31b3586
 }
 
 .modal-fixed {
@@ -231,6 +287,7 @@ tab menu popup
   outline: 0;
   outline: none;
 
+<<<<<<< HEAD
 }
 .Tabmenu .nav {
   display: flex;
@@ -264,3 +321,151 @@ tab menu popup
 .Tabmenu .tab-content{
   background-color: #fff;
 }
+=======
+
+.tabmenu .nav-link {
+
+display: block;
+
+padding: 0.5rem 1rem;
+
+color: #0d6efd;
+
+text-decoration: none;
+
+transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+
+}
+
+
+/*********************** Table New Vertical Header css *************************/
+.tbl-headings .fa-paint-brush, .tbl-headings .fa-expand,.tbl-headings .fa-bars, .tbl-headings .fa-print, .tbl-headings .excal, .tbl-headings .fa-star-o, .tbl-headings .fa-star, .tbl-headings .fa-envelope, .tbl-headings .fa-envelope-o{display: inline-flex;border: 2px solid #918d8d;color: #000;padding: 2px;font-size:15px;}
+.allexpand .fa-expand{display: inline-flex;border: 2px solid #918d8d;color: #000;padding: 2px;font-size:15px;position: absolute;z-index: 1;right: 7px;top: 15px;}
+.tbl-headings .toolbox {display: flex;vertical-align: middle;align-items: center;}
+.tbl-headings {display: flex;vertical-align: middle;padding: 3px 5px;background: #e9e9e9;}
+.tbl-headings .gsearch-btn {background-color: #e9e9e9;padding: 5px 7px;height: 18px;position: absolute;font-size: 14px;right: 1px;color: #b1acac;top: 1px;}
+.tbl-headings .toolbox .btn {padding: 4px 12px 4px 12px;margin-left:5px;}
+.tbl-headings .toolbox .btn img {width: 17px;}
+.tbl-headings .toolbox > a {padding-left: 5px;}
+.tbl-headings .g-search {position: relative;width: 170px;margin-left: 5px;}
+.tbl-headings .g-searchclear {font-size: 14px;cursor: pointer;color: #ccc;position: absolute;padding: 2px 3px;background-color: #FFF;right: 29px;top: 3px;}
+.tbl-headings .toolbox img.excal {border: 2px solid #918d8d;padding: 2px;width: 23px;}
+.tbl-headings .leftsec{float: left;display: flex;align-items: center;vertical-align: middle;}
+input, button, select, textarea {outline: none;border: 1px solid #ccc;}
+.w47{width:47%;}
+.w65{width:65%;}
+/***********************End Table New Vertical Header css *************************/
+/*************************** New Table(tr,th.td)css *******************************/
+.Alltable{width: 100%;float: left;position: relative;border: 1px solid #ccc;}
+.Alltable .smart .section-event {padding-top: 45px !important;border: 0px !important;position: relative;}
+.Alltable .section-event th .smart-relative {position: absolute;background: transparent;color: #fff;padding: 5px 10px;top: 0;line-height: normal;}
+.Alltable .smart-relative .searchbox_height {height: 35px !important;color: #444;}
+.Alltable .section-event .table>thead .smart-relative .searchclear {right: 32px;bottom: auto;top: 7px !important;background: #fff;padding: 0px 1px;position: absolute;line-height: 30px;height: 30px;}
+.Alltable .smart-relative .sorticon {float: left;position: absolute;top: 6px;background: #e9e9e9;padding: 0 5px;color: #b1acac;right: 11px;}
+.Alltable .smart-relative .sorticon span:last-child {border-bottom: none;}
+.Alltable .smart-relative .sorticon span {display: grid;text-align: center;border-bottom: 1px solid #a09c9c;}
+.Alltable .smart-relative .sorticon .fa-angle-up {padding-bottom: 1px;}
+.Alltable .smart-relative .sorticon .fa-angle-down {margin-top: -1px;}
+.Alltable .smart-relative .sorticon .fa-angle-down, .Alltable .smart-relative .sorticon .fa-angle-up { font-size: 16px !important;font-weight: 800 !important;}
+.Alltable .smart-relative .filer-icons {position: absolute;top: 12px;color: #ccc;right: -7px;font-size: 20px;line-height: 18px;}
+.Alltable .table>tbody>tr>th, .Alltable .table>tfoot>tr>th, .Alltable .table>thead>tr>th {padding: 0px;line-height: 1.42857143; vertical-align: middle;border-bottom: 1px solid #ddd;}
+.Alltable .table>tbody>tr>td, .Alltable .table>tfoot>tr>td, .Alltable .table>thead>tr>td {vertical-align: middle;padding: 5px 10px;border-top: 1px solid #ccc;}
+.quickheader {border-bottom: 1px solid #ccc;font-weight: 700 !important;padding: 4px 10px 4px 10px !important; margin:0px 0px 8px 0px;}
+.pagescroll{width: 100%;float: left;height: 130px;overflow-y: scroll;overflow-x: hidden;}
+.Alltable .smart .modal-footer {padding: 15px !important;display: flow-root;border-top: 0px;}
+.dropdown-content h4 .fa-times-circle {font-size: 20px;font-weight: 300;margin-top: 3px;position: absolute;right:2px;top:-3px;}
+.Alltable .smart-relative .alignmen {position:absolute; padding: 0px; top: 12px; display: inline-flex;}
+/***********************End New Table(tr,th.td)css *************************/
+
+.full_width, .full-width {
+    width: 100%;
+}
+.searchbox_height {
+    height: 30px;
+}
+.ml-auto, .mx-auto {
+    margin-left: auto!important;
+}
+.btn-primary {
+    background-color: #dc0018 !important;
+    border-color: #dc0018 !important;
+}
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;color: #fff;
+}
+
+
+/*------------creat task page---------
+---------------------------------*/
+.taskimage .images img {
+width: 100%;
+}
+
+.usericons img {
+width: 16px;
+border-radius: 50%;
+}
+
+
+/*------comman class --------------
+---------------------------------*/
+a:active, a:hover, a:link, a:visited{
+  color: #000069;
+  text-decoration: none;
+}
+svg {
+  color: #000069; 
+}
+.bg-light{
+  background-color: #f4f4f4;
+}
+.bg-fxdark{
+  background-color: #e7e7e7;
+}
+.root-61 {
+  background-color: #f5f5f5;
+  color: rgb(50, 49, 48);
+}
+.bg-wihite{
+  background-color: #fff;
+  color: #000;
+}
+
+.bg-69{
+  background-color: #000069;
+  color: #fff;
+}
+.bg-f4{
+background-color: #f4f4f4;
+}
+.bg-ee{
+  background-color: #eee;
+}
+.bg-th{
+  background-color: #eee;
+}
+
+/*------comman class end --------------
+---------------------------------*/
+.headign a{
+  color: #000069;
+}
+
+>>>>>>> 741b4ffa06434f266274429b0e2503cae31b3586
