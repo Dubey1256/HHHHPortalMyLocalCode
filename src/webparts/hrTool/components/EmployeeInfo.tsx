@@ -11,6 +11,8 @@ import SalarySlipPopup from './SalarySlipPopup';
 import { Web } from "sp-pnp-js";
 import { useEffect, useState } from 'react';
 import * as moment from 'moment';
+import EditEmployeeInfo from './EditEmployeeInfo';
+import SalaryConfirmationPopup from './SalaryConfirmation';
 
 
 const EmployeeInfo = () => {
@@ -22,9 +24,7 @@ const EmployeeInfo = () => {
     const [salaryData, setEmployees] = useState([]);
     const [HrData, setHrData] = useState(null);
     const [ContractData, setContractData] = useState([]);
-    // const [ShowImage, setImage] = useState(false);
 
- 
     useEffect(() => {
         fetchAPIData();
         loadSmartTaxonomyItems();
@@ -153,9 +153,10 @@ const EmployeeInfo = () => {
                                 {HrData.FirstName} {HrData.Title} ({HrData.StaffID})
                             </div>
                             <div className="mx-auto">
-                                <span ng-show="showHRDetailsPopup">
-                                    <span style={{ padding: 3 }} className="btn btn-outline btn-primary">
-                                        <img />Edit HR Details</span>
+                                <span>
+                                    {/* <span style={{ padding: 3 }} className="btn btn-outline btn-primary">
+                                        <img />Edit HR Details</span> */}
+                                    <EditEmployeeInfo />
                                 </span>
                             </div>
                         </div>
@@ -179,7 +180,7 @@ const EmployeeInfo = () => {
                 </div>
             }
 
-            <div className="col-sm-12 emp-tab  ">
+            <div className="col-sm-12 emp-tab">
                 <input id="InformationTAB" type="radio" defaultChecked={true} name="emp" />
                 <input id="ContractsTAB" type="radio" name="emp" />
                 <input id="PaymentsTAB" type="radio" name="emp" />
@@ -524,11 +525,12 @@ const EmployeeInfo = () => {
                                                                             </span>
 
                                                                         </div>
-                                                                    </div>
-
+                                                                    </div> 
                                                                 </div>
-                                                                <h2 className="Salaryheading"></h2>
+
+                                                                
                                                                 <table className="table table-bordered table-hover mt-10">
+                                                                {/* <h2 className="heading"></h2> */}
                                                                     <thead>
                                                                         <tr>
                                                                             <th>Contract ID</th>
@@ -556,7 +558,7 @@ const EmployeeInfo = () => {
                                                                                         <td>{EmployeeSalary.payOut.toFixed(2)}€</td>
                                                                                         <td>{EmployeeSalary.accountingDate != null ? moment(EmployeeSalary.accountingDate).format('DD/MM/YYYY') : ""}</td>
                                                                                         <td><a><SalarySlipPopup props={EmployeeSalary.Id} /></a>
-                                                                                        </td>
+                                                                                        <a><SalaryConfirmationPopup props={EmployeeSalary.Id} contractData={ContractData}/></a></td>
                                                                                     </tr>
                                                                                 )
                                                                             })

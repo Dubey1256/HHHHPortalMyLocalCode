@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "gulp bundle",
-    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=8096\" gulp bundle",
+    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=448096\" gulp bundle",
     "clean": "gulp clean",
     "test": "gulp test"
   },
@@ -13,7 +13,7 @@
     "@fluentui/react": "^8.103.7",
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@microsoft/sp-core-library": "1.15.2",
-    "@microsoft/sp-lodash-subset": "1.15.2",
+    "@microsoft/sp-lodash-subset": "^1.15.2",
     "@microsoft/sp-office-ui-fabric-core": "1.15.2",
     "@microsoft/sp-property-pane": "1.15.2",
     "@microsoft/sp-webpart-base": "1.15.2",

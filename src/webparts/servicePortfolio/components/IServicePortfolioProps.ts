@@ -4,4 +4,5 @@ export interface IServicePortfolioProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  Context: any;
 }
