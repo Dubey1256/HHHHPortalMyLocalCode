@@ -214,7 +214,7 @@ function Portfolio({ ID }: any) {
                 <div className='container'>
 
                     <div className='row'>
-                        <div className='p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
+                        <div className='d-flex justify-content-between p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
                             <ul className="spfxbreadcrumb m-0 p-0">
                                 <li><a href='#'><FaHome /> </a></li>
                                 <li>
@@ -225,6 +225,7 @@ function Portfolio({ ID }: any) {
                                 </li>
                                 <li> {data.map(item => <a>{item.Title}</a>)}</li>
                             </ul>
+                            <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                         </div>
                     </div>
 
@@ -245,7 +246,7 @@ function Portfolio({ ID }: any) {
                     <div className='row'>
                         <div className='col-md-9 bg-white'>
                             <div className='team_member row  py-2'>
-                                <div className='col-md-4 ps-2'>
+                                <div className='col-md-4 p-0'>
                                     <dl>
                                         <dt className='bg-fxdark'>Due Date</dt>
                                         <dd className='bg-light'>
@@ -302,7 +303,7 @@ function Portfolio({ ID }: any) {
                                         </dd>
                                     </dl>
                                 </div>
-                                <div className='col-md-4'>
+                                <div className='col-md-4 p-0'>
                                     <dl>
                                         <dt className='bg-fxdark'>Priority</dt>
                                         <dd className='bg-light'>
@@ -349,7 +350,7 @@ function Portfolio({ ID }: any) {
                                         </dd>
                                     </dl>
                                 </div>
-                                <div className='col-md-4'>
+                                <div className='col-md-4 p-0'>
                                 {data.map((item:any)=>{
                                     return(
                                     <dl>
@@ -361,9 +362,9 @@ function Portfolio({ ID }: any) {
                                     <dl className='Sitecomposition'>
                                         <div className="dropdown">
                                             {data.map(item =>
-                                                <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
+                                                <a className="btn btn-secondary  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
 
-                                                    <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition <span><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/analyze.png" /></span>
+                                                    <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition 
 
                                                 </a>
                                             )}
@@ -471,9 +472,9 @@ function Portfolio({ ID }: any) {
                                 }
                                 </div>
                             </div>
-                            <section className='accordionbox'>
+                            <section className='row  accordionbox'>
 
-                                <div className="accordion  overflow-hidden">
+                                <div className="accordion p-0  overflow-hidden">
                                     {/* Short description */}
                                     {data.map(item =>
                                     <>

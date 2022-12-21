@@ -1,8 +1,7 @@
-export interface IServicePortfolioProps {
+export interface IHhhhHrToolProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  Context: any;
 }

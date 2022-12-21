@@ -1,16 +1,17 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-import '../../webparts/cssFolder/foundation.scss'
-import '../../webparts/cssFolder/foundationmin.scss';
+//import '../../webparts/cssFolder/foundation.scss'
+//import '../../webparts/cssFolder/foundationmin.scss';
+import '../foundation.scss';
+import '../foundationmin.scss';
 import './CommentStyle.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
-
-import { sp } from "@pnp/sp";
 import "@pnp/sp/sputilities";
+import { sp } from "@pnp/sp";
  
 export interface ICommentCardProps {
   siteUrl? : string;
@@ -74,7 +75,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
    
     await this.GetTaskUsers();
 
-    //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
+    this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
 
     let tempTask = {      
       ID: 'T'+taskDetails["ID"],

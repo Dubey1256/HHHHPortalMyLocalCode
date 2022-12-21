@@ -11,6 +11,7 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'ServicePortfolioWebPartStrings';
 import ServicePortfolio from './components/ServicePortfolio';
 import { IServicePortfolioProps } from './components/IServicePortfolioProps';
+import * as pnp from 'sp-pnp-js';
 
 export interface IServicePortfolioWebPartProps {
   description: string;
@@ -20,6 +21,14 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
+  protected onInit(): Promise<void> {
+    //this._environmentMessage = this._getEnvironmentMessage();
+    return super.onInit().then(_ => {
+      pnp.setup({
+        spfxContext: this.context
+      });
+    });
+  }
 
   public render(): void {
     const element: React.ReactElement<IServicePortfolioProps> = React.createElement(
@@ -29,18 +38,19 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        Context: this.context
       }
     );
 
     ReactDom.render(element, this.domElement);
   }
 
-  protected onInit(): Promise<void> {
-    this._environmentMessage = this._getEnvironmentMessage();
+  // protected onInit(): Promise<void> {
+  //   this._environmentMessage = this._getEnvironmentMessage();
 
-    return super.onInit();
-  }
+  //   return super.onInit();
+  // }
 
   private _getEnvironmentMessage(): string {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams

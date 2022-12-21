@@ -1,5 +1,6 @@
 import * as React from 'react';
 import './styles.css';
+
 type Props = {
   title: string
   index: number
@@ -7,9 +8,14 @@ type Props = {
 }
 
 const TabTitle: React.FC<Props> = ({ title, setSelectedTab, index }) => {
+  const [isActive, setIsActive] = React.useState(false);
+  const SelectedTab=(index:any)=>{
+    setSelectedTab(index)
+    setIsActive(current=>!current)
+  }
 
   return (
-      <button type='button' onClick={() => setSelectedTab(index)}>{title}</button>
+      <button className={isActive ? 'nav-link active':'nav-link'} type='button' onClick={() => SelectedTab(index)}>{title}</button>
   )
 }
 
