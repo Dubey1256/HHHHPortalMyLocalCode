@@ -221,7 +221,6 @@ aside .card-title {
     color: #000;
 }
 
-<<<<<<< HEAD
 /*-----------------------
 tab menu popup 
 ------------------------ */
@@ -229,51 +228,6 @@ tab menu popup
 .modal-lg, .modal-xl {
     --bs-modal-width: auto;
 }
-=======
-/* --------------tab css------------*/
-.tabmenu .nav{
-
-   
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  padding-left: 0;
-
-  margin-bottom: 0;
-
-  list-style: none;
-
-}
-
-.tabmenu .nav-tabs {
-
-border-bottom: 1px solid #dee2e6;
-
-}
-
-.tabmenu .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-
-color: #495057;
-
-background-color: #fff;
-
-border-color: #dee2e6 #dee2e6 #fff;
-
-}
-
-.tabmenu .nav-tabs .nav-link {
-
-margin-bottom: -1px;
-
-background: 0 0;
-
-border-top-left-radius: 0.25rem;
-
-border-top-right-radius: 0.25rem;
-
->>>>>>> 741b4ffa06434f266274429b0e2503cae31b3586
 }
 
 .modal-fixed {
@@ -287,7 +241,6 @@ border-top-right-radius: 0.25rem;
   outline: 0;
   outline: none;
 
-<<<<<<< HEAD
 }
 .Tabmenu .nav {
   display: flex;
@@ -321,7 +274,6 @@ border-top-right-radius: 0.25rem;
 .Tabmenu .tab-content{
   background-color: #fff;
 }
-=======
 
 .tabmenu .nav-link {
 
@@ -468,4 +420,3 @@ background-color: #f4f4f4;
   color: #000069;
 }
 
->>>>>>> 741b4ffa06434f266274429b0e2503cae31b3586
