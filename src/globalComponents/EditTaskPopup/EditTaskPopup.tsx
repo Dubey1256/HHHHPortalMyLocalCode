@@ -2,7 +2,7 @@ import * as React from "react";
 import * as $ from 'jquery';
 import { Modal } from 'office-ui-fabric-react';
 import * as Moment from 'moment';
-import '../TaskDashboard.scss'
+import '../../webparts/taskDashboard/components/TaskDashboard.scss'
 import { HiPencil } from 'react-icons/Hi';
 import { Web } from "sp-pnp-js";
 import TeamComposition from './TeamComposition';
@@ -13,7 +13,7 @@ import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
-import CommentCard from "../Commnet/CommentCard";
+import CommentCard from "../../webparts/taskDashboard/components/Commnet/CommentCard";
 
 
 var IsShowFullViewImage = false;
@@ -238,6 +238,227 @@ const EditTaskPopup = (Items: any) => {
         const res = await web.lists.getById(Items.Items.listId).items
             .select("Id,Title,Priority_x0020_Rank,EstimatedTime,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title,Approver/Title,Approver/Id,Approver/Name&$expand=AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,Approver").getById(Items.Items.ID).get();
          DataEdit.push(res)
+
+         DataEdit.map(function (item: any) {
+            item.currentsiteType = Items.Items.Site;
+            item.siteType = Items.Items.site.Title;
+            item.listId = Items.Items.listId;
+            item.SiteIcon = Items.Items.SiteIcon;
+            item.SiteUrl = Items.Items.SiteUrl;
+            item.DisplaySiteName = Items.Items.DisplaySiteName;
+            item.Responsible_x0020_TeamID = "";
+            //SiteIcon  SiteUrl                   
+            item.Select = false;
+            if (item.Item_x0020_Type) {
+                item.isPortfolio = true;
+            } else {
+                item.isPortfolio = false;
+            }
+            if (item.__metadata != undefined && item.__metadata.type != undefined) {
+                item.Metadatainfo = item.__metadata.type;
+            }
+            if (item.SharewebTaskType != undefined && item.SharewebTaskType.Id != undefined) {
+                item.SharewebTaskTypeTitle = item.SharewebTaskType.Title;
+            } else {
+                item.SharewebTaskTypeTitle = "Task"
+            }
+            try {
+                item.Responsible_x0020_TeamTitle = item.Responsible_x0020_Team.results[0].Title.replace('  ', ' ');
+                item.Responsible_x0020_TeamID = item.Responsible_x0020_Team.results[0].Id;
+            } catch (e) {
+                item.Responsible_x0020_TeamTitle = "";
+                item.Responsible_x0020_TeamID = "";
+            }
+            if (item.EstimatedTime === undefined || item.EstimatedTime === '')
+                item.EstimatedTime = 0;
+
+            if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
+                item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
+                item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
+            }
+
+            if (item.Priority_x0020_Rank === undefined || item.Priority_x0020_Rank === '')
+                item.Priority_x0020_Rank = 4;
+
+            if (item.SharewebCategories.results != undefined) {
+                item.Categories = "";
+                $.each(item.SharewebCategories.results, function (index: any, categories: any) {
+                    if (categories.Title != "Normal Approval" && categories.Title != "Complex Approval" && categories.Title != "Quick Approval") {
+                        item.Categories += categories.Title + ';';
+                    }
+                    if (categories.Title === "Normal Approval" || categories.Title === "Complex Approval" || categories.Title === "Quick Approval") {
+                        item["Is" + categories.Title.replace(" ", "")] = true;
+                    }
+                });
+                if (item.Categories != '')
+                    item.Categories = item.Categories.slice(0, -1);
+            }
+            item.AuthorTitle = item.Author.Title.replace('  ', ' ');
+            item.DueDate = Moment(item.Created).format('DD/MM/YYYY HH mm')
+            item.Modified = Moment(item.Modified).format('DD/MM/YYYY ')
+            item.EditorTitle = item.Editor.Title.replace('  ', ' ');
+            item.Team_x0020_MembersTitle = "";
+            item.Team_x0020_MembersId = "";
+            $.each(item.Team_x0020_Members, function (member: any) {
+                item.Team_x0020_MembersTitle = item.Team_x0020_MembersTitle + "" + member.Title + ", ";
+                item.Team_x0020_MembersId = item.Team_x0020_MembersId + " " + member.Id;
+            })
+            item.AuthorId = item.Author.Id;
+            item.EditorId = item.Editor.Id;
+            item.AssigntoTitle = "";
+            item.AssigntoId = "";
+            if (item.AssignedTo) {
+                $.each(item.AssignedTo.results, function (assign: any) {
+                    item.AssigntoTitle = item.AssigntoTitle + " " + assign.Title;
+                    item.AssigntoId = item.AssigntoId + " " + assign.Id;
+                })
+            }
+            item.Team_x0020_MembersTitle = item.Team_x0020_MembersTitle.replace('  ', ' ');
+            item.Alluserimages = [];
+            item.AllCreatedimages = [];
+            item.AllModifiedimages = [];
+            item.TeamAlluserimages = [];
+            if (item.AssignedTo != undefined && item.AssignedTo.length > 0) {
+                $.each(item.AssignedTo, function (index: any, newitem: any) {
+                    var newuserdata: any = {};
+                    $.each(Items.loadTaskUsers, function (index: any, user: any) {
+                        if (newitem.Id === user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
+                            newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
+                            newuserdata['Suffix'] = user.Suffix;
+                            newuserdata['Title'] = user.Title;
+                            newuserdata['UserId'] = user.AssingedToUserId;
+                            item['Usertitlename'] = user.Title;
+                        }
+                    })
+                    item.Alluserimages.push(newuserdata);
+                })
+            }
+            if (item.Author.Title != undefined && item.Author.Title.length > 0) {
+                let newuserdata: any = {};
+                $.each(Items.taskUsers, function (index: any, user: any) {
+                    if (item.Author.Id === user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
+                        newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
+                        newuserdata['Suffix'] = user.Suffix;
+                        newuserdata['Title'] = user.Title;
+                        newuserdata['UserId'] = user.AssingedToUserId;
+                        item['Usertitlename'] = user.Title;
+                    }
+                })
+                item.AllCreatedimages.push(newuserdata);
+            }
+            if (item.Editor.Title != undefined && item.Editor.Title.length > 0) {
+                let newuserdata: any = {};
+                $.each(Items.taskUsers, function (index: any, user: any) {
+                    if (item.Editor.Id === user.AssingedToUserId && user.Item_x0020_Cover != undefined) {
+                        newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
+                        newuserdata['Suffix'] = user.Suffix;
+                        newuserdata['Title'] = user.Title;
+                        newuserdata['UserId'] = user.AssingedToUserId;
+                        item['Usertitlename'] = user.Title;
+                    }
+                })
+                item.AllModifiedimages.push(newuserdata);
+            }
+            if (item.Team_x0020_Members != undefined) {
+                $.each(item.Team_x0020_Members, function (index: any, teamnewitem: any) {
+                    var teamnewuserdata: any = {};
+                    $.each(Items.taskUsers, function (index: any, teamuser: any) {
+                        if (teamnewitem.Id === teamuser.AssingedToUserId && teamuser.Item_x0020_Cover != undefined) {
+                            teamnewuserdata['useimageurl'] = teamuser.Item_x0020_Cover.Url;
+                            teamnewuserdata['Suffix'] = teamuser.Suffix;
+                            teamnewuserdata['Title'] = teamuser.Title;
+                            item['TeamUsertitlename'] = teamuser.Title;
+                        }
+
+                    })
+                    item.TeamAlluserimages.push(teamnewuserdata);
+                })
+            }
+            if (item.Alluserimages != undefined) {
+                item.allusername = '';
+                $.each(item.Alluserimages, function (index: any, items: any) {
+                    if (items.Title != undefined) {
+                        item.allusername += items.Title + ' ';
+                    }
+                })
+            }
+            if (item.TeamAlluserimages != undefined) {
+                item.allteammembername = '';
+                $.each(item.TeamAlluserimages, function (items: any) {
+                    if (items.Title != undefined) {
+                        item.allteammembername += items.Title + ' ';
+                    }
+                })
+            }
+            item['Companytype'] = 'Alltask';
+            if (item.siteType != undefined && item.siteType === 'Offshore Tasks') {
+                item['Companytype'] = 'Offshoretask';
+            }
+            // if (item.Author != undefined) {
+            //     $.each(taskUsers, function (index:any,newuser:any) {
+
+            //         if (item.Author.Title === newuser.AssingedToUser.Title) {
+            //             if (newuser.Item_x0020_Cover != undefined)
+            //                 item['autherimage'] = newuser.Item_x0020_Cover.Url;
+            //         }
+            //         if (item.Editor.Title === newuser.AssingedToUser.Title) {
+            //             if (newuser.Item_x0020_Cover != undefined)
+            //                 item['editoreimage'] = newuser.Item_x0020_Cover.Url;
+            //         }
+            //     })
+            // }
+            item.ModifiedDateTime = item.Modified;
+            // if (item.Modified != undefined)
+            //     item.Modifiednew = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+            // if (item.Created != undefined)
+            //     item.CreatedNew = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
+            // if (item.Modified != undefined) {
+            //     item.ModifiedNew2 = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY');
+            // }
+            // if (item.Created != undefined) {
+            //     item.CreatedNew2 = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
+            // }
+            // if (item.DueDate != undefined) {
+            //     item.DueDateNew2 = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
+            // }
+            if (item.Component != undefined && item.Component.results != undefined && item.Component.results.length > 0) {
+                item['Portfoliotype'] = 'Component';
+            } else if (item.Services != undefined && item.Services.results && item.Services.results.length > 0) {
+                item['Portfoliotype'] = 'Service';
+            } else if (item.Events != undefined && item.Events.results != undefined && item.Events.results.length > 0) {
+                item['Portfoliotype'] = 'Event';
+            }
+            item['Portfolio_x0020_Type'] = item['Portfoliotype'];
+            if (item.PercentComplete != undefined && item.PercentComplete > 2) {
+                item.PercentComplete = parseInt((item.PercentComplete / 100).toFixed(0));
+            } else if (item.PercentComplete != undefined)
+                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+            else
+                item.PercentComplete = 0;
+
+            item.ClientCategoryItem = "";
+            if (item.ClientCategory != undefined && item.ClientCategory.results != undefined && item.ClientCategory.results.length > 0) {
+                $.each(item.ClientCategory.results, function (category: any, index) {
+                    if (index === 0)
+                        item.ClientCategoryItem = item.ClientCategoryItem != undefined ? item.ClientCategoryItem + category.Title : category.Title;
+                    else
+                        item.ClientCategoryItem = item.ClientCategoryItem != undefined ? item.ClientCategoryItem + ';' + category.Title : category.Title;
+                })
+            }
+
+            if (item.CategoryItem != undefined && item.CategoryItem.indexOf('Draft') > -1) {
+                item['Companytype'] = 'Drafttask';
+            }
+            if (item.component_x0020_link != undefined && item.component_x0020_link.Url != undefined) {
+                item.componentlink = item.component_x0020_link.Url;
+            }
+            else {
+                item.componentlink = undefined;
+            }
+
+           
+        });
+
         setEditData(DataEdit)
 
     }

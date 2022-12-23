@@ -2012,7 +2012,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             {/* Due Date popup end here */}
 
     {/* Team Member Popup */}
-    <Modal
+    <Modal 
                 isOpen={TeamMembermodalIsOpen}
                 onDismiss={setTeamMembermodalIsOpenToFalse}
                 isBlocking={false}

@@ -1,6 +1,6 @@
 import * as React from "react";
-import '../TaskDashboard.scss';
-import '../foundation.scss';
+import '../../webparts/taskDashboard/components/TaskDashboard.scss';
+import '../../webparts/taskDashboard/components/foundation.scss';
 const { useState,useCallback } = React;
 import { memo } from "react";
 
