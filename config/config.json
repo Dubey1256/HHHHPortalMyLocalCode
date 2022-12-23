@@ -89,6 +89,14 @@
           "manifest": "./src/webparts/projectManagement/ProjectManagementWebPart.manifest.json"
         }
       ]
+    },
+    "categories-weekly-multiple-report-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/categoriesWeeklyMultipleReport/CategoriesWeeklyMultipleReportWebPart.js",
+          "manifest": "./src/webparts/categoriesWeeklyMultipleReport/CategoriesWeeklyMultipleReportWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -120,6 +128,7 @@
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
-    "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js"
+    "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
+    "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js"
   }
 }
