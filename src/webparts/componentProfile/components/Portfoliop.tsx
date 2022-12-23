@@ -13,6 +13,7 @@ import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SPComponentLoader } from '@microsoft/sp-loader';
 // import { NavItem } from 'react-bootstrap';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
+import Smartinfo from './NextSmart';
 
 SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css');
 SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js');
@@ -611,7 +612,7 @@ function Portfolio({ ID }: any) {
                                         <div className="mb-0 card-title h5">Smart Information</div>
                                     </div>
                                     <div className='card-body'>
-                                        <div className="border-bottom pb-2"><a title="+ Add SmartInformation" ng-click="editSmartInfoItem(item,'add')">+ Add SmartInformation</a></div>
+                                        <div className="border-bottom pb-2"><a title="+ Add SmartInformation" ng-click="editSmartInfoItem(item,'add')"><Smartinfo/>+ Add SmartInformation</a></div>
                                     </div>
                                 </div>
                                 <div className='mb-3 card' ng-if="isOwner==true">
