@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as $ from 'jquery';
-import '../foundation.scss';
+import '../../webparts/taskDashboard/components/foundation.scss';
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
-import '../TaskDashboard.scss';
+import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 const Picker=()=>{
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(false);
     const [AllCategories, setAllCategories] = React.useState([]);

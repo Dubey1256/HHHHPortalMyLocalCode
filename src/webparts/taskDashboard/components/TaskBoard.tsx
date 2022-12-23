@@ -8,7 +8,7 @@ import { FaAngleDown, FaAngleUp} from 'react-icons/fa';
 import * as Moment from 'moment';
 import { HiOutlineDocumentText } from 'react-icons/Hi';
 import './TaskDashboard.scss';
-import EditTaskPopup from './EditTaskPopup/EditTaskPopup'
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 
 
 
@@ -537,33 +537,9 @@ const TaskDashboard = (props: any) => {
                             if (item.siteType != undefined && item.siteType === 'Offshore Tasks') {
                                 item['Companytype'] = 'Offshoretask';
                             }
-                            // if (item.Author != undefined) {
-                            //     $.each(taskUsers, function (index:any,newuser:any) {
-
-                            //         if (item.Author.Title === newuser.AssingedToUser.Title) {
-                            //             if (newuser.Item_x0020_Cover != undefined)
-                            //                 item['autherimage'] = newuser.Item_x0020_Cover.Url;
-                            //         }
-                            //         if (item.Editor.Title === newuser.AssingedToUser.Title) {
-                            //             if (newuser.Item_x0020_Cover != undefined)
-                            //                 item['editoreimage'] = newuser.Item_x0020_Cover.Url;
-                            //         }
-                            //     })
-                            // }
+        
                             item.ModifiedDateTime = item.Modified;
-                            // if (item.Modified != undefined)
-                            //     item.Modifiednew = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
-                            // if (item.Created != undefined)
-                            //     item.CreatedNew = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-                            // if (item.Modified != undefined) {
-                            //     item.ModifiedNew2 = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY');
-                            // }
-                            // if (item.Created != undefined) {
-                            //     item.CreatedNew2 = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-                            // }
-                            // if (item.DueDate != undefined) {
-                            //     item.DueDateNew2 = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
-                            // }
+                
                             if (item.Component != undefined && item.Component.results != undefined && item.Component.results.length > 0) {
                                 item['Portfoliotype'] = 'Component';
                             } else if (item.Services != undefined && item.Services.results && item.Services.results.length > 0) {
@@ -700,7 +676,7 @@ const TaskDashboard = (props: any) => {
                 users = users.slice(0, -2);
             return users;
         };
-        var getSmartCategories = (Item: any, AllTaxonomyItems: any) => {
+        const getSmartCategories = (Item: any, AllTaxonomyItems: any) => {
             var smartCategories: any = [];
             if (Item.SharewebCategories != undefined) {
                 $.each(Item.SharewebCategories.results, function (index: any, category: any) {
@@ -721,245 +697,7 @@ const TaskDashboard = (props: any) => {
 
     }
 
-    // const finalFilter=()=> {
-    //     var temptask = [];
-    //     var GlobalFilter = undefined;
-    //     finalFilterAfterGlobalSearch(AllTasks);
-
-    //     // if (GlobalFilter) {
-    //     //     console.log(GlobalFilter);
-    //     //     if (GlobalFilter.advanceValueAll === 'Allwords') {
-    //     //         var testItemstoFilter = $scope.AllTasks;
-    //     //         angular.forEach(GlobalFilter.GlobalSearch.split(' '), function (word) {
-    //     //             if (GlobalFilter.updateFilterAll === "Allfields") {
-    //     //                 temptask = $filter('filter')(testItemstoFilter, word);
-    //     //                 testItemstoFilter = temptask;
-    //     //             } else {
-    //     //                 var filter1 = {};
-    //     //                 filter1.Title = word;
-    //     //                 temptask = $filter('filter')(testItemstoFilter, filter1);
-    //     //                 testItemstoFilter = temptask;
-    //     //             }
-
-    //     //         })
-
-    //     //         $scope.finalFilterAfterGlobalSearch(testItemstoFilter);
-    //     //     } else if (GlobalFilter.advanceValueAll === 'Anywords') {
-    //     //         var testItemstoFilter = $scope.AllTasks;
-    //     //         angular.forEach(GlobalFilter.GlobalSearch.split(' '), function (word) {
-    //     //             if (GlobalFilter.updateFilterAll === "Allfields") {
-    //     //                 temptask = $.merge(temptask, $filter('filter')(testItemstoFilter, word));
-    //     //             } else {
-    //     //                 var filter1 = {};
-    //     //                 filter1.Title = word;
-    //     //                 temptask = $.merge(temptask, $filter('filter')(testItemstoFilter, filter1));
-    //     //             }
-    //     //         })
-    //     //         testItemstoFilter = $scope.removeDuplicates(temptask);
-    //     //         $scope.finalFilterAfterGlobalSearch(testItemstoFilter);
-    //     //     } else if (GlobalFilter.advanceValueAll === 'ExactPhrase') {
-    //     //         var testItemstoFilter = $scope.AllTasks;
-    //     //         if (GlobalFilter.updateFilterAll === "Allfields") {
-    //     //             temptask = $.merge(temptask, $filter('filter')(testItemstoFilter, GlobalFilter.GlobalSearch));
-    //     //         } else {
-    //     //             var filter1 = {};
-    //     //             filter1.Title = GlobalFilter.GlobalSearch;
-    //     //             temptask = $.merge(temptask, $filter('filter')(testItemstoFilter, filter1));
-    //     //         }
-
-    //     //         testItemstoFilter = $scope.removeDuplicates(temptask);
-    //     //         $scope.finalFilterAfterGlobalSearch(testItemstoFilter);
-    //     //     }
-    //     // } else {
-    //     //     $scope.finalFilterAfterGlobalSearch($scope.AllTasks);
-    //     // }
-
-    // }
-
-    // const finalFilterAfterGlobalSearch =(tasks:any)=> {
-    //     var tempAllTask = tasks;
-    //     var isType = false;
-    //     var isPType = false;
-    //     var flag = false;
-    //     var IsCompletedTaskItem = false;
-    //     angular.forEach(highFilters, function (filter) {
-    //         if (filter.name === "Team Member") {
-    //             flag = true;
-    //         }
-    //     })
-    //     if (!flag) {
-    //         var userFilter = {};
-    //         userFilter.name = "Team Member"
-    //         userFilter.childs = [];
-    //         // userFilter.childs.push(_spPageContextInfo.userId);
-    //         if ($scope.UrlbasedFilterName != undefined && $scope.UrlbasedFilterName != '') {
-    //             angular.forEach($scope.AllTaskusers, function (ValUser) {
-    //                 if (ValUser.Title === $scope.UrlbasedFilterName) {
-    //                     userFilter.childs.push(ValUser.AssingedToUserId);
-    //                 }
-    //             })
-    //         } else {
-    //             userFilter.childs.push(_spPageContextInfo.userId);
-    //         }
-    //         if ($scope.highFilters) {
-    //             $scope.highFilters.push(userFilter);
-    //         } else {
-    //             $scope.highFilters = [];
-    //             $scope.highFilters.push(userFilter);
-    //         }
-    //     }
-    //     angular.forEach($scope.highFilters, function (fil) {
-    //         if (fil.name === "Type") {
-    //             isType = true;
-    //         }
-    //         if (fil.name === "Portfolio Type") {
-    //             isPType = true;
-    //         }
-    //     })
-    //     if (isType && isPType) {
-    //         angular.forEach($scope.highFilters, function (fil) {
-
-    //             if (fil.name === "Portfolio Type") {
-    //                 fil.name = "Portfolio Task"
-    //             }
-    //         })
-    //     }
-    //     angular.forEach($scope.highFilters, function (high) {
-    //         if (high.name === 'Sites') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 // tempfilter.siteType = filter; 
-    //                 tempfilter.currentsiteType = filter;
-    //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter, true));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name === 'Categories') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 tempfilter.CategoryItem = filter;
-    //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         }
-    //         else if (high.name === 'Client Category') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 tempfilter.ClientCategoryItem = filter;
-    //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         }
-    //         else if (high.name === 'Priority') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 tempfilter.Priority_x0020_Rank = filter;
-    //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         }
-    //         else if (high.name === 'Portfolio Type') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 var tempval = [];
-    //                 tempfilter.Portfolio_x0020_Type = filter;
-    //                 var underfilter = {};
-    //                 underfilter.isPortfolio = true;
-    //                 tempval = $filter('filter')($scope.tempAllTask, underfilter);
-    //                 tempdata = $.merge(tempdata, $filter('filter')(tempval, tempfilter));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name === 'Type') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 var tempval = [];
-    //                 var underfilter = {};
-    //                 underfilter.isPortfolio = false;
-    //                 tempval = $filter('filter')($scope.tempAllTask, underfilter);
-    //                 tempfilter.SharewebTaskTypeTitle = filter;
-    //                 tempdata = $.merge(tempdata, $filter('filter')(tempval, tempfilter));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name === 'Portfolio Task') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 tempfilter.Portfoliotype = filter;
-    //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name === 'Status') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 tempfilter.PercentComplete = filter;
-    //                 if (filter === 99 || filter === 100) {
-    //                     IsCompletedTaskItem = true;
-    //                 }
-    //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter, true));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         } else if (high.name === 'Team Member') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 if ($scope.isCreatedByFilter) {
-    //                     tempfilter = {};
-    //                     tempfilter.AuthorId = filter;
-    //                     tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-    //                 }
-    //                 if ($scope.isModifiedByFilter) {
-    //                     tempfilter = {};
-    //                     tempfilter.EditorId = filter;
-    //                     tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-    //                 }
-
-    //                 if ($scope.isTeamLeaderByFilter) {
-    //                     tempfilter = {};
-    //                     tempfilter.AssigntoId = filter;
-    //                     tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-    //                 }
-
-    //                 if (!$scope.isCreatedByFilter && !$scope.isModifiedByFilter && !$scope.isTeamLeaderByFilter) {
-    //                     tempfilter = {};
-    //                     tempfilter.AuthorId = filter;
-    //                     tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-
-    //                     tempfilter = {};
-    //                     tempfilter.EditorId = filter;
-    //                     tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-
-    //                     tempfilter = {};
-    //                     tempfilter.AssigntoId = filter;
-    //                     tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter));
-
-
-    //                     tempdata = $scope.removeDuplicates(tempdata);
-    //                 }
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         }
-    //         else if (high.name === 'Url') {
-    //             var tempdata = [];
-    //             angular.forEach(high.childs, function (filter) {
-    //                 var tempfilter = {};
-    //                 tempfilter.componentlink = filter;
-    //                 tempdata = $.merge(tempdata, $filter('filter')($scope.tempAllTask, tempfilter, true));
-    //             })
-    //             $scope.tempAllTask = tempdata;
-    //         }
-    //     })
-    //     $scope.finalFilteredTask = $scope.tempAllTask;
-    //     if (!IsCompletedTaskItem) {
-    //         $scope.finalFilteredTask = SharewebCommonFactoryService.ArrayCopy($.grep($scope.finalFilteredTask, function (type) { return (type.PercentComplete != 99 && type.PercentComplete != 100) }));
-    //     }
-    //     $scope.dateFiltersMethod();
-    // }
+    
     const getSharewebId = (item: any) => {
         var Shareweb_x0020_ID = undefined;
         if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title === undefined) {
@@ -1354,7 +1092,7 @@ const TaskDashboard = (props: any) => {
                     </div>
                 </div>
             </div>
-            {isOpenEditPopup ? <EditTaskPopup Items={passdata} Call={CallBack}/>:''}
+            {isOpenEditPopup ? <EditTaskPopup Items={passdata} Call={CallBack} loadTaskUsers={loadTaskUsers} />:''}
         </>
 
     )
