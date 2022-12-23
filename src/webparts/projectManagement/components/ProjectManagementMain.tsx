@@ -521,6 +521,11 @@ const ProjectManagementMain = () => {
                         <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                             <thead>
                                 <tr>
+                                <th style={{ width: "2%" }}>
+                                        <div className="smart-relative">
+
+                                        </div>
+                                    </th>
                                     <th style={{ width: "10%" }}>
                                         <div className="smart-relative">
                                             <input type="search" placeholder="Task ID" className="full_width searchbox_height" />
@@ -547,7 +552,7 @@ const ProjectManagementMain = () => {
 
                                         </div>
                                     </th>
-                                    <th style={{ width: "15%" }}>
+                                    <th style={{ width: "13%" }}>
                                         <div className="smart-relative">
                                             <input id="searchClientCategory" type="search" placeholder="Priority"
                                                 title="Client Category" className="full_width searchbox_height" />
@@ -588,6 +593,32 @@ const ProjectManagementMain = () => {
                                     return (
                                         <>
                                             <tr >
+                                            <td>
+                                                    {item.Component != undefined &&
+                                                    <>
+                                                    {item.Component.map((types:any)=>{
+                                                        return(
+                                                            <>
+                                                            <img className="icon-sites-img"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                                            </>
+                                                        )
+                                                    })}
+                                                    </>
+                                                }
+                                                 {(item.Component == undefined && item.Services != undefined ) &&
+                                                    <>
+                                                    {item.Services.map((types:any)=>{
+                                                        return(
+                                                            <>
+                                                            <img className="icon-sites-img"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" />
+                                                            </>
+                                                        )
+                                                    })}
+                                                    </>
+                                                }
+                                                </td>
                                                 <td>{item.Shareweb_x0020_ID}</td>
                                                 <td>
                                                     <span><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
