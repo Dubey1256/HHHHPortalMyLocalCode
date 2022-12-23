@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "gulp bundle",
-    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=548096\" gulp bundle",
+    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=62096\" gulp bundle",
     "clean": "gulp clean",
     "test": "gulp test"
   },
@@ -36,6 +36,7 @@
     "react-icons": "^4.7.1",
     "react-images-uploading": "^3.1.7",
     "react-mentions": "^4.4.7",
+    "react-moment": "^1.1.2",
     "react-to-print": "^2.14.10",
     "reactjs-popup": "^2.0.5",
     "sp-pnp-js": "^3.0.10",

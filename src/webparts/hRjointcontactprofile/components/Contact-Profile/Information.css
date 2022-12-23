@@ -1,0 +1,20 @@
+.w-28 {
+    width: 28px;
+    height: auto;
+}
+.text1-hadding{
+    color: #000069;
+    border-bottom: #000069 solid 2px;
+}
+
+.text2-anchor{
+    color:#191963;
+}
+
+.litest:hover{
+    background-color: #EEEEEE;
+}
+
+.litest{
+    font-weight: bold;
+}
