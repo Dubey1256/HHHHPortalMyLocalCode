@@ -66,6 +66,24 @@ export default function Smartinfo() {
              isModeless={true}
             >
 
+      {/* Edit Modal */}
+      <div className="modal-header">
+      <h3 ng-if="type=='edit'" className="modal-title">
+            Edit SmartInformation - 
+            {/* {{Item.Title}} */}
+            <span ng-if="type=='edit'" className="pull-right">
+                {/* <page-settings-info webpartid="'sharewebEditSmartInfoPopup'"></page-settings-info> */}
+            </span>
+        </h3>
+
+
+        <button type="button" className="close" ng-click="CancelPopup()" onClick={setModalSmartIsOpenToFalse} style={{minWidth: "10px"}}>
+            &times;
+        </button>
+         </div>
+
+            {/*END Edit Modal */}
+
         {/* Start Modal */}
         <div className="modal-content" ng-cloak>
     <div className="modal-header">
@@ -76,13 +94,7 @@ export default function Smartinfo() {
             </span>
         </h3>
 
-        <h3 ng-if="type=='edit'" className="modal-title">
-            Edit SmartInformation - 
-            {/* {{Item.Title}} */}
-            <span ng-if="type=='edit'" className="pull-right">
-                {/* <page-settings-info webpartid="'sharewebEditSmartInfoPopup'"></page-settings-info> */}
-            </span>
-        </h3>
+     
 
         <button type="button" className="close" ng-click="CancelPopup()" onClick={setModalSmartIsOpenToFalse} style={{minWidth: "10px"}}>
             &times;
@@ -271,5 +283,6 @@ export default function Smartinfo() {
    
     </>
     )
+    
 
 }
