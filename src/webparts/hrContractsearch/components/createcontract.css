@@ -2,24 +2,13 @@
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+  
 }
 
 .cotact-container {
     width: 100%;
     height: 100%;
-    overflow: hidden;
-}
-
-.table-container {
-    overflow-y: auto;
-    max-height: 407px;
-    overflow-x: hidden;
-    border: 1px solid #ccc;
-}
-
-.table-head {
-    position: fixed;
+  
 }
 
 .contact-heading {
@@ -29,9 +18,7 @@
     color: rgb(17, 17, 104);
 }
 
-.t_e_8474018e {
-    max-width: 1400px !important;
-}
+
 
 .userImg {
     width: 40px;
@@ -56,8 +43,7 @@
     justify-content: center;
     backdrop-filter: blur(10px);
 }
-
-.popup-container-org {
+.popup-container-org{
     position: absolute;
     top: 22%;
     left: 50%;
@@ -68,8 +54,7 @@
     padding: 10%;
     justify-content: center;
 }
-
-.popup-container-country {
+.popup-container-country{
     position: absolute;
     top: 22%;
     left: 50%;
@@ -80,39 +65,32 @@
     padding: 10%;
     justify-content: center;
 }
-
 shareweb-breadcrumb-item .Breadcrumb {
     display: none;
 }
-
 .popup-header {
     width: 100%;
 }
-
-.links-and-buttons button {
-    border: none;
-    outline: none;
+.links-and-buttons button{
+  border: none;
+  outline: none;
 }
 
-.CanvasComponent.LCS .CanvasZone,
-.f_a_8474018e {
+.CanvasComponent.LCS .CanvasZone, .f_a_8474018e   {
     width: 1400px !important;
 
 }
-
-.row>* {
+.row>*{
     max-width: 1400px !important;
 }
-
-.e_a_8474018 {
+.e_a_8474018{
     padding: 0px 0px !important;
 }
-
-.badge {
-    background-color: #000066;
+.badge{
+background-color: #000066;
 }
 
-.tr {
+.tr{
     border-color: black !important;
 }
 
@@ -120,13 +98,13 @@ shareweb-breadcrumb-item .Breadcrumb {
 
 /* this is for main component styling  */
 
-.component-section .main-search {
+.component-section .main-search{
     border-radius: 25px 0px 0 25px;
     padding: 3px 10px;
     outline: none;
 }
 
-.search-button {
+.search-button{
     padding: 4px 15px;
     border-radius: 0 25px 25px 0;
     border: 1px solid black;
@@ -135,7 +113,7 @@ shareweb-breadcrumb-item .Breadcrumb {
     font-weight: 400;
 }
 
-.table-buttons .function-btns {
+.table-buttons .function-btns{
     background: #000066;
     font-weight: 500;
     color: #fff;
@@ -145,26 +123,24 @@ shareweb-breadcrumb-item .Breadcrumb {
     border-radius: 3px;
 }
 
-.full-name {
+.full-name{
     color: #000066;
     font-size: 15px;
     font-weight: 600;
 }
-
-.edit-btn {
+.edit-btn{
     border: none;
     outline: none;
     font-size: 25px;
     background: none;
     color: #000066;
 }
-
-.search-input {
+.search-input{
     border-radius: 5px;
     padding: 3px 10px;
 }
 
-.contact-navigation button {
+.contact-navigation button{
     background-color: #fff;
     color: #006;
     font-weight: 600;
@@ -172,73 +148,17 @@ shareweb-breadcrumb-item .Breadcrumb {
     font-size: 18px;
 }
 
-.contact-navigation .institute-nav-button-active,
-.contact-navigation .contact-nav-button-active {
+.contact-navigation .institute-nav-button-active, .contact-navigation .contact-nav-button-active{
     background-color: #000066;
     color: #fff;
     font-size: 500;
     transition: all ease-in-out 0.1s;
 }
-
-.tab-btn {
-    border: 1px solid #000066;
-    padding: 10px;
-    color: #000066;
-    font-weight: 600;
-    padding: 5px 25px;
-    font-size: 15px;
+    
+   
+.t_e_8474018e {
+    max-width: 1845px!important;
 }
-
-.tab-btn-active {
-    border: 1px solid #000066;
-    padding: 10px;
-    color: #fff;
-    background: #000066;
-    font-weight: 600;
-    padding: 5px 25px;
-    font-size: 15px;
-}
-
-.hr-tab-btn {
-    border: 1px solid #000066;
-    padding: 10px;
-    color: #000066;
-    font-weight: 600;
-    padding: 5px 25px;
-    font-size: 12px;
-}
-
-.hr-tab-btn-active {
-    border: 1px solid #000066;
-    padding: 10px;
-    color: #fff;
-    background: #000066;
-    font-weight: 600;
-    padding: 5px 25px;
-    font-size: 12px;
-}
-
-.popup-text {
-    width: 270px;
-    border: 1px solid #d9d9d9;
-    padding: 8px;
-    border-radius: 5px;
-}
-
-.popup-btn {
-    border: 1px solid #d9d9d9;
-    background: none;
-    font-size: 25px;
-    border-radius: 5px;
-}
-
-.country-popup-header button {
-    border: none;
-    color: #000066;
-    background: none;
-    outline: none;
-}
-
-.country-popup-header-button {
-    background: #000066;
+.CanvasComponent.LCS .CanvasZone, .f_a_8474018e {
+    width: 1850px!important;
 }

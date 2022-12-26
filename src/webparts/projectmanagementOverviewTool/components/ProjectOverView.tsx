@@ -105,11 +105,67 @@ export default function ProjectOverview(){
 
     }
 
+//    Save data in master task list
+const [title, settitle] = React.useState('')  
+
+
+
+const addFunction = async () => { 
+
+
+
+let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP'); 
+
+await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items.add({ 
+
+ Title: `${title}`, 
+
+ Item_x0020_Type: "Project", 
+
+
+
+} ).then((res: any) => { 
+    setAddmodalIsOpenToFalse();
+    GetMasterData();
+console.log(res); 
+
+}) 
+
+} 
+
+
+// Update Data 
+const updateDetails = async() => { 
+
+ 
+ let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP'); 
+    
+ await web.lists.getByTitle("Master%20Tasks").items.getById(3646).update({ 
+    // postData.UserName postData.userEmail postData.userPassword  
+    Title:"TestNew" 
+    
+    // DueDate: "10/12/2022", 
+    
+    // PercentComplete:5.5,
+    // Priority:"Normal"
+    
+   }).then(i => { 
+    setEditmodalIsOpenToFalse();
+   console.log("Update Success"); 
+    
+ }) 
+    
+   } 
+    
+       
+
     const setEditmodalIsOpenToTrue = () => {
         setEditmodalIsOpen(true)
+        
     }
     const setEditmodalIsOpenToFalse = () => {
         setEditmodalIsOpen(false)
+        
     }
     const setAddmodalIsOpenToTrue = () => {
         setAddmodalIsOpen(true)
@@ -157,8 +213,8 @@ export default function ProjectOverview(){
                                             </div>
                                             <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
                                                     <button type="button" ng-click="FilterData('SmartTime')"
-                                                            className="btn btn-primary">
-                                                        Update
+                                                            className="btn btn-primary"  onClick={updateDetails}>
+                                                        Update 
                                                     </button>
                                                     <button type="button" className="btn btn-primary"
                                                             ng-click="Filtercancel('SmartTime')" onClick={setEditmodalIsOpenToFalse}>
@@ -187,26 +243,13 @@ export default function ProjectOverview(){
              <span >
                                             <div>
                                                 <span>
-                                                    <input type='text'/>
+                                                    <input type='text' value={title} onChange={(e)=>{settitle(e.target.value)}}/>
                                                 </span>
-                                                <span>
-                                                    <input type='text'/>
-                                                </span>
-                                            </div>
-                                            <div>
-                                            <span>
-                                                    <input type='text'/>
-                                                </span>
-                                                <span>
-                                                    <input type='text'/>
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span><input type='text'/></span>
+                                          
                                             </div>
                                             <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
                                                     <button type="button" ng-click="FilterData('SmartTime')"
-                                                            className="btn btn-primary">
+                                                            className="btn btn-primary" onClick={addFunction}>
                                                      Create 
                                                     </button>
                                                     <button type="button" className="btn btn-primary"
@@ -227,7 +270,7 @@ export default function ProjectOverview(){
                                         <div className="wrapper">
                                         <h1>Project Management Overview</h1>
                                         
-                                        <div className='d-flex justify-content-between p-0'><button className='text-end' type='button' onClick={setAddmodalIsOpenToTrue}>Add Popup</button></div>
+                                        <div className='d-flex justify-content-between p-0'><button style={{position: "absolute",right: "10px",top: "20px"}}className='text-end' type='button' onClick={setAddmodalIsOpenToTrue}>Add Popup</button></div>
                                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                             <thead>
                                                     <tr>
@@ -288,7 +331,7 @@ export default function ProjectOverview(){
                                                                 <>
                                                                     <tr >
                                                                                     <td>
-                                                                                    <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`}>{item.Title}</a></span>
+                                                                                    <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`} target="blank">{item.Title}</a></span>
 
                                                                                     </td>
                                                                                     <td><span className="ml-2">{item.PercentComplete}</span></td>    
