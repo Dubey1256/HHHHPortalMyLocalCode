@@ -63,49 +63,129 @@ function ComponentTable() {
         // const { checked } = e.target;
 
     }
+    isItemExists = function (arr: any, Id: any) {
+        var isExists = false;
+        map(arr, (item) => {
+            if (item.Id == Id) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
+    }
     const Updateitem = () => {
         var filters: any[] = []
+        var CategoryItems: any = [];
         if (state.length == 0) {
             setData(maidataBackup)
         }
         else {
-            $.each(maidataBackup, function (index: any, item) {
+            map(maidataBackup, (item) => {
 
-                $.each(state, function (index: any, select) {
-                    if (item.Id == select.Id) {
-                        filters.push(item);
-                    }
-                    $.each(item.TeamLeaderUser, function (index: any, team) {
-                        if (select.Title == team.Title) {
+                map(state, (select) => {
+                    if (select.Selected)
+                        switch (select.TaxType) {
+                            case 'Type':
+                                if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                    item.flag = true
+                                    CategoryItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.SharewebTaskType != undefined && child.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                            child.flag = true
+                                            CategoryItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.SharewebTaskType != undefined && subchild.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                                    child.flag = true
+                                                    CategoryItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
 
-                            filters.push(item);
+                            case 'Sites':
+                                if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                    item.flag = true
+                                    CategoryItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.Item_x0020_Type != undefined && child.Item_x0020_Type == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                            child.flag = true
+                                            CategoryItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.Item_x0020_Type != undefined && subchild.Item_x0020_Type == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                                    child.flag = true
+                                                    CategoryItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+                            case 'Portfolio':
+                                if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                    item.flag = true
+                                    CategoryItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.SharewebTaskType != undefined && child.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                            child.flag = true
+                                            CategoryItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.SharewebTaskType != undefined && subchild.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                                    child.flag = true
+                                                    CategoryItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+
                         }
 
-                    })
-                    $.each(item.Child, function (index: any, childitem) {
-                        if (childitem.Id == select.Id) {
-                            filters.push(childitem);
-                        }
+                    // if (item.Id == select.Id) {
+                    //     filters.push(item);
+                    // }
+                    // map(item.TeamLeaderUser, (team) => {
+                    //     if (select.Title == team.Title) {
 
-                    })
-                    $.each(item.Child.TeamLeaderUser, function (index: any, childteam) {
-                        if (select.Title == childteam.Title) {
+                    //         filters.push(item);
+                    //     }
 
-                            filters.push(childteam);
-                        }
+                    // })
+                    // map(item.Child, (childitem) => {
+                    //     if (childitem.Id == select.Id) {
+                    //         filters.push(childitem);
+                    //     }
 
-                    })
+                    // })
+                    // map(item.Child.TeamLeaderUser, (childteam) => {
+                    //     if (select.Title == childteam.Title) {
 
+                    //         filters.push(childteam);
+                    //     }
+
+                    // })
                 })
-
-
-
-
-
             })
-        }
 
-        setData(filters)
+        }
+        if (state.length > 0)
+            setData(CategoryItems)
 
 
     }
@@ -1177,51 +1257,6 @@ function ComponentTable() {
         setTitle(e.target.value)
 
     };
-    // function AddItem() {
-    //     var MyData = JSON.stringify({
-    //         '__metadata': {
-    //             'type': 'SP.Data.Master_x0020_TasksListItem'
-    //         },
-    //         "Title": Title,
-    //         "Item_x0020_Type": itemType,
-    //         "Portfolio_x0020_Type": 'Component'
-    //     })
-    //     $.ajax({
-    //         url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/contextinfo",
-    //         type: "POST",
-    //         headers: {
-    //             "Accept": "application/json;odata=verbose"
-    //         },
-    //         success: function (contextData: any) {
-    //             $.ajax({
-    //                 url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items",
-    //                 method: "POST",
-    //                 contentType: "application/json;odata=verbose",
-    //                 data: MyData,
-    //                 async: false,
-    //                 headers: {
-    //                     "Accept": "application/json;odata=verbose",
-    //                     "X-RequestDigest": contextData.d.GetContextWebInformation.FormDigestValue,
-    //                     "IF-MATCH": "*",
-    //                     "X-HTTP-Method": "POST"
-    //                 },
-    //                 success: function (data: any) {
-    //                     alert('success');
-    //                     setModalIsOpenToFalse();
-    //                     window.location.reload();
-    //                 },
-    //                 error: function (jqXHR: any, textStatus: any, errorThrown: any) {
-    //                     alert('error');
-    //                 }
-    //             });
-    //         },
-    //         error: function (jqXHR: any, textStatus: any, errorThrown: any) {
-    //             alert('error');
-    //         }
-    //     });
-
-
-    // }
     const Call = React.useCallback((item1) => {
         setIsComponent(false);
     }, []);
@@ -1235,11 +1270,6 @@ function ComponentTable() {
         setSharewebComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    // React.useEffect(()=>{
-    //     eventBus.on("Successful", (data:any) =>
-    //     setPassData({data:selected2)
-    //   );
-    // },[])
     function AddItem() {
     }
     return (
@@ -1403,7 +1433,7 @@ function ComponentTable() {
                         <div className="togglebox">
                             <label className="toggler full_width mb-10">
                                 <span className=" siteColor">
-                                    <img className="hreflink wid22" ng-show="pagesType=='componentportfolio'"
+                                    <img className="hreflink wid22"
                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" />
                                     SmartSearch – Filters
                                 </span>
@@ -1439,95 +1469,99 @@ function ComponentTable() {
                                                             </fieldset>
                                                             {filterItems.map(function (ItemType, index) {
                                                                 return (
+
                                                                     <>
-                                                                        <div style={{ display: "block" }}> {ItemType.Group == item &&
-                                                                            <>
-                                                                                <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
-                                                                                    {ItemType.childs.length > 0 &&
-                                                                                        <a className='hreflink'
-                                                                                            title="Tap to expand the childs">
-                                                                                            {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
+                                                                        {ItemType.Group == item &&
+                                                                            <div style={{ display: "block" }}>
+                                                                                <>
+                                                                                    <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
+                                                                                        {ItemType.childs.length > 0 &&
+                                                                                            <a className='hreflink'
+                                                                                                title="Tap to expand the childs">
+                                                                                                {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                    : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
 
-                                                                                        </a>}
-                                                                                </span>
-                                                                                {ItemType.TaxType != 'Status' &&
-                                                                                    <span className="ml-1">
+                                                                                            </a>}
+                                                                                    </span>
+                                                                                    {ItemType.TaxType != 'Status' &&
+                                                                                        <span className="ml-1">
 
 
-                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                            <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
 
-                                                                                        <span className="ml-2">
-                                                                                            {ItemType.Title}
+                                                                                            <span className="ml-2">
+                                                                                                {ItemType.Title}
+
+                                                                                            </span>
 
                                                                                         </span>
-
-                                                                                    </span>
-                                                                                }
-                                                                                {ItemType.TaxType == 'Status' &&
-                                                                                    <span className="ml-2">
-
-
-                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    }
+                                                                                    {ItemType.TaxType == 'Status' &&
                                                                                         <span className="ml-2">
-                                                                                            {ItemType.Title}
+
+
+                                                                                            <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                            <span className="ml-2">
+                                                                                                {ItemType.Title}
+
+                                                                                            </span>
 
                                                                                         </span>
+                                                                                    }
+                                                                                    <ul id="id_{ItemType.Id}"
+                                                                                        className="subfilter width-85">
+                                                                                        <span>
+                                                                                            {ItemType.show && (
+                                                                                                <>
+                                                                                                    {ItemType.childs.map(function (child1: any, index: any) {
+                                                                                                        return (
+                                                                                                            <>
+                                                                                                                <div style={{ display: "block" }}>
+                                                                                                                    {child1.childs.length > 0 && !child1.expanded &&
+                                                                                                                        <span className="plus-icon hreflink"
+                                                                                                                            ng-click="loadMoreFilters(child1);">
+                                                                                                                            <img
+                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                                                                                                        </span>
+                                                                                                                    }
+                                                                                                                    {child1.childs.length > 0 && child1.expanded &&
+                                                                                                                        <span className="plus-icon hreflink"
+                                                                                                                            ng-click="loadMoreFilters(child1);">
+                                                                                                                            <img
+                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                        </span>
+                                                                                                                    }
+                                                                                                                    <input type="checkbox" className="icon-input mr0" ng-model="child1.Selected"
+                                                                                                                        onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
 
-                                                                                    </span>
-                                                                                }
-                                                                                <ul id="id_{ItemType.Id}"
-                                                                                    className="subfilter width-85">
-                                                                                    <span>
-                                                                                        {ItemType.show && (
-                                                                                            <>
-                                                                                                {ItemType.childs.map(function (child1: any, index: any) {
-                                                                                                    return (
-                                                                                                        <>
-                                                                                                            <div style={{ display: "block" }}>
-                                                                                                                {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                                    <span className="plus-icon hreflink"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                {child1.childs.length > 0 && child1.expanded &&
-                                                                                                                    <span className="plus-icon hreflink"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                <input type="checkbox" className="icon-input mr0" ng-model="child1.Selected"
-                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
+                                                                                                                    <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
+                                                                                                                    >
+                                                                                                                        {child1.childs.map(function (child2: any) {
+                                                                                                                            <li>
+                                                                                                                                <input type="checkbox"
 
-                                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
-                                                                                                                >
-                                                                                                                    {child1.childs.map(function (child2: any) {
-                                                                                                                        <li>
-                                                                                                                            <input type="checkbox"
+                                                                                                                                    ng-model="child2.Selected"
+                                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
+                                                                                                                            </li>
+                                                                                                                        })}
+                                                                                                                    </ul>
+                                                                                                                </div>
+                                                                                                            </>
+                                                                                                        )
 
-                                                                                                                                ng-model="child2.Selected"
-                                                                                                                                onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
-                                                                                                                        </li>
-                                                                                                                    })}
-                                                                                                                </ul>
-                                                                                                            </div>
-                                                                                                        </>
-                                                                                                    )
+                                                                                                    })}
+                                                                                                </>
+                                                                                            )}
+                                                                                        </span>
+                                                                                    </ul>
 
-                                                                                                })}
-                                                                                            </>
-                                                                                        )}
-                                                                                    </span>
-                                                                                </ul>
+                                                                                </>
 
-                                                                            </>
 
+                                                                            </div>
                                                                         }
-                                                                        </div>
                                                                     </>
+
                                                                 )
                                                             })}
 
@@ -1560,7 +1594,7 @@ function ComponentTable() {
                 </section>
             </div>
 
-            <section className="TableContentSection">
+            <section className="TableContentSection taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container pad0">
@@ -1773,11 +1807,11 @@ function ComponentTable() {
                                                                                     <td style={{ width: "20%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
-                                                                                        >{item.Title}
+                                                                                        ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                                        >{item.Title}
+                                                                                        ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
                                                                                             <span>({item.childs.length})</span>
@@ -2169,4 +2203,5 @@ function RetrieveSPData() {
 function openModal(): React.MouseEventHandler<HTMLAnchorElement> {
     throw new Error("Function not implemented.");
 }
+
 

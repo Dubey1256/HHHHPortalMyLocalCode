@@ -18,7 +18,13 @@ a.btn.btn-outline.btn-primary {
 #contentRow {
     padding-top: 0px;
 }
-
+.taskprofilepagegreen a:active, .taskprofilepagegreen a:hover, .taskprofilepagegreen a:link, .taskprofilepagegreen a:visited {
+    color: #228b22 !important;
+    text-decoration: none;
+}
+.taskprofilepagegreen .comment_header, .taskprofilepagegreen a, .taskprofilepagegreen td {
+    color: #228b22 !important;
+}
 #pageTitle {
     display: none;
 }

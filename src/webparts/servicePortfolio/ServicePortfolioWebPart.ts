@@ -15,6 +15,10 @@ import * as pnp from 'sp-pnp-js';
 
 export interface IServicePortfolioWebPartProps {
   description: string;
+  ComponentlistId:'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TasklistId:'ec34b38f-0669-480a-910c-f84e92e58adf';
+  SmartMetaDataId:'01a34938-8c7e-4ea6-a003-cee649e8c67a'
+  TaskUserlistId:'b318ba84-e21d-4876-8851-88b94b9dc300'
 }
 
 export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServicePortfolioWebPartProps> {
@@ -39,6 +43,11 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        ComponentlistId:this.properties.ComponentlistId,
+        TasklistId:this.properties.TasklistId,
+        SmartMetaDataId:this.properties.SmartMetaDataId,
+        TaskUserlistId:this.properties.TaskUserlistId,
         Context: this.context
       }
     );
