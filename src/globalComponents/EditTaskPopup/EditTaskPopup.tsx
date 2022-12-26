@@ -2,7 +2,7 @@ import * as React from "react";
 import * as $ from 'jquery';
 import { Modal } from 'office-ui-fabric-react';
 import * as Moment from 'moment';
-import '../TaskDashboard.scss'
+import '../../webparts/taskDashboard/components/TaskDashboard.scss'
 import { HiPencil } from 'react-icons/Hi';
 import { Web } from "sp-pnp-js";
 import TeamComposition from './TeamComposition';
@@ -13,8 +13,8 @@ import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
-import CommentCard from "../Commnet/CommentCard";
-import "../../../cssFolder/Style.scss";
+import CommentCard from "../../globalComponents/Comments/CommentCard";
+import '../../../src/webparts/cssFolder/Style.scss';
 
 
 var IsShowFullViewImage = false;
@@ -239,6 +239,84 @@ const EditTaskPopup = (Items: any) => {
         const res = await web.lists.getById(Items.Items.listId).items
             .select("Id,Title,Priority_x0020_Rank,EstimatedTime,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title,Approver/Title,Approver/Id,Approver/Name&$expand=AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,Approver").getById(Items.Items.ID).get();
          DataEdit.push(res)
+
+         DataEdit.map(function (item: any) {
+            //item.currentsiteType = Items.Items.Site;
+            //item.siteType = Items.Items.site.Title;
+            item.listId = Items.Items.listId;
+            item.SiteIcon = Items.Items.SiteIcon;
+            item.SiteUrl = Items.Items.SiteUrl;
+            item.DisplaySiteName = Items.Items.DisplaySiteName;
+            item.Responsible_x0020_TeamID = "";
+            //SiteIcon  SiteUrl                   
+            // item.Select = false;
+            // if (item.Item_x0020_Type) {
+            //     item.isPortfolio = true;
+            // } else {
+            //     item.isPortfolio = false;
+            // }
+            // if (item.__metadata != undefined && item.__metadata.type != undefined) {
+            //     item.Metadatainfo = item.__metadata.type;
+            // }
+            // if (item.SharewebTaskType != undefined && item.SharewebTaskType.Id != undefined) {
+            //     item.SharewebTaskTypeTitle = item.SharewebTaskType.Title;
+            // } else {
+            //     item.SharewebTaskTypeTitle = "Task"
+            // }
+            // try {
+            //     item.Responsible_x0020_TeamTitle = item.Responsible_x0020_Team[0].Title.replace('  ', ' ');
+            //     item.Responsible_x0020_TeamID = item.Responsible_x0020_Team.results[0].Id;
+            // } catch (e) {
+            //     item.Responsible_x0020_TeamTitle = "";
+            //     item.Responsible_x0020_TeamID = "";
+            // }
+            // if (item.EstimatedTime === undefined || item.EstimatedTime === '')
+            //     item.EstimatedTime = 0;
+
+            // if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
+            //     item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
+            //     item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
+            // }
+
+            // if (item.Priority_x0020_Rank === undefined || item.Priority_x0020_Rank === '')
+            //     item.Priority_x0020_Rank = 4;
+
+            // if (item.SharewebCategories != undefined) {
+            //     item.Categories = "";
+            //     $.each(item.SharewebCategories, function (index: any, categories: any) {
+            //         if (categories.Title != "Normal Approval" && categories.Title != "Complex Approval" && categories.Title != "Quick Approval") {
+            //             item.Categories += categories.Title + ';';
+            //         }
+            //         if (categories.Title === "Normal Approval" || categories.Title === "Complex Approval" || categories.Title === "Quick Approval") {
+            //             item["Is" + categories.Title.replace(" ", "")] = true;
+            //         }
+            //     });
+            //     if (item.Categories != '')
+            //         item.Categories = item.Categories.slice(0, -1);
+            // }
+            // item.AuthorTitle = item.Author.Title.replace('  ', ' ');
+            // item.DueDate = Moment(item.Created).format('DD/MM/YYYY HH mm')
+            // item.Modified = Moment(item.Modified).format('DD/MM/YYYY ')
+            // item.EditorTitle = item.Editor.Title.replace('  ', ' ');
+            // item.Team_x0020_MembersTitle = "";
+            // item.Team_x0020_MembersId = "";
+            // $.each(item.Team_x0020_Members, function (member: any) {
+            //     item.Team_x0020_MembersTitle = item.Team_x0020_MembersTitle + "" + member.Title + ", ";
+            //     item.Team_x0020_MembersId = item.Team_x0020_MembersId + " " + member.Id;
+            // })
+            // item.AuthorId = item.Author.Id;
+            // item.EditorId = item.Editor.Id;
+            // item.AssigntoTitle = "";
+            // item.AssigntoId = "";
+           // item.Team_x0020_MembersTitle = item.Team_x0020_MembersTitle.replace('  ', ' ');
+        
+       
+          
+         
+
+           
+        });
+
         setEditData(DataEdit)
 
     }
@@ -464,7 +542,7 @@ const EditTaskPopup = (Items: any) => {
                     <div className="modal-dailog modal-lg">
                         <div className="modal-content" ng-cloak>
                         <div className="modal-header">
-                        <h5 className="modal-title">Modal title</h5>
+                        <h5 className="modal-title">Edit Task Popup</h5>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"  onClick={Items.Call}></button>
 
        

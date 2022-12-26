@@ -22,7 +22,9 @@ const Tabs: React.FC<Props> = ({ children }) => {
       </ul>
       {children[selectedTab]}
     </div>
+  
   )
 }
+ 
 
-export default Tabs
+export default Tabs;

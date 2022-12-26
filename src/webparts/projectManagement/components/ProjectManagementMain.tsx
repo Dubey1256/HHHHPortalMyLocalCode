@@ -6,10 +6,13 @@ import '../../cssFolder/Style.scss';
 import '../../cssFolder/site_color.scss';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import * as Moment from 'moment';
-var siteConfig:any=[]
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+var AllUser: any = []
+var siteConfig: any = []
 const ProjectManagementMain = () => {
-    const [AllTasks,setAllTasks] = React.useState([])
-    const [Masterdata,setMasterdata] = React.useState([])
+    const [AllTasks, setAllTasks] = React.useState([])
+    const[isOpenEditPopup,setisOpenEditPopup] = React.useState(false)
+    const [Masterdata, setMasterdata] = React.useState([])
     const [array, setArray] = React.useState([])
     const [datas, setdatas] = React.useState([])
     const [isActive, setIsActive] = React.useState(false);
@@ -17,45 +20,52 @@ const ProjectManagementMain = () => {
     const [datak, setdatak] = React.useState([])
     const [dataj, setdataj] = React.useState([])
     const [datams, setdatams] = React.useState([])
+    const [passdata, setpassdata] = React.useState('');
     const [Title, setTitle] = React.useState()
     //const [QueryId, setQueryId] = React.useState()
-var QueryId:any=''
+    var QueryId: any = ''
     React.useEffect(() => {
-         getQueryVariable((e:any)=>e);
+        getQueryVariable((e: any) => e);
+        TaskUser();
         GetMasterData();
         GetMetaData();
-      
+
     }, [])
 
-    function getQueryVariable(variable:any)
+    function getQueryVariable(variable: any) {
 
-    {
+        var query = window.location.search.substring(1);
 
-            var query = window.location.search.substring(1);
+        console.log(query)//"app=article&act=news_content&aid=160990"
 
-            console.log(query)//"app=article&act=news_content&aid=160990"
+        var vars = query.split("&");
 
-            var vars = query.split("&");
+        console.log(vars)
 
-            console.log(vars)
+        for (var i = 0; i < vars.length; i++) {
 
-            for (var i=0;i<vars.length;i++) {
+            var pair = vars[i].split("=");
+            QueryId = pair[1]
 
-                        var pair = vars[i].split("=");
-                        QueryId=pair[1]
+            console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ]
 
-                        console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ]
+            if (pair[0] == variable) { return pair[1]; }
 
-            if(pair[0] == variable){ return pair[1];}
+        }
 
-             }
+        return (false);
 
-             return(false);
-
-             
-
-             
-
+    }
+    const TaskUser = async () => {
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let taskUser = [];
+        taskUser = await web.lists
+            .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
+            .items
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
+            .expand("AssingedToUser,Approver")
+            .get();
+        AllUser = taskUser;
     }
     const GetMasterData = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -63,15 +73,45 @@ var QueryId:any=''
         var AllUsers: any = []
         taskUsers = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title").expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").getById(QueryId).get();
-            taskUsers.PercentComplete = (taskUsers.PercentComplete * 100).toFixed(0);
-            AllUsers.push(taskUsers);
+        taskUsers.PercentComplete = (taskUsers.PercentComplete * 100).toFixed(0);
+        if (taskUsers.Body != undefined) {
+            taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/ig, '');
+        }
+
+        AllUsers.push(taskUsers);
+
+        AllUsers.map((items: any) => {
+            items.AssignedUser = []
+            if (items.AssignedToId != undefined) {
+                items.AssignedToId.map((taskUser: any) => {
+                    var newuserdata: any = {};
+
+                    AllUser.map((user: any) => {
+                        if (user.AssingedToUserId == taskUser) {
+
+                            newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
+                            newuserdata['Suffix'] = user.Suffix;
+                            newuserdata['Title'] = user.Title;
+                            newuserdata['UserId'] = user.AssingedToUserId;
+                            items['Usertitlename'] = user.Title;
+                        }
+
+                    })
+                    items.AssignedUser.push(newuserdata);
+                })
+
+            }
+        })
         setMasterdata(AllUsers)
 
     }
+    const CallBack =React.useCallback(()=>{
+        setisOpenEditPopup(false)
+    },[])
     const GetMetaData = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let smartmeta = [];
-       
+
         let TaxonomyItems = [];
         smartmeta = await web.lists
             .getById('01a34938-8c7e-4ea6-a003-cee649e8c67a')
@@ -81,54 +121,221 @@ var QueryId:any=''
             .filter("TaxType eq 'Sites'")
             .expand('Parent')
             .get();
-            siteConfig = smartmeta;
-            LoadAllSiteTasks();
+        siteConfig = smartmeta;
+        LoadAllSiteTasks();
     }
+    const getSharewebId = (item: any) => {
+        var Shareweb_x0020_ID = undefined;
+        if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title === undefined) {
+            Shareweb_x0020_ID = 'T' + item.Id;
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No === undefined && item.SharewebTaskLevel2No === undefined) {
+            Shareweb_x0020_ID = 'T' + item.Id;
+            if (item.SharewebTaskType.Title === 'MileStone')
+                Shareweb_x0020_ID = 'M' + item.Id;
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Activities' || item.SharewebTaskType.Title === 'Project') && item.SharewebTaskLevel1No != undefined) {
+            if (item.Component != undefined) {
+                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
+                }
+            }
+            if (item.Services != undefined) {
+                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
+                }
+            }
+            if (item.Events != undefined) {
+                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
+                }
+            }
+            if (item.Component != undefined && item.Events != undefined && item.Services != undefined)
+                if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
+                    Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
+                }
+            if (item.Component === undefined && item.Events === undefined && item.Services === undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
+            }
+            if (item.SharewebTaskType.Title === 'Project')
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
+
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Workstream' || item.SharewebTaskType.Title === 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
+                    Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
+            }
+            if (item.Component != undefined) {
+                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
+            }
+            if (item.Services != undefined) {
+                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
+            }
+            if (item.Events != undefined) {
+                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
+            }
+            if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+            }
+            if (item.SharewebTaskType.Title === 'Step')
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
+
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
+                    Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Component != undefined) {
+                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Services != undefined) {
+                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Events != undefined) {
+                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+            }
+            if (item.SharewebTaskType.Title === 'MileStone') {
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
+            }
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No === undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
+                    Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Component != undefined) {
+                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Services != undefined) {
+                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Events != undefined) {
+                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
+            }
+            if (item.SharewebTaskType.Title === 'MileStone') {
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
+            }
+
+        }
+        return Shareweb_x0020_ID;
+    }
+    const EditPopup=React.useCallback((item:any)=>{
+        setisOpenEditPopup(true)
+        setpassdata(item)
+    },[])
     const LoadAllSiteTasks = function () {
-var AllTask:any=[]
+        var AllTask: any = []
         var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         var Counter = 0;
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         var arraycount = 0;
-        siteConfig.map(async (config: any)=> {
+        siteConfig.map(async (config: any) => {
             if (config.Title != 'SDC Sites') {
-                
-                let smartmeta = []; 
+
+                let smartmeta = [];
                 let TaxonomyItems = [];
                 smartmeta = await web.lists
                     .getById(config.listId)
                     .items
-                    .select("Id,StartDate,DueDate,Title,PercentComplete,Priority_x0020_Rank,Priority,Project/Id,Project/Title")
-                        .top(4999)
-                        .filter("Project/Id eq " +QueryId)
-                        .expand("Project")
-                        .get();
-                        arraycount++;
-                    smartmeta.map((items:any)=>{
-                        items.siteType = config.Title;
-                        items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-                        AllTask.push(items)
-                    })
-                        if (arraycount === 17) {
-                            setAllTasks(AllTask)
-                            // setmaidataBackup(AllTask)
-                            // showProgressHide();
-                        }
-                        
+                    .select("Id,StartDate,DueDate,Title,PercentComplete,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title")
+                    .top(4999)
+                    .filter("Project/Id eq " + QueryId)
+                    .expand("Project,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType")
+                    .get();
+                arraycount++;
+                smartmeta.map((items: any) => {
+                    items.AllTeamMember = []
+                    items.siteType = config.Title;
+                    items.listId = config.listId;
+                    items.SiteUrl = config.siteUrl.Url;
+                    items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                    if (items.Component != undefined && items.Component.results != undefined && items.Component.results.length > 0) {
+                        items['Portfoliotype'] = 'Component';
+                    }
+                    if (items.Services != undefined && items.Services.results && items.Services.results.length > 0) {
+                        items['Portfoliotype'] = 'Service';
+                    }
+                    items.componentString = items.Component != undefined && items.Component != undefined && items.Component.length > 0 ? getComponentasString(items.Component) : '';
+                    items.Shareweb_x0020_ID = getSharewebId(items);
+                    if (items.Team_x0020_Members != undefined) {
+                        items.Team_x0020_Members.map((taskUser: any) => {
+                            var newuserdata: any = {};
 
-                        
-              
+                            AllUser.map((user: any) => {
+                                if (user.AssingedToUserId == taskUser.Id) {
 
-    }else{
-        arraycount ++
-    }})
+                                    newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
+                                    newuserdata['Suffix'] = user.Suffix;
+                                    newuserdata['Title'] = user.Title;
+                                    newuserdata['UserId'] = user.AssingedToUserId;
+                                    items['Usertitlename'] = user.Title;
+                                }
+
+                            })
+                            items.AllTeamMember.push(newuserdata);
+                        })
+
+                    }
+                    AllTask.push(items)
+                })
+                if (arraycount === 17) {
+                    setAllTasks(AllTask)
+                    // setmaidataBackup(AllTask)
+                    // showProgressHide();
+                }
+
+
+
+
+
+            } else {
+                arraycount++
+            }
+        })
     }
+    const getComponentasString = function (results: any) {
+        var component = '';
+        $.each(results, function (cmp: any) {
+            component += cmp.Title + '; ';
+        })
+        return component;
+    }
+
     const handleOpen1 = (item: any) => {
         item.showl = item.showl = item.showl == true ? false : true;
         setdatam(datam => ([...datam]));
     };
     const handleOpen2 = (item: any) => {
-        
+
         item.shows = item.shows = item.shows == true ? false : true;
         setdatas(datas => ([...datas]));
     };
@@ -176,213 +383,309 @@ var AllTask:any=[]
     // }
     return (
         <>
-        <section>
-          <div className='container'>
+            <section>
+                <div className='container'>
 
-<div className='row'>
-    <div className='d-flex justify-content-between p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
-        <ul className="spfxbreadcrumb m-0 p-0">
-            <li><a href='#'><FaHome /> </a></li>
-            <li>
-                <a ng-if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')"
-                    href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">
-                   Project Management
-                </a>
-            </li>
-            <li> {Masterdata.map(item => <a>{item.Title}</a>)}</li>
-        </ul>
-        {/* <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span> */}
-    </div>
-</div>
+                    <div className='row'>
+                        <div className='d-flex justify-content-between p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
+                            <ul className="spfxbreadcrumb m-0 p-0">
+                                <li><a href='#'><FaHome /> </a></li>
+                                <li>
+                                    <a ng-if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')"
+                                        href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">
+                                        Project Management
+                                    </a>
+                                </li>
+                                <li> {Masterdata.map(item => <a>{item.Title}</a>)}</li>
+                            </ul>
+                            {/* <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span> */}
+                        </div>
+                    </div>
 
-<div className='row'>
-    <div className='p-0' style={{ verticalAlign: "top" }}>
-        <h2 className='headign'>
-           {Masterdata.map(item => <a>{item.Title}</a>)}
-        </h2>
-    </div>
-</div>
+                    <div className='row'>
+                        <div className='p-0' style={{ verticalAlign: "top" }}>
+                            <h2 className='headign'>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png" />
+                                {Masterdata.map(item => <a>{item.Title}</a>)}
+                            </h2>
+                        </div>
+                    </div>
 
-        </div>
-        </section>
-        <section>
+                </div>
+            </section>
+            <section>
                 <div className='container'>
                     <div className='row'>
                         <div className='col-md-9 bg-white'>
-                            <div className='team_member row  py-2'>
-                                <div className='col-md-4 p-0'>
-                                    <dl>
-                                        <dt className='bg-fxdark'>Due Date</dt>
-                                        <dd className='bg-light'>
+                            {Masterdata.map((item: any) => {
+                                return (
+                                    <>
 
-                                            <span>
-                                                {Masterdata.map(item =>
-                                                    <a>{item.DueDate != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</a>
-                                                )}
-                                                {/* {data.map(item =>  <i>{item.DueDate}</i>)} */}
-                                            </span>
-                                            <span
-                                                className="pull-right" title="Edit Inline"
-                                                ng-click="EditContents(Task,'editableDueDate')">
-                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                            </span>
-                                        </dd>
-                                    </dl>
-                                    <dl>
-                                        <dt className='bg-fxdark'>Priority</dt>
-                                        <dd className='bg-light'>
-                                            {Masterdata.map(item =>
-                                                <a>{item.Priority != null ? item.Priority : ""}</a>)}
-                                            <span
-                                                className="hreflink pull-right" title="Edit Inline"
-                                              >
-                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                            </span>
+                                        <div className='team_member row  py-2'>
+                                            <div className='col-md-4 p-0'>
+                                                <dl>
+                                                    <dt className='bg-fxdark'>Due Date</dt>
+                                                    <dd className='bg-light'>
 
-                                        </dd>
-                                    </dl>
-                                  
-                                </div>
-                                <div className='col-md-4 p-0'>
-                                    
-                                    <dl>
-                                        <dt className='bg-fxdark'>Assigned To</dt>
-                                        <dd className='bg-light'>
-                                            {Masterdata.map(item =>
-                                                <a>{item.CompletedDate != null ? Moment(item.CompletedDate).format('DD/MM/YYYY') : ""}</a>)}
-                                            <span
-                                                className="hreflink pull-right" title="Edit Inline"
-                                            >
-                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                            </span>
-                                        </dd>
-                                    </dl>
-                                   
-                                    <dl>
-                                        <dt className='bg-fxdark'>% Complete</dt>
-                                        <dd className='bg-light'>
-                                            {Masterdata.map(item => <a>{item.PercentComplete != null ? item.PercentComplete : ""}</a>)}
-                                            <span className="pull-right">
-                                                <span className="pencil_icon">
-                                                    <span ng-show="isOwner" className="hreflink"
-                                                        title="Edit Inline"
-                                                    >
-                                                        <i className="fa fa-pencil" aria-hidden="true"></i>
-                                                    </span>
-                                                </span>
-                                            </span>
+                                                        <span>
 
-                                        </dd>
-                                    </dl>
-                                </div>
-                                <div className='col-md-4 p-0'>
-                               
-                                </div>
-                            </div>
-                          
+                                                            <a>{item.DueDate != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</a>
+
+                                                        </span>
+                                                        <span
+                                                            className="pull-right" title="Edit Inline"
+                                                            ng-click="EditContents(Task,'editableDueDate')">
+                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                        </span>
+                                                    </dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt className='bg-fxdark'>Priority</dt>
+                                                    <dd className='bg-light'>
+
+                                                        <a>{item.Priority != null ? item.Priority : ""}</a>
+                                                        <span
+                                                            className="hreflink pull-right" title="Edit Inline"
+                                                        >
+                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                        </span>
+
+                                                    </dd>
+                                                </dl>
+
+
+                                            </div>
+                                            <div className='col-md-4 p-0'>
+
+                                                <dl>
+                                                    <dt className='bg-fxdark'>Assigned To</dt>
+                                                    <dd className='bg-light'>
+                                                        {item.AssignedUser.map((image: any) =>
+                                                            <span className="headign" title={image.Title}><img src={image.useimageurl} /></span>
+                                                        )}
+
+                                                    </dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt className='bg-fxdark'>% Complete</dt>
+                                                    <dd className='bg-light'>
+                                                        <a>{item.PercentComplete != null ? item.PercentComplete : ""}</a>
+                                                        <span className="pull-right">
+                                                            <span className="pencil_icon">
+                                                                <span ng-show="isOwner" className="hreflink"
+                                                                    title="Edit Inline"
+                                                                >
+                                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
+                                                                </span>
+                                                            </span>
+                                                        </span>
+
+                                                    </dd>
+                                                </dl>
+
+
+                                            </div>
+                                            <div className='team_member row  py-2'>
+                                            <div className='col-md-12 p-0'>
+                                                <dl>
+                                                    <dt className='bg-fxdark' style={{width:"10%"}}>Description</dt>
+                                                    <dd className='bg-light'>
+
+                                                        <a>{item.Body != null ? item.Body : ""}</a>
+                                                        <span
+                                                            className="hreflink pull-right" title="Edit Inline"
+                                                        >
+                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                        </span>
+
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )
+                            })}
+
                         </div>
-                       
+
                     </div>
                 </div>
-       </section>
+            </section>
 
-       {/* ======================================Show Table============================================================================================================================ */}
+            {/* ======================================Show Table============================================================================================================================ */}
 
-       <div className="col-sm-12 pad0 smart">
-                                    <div className="section-event">
-                                        <div className="wrapper">
-                                            <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                            <thead>
-                                                    <tr>
-                                                      
-                                                      
-                                                        <th style={{ width: "40%" }}>
-                                                            <div className="smart-relative">
-                                                                <input type="search" placeholder="Title" className="full_width searchbox_height" />
+            <div className="col-sm-12 pad0 smart">
+                <div className="section-event">
+                    <div className="wrapper">
+                        <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                            <thead>
+                                <tr>
+                                <th style={{ width: "2%" }}>
+                                        <div className="smart-relative">
 
-                                                            </div>
-                                                        </th>
-                                                        <th style={{ width: "15%" }}>
-                                                            <div  className="smart-relative">
-                                                                <input type="search" placeholder="% Complete" className="full_width searchbox_height"/>
-   
+                                        </div>
+                                    </th>
+                                    <th style={{ width: "10%" }}>
+                                        <div className="smart-relative">
+                                            <input type="search" placeholder="Task ID" className="full_width searchbox_height" />
 
-                                                            </div>
-                                                        </th>
-                                                        <th style={{ width: "15%" }}>
-                                                            <div className="smart-relative">
-                                                                <input id="searchClientCategory" type="search" placeholder="Priority"
-                                                                    title="Client Category" className="full_width searchbox_height"/>
-                                                               
-                                                            </div>
-                                                        </th>
-                                                        <th style={{ width: "15%" }}>
-                                                            <div className="smart-relative">
-                                                                <input id="searchClientCategory" type="search" placeholder="Team"
-                                                                    title="Client Category" className="full_width searchbox_height"/>
-                                                               
-                                                            </div>
-                                                        </th>
-                                                        <th style={{ width: "13%" }}>
-                                                            <div className="smart-relative">
-                                                                <input id="searchClientCategory" type="search" placeholder="Due Date"
-                                                                    title="Client Category" className="full_width searchbox_height"
-                                                                    />
-                                                           
-                                                                
-                                                            </div>
-                                                        </th>
-                                                        <th style={{ width: "2%" }}>
-                                                        </th>
-                                                      
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
+                                        </div>
+                                    </th>
 
-                                                    <div id="SpfxProgressbar" style={{ display: "none" }}>
+                                    <th style={{ width: "25%" }}>
+                                        <div className="smart-relative">
+                                            <input type="search" placeholder="Title" className="full_width searchbox_height" />
 
-                                                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                        </div>
+                                    </th>
+                                    <th style={{ width: "25%" }}>
+                                        <div className="smart-relative">
+                                            <input type="search" placeholder="Portfolio Type" className="full_width searchbox_height" />
 
-                                                    </div>
-                                                    {AllTasks.length > 0 && AllTasks && AllTasks.map(function (item, index) {
-                                                      
-                                                     
+                                        </div>
+                                    </th>
+                                    <th style={{ width: "10%" }}>
+                                        <div className="smart-relative">
+                                            <input type="search" placeholder="% Complete" className="full_width searchbox_height" />
+
+
+                                        </div>
+                                    </th>
+                                    <th style={{ width: "13%" }}>
+                                        <div className="smart-relative">
+                                            <input id="searchClientCategory" type="search" placeholder="Priority"
+                                                title="Client Category" className="full_width searchbox_height" />
+
+                                        </div>
+                                    </th>
+                                    <th style={{ width: "15%" }}>
+                                        <div className="smart-relative">
+                                            <input id="searchClientCategory" type="search" placeholder="Team"
+                                                title="Client Category" className="full_width searchbox_height" />
+
+                                        </div>
+                                    </th>
+                                    <th style={{ width: "13%" }}>
+                                        <div className="smart-relative">
+                                            <input id="searchClientCategory" type="search" placeholder="Due Date"
+                                                title="Client Category" className="full_width searchbox_height"
+                                            />
+
+
+                                        </div>
+                                    </th>
+                                    <th style={{ width: "2%" }}>
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <div id="SpfxProgressbar" style={{ display: "none" }}>
+
+                                    <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+
+                                </div>
+                                {AllTasks.length > 0 && AllTasks && AllTasks.map(function (item, index) {
+
+
+                                    return (
+                                        <>
+                                            <tr >
+                                            <td>
+                                                    {item.Component != undefined &&
+                                                    <>
+                                                    {item.Component.map((types:any)=>{
+                                                        return(
+                                                            <>
+                                                            <img className="icon-sites-img"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                                            </>
+                                                        )
+                                                    })}
+                                                    </>
+                                                }
+                                                 {(item.Component == undefined && item.Services != undefined ) &&
+                                                    <>
+                                                    {item.Services.map((types:any)=>{
+                                                        return(
+                                                            <>
+                                                            <img className="icon-sites-img"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" />
+                                                            </>
+                                                        )
+                                                    })}
+                                                    </>
+                                                }
+                                                </td>
+                                                <td>{item.Shareweb_x0020_ID}</td>
+                                                <td>
+                                                    <span><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
+
+                                                </td>
+                                                <td>
+                                                    {item.Component != undefined &&
+                                                    <>
+                                                    {item.Component.map((types:any)=>{
+                                                        return(
+                                                            <>
+                                                            <span><a target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                            </>
+                                                        )
+                                                    })}
+                                                    </>
+                                                }
+                                                 {item.Component == undefined &&
+                                                    <>
+                                                    {item.Services.map((types:any)=>{
+                                                        return(
+                                                            <>
+                                                            <span><a target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                            </>
+                                                        )
+                                                    })}
+                                                    </>
+                                                }
+                                                </td>
+                                                <td><span className="ml-2">{item.PercentComplete}</span></td>
+                                                <td>{item.Priority}</td>
+                                                <td>
+                                                    {item.AllTeamMember != undefined &&
+                                                        item.AllTeamMember.map((users: any) => {
                                                             return (
                                                                 <>
-                                                                    <tr >
-                                                                                    <td>
-                                                                                    <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
-
-                                                                                    </td>
-                                                                                    <td><span className="ml-2">{item.PercentComplete}</span></td>    
-                                                                                    <td>{item.Priority}</td>
-
-                                                                                    <td></td>
-                                                                                    <td><span className="ml-2">{Moment(item.DueDate).format('DD/MM/YYYY')}</span></td>
-                                                                                    <td><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img></td>
-                                                                                  
-                                                                            
-                                                                       
-
-                                                                    </tr>
-                                                                
+                                                                    <span className="headign" title={users.Title}><img src={users.useimageurl} /></span>
                                                                 </>
-
-
                                                             )
-                                                       
-                                                    })}
+                                                        })
+
+                                                    }
+                                                </td>
+                                                <td><span className="ml-2">{Moment(item.DueDate).format('DD/MM/YYYY')}</span></td>
+                                                <td onClick={()=>EditPopup(item)}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img></td>
+
+
+                                            </tr>
+
+                                        </>
+
+
+                                    )
+
+                                })}
 
 
 
-                                                </tbody>
+                            </tbody>
 
 
 
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {isOpenEditPopup ? <EditTaskPopup Items={passdata} Call={CallBack}  />:''}
 
         </>
     )

@@ -1,9 +1,11 @@
 
 import * as React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaHome } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaHome, FaRegTimesCircle } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
+import { Modal } from 'office-ui-fabric-react';
+import '../../cssFolder/Style.scss'
 
 var siteConfig:any=[]
 var AllTaskUser:any=[]
@@ -11,19 +13,35 @@ export default function ProjectOverview(){
     
 
     const [AllTasks,setAllTasks] = React.useState([])
+    
+    const [EditmodalIsOpen, setEditmodalIsOpen] = React.useState(false);
+    
+    const [AddmodalIsOpen, setAddmodalIsOpen] = React.useState(false);
     // const [Masterdata,setMasterdata] = React.useState([])
    
     //const [QueryId, setQueryId] = React.useState()
 
     React.useEffect(() => {
         
-        
+        TaskUser()
         GetMasterData();
       
       
     }, [])
 
-   
+    const TaskUser=async()=>{
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let taskUser = [];
+        taskUser = await web.lists
+            .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
+            .items
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
+            .top(5000)
+            .expand("AssingedToUser,Approver")
+            .get();
+            
+            AllTaskUser=taskUser;
+       }
     const GetMasterData = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let taskUsers = [];
@@ -38,19 +56,19 @@ export default function ProjectOverview(){
                 if(item.Item_x0020_Type != null && item.Item_x0020_Type == "Project"){
                     Alltask.push(item)
                 }
-                AllUsers.map((items: any) => {
+                Alltask.map((items: any) => {
 
                     items.AssignedUser = []
         
-                    if (items.AssignedToId != undefined) {
+                    if (items.AssignedTo != undefined) {
         
-                        items.AssignedToId.map((taskUser: any) => {
+                        items.AssignedTo.map((taskUser: any) => {
         
                             var newuserdata: any = {};
         
                             AllTaskUser.map((user: any) => {
         
-                                if (user.AssingedToUserId == taskUser) {
+                                if (user.AssingedToUserId == taskUser.Id) {
         
         
         
@@ -86,25 +104,130 @@ export default function ProjectOverview(){
         setAllTasks(Alltask)
 
     }
-    const TaskUser=async()=>{
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let taskUser = [];
-        taskUser = await web.lists
-            .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
-            .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
-            .top(5000)
-            .expand("AssingedToUser,Approver")
-            .get();
-            AllTaskUser=taskUser;
-       }
+
+    const setEditmodalIsOpenToTrue = () => {
+        setEditmodalIsOpen(true)
+    }
+    const setEditmodalIsOpenToFalse = () => {
+        setEditmodalIsOpen(false)
+    }
+    const setAddmodalIsOpenToTrue = () => {
+        setAddmodalIsOpen(true)
+    }
+    const setAddmodalIsOpenToFalse = () => {
+        setAddmodalIsOpen(false)
+    }
+
     console.log(AllTasks);
     return(
         <div>
+          {/* Edit Popup */}
+          {AllTasks.length > 0 && AllTasks && AllTasks.map(function (item, index) {
+            return(
+           <Modal 
+                isOpen={EditmodalIsOpen}
+                onDismiss={setEditmodalIsOpenToFalse}
+                isBlocking={false}
+                isModeless={true} >
+             <span >
+             <h4 className="col-sm-12 siteColor quickheader">
+                                                    Edit Task <span title="Close popup" className="pull-right hreflink"
+                                                                      onClick={setEditmodalIsOpenToFalse}>
+                                                        <i className="fa fa-times-circle"  ><FaRegTimesCircle/></i>
+                                                    </span>
+                                                </h4>
+                                            <div>
+                                                <span>
+                                                    <input type='text' value={item.Title}/>
+                                                </span>
+                                                <span>
+                                                    <input type='text' value={item.PercentComplete}/>
+                                                </span>
+                                            </div>
+                                            <div>
+                                            <span>
+                                                    <input type='text'/>
+                                                </span>
+                                                <span>
+                                                    <input type='text' value={item.DueDate!=null?Moment(item.DueDate).format('DD/MM/YYYY'):""}/>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span><input type='text'/></span>
+                                            </div>
+                                            <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
+                                                    <button type="button" ng-click="FilterData('SmartTime')"
+                                                            className="btn btn-primary">
+                                                        Update
+                                                    </button>
+                                                    <button type="button" className="btn btn-primary"
+                                                            ng-click="Filtercancel('SmartTime')" onClick={setEditmodalIsOpenToFalse}>
+                                                        Cancel
+                                                    </button>
+                                                </div>
+
+                                        </span>
+             
+                
+            </Modal>
+          )})}
+{/* Edit Popup End*/}
+ {/* Add Popup */}
+ <Modal 
+                isOpen={AddmodalIsOpen}
+                onDismiss={setAddmodalIsOpenToFalse}
+                isBlocking={false}
+                isModeless={true} >
+                          <h4 className="col-sm-12 siteColor quickheader">
+                                                    ADD Task <span title="Close popup" className="pull-right hreflink"
+                                                                      onClick={setAddmodalIsOpenToFalse}>
+                                                        <i className="fa fa-times-circle"  ><FaRegTimesCircle/></i>
+                                                    </span>
+                                                </h4>
+             <span >
+                                            <div>
+                                                <span>
+                                                    <input type='text'/>
+                                                </span>
+                                                <span>
+                                                    <input type='text'/>
+                                                </span>
+                                            </div>
+                                            <div>
+                                            <span>
+                                                    <input type='text'/>
+                                                </span>
+                                                <span>
+                                                    <input type='text'/>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span><input type='text'/></span>
+                                            </div>
+                                            <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
+                                                    <button type="button" ng-click="FilterData('SmartTime')"
+                                                            className="btn btn-primary">
+                                                     Create 
+                                                    </button>
+                                                    <button type="button" className="btn btn-primary"
+                                                            ng-click="Filtercancel('SmartTime')" onClick={setAddmodalIsOpenToFalse}>
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                        </span>
+             
+                
+            </Modal>
+{/* Add Popup End*/}
+
+        
+
          <div className="col-sm-12 pad0 smart">
                                     <div className="section-event">
                                         <div className="wrapper">
                                         <h1>Project Management Overview</h1>
+                                        
+                                        <div><button type='button' onClick={setAddmodalIsOpenToTrue}>Add Popup</button></div>
                                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                             <thead>
                                                     <tr>
@@ -165,15 +288,27 @@ export default function ProjectOverview(){
                                                                 <>
                                                                     <tr >
                                                                                     <td>
-                                                                                    <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspxProjectId=${item.Id}`}>{item.Title}</a></span>
+                                                                                    <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`}>{item.Title}</a></span>
 
                                                                                     </td>
                                                                                     <td><span className="ml-2">{item.PercentComplete}</span></td>    
                                                                                     <td>{item.Priority}</td>
 
-                                                                                    <td></td>
-                                                                                    <td><span className="ml-2">{Moment(item.DueDate).format('DD/MM/YYYY')}</span></td>
-                                                                                    <td><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img></td>
+                                                                                 <td>
+                                                                                    {item.AssignedUser != undefined &&
+                                                                                       item.AssignedUser.map((Userda:any)=>{
+                                                                                        return(
+                                                                                            <span className="headign">
+                                                                                            <img  src={Userda.useimageurl} title={Userda.Title}/>
+                                                                                            
+                                                                                        </span>
+                                                                                        )
+                                                                                       })
+                                                                                    }
+                                                                                 </td>
+
+                                                                                    <td><span className="ml-2">{item.DueDate!=null?Moment(item.DueDate).format('DD/MM/YYYY'):""}</span></td>
+                                                                                    <td><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={setEditmodalIsOpenToTrue}></img></td>
                                                                                   
                                                                             
                                                                        
