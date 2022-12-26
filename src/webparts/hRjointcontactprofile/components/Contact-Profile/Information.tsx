@@ -12,6 +12,11 @@ const Information = (props: any) => {
   return (
     <div>
       <section className="m-2 w-100">
+
+
+
+
+        
         <nav style={{ width: "35%" }}>
           <ul
             className="text-center"

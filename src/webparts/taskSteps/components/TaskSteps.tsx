@@ -218,14 +218,24 @@ export default class TaskSteps extends React.Component<ITaskStepsProps, ITaskSte
     }
 
     //add blank element if child count is less than max count
+    
     for (let index = 0; index < plannedData.length; index++) {
-      if (maxChildCount > plannedData[index].child.length){
+      if (maxChildCount > plannedData[index].child.length){      
         let itemToRun = maxChildCount - plannedData[index].child.length;
-        for (let j=0; j< itemToRun; j++)
-        {
-          //console.log(j);
-          plannedData[index].child.push({StepNo : maxChildCount- (j+1)});
-        }         
+        //Get All Step no
+        let AllStepNo = [];
+        for (let k = 0; k < plannedData[index].child.length; k++) {
+          AllStepNo.push(plannedData[index].child[k].StepNo)          
+        }       
+        let runloop = 0;
+        for (let l = maxChildCount; l >= 1; l--) {          
+          if(AllStepNo.indexOf(l)<0){
+              plannedData[index].child.push({StepNo : l});
+              runloop += 1;
+              if (runloop == itemToRun)
+                break;
+          }
+        }                
       }
     }
 

@@ -227,7 +227,7 @@ export default function ProjectOverview(){
                                         <div className="wrapper">
                                         <h1>Project Management Overview</h1>
                                         
-                                        <div><button type='button' onClick={setAddmodalIsOpenToTrue}>Add Popup</button></div>
+                                        <div className='d-flex justify-content-between p-0'><button className='text-end' type='button' onClick={setAddmodalIsOpenToTrue}>Add Popup</button></div>
                                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                             <thead>
                                                     <tr>
