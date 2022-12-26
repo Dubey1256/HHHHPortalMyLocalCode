@@ -330,6 +330,10 @@ input, button, select, textarea {outline: none;border: 1px solid #ccc;}
 .Alltable .smart .modal-footer {padding: 15px !important;display: flow-root;border-top: 0px;}
 .dropdown-content h4 .fa-times-circle {font-size: 20px;font-weight: 300;margin-top: 3px;position: absolute;right:2px;top:-3px;}
 .Alltable .smart-relative .alignmen {position:absolute; padding: 0px; top: 12px; display: inline-flex;}
+
+.border-top{
+  border-top: 1px solid #ccc !important;
+}
 /***********************End New Table(tr,th.td)css *************************/
 
 .full_width, .full-width {
