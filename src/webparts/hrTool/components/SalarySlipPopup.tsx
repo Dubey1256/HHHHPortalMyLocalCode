@@ -647,8 +647,9 @@ const SalarySlipPopup = (props: any) => {
                             }
                             <div className="col-sm-6 PadR0 ItemInfo-right">
                                 <div className="pull-right">
+                                    
                                     <ReactToPrint
-                                        trigger={() => <span className="FooterBtn">Employee Pdf</span>}
+                                        trigger={() => <span className='FooterBtn'>Employee Pdf</span>}
                                         content={() => componentRef.current}
                                     />
 

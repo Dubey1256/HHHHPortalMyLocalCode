@@ -49,7 +49,7 @@ const SalaryConfirmationPopup = ((props: any) => {
                     <h3 className='modal-title'>Salary Info -
                         <span className='form-inline mr-10 pull-right'>
                             <label className="mr-3" htmlFor='accountingDate'>Accounting Date</label>
-                            <input value={SalaryItem.accountingDate != null ? moment(SalaryItem.accountingDate).format('DD/MM/YYYY') : ""}  type='date' id='accountingDate' placeholder='' />
+                            <input type='date' id='accountingDate' placeholder=''/>
                         </span>
                     </h3>
                     <button type="button" className='Close-button' onClick={handleClose}>×</button>

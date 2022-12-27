@@ -9,6 +9,7 @@ import '../../cssFolder/Style.scss'
 
 var siteConfig:any=[]
 var AllTaskUser:any=[]
+var Idd:number ;
 export default function ProjectOverview(){
     
 
@@ -17,6 +18,9 @@ export default function ProjectOverview(){
     const [EditmodalIsOpen, setEditmodalIsOpen] = React.useState(false);
     
     const [AddmodalIsOpen, setAddmodalIsOpen] = React.useState(false);
+    const [searchKey, setSearchKey] = React.useState({
+        Title: ''
+    });
     // const [Masterdata,setMasterdata] = React.useState([])
    
     //const [QueryId, setQueryId] = React.useState()
@@ -133,35 +137,48 @@ console.log(res);
 
 } 
 
+//Just Check 
+
+
+const [UpdateData, setUpdateData] = React.useState({ 
+
+    Title: '', 
+    DueDate: '',   
+    Body: '' ,
+    AssignedUser:'',
+    PercentComplete:'',
+    Priority:''
+    
+ }) 
 
 // Update Data 
 const updateDetails = async() => { 
-
- 
  let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP'); 
-    
- await web.lists.getByTitle("Master%20Tasks").items.getById(3646).update({ 
+    if(Idd!=undefined){
+ await web.lists.getByTitle("Master%20Tasks").items.getById(Idd).update({ 
     // postData.UserName postData.userEmail postData.userPassword  
-    Title:"TestNew" 
-    
-    // DueDate: "10/12/2022", 
-    
-    // PercentComplete:5.5,
-    // Priority:"Normal"
+    Title:`${UpdateData.Title}`, 
+
+    DueDate: `${UpdateData.DueDate}`, 
+    Body:`${UpdateData.Body}`,
+    PercentComplete:`${UpdateData.PercentComplete}`,
+    Priority:`${UpdateData.Priority}`
     
    }).then(i => { 
+    GetMasterData()
     setEditmodalIsOpenToFalse();
    console.log("Update Success"); 
     
  }) 
+}
     
    } 
     
        
-
-    const setEditmodalIsOpenToTrue = () => {
+    
+    const setEditmodalIsOpenToTrue = (Id:any) => {
         setEditmodalIsOpen(true)
-        
+        Idd=Id;
     }
     const setEditmodalIsOpenToFalse = () => {
         setEditmodalIsOpen(false)
@@ -174,17 +191,37 @@ const updateDetails = async() => {
         setAddmodalIsOpen(false)
     }
 
+
+
+    const searchedName = async (e: any) => {
+        
+        let Key: any = e.target.value.toLowerCase();
+        let subString = Key.split(" ");
+        setSearchKey({ ...searchKey, Title: subString[0] + " " + subString[1] })
+        const data: any = {
+            nodes: AllTaskUser.filter((items: any) =>
+                items.Title?.toLowerCase().includes(Key)
+            ),
+        };
+        setUpdateData(data.nodes);
+        if (Key.length == 0) {
+            setUpdateData(AllTaskUser);
+           
+        }
+      
+    }
     console.log(AllTasks);
     return(
         <div>
           {/* Edit Popup */}
           {AllTasks.length > 0 && AllTasks && AllTasks.map(function (item, index) {
+            if(item.Id==Idd){
             return(
            <Modal 
                 isOpen={EditmodalIsOpen}
                 onDismiss={setEditmodalIsOpenToFalse}
                 isBlocking={false}
-                isModeless={true} >
+                 >
              <span >
              <h4 className="col-sm-12 siteColor quickheader">
                                                     Edit Task <span title="Close popup" className="pull-right hreflink"
@@ -193,31 +230,35 @@ const updateDetails = async() => {
                                                     </span>
                                                 </h4>
                                             <div>
+
+
+                                                
                                                 <span>
-                                                    <input type='text' value={item.Title}/>
+                                                    <input type='text' defaultValue={item.Title} onChange={(e) => setUpdateData({ ...UpdateData, Title: e.target.value })}/>
                                                 </span>
                                                 <span>
-                                                    <input type='text' value={item.PercentComplete}/>
+                                                    <input type='text' defaultValue={item.PercentComplete} onChange={(e) => setUpdateData({ ...UpdateData, PercentComplete: e.target.value })}/>
                                                 </span>
                                             </div>
                                             <div>
                                             <span>
-                                                    <input type='text'/>
+                                                    <input type='text' placeholder='Assign To' defaultValue={item.AssignedUser.Title} onChange={(e) => searchedName(e)} />
                                                 </span>
                                                 <span>
-                                                    <input type='text' value={item.DueDate!=null?Moment(item.DueDate).format('DD/MM/YYYY'):""}/>
+                                                    <input type='text' defaultValue={item.DueDate} onChange={(e) => setUpdateData({ ...UpdateData, DueDate: e.target.value })}/>
                                                 </span>
                                             </div>
                                             <div>
-                                                <span><input type='text'/></span>
+                                                <span><input type='text'   defaultValue={item.Body} onChange={(e) => setUpdateData({ ...UpdateData, Body: e.target.value })}/></span>
+                                                <span><input type='text'   defaultValue={item.Priority} onChange={(e) => setUpdateData({ ...UpdateData, Priority: e.target.value })}/></span>
                                             </div>
                                             <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                                                    <button type="button" ng-click="FilterData('SmartTime')"
+                                                    <button type="button" 
                                                             className="btn btn-primary"  onClick={updateDetails}>
                                                         Update 
                                                     </button>
                                                     <button type="button" className="btn btn-primary"
-                                                            ng-click="Filtercancel('SmartTime')" onClick={setEditmodalIsOpenToFalse}>
+                                                             onClick={setEditmodalIsOpenToFalse}>
                                                         Cancel
                                                     </button>
                                                 </div>
@@ -226,14 +267,14 @@ const updateDetails = async() => {
              
                 
             </Modal>
-          )})}
+          )}})}
 {/* Edit Popup End*/}
  {/* Add Popup */}
  <Modal 
                 isOpen={AddmodalIsOpen}
                 onDismiss={setAddmodalIsOpenToFalse}
                 isBlocking={false}
-                isModeless={true} >
+                 >
                           <h4 className="col-sm-12 siteColor quickheader">
                                                     ADD Task <span title="Close popup" className="pull-right hreflink"
                                                                       onClick={setAddmodalIsOpenToFalse}>
@@ -331,7 +372,7 @@ const updateDetails = async() => {
                                                                 <>
                                                                     <tr >
                                                                                     <td>
-                                                                                    <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`} target="blank">{item.Title}</a></span>
+                                                                                    <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`} target="_blank">{item.Title}</a></span>
 
                                                                                     </td>
                                                                                     <td><span className="ml-2">{item.PercentComplete}</span></td>    
@@ -351,7 +392,7 @@ const updateDetails = async() => {
                                                                                  </td>
 
                                                                                     <td><span className="ml-2">{item.DueDate!=null?Moment(item.DueDate).format('DD/MM/YYYY'):""}</span></td>
-                                                                                    <td><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={setEditmodalIsOpenToTrue}></img></td>
+                                                                                    <td><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e:any)=>setEditmodalIsOpenToTrue(item.Id)}></img></td>
                                                                                   
                                                                             
                                                                        

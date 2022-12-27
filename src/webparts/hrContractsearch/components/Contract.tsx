@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./ContractSearch.module.scss";
+// import "./ContractSearch.module.scss";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useState, useCallback, useEffect } from "react";
 import { Web } from "sp-pnp-js";

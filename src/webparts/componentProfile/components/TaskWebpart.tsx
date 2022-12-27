@@ -815,7 +815,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
 
         var OtherStructure = "";
         if (MainComponent.length > 0) {
-            if (MainComponent[0].Item_x0020_Type == 'Component') {
+            if (MainComponent[0].Item_x0020_Type == 'Component'  ) {
                 OtherStructure = MainComponent[0].Title;
             } else if (MainComponent[0].Item_x0020_Type == 'SubComponent') {
                 // var temp = $.grep($scope.AllComponetsData, item => { return item.Id == MainComponent[0].Parent.Id })[0];

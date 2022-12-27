@@ -606,7 +606,7 @@ function Portfolio({ ID }: any) {
                         </div>
                         <div className='col-md-3'>
                             <aside>
-                                <div className='mb-3 card'>
+                                {/* <div className='mb-3 card'>
                                     <div className='card-header'>
                                         <div className='card-actions float-end'>  <Tooltip /></div>
                                         <div className="mb-0 card-title h5">Smart Information</div>
@@ -653,7 +653,7 @@ function Portfolio({ ID }: any) {
 
                                 </div>
                             )})} </>
-                               } 
+                               }  */}
                                 <div className='mb-3 card'>
                                     <>
                                     {data.map(item =>
