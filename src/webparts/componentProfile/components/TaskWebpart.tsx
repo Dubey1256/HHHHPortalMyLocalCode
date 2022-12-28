@@ -2,23 +2,17 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
+import '../../cssFolder/sitecolorservice.scss'
 import { Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import Tooltip from './Tooltip';
 import { create } from 'lodash';
-// import '../../cssFolder/foundation.scss'
-// import '../../cssFolder/foundationmin.scss'
-
-export default function ComponentTable({props}:any) {
-
+export default function ComponentTable({ props }: any) {
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
-    // const [Editpopup, setEditpopup] = React.useState(false)
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [show, setShow] = React.useState(false);
-    //const [passData, setPassData] = React.useState([]);
     const [child, setChild] = React.useState(false);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [data, setData] = React.useState([])
@@ -39,7 +33,6 @@ export default function ComponentTable({props}:any) {
     const [Editdata, setEditdata] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
-
     const [collapseItem, setcollapseItem] = React.useState(true);
     const [EditTaskItemitle, setEditItem] = React.useState('');
     const [popupStatus, setPopupItem] = React.useState(false);
@@ -51,23 +44,17 @@ export default function ComponentTable({props}:any) {
     const [TeamMembermodalIsOpen, setTeamMembermodalIsOpen] = React.useState(false);
     const [ItemRankmodalIsOpen, setItemRankmodalIsOpen] = React.useState(false);
     const [StatusmodalIsOpen, setStatusmodalIsOpen] = React.useState(false);
-
-
-
-
-//    Array For Status
-const AllItems = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
-// Array of Rank
-const AllItemRank = [{ 'Title': 1, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 2, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 3, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 4, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 5, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 6, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 7, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 8, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 9, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 10, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }];
-// Array of SmartTime
-const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 'Selected': false }];
- 
+    //    Array For Status
+    const AllItems = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
+    // Array of Rank
+    const AllItemRank = [{ 'Title': 1, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 2, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 3, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 4, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 5, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 6, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 7, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 8, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 9, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }, { 'Title': 10, 'Group': 'ItemRank', 'TaxType': 'ItemRank', 'Selected': false }];
+    // Array of SmartTime
+    const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 'Selected': false }];
     //    Get query string id
     function getQueryVariable(variable: any) {
         var query = window.location.search.substring(1);
         console.log(query)//"app=article&act=news_content&aid=160990"
         var vars = query.split("&");
-
         console.log(vars)
         for (var i = 0; i < vars.length; i++) {
             var pair = vars[i].split("=");
@@ -75,25 +62,18 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             if (pair[0] == variable) { return pair[1]; }
         }
         return (false);
-
-
     }
-
-
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     const editProfile = (itemData: any) => {
         console.log('test')
         setPopupItem(true);
         setItemData(['']);
         setItemData(itemData);// => ([...itemData]));
-
-
     }
     const SingleLookDatatest = (e: any, item: any, value: any) => {
         const { checked } = e.target;
         if (checked) {
             state.push(item);
-
         }
         else {
             $.each(state, function (index: any, newite: any) {
@@ -112,9 +92,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
         // setData(maini...[maidataBackup])
         setData(maidataBackup)
         // const { checked } = e.target;
-
     }
-    
     const setModalSmartIsOpenToTrue = () => {
         setSmartModalIsOpen(true)
     }
@@ -133,31 +111,24 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     const setDuemodalIsOpenToFalse = () => {
         setDuemodalIsOpen(false)
     }
-
     const setTeamMembermodalIsOpenToTrue = () => {
         setTeamMembermodalIsOpen(true)
     }
     const setTeamMembermodalIsOpenToFalse = () => {
         setTeamMembermodalIsOpen(false)
     }
-
     const setItemRankmodalIsOpenToTrue = () => {
         setItemRankmodalIsOpen(true)
     }
     const setItemRankmodalIsOpenToFalse = () => {
         setItemRankmodalIsOpen(false)
     }
-
     const setStatusmodalIsOpenToTrue = () => {
         setStatusmodalIsOpen(true)
     }
     const setStatusmodalIsOpenToFalse = () => {
         setStatusmodalIsOpen(false)
     }
-
-
-
-   
     const Updateitem = () => {
         var filters: any[] = []
         if (state.length == 0) {
@@ -165,78 +136,48 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
         }
         else {
             $.each(maidataBackup, function (index: any, item) {
-
                 $.each(state, function (index: any, select) {
                     if (item.Id == select.Id) {
                         filters.push(item);
                     }
                     $.each(item.TeamLeaderUser, function (index: any, team) {
                         if (select.Title == team.Title) {
-
                             filters.push(item);
                         }
-
                     })
                     $.each(item.Child, function (index: any, childitem) {
                         if (childitem.Id == select.Id) {
                             filters.push(childitem);
                         }
-
                     })
                     $.each(item.Child.TeamLeaderUser, function (index: any, childteam) {
                         if (select.Title == childteam.Title) {
-
                             filters.push(childteam);
                         }
-
                     })
-
                 })
-
-
-
-
-
             })
         }
-
         setData(filters)
-
-
     }
-
-
-
     const handleOpen2 = (item: any) => {
-
         item.show = item.show = item.show == true ? false : true;
         setfilterItems(filterItems => ([...filterItems]));
-
-
     };
     const handleOpen = (item: any) => {
-
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
-
     }; const handleEditPopup = (item: any) => {
-
         //    item.Isclick = item.Isclick = item.Isclick == true ? false : true;
         //    setData(data => ([...data]));
-
         // item.Isclick = item.Isclick = item.Isclick == true ? false : true;
         //setData(data => ([...data]));
-
     };
     const handleTimeOpen = (item: any) => {
-
         item.show = item.show = item.show == true ? false : true;
         setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
         // setData(data => ([...data]));
-
     };
-
-
     const addModal = () => {
         setAddModalOpen(true)
     }
@@ -246,25 +187,15 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     const setModalIsTimeOpenToTrue = () => {
         setTimeModalIsOpen(true)
     }
-
-
     const sortBy = () => {
-
         const copy = data
-
         copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
-
         setTable(copy)
-
     }
     const sortByDng = () => {
-
         const copy = data
-
         copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
-
         setTable(copy)
-
     }
     let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
         setSearch(e.target.value.toLowerCase());
@@ -282,7 +213,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
         $.each(searchTerms, function (index: any, val: any) {
             if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
                 isSearchTermAvailable = true;
-
             } else
                 isSearchTermAvailable = false;
         })
@@ -290,8 +220,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     }
     let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
         setSearch(e.target.value.toLowerCase());
-        var Title = titleName;  
- 
+        var Title = titleName;
         var AllFilteredTagNews = [];
         var filterglobal = e.target.value.toLowerCase();
         if (filterglobal != undefined && filterglobal.length >= 1) {
@@ -344,7 +273,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                 }
                             })
                         }
-
                     })
                 }
             })
@@ -354,11 +282,9 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             // setData(data => ([...maidataBackup]));
             setData(maidataBackup);
             //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
-        } 
+        }
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
-
     };
-
     var siteConfig: any = [];
     var TaxonomyItems: any = [];
     var AllComponetsData: any = [];
@@ -368,61 +294,37 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     var showProgressBar = () => {
         $(' #SpfxProgressbar').show();
     }
-
     var showProgressHide = () => {
         $(' #SpfxProgressbar').hide();
     }
     React.useEffect(() => {
-            console.log("Use effect is running")
+        console.log("Use effect is running")
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------
             var Response: any = []
             var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$top=1000";
-
             $.ajax({
-
                 url: url,
-
                 method: "GET",
-
                 headers: {
-
                     "Accept": "application/json; odata=verbose"
-
                 },
-
                 success: function (data) {
-
                     Response = Response.concat(data.d.results);
                     TaskUsers = Response;
                     console.log(Response);
                     setTaskUser(Response);
                     //   if (data.d.__next) {
-
                     //   url = data.d.__next;
-
-
-
                     // }
                     //  else setTaskUser(Response);
-
-
                 },
-
                 error: function (error) {
-
-
                 }
-
             });
-
             //-----------------------------------end taskuser data--------------------------------------------------------------------------------------------
-
             //----------------------------------------LoadSmartMetaData---------------------------------------------------------------------------------------------------------------------------
-
-
-
             var metadatItem: any = []
             var filterItems: any = [];
             // siteConfig =[];
@@ -461,7 +363,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                         }
                         if (newsite.Title != "Master Tasks" || newsite.Title != "Foundation")
                             siteConfig.push(newsite);
-                    }) 
+                    })
                     $.each(MetaData, function (newitem: any, item) {
                         if (item.TaxType != 'Status' && item.TaxType != 'Admin Status' && item.TaxType != 'Task Type' && item.TaxType != 'Time' && item.Id != 300 && item.TaxType != 'Portfolio Type' && item.TaxType != 'Task Types') {
                             if (item.TaxType == 'Sites') {
@@ -508,8 +410,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                             if (item.Title == "Activities" || item.Title == "Workstream" || item.Title == "Task") {
                                 item.Selected = true;
                             }
-
-
                             if (filterItem.ParentID == 0 || (filterItem.Parent != undefined && filterItem.Parent.Id == undefined)) {
                                 if (item.TaxType == 'Team Members') {
                                     getChildsBasedonId(item, Response);
@@ -519,16 +419,11 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                 filterItems.push(item);
                                 if (filterItem.TaxType != "Type" && filterItem.TaxType != "Sites Old" && (filterGroups.length == 0 || filterGroups.indexOf(filterItem.TaxType) == -1)) {
                                     filterGroups.push(filterItem.TaxType);
-
                                 }
-
                                 setFilterGroups(filterGroups)
-
                             }
-
                         }
                     });
-
                     filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true, "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true, "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true, "childs": [] });
                     $.each(filterItems, function (neww: any, item) {
                         if (item.TaxType == "Sites" && item.Title == 'SDC Sites' || item.Title == 'Tasks') {
@@ -536,7 +431,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                         }
                     })
                     setfilterItems(filterItems)
-
                     function getChildsBasedonId(item: { childs: any[]; Id: any; }, items: any) {
                         item.childs = [];
                         $.each(items, function (child: any, childItem) {
@@ -555,49 +449,33 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                             }
                         });
                     }
-
                 },
-
-
                 error: function (error) {
-
-
                 }
-
             });
             //---------------------------------------End SmartMetaData-------------------------------------------------------------------------------------------------------------------------------------
-
             var spRequest = new XMLHttpRequest();
-            var query = "Id,Mileage,TaskListId,TaskListName,WorkspaceType,PortfolioLevel,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,SiteCompositionSettings,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,TechnicalExplanations,Idea,ValueAdded,Synonyms,Package,Short_x0020_Description_x0020_On,Admin_x0020_Notes,AdminStatus,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,DueDate,PercentComplete,Modified,CompletedDate,ItemRank,Title,Portfolio_x0020_Type,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title&$expand=SharewebCategories,ClientCategory,Parent,Component,Services,Events,AssignedTo,Team_x0020_Members&$filter=((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature'))and (Portfolio_x0020_Type eq 'Component')&$top=4999";
+            var query = "Id,Mileage,TaskListId,TaskListName,WorkspaceType,PortfolioLevel,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,SiteCompositionSettings,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,TechnicalExplanations,Idea,ValueAdded,Synonyms,Package,Short_x0020_Description_x0020_On,Admin_x0020_Notes,AdminStatus,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,DueDate,PercentComplete,Modified,CompletedDate,ItemRank,Title,Portfolio_x0020_Type,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title&$expand=SharewebCategories,ClientCategory,Parent,Component,Services,Events,AssignedTo,Team_x0020_Members&$filter=((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) or (Portfolio_x0020_Type eq 'Component')or (Portfolio_x0020_Type eq 'Services')&$top=4999";
             spRequest.open('GET', "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query);
             spRequest.setRequestHeader("Accept", "application/json");
-
             spRequest.onreadystatechange = function () {
                 //  var RootComponentsData: any[] = [];
                 // var ComponentsData: any = [];
                 // var SubComponentsData: any = [];
                 // var FeatureData: any = [];
                 var maiArrayBackup: any = []
-
                 if (spRequest.readyState === 4 && spRequest.status === 200) {
                     var results = JSON.parse(spRequest.responseText);
-
                     maiArrayBackup.push(results.value)
-                    
                     setmaiArrayBackup(maiArrayBackup)
                     AllComponetsData = maiArrayBackup[0];
                     //  setData(AllComponetsData);
                     ComponetsData['allComponets'] = AllComponetsData;
-
-
-
                 }
                 else if (spRequest.readyState === 4 && spRequest.status !== 200) {
                     console.log('Error Occurred !');
                 }
-
             },
-
                 spRequest.send();
         }
         RetrieveSPData();
@@ -605,15 +483,11 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             $.each(state, function (index: any, select) {
                 if (item.Portfolio_x0020_Type == select.Title) {
                     select.Selected = true;
-
                 }
                 if (item.Id == select.Id) {
                     select.Selected = true;
-
                 }
-
             })
-
         })
     }, [])
     // common services
@@ -665,7 +539,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             }
             if (item.SharewebTaskType.Title == 'Project')
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
-
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Workstream' || item.SharewebTaskType.Title == 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
             if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
@@ -693,7 +566,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             }
             if (item.SharewebTaskType.Title == 'Step')
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
-
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
             if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
@@ -750,7 +622,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             if (item.SharewebTaskType.Title == 'MileStone') {
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
             }
-
         }
         return Shareweb_x0020_ID;
     }
@@ -805,17 +676,15 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             }
         }
         var MainComponent: any = [];
-
         if (task.PortfolioItemsId != undefined) {
             MainComponent = ArrayCopy($.grep(AllComponetsData, function (index: any, type: any) { return type.Id == task.PortfolioItemsId }));
         }
         if (task.Item_x0020_Type != undefined && task.Item_x0020_Type == 'Component' || task.Item_x0020_Type == 'SubComponent' || task.Item_x0020_Type == 'Feature') {
             MainComponent = ArrayCopy($.grep(AllComponetsData, function (type: any) { return type.Id == task.Id }));
         }
-
         var OtherStructure = "";
         if (MainComponent.length > 0) {
-            if (MainComponent[0].Item_x0020_Type == 'Component'  ) {
+            if (MainComponent[0].Item_x0020_Type == 'Component') {
                 OtherStructure = MainComponent[0].Title;
             } else if (MainComponent[0].Item_x0020_Type == 'SubComponent') {
                 // var temp = $.grep($scope.AllComponetsData, item => { return item.Id == MainComponent[0].Parent.Id })[0];
@@ -895,7 +764,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             })
         }
     }
-    var Mainarray:any=[]
+    var Mainarray: any = []
     var AllTasks: any = [];
     var CopyTaskData: any = [];
     var isItemExistsNew = function (array: any, items: any) {
@@ -946,7 +815,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                 result.DueDate = result.DueDate.replaceAll("Invalid date", "")
             }
             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
             if (result.Short_x0020_Description_x0020_On != undefined) {
                 result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
             }
@@ -956,12 +824,10 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                 $.each(result.AssignedTo, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(Response, function (index: any, users: any) {
-
                             if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
                             }
-
                         })
                     }
                 })
@@ -974,7 +840,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
                             }
-
                         })
                     }
                 })
@@ -998,16 +863,11 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 result.SiteIcon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png'
                 ComponentsData.push(result);
-
-
             }
-
             if (result.Item_x0020_Type == 'SubComponent') {
                 result.SiteIcon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 SubComponentsData.push(result);
-
-
             }
             if (result.Item_x0020_Type == 'Feature') {
                 result.SiteIcon = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"
@@ -1015,7 +875,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                 FeatureData.push(result);
             }
         });
-
         $.each(SubComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
                 $.each(FeatureData, function (index: any, featurecomp: any) {
@@ -1025,7 +884,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                 })
             }
         })
-
         $.each(ComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
                 $.each(SubComponentsData, function (index: any, featurecomp: any) {
@@ -1048,38 +906,29 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                         $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
                             if (Nextnextcomp.Id == id)
                                 arrys.push(Nextnextcomp.childs);
-
-
                         })
                     }
-
                 })
-
             }
-
         })
-        $.each(arrys,function(index:any,item:any){
-             if(item.childs != undefined){
-                $.each(item.childs,function(index:any,childItem:any){
-                    if(item.PortfolioStructureID == childItem.PortfolioStructureID){
+        $.each(arrys, function (index: any, item: any) {
+            if (item.childs != undefined) {
+                $.each(item.childs, function (index: any, childItem: any) {
+                    if (item.PortfolioStructureID == childItem.PortfolioStructureID) {
                         Mainarray.push(childItem)
                     }
                 })
-             }
+            }
         })
         //maidataBackup.push(ComponentsData)
-        arrys.map((item: any)=>{
-            if(item.length>0){
+        arrys.map((item: any) => {
+            if (item.length > 0) {
                 setmaidataBackup(item)
                 setData(item);
             }
         })
-       
-
         showProgressHide();
-
     }
-
     var makeFinalgrouping = function () {
         var AllTaskData1: any = [];
         AllTaskData1 = AllTaskData1.concat(TasksItem);
@@ -1101,7 +950,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     const filterDataBasedOnList = function () {
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
         //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
-
         //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         var AllTaskData1: any = [];
         AllTaskData1 = AllTaskData1.concat(CopyTaskData);
@@ -1136,11 +984,8 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     }
     var TasksItem: any = [];
     const LoadAllSiteTasks = function () {
-
         var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         var Counter = 0;
-
-
         $.each(siteConfig, function (index: any, config: any) {
             if (config.Title != 'SDC Sites') {
                 //     $.each($scope.filterItems, function (filter) {
@@ -1175,9 +1020,8 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                             item.flag = true;
                             item.siteType = config.Title;
                             item.childs = [];
-                            item.TeamLeaderUser=[]
-                            item.CreatedDateImg=[]
-
+                            item.TeamLeaderUser = []
+                            item.CreatedDateImg = []
                             if (item.SharewebCategories.results != undefined) {
                                 if (item.SharewebCategories.results.length > 0) {
                                     $.each(item.SharewebCategories.results, function (ind: any, value: any) {
@@ -1195,32 +1039,26 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                         // });
                         // $.each(AllTasks,function(index:any,item:any){
                         //     item.TeamLeaderUser=[]
-
                         // })
                         if (Counter == 18) {
                             $.each(AllTasks, function (index: any, result: any) {
                                 //result.TeamLeaderUser = []
                                 result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
-
                                 if (result.DueDate == 'Invalid date' || '') {
                                     result.DueDate = result.DueDate.replaceAll("Invalid date", "")
                                 }
                                 result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
                                 if (result.Short_x0020_Description_x0020_On != undefined) {
                                     result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
                                 }
-
                                 if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
                                     $.each(result.AssignedTo, function (index: any, Assig: any) {
                                         if (Assig.Id != undefined) {
                                             $.each(TaskUsers, function (index: any, users: any) {
-
                                                 if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                                     users.ItemCover = users.Item_x0020_Cover;
                                                     result.TeamLeaderUser.push(users);
                                                 }
-
                                             })
                                         }
                                     })
@@ -1233,24 +1071,20 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                     users.ItemCover = users.Item_x0020_Cover;
                                                     result.TeamLeaderUser.push(users);
                                                 }
-
                                             })
                                         }
                                     })
                                 }
                                 if (result.Author != undefined) {
-                                    
                                     if (result.Author.Id != undefined) {
                                         $.each(TaskUsers, function (index: any, users: any) {
                                             if (result.Author.Id != undefined && users.AssingedToUserId != undefined && result.Author.Id == users.AssingedToUserId) {
                                                 users.ItemCover = users.Item_x0020_Cover;
                                                 result.CreatedDateImg.push(users);
                                             }
-
                                         })
                                     }
-                                
-                            }
+                                }
                                 result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
                                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
                                     $.each(result.Team_x0020_Members, function (index: any, catego: any) {
@@ -1260,10 +1094,9 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                 result['Shareweb_x0020_ID'] = getSharewebId(result);
                                 if (result['Shareweb_x0020_ID'] == undefined) {
                                     result['Shareweb_x0020_ID'] = "";
-                                } 
+                                }
                                 TasksItem.push(result);
                                 if (result.ClientCategory != undefined && result.ClientCategory.results != undefined && result.ClientCategory.results.length > 0) {
- 
                                     $.each(result.ClientCategory.results, function (index: any, clientcategory: any) {
                                         result.ClientCategoryTitle = result.ClientCategoryTitle + ';' + clientcategory.Title;
                                     })
@@ -1297,14 +1130,11 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                             }
                                                         })
                                                     })
-
                                                 }
                                             })
-
                                         }
                                     })
                                 } else result.ClientCategory = [];
-
                                 // task['Item_x0020_Type'] = 'Task';
                                 // task['flag'] = true;
                                 // task['newTitle'] = task.Title;
@@ -1369,7 +1199,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                 // task.TeamLeaderUser = []
                                 // getTeamLeadersName(task.Responsible_x0020_Team, task);
                                 // getTeamLeadersName(task.Team_x0020_Members, task);
-
                                 // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
                                 // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
                                 // TasksItem.push(task);
@@ -1396,20 +1225,13 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                     error: function (error) {
                         Counter++;
                     }
-
                 });
-
-
-
             } else Counter++;
-
         })
-
     }
     function Buttonclick(e: any) {
         e.preventDefault();
         this.setState({ callchildcomponent: true });
-
     }
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false)
@@ -1420,13 +1242,10 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     const closeModal = () => {
         setAddModalOpen(false)
     }
-
-
     const Prints = () => {
         window.print();
     }
     // ---------------------Export to Excel-------------------------------------------------------------------------------------
-
     const getCsvData = () => {
         const csvData = [['Title']];
         let i;
@@ -1437,9 +1256,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     };
     const clearSearch = () => {
         setSearch('')
-
     }
-
     // const openEditPopup = () => {
     //     setEditpopup(true)
     // }
@@ -1452,10 +1269,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     const collapseTime = () => {
         setcollapseItem(false)
     }
-
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
-
-
     const getStructurefTimesheetCategories = function () {
         $.each(TaskTimeSheetCategories, function (index: any, item: any) {
             $.each(TaskTimeSheetCategories, function (index: any, val: any) {
@@ -1507,8 +1321,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             }
         })
     }
-
-
     const getStructureData = function () {
         $.each(AllTimeSpentDetails, function (index: any, item: any) {
             if (item.TimesheetTitle.Id == undefined) {
@@ -1531,7 +1343,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                     // value.TaskTimeModifiedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Modified, 'DD/MM/YYYY HH:mm');
                                     item.AdditionalTime.push(value);
                         })
-
                     }
                 })
             }
@@ -1663,7 +1474,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             categoryTitle.TaskDate = undefined
             categoryTitle.TaskTime = undefined
             categoryTitle.TimesheetTitle = [];
-
         });
         getStructurefTimesheetCategories();
         setEditItem(item.Title);
@@ -1675,21 +1485,14 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
         { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }]
         $.each(allurls, function (index: any, item: any) {
             $.ajax({
-
                 url: item.Url,
-
                 method: "GET",
-
                 headers: {
-
                     "Accept": "application/json; odata=verbose"
-
                 },
-
                 success: function (data) {
                     count++;
                     if (data.d.results != undefined && data.d.results.length > 0) {
-
                         AllTimeSpentDetails = AllTimeSpentDetails.concat(data.d.results);
                     }
                     if (allurls.length == count) {
@@ -1731,7 +1534,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                         console.log(e)
                                     }
                                 }
-
                                 $.each(AllUsers, function (index: any, taskUser: any) {
                                     if (taskUser.AssingedToUserId == item.AuthorId) {
                                         item.AuthorName = taskUser.Title;
@@ -1746,18 +1548,15 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                             } else {
                                 AllAvailableTitle.push(item);
                             }
-
                             if (item.AdditionalTime == undefined) {
                                 item.AdditionalTime = [];
                             }
                             // item.ServerTaskDate = angular.copy(item.TaskDate);
                             // item.TaskDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.TaskDate, 'DD/MM/YYYY');
                             item.isShifted = false;
-
                         })
                         getStructureData();
                     }
-
                 },
                 error: function (error) {
                     count++;
@@ -1767,36 +1566,24 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
             })
         })
         // spRequest.onreadystatechange = function () {
-
         //     if (spRequest.readyState === 4 && spRequest.status === 200) {
         //         var result = JSON.parse(spRequest.responseText);
-
         //         if (result.value.ItemType == "Group") {
         //             result.value.UserType = "Group"
-
         //         }
         //         else {
-
         //             setEditdata(result.value)
-
         //         }
         //     }
-
         //     else if (spRequest.readyState === 4 && spRequest.status !== 200) {
         //         console.log('Error Occurred !');
         //     }
         //     setModalIsTimeOpenToTrue();
-
-
         // };
         // spRequest.send();
     }
-
-
-
     const handleTitle = (e: any) => {
         setTitle(e.target.value)
-
     };
     function AddItem() {
         var MyData = JSON.stringify({
@@ -1840,11 +1627,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                 alert('error');
             }
         });
-
-
     }
-
-
     // React.useEffect(()=>{
     //     eventBus.on("Successful", (data:any) =>
     //     setPassData({data:selected2)
@@ -1852,495 +1635,425 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
     // },[])
     return (
         <div className="app component">
-          
-          
-               {/* Smart Time Popup */}
-               <Modal
+            {/* Smart Time Popup */}
+            <Modal
                 isOpen={SmartmodalIsOpen}
                 onDismiss={setModalSmartIsOpenToFalse}
                 isBlocking={true}
                 isModeless={true}
-                
-                >
-               
-                    <span ng-if="SmartTimeflag">
-                                            <div id="myDropdown1" className="col-sm-12 pad0 dropdown-content">
-                                                <h4 className="col-sm-12 siteColor quickheader">
-                                                    Smart Time <span title="Close popup" className="pull-right hreflink"
-                                                                      onClick={setModalSmartIsOpenToFalse}>
-                                                        <i className="fa fa-times-circle"  ><FaRegTimesCircle/></i>
-                                                    </span>
-                                                </h4>
-                                                <div className="col-md-12 mb-10 mt-10">
-                                                    <select className="form-control" ng-change="valuechange(ValueTitle);"
-                                                            ng-model="ValueTitle">
-                                                        <option value="">Select</option>
-                                                        <option value="Equal to">Equal to</option>
-                                                        <option value="Greater than">Greater than</option>
-                                                        <option value="Less than">Less than</option>
-                                                        <option value="Not equal to">Not equal to</option>
-                                                    </select>
-                                                </div>
-                                                <div className="col-md-12 mb-10 mt-10">
-                                                <input type="text" placeholder="Effort" ng-change="clickInteger(Item3)" className="form-control full-width ng-pristine ng-untouched ng-valid ng-empty" id="txtSmartTime" ng-model="Item3"/>
-                                                </div>
-                                                <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                                                    <button type="button" ng-click="FilterData('SmartTime')"
-                                                            className="btn btn-primary">
-                                                        Apply
-                                                    </button>
-                                                    <button type="button" className="btn btn-default blocks"
-                                                            ng-click="Filtercancel('SmartTime')">
-                                                        Clear
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </span>
-                
+            >
+                <span >
+                    <div id="myDropdown1" className="col-sm-12 pad0 dropdown-content">
+                        <h4 className="col-sm-12 siteColor quickheader">
+                            Smart Time <span title="Close popup" className="pull-right hreflink"
+                                onClick={setModalSmartIsOpenToFalse}>
+                                <i className="fa fa-times-circle"  ><FaRegTimesCircle /></i>
+                            </span>
+                        </h4>
+                        <div className="col-md-12 mb-10 mt-10">
+                            <select className="form-control"
+                          >
+                                <option value="">Select</option>
+                                <option value="Equal to">Equal to</option>
+                                <option value="Greater than">Greater than</option>
+                                <option value="Less than">Less than</option>
+                                <option value="Not equal to">Not equal to</option>
+                            </select>
+                        </div>
+                        <div className="col-md-12 mb-10 mt-10">
+                            <input type="text" placeholder="Effort"  className="form-control full-width ng-pristine ng-untouched ng-valid ng-empty" id="txtSmartTime" />
+                        </div>
+                        <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
+                            <button type="button" 
+                                className="btn btn-primary">
+                                Apply
+                            </button>
+                            <button type="button" className="btn btn-default blocks"
+                               >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </span>
             </Modal>
-
             {/* Smart Time popup end here */}
-
-                 {/* Created Date Popup */}
-                 <Modal
+            {/* Created Date Popup */}
+            <Modal
                 isOpen={CreatedmodalIsOpen}
                 onDismiss={setModalSmartIsOpenToFalse}
                 isBlocking={false}
                 isModeless={true} >
-                <div ng-if="CreatedDateflag">
-                                            <div id="myDropdown4" className="dropdown-content">
-                                                <h4 className="col-sm-12 siteColor quickheader">
-                                                    Created Date <span title="Close popup" className="pull-right hreflink"
-                                                                       ng-click="cancelColumnFilter()" onClick={setCreatedmodalIsOpenToFalse}>
-                                                        <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle/></i>
-                                                    </span>
-                                                </h4>
-                                                <div className="col-md-12 mb-10 mt-10">
-                                                    <select id="selectCreatedValue" className="form-control"
-                                                            ng-change="valuechange1(ValueTitle1);" ng-model="ValueTitle1">
-                                                        <option value="">Select</option>
-                                                        <option value="Equal to">Equal to</option>
-                                                        <option value="Greater than">Greater than</option>
-                                                        <option value="Less than">Less than</option>
-                                                        <option value="Not equal to">Not equal to</option>
-                                                        <option value="In Between">In Between</option>
-                                                        <option value="Presets">Presets</option>
-                                                    </select>
-                                                </div>
-                                               
-                                                <div ng-show="ValueTitle1!='Presets'"
-                                                     className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
-                                                    <input type="date" placeholder="dd/mm/yyyy"
-                                                           className="form-control date-picker" id="txtDate4"
-                                                           ng-model="CreatedDateValue" />
-                                                    <i className="fa fa-calendar form-control-feedback mt-10"
-                                                      style={{marginRight:"10px"}}></i>
-                                                </div>
-                                               
-                                                <div className="col-md-12 text-center PadR0 mb-10 mt-10">
-                                                    <button type="button" ng-click="FilterData('CreatedDate')"
-                                                            className="btn btn-primary">
-                                                        Apply
-                                                    </button>
-                                                    <button type="button" className="btn btn-default blocks"
-                                                            ng-click="Filtercancel('CreatedDate')">
-                                                        Clear
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-             
-                
+                <div >
+                    <div id="myDropdown4" className="dropdown-content">
+                        <h4 className="col-sm-12 siteColor quickheader">
+                            Created Date <span title="Close popup" className="pull-right hreflink"
+                             onClick={setCreatedmodalIsOpenToFalse}>
+                                <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
+                            </span>
+                        </h4>
+                        <div className="col-md-12 mb-10 mt-10">
+                            <select id="selectCreatedValue" className="form-control"
+                            >
+                                <option value="">Select</option>
+                                <option value="Equal to">Equal to</option>
+                                <option value="Greater than">Greater than</option>
+                                <option value="Less than">Less than</option>
+                                <option value="Not equal to">Not equal to</option>
+                                <option value="In Between">In Between</option>
+                                <option value="Presets">Presets</option>
+                            </select>
+                        </div>
+                        <div
+                            className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
+                            <input type="date" placeholder="dd/mm/yyyy"
+                                className="form-control date-picker" id="txtDate4"
+                            />
+                            <i className="fa fa-calendar form-control-feedback mt-10"
+                                style={{ marginRight: "10px" }}></i>
+                        </div>
+                        <div className="col-md-12 text-center PadR0 mb-10 mt-10">
+                            <button type="button" 
+                                className="btn btn-primary">
+                                Apply
+                            </button>
+                            <button type="button" className="btn btn-default blocks"
+                                >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </Modal>
-
             {/* Created Date popup end here */}
-
-
-                {/* Due Date Popup */}
-                <Modal
+            {/* Due Date Popup */}
+            <Modal
                 isOpen={DuemodalIsOpen}
                 onDismiss={setDuemodalIsOpenToFalse}
-                isBlocking={false} 
+                isBlocking={false}
                 isModeless={true}
-                >
-                <div ng-if="CreatedDateflag">
-                                            <div id="myDropdown4" className="dropdown-content">
-                                                <h4 className="col-sm-12 siteColor quickheader">
-                                                    Due Date <span title="Close popup" className="pull-right hreflink"
-                                                                       ng-click="cancelColumnFilter()" onClick={setDuemodalIsOpenToFalse}>
-                                                        <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle/></i>
-                                                    </span>
-                                                </h4>
-                                                <div className="col-md-12 mb-10 mt-10">
-                                                    <select id="selectCreatedValue" className="form-control"
-                                                            ng-change="valuechange1(ValueTitle1);" ng-model="ValueTitle1">
-                                                        <option value="">Select</option>
-                                                        <option value="Equal to">Equal to</option>
-                                                        <option value="Greater than">Greater than</option>
-                                                        <option value="Less than">Less than</option>
-                                                        <option value="Not equal to">Not equal to</option>
-                                                        <option value="In Between">In Between</option>
-                                                        <option value="Presets">Presets</option>
-                                                    </select>
-                                                </div>
-                                               
-                                                <div ng-show="ValueTitle1!='Presets'"
-                                                     className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
-                                                    <input type="date" placeholder="dd/mm/yyyy"
-                                                           className="form-control date-picker" id="txtDate4"
-                                                           ng-model="CreatedDateValue" />
-                                                    <i className="fa fa-calendar form-control-feedback mt-10"
-                                                      style={{marginRight:"10px"}}></i>
-                                                </div>
-                                               
-                                                <div className="col-md-12 text-center PadR0 mb-10 mt-10">
-                                                    <button type="button" ng-click="FilterData('CreatedDate')"
-                                                            className="btn btn-primary">
-                                                        Apply
-                                                    </button>
-                                                    <button type="button" className="btn btn-default blocks"
-                                                            ng-click="Filtercancel('CreatedDate')">
-                                                        Clear
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-             
-                
+            >
+                <div >
+                    <div id="myDropdown4" className="dropdown-content">
+                        <h4 className="col-sm-12 siteColor quickheader">
+                            Due Date <span title="Close popup" className="pull-right hreflink"
+                               onClick={setDuemodalIsOpenToFalse}>
+                                <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
+                            </span>
+                        </h4>
+                        <div className="col-md-12 mb-10 mt-10">
+                            <select id="selectCreatedValue" className="form-control"
+                             >
+                                <option value="">Select</option>
+                                <option value="Equal to">Equal to</option>
+                                <option value="Greater than">Greater than</option>
+                                <option value="Less than">Less than</option>
+                                <option value="Not equal to">Not equal to</option>
+                                <option value="In Between">In Between</option>
+                                <option value="Presets">Presets</option>
+                            </select>
+                        </div>
+                        <div
+                            className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
+                            <input type="date" placeholder="dd/mm/yyyy"
+                                className="form-control date-picker" id="txtDate4"
+                              />
+                            <i className="fa fa-calendar form-control-feedback mt-10"
+                                style={{ marginRight: "10px" }}></i>
+                        </div>
+                        <div className="col-md-12 text-center PadR0 mb-10 mt-10">
+                            <button type="button"
+                                className="btn btn-primary">
+                                Apply
+                            </button>
+                            <button type="button" className="btn btn-default blocks"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </Modal>
-
             {/* Due Date popup end here */}
-
-    {/* Team Member Popup */}
-    <Modal 
+            {/* Team Member Popup */}
+            <Modal
                 isOpen={TeamMembermodalIsOpen}
                 onDismiss={setTeamMembermodalIsOpenToFalse}
                 isBlocking={false}
                 isModeless={true} >
-             <span ng-if="Responsibilityflag">
-                                            <div id="myDropdown1" className="dropdown-content">
-                                              
-                                                <h4 className="col-sm-12 siteColor quickheader">
-                                                    Team Members <span title="Close popup" className="pull-right hreflink"
-                                                                       ng-click="cancelColumnFilter()" onClick={setTeamMembermodalIsOpenToFalse}>
-                                                        <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle/></i>
-                                                    </span>
-                                                </h4>
-                                                <div className="col-sm-12 padL-0 ml5">
-                                                    <div className="checkbox mb0 ml15">
-                                                        <input ng-model="selectAll" type="checkbox"
-                                                               name="Responsibility1"
-                                                               ng-click="SelectAll(selectAll,'Team Members')"/><span className=" f-500">
-                                                            Select All
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                               
-                                                <div className="col-sm-12 PadR0 ml5">
-                                                  
-                                                    {filterGroups.map(function (item) {
-                                                return (
-                                                    
-                                                    <>
-                                                             {item == 'Team Members' &&
-                                                        <td valign="top">
-                                                            <fieldset>
-                                                                <legend>{item == 'Team Members' && <span>{item}</span>}</legend>
-                                                                <legend>{item == 'teamSites' && <span>Sites</span>}</legend>
-                                                            </fieldset>
-                                                            {filterItems.map(function (ItemType, index) {
-                                                                return (
-                                                                    <>
-                                                                        <div style={{ display: "block" }}> {ItemType.Group == item &&
-                                                                            <>
-                                                                                <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
-                                                                                    {ItemType.childs.length > 0 &&
-                                                                                        <a className='hreflink'
-                                                                                            title="Tap to expand the childs">
-                                                                                            {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-
-                                                                                        </a>}
-                                                                                </span>
-                                                                                {ItemType.TaxType != 'Status' &&
-                                                                                    <span className="ml-1">
-
-
-                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-
-                                                                                        <span className="ml-2">
-                                                                                            {ItemType.Title}
-
-                                                                                        </span>
-
-                                                                                    </span>
-                                                                                }
-                                                                                {ItemType.TaxType == 'Status' &&
-                                                                                    <span className="ml-2">
-
-
-                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                                        <span className="ml-2">
-                                                                                            {ItemType.Title}
-
-                                                                                        </span>
-
-                                                                                    </span>
-                                                                                }
-                                                                                <ul id="id_{ItemType.Id}"
-                                                                                    className="subfilter width-85">
-                                                                                    <span>
-                                                                                        {ItemType.show && (
+                <span >
+                    <div id="myDropdown1" className="dropdown-content">
+                        <h4 className="col-sm-12 siteColor quickheader">
+                            Team Members <span title="Close popup" className="pull-right hreflink"
+                               onClick={setTeamMembermodalIsOpenToFalse}>
+                                <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
+                            </span>
+                        </h4>
+                        <div className="col-sm-12 padL-0 ml5">
+                            <div className="checkbox mb0 ml15">
+                                <input  type="checkbox"
+                                    name="Responsibility1"
+                                    /><span className=" f-500">
+                                    Select All
+                                </span>
+                            </div>
+                        </div>
+                        <div className="col-sm-12 PadR0 ml5">
+                            {filterGroups.map(function (item) {
+                                return (
+                                    <>
+                                        {item == 'Team Members' &&
+                                            <td valign="top">
+                                                <fieldset>
+                                                    <legend>{item == 'Team Members' && <span>{item}</span>}</legend>
+                                                    <legend>{item == 'teamSites' && <span>Sites</span>}</legend>
+                                                </fieldset>
+                                                {filterItems.map(function (ItemType, index) {
+                                                    return (
+                                                        <>
+                                                            <div style={{ display: "block" }}> {ItemType.Group == item &&
+                                                                <>
+                                                                    <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
+                                                                        {ItemType.childs.length > 0 &&
+                                                                            <a className='hreflink'
+                                                                                title="Tap to expand the childs">
+                                                                                {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                    : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
+                                                                            </a>}
+                                                                    </span>
+                                                                    {ItemType.TaxType != 'Status' &&
+                                                                        <span className="ml-1">
+                                                                            <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                            <span className="ml-2">
+                                                                                {ItemType.Title}
+                                                                            </span>
+                                                                        </span>
+                                                                    }
+                                                                    {ItemType.TaxType == 'Status' &&
+                                                                        <span className="ml-2">
+                                                                            <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                            <span className="ml-2">
+                                                                                {ItemType.Title}
+                                                                            </span>
+                                                                        </span>
+                                                                    }
+                                                                    <ul id="id_{ItemType.Id}"
+                                                                        className="subfilter width-85">
+                                                                        <span>
+                                                                            {ItemType.show && (
+                                                                                <>
+                                                                                    {ItemType.childs.map(function (child1: any, index: any) {
+                                                                                        return (
                                                                                             <>
-                                                                                                {ItemType.childs.map(function (child1: any, index: any) {
-                                                                                                    return (
-                                                                                                        <>
-                                                                                                            <div style={{ display: "block" }}>
-                                                                                                                {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                                    <span className="plus-icon hreflink"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                {child1.childs.length > 0 && child1.expanded &&
-                                                                                                                    <span className="plus-icon hreflink"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                <input type="checkbox" className="icon-input mr0" ng-model="child1.Selected"
-                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
-
-                                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
-                                                                                                                >
-                                                                                                                    {child1.childs.map(function (child2: any) {
-                                                                                                                        <li>
-                                                                                                                            <input type="checkbox"
-
-                                                                                                                                ng-model="child2.Selected"
-                                                                                                                                onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
-                                                                                                                        </li>
-                                                                                                                    })}
-                                                                                                                </ul>
-                                                                                                            </div>
-                                                                                                        </>
-                                                                                                    )
-
-                                                                                                })}
+                                                                                                <div style={{ display: "block" }}>
+                                                                                                    {child1.childs.length > 0 && !child1.expanded &&
+                                                                                                        <span className="plus-icon hreflink"
+                                                                                                         >
+                                                                                                            <img
+                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                    {child1.childs.length > 0 && child1.expanded &&
+                                                                                                        <span className="plus-icon hreflink"
+                                                                                                         >
+                                                                                                            <img
+                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                    <input type="checkbox" className="icon-input mr0" 
+                                                                                                        onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
+                                                                                                    <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
+                                                                                                    >
+                                                                                                        {child1.childs.map(function (child2: any) {
+                                                                                                            <li>
+                                                                                                                <input type="checkbox"
+                                                                                                                   
+                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
+                                                                                                            </li>
+                                                                                                        })}
+                                                                                                    </ul>
+                                                                                                </div>
                                                                                             </>
-                                                                                        )}
-                                                                                    </span>
-                                                                                </ul>
-
-                                                                            </>
-
-                                                                        }
-                                                                        </div>
-                                                                    </>
-                                                                )
-                                                            })}
-
-                                                        </td>
-                                                    }
-                                                    </>
-                                                )
-                                            })}
-                                                </div>
-                                            
-                                                <div className="col-md-12 text-center padL-0 PadR0 mb-10 mt-10">
-                                                    <button type="button" ng-click="FilterData('Team Members')"
-                                                            className="btn btn-primary">
-                                                        Apply
-                                                    </button>
-                                                    <button type="button" className="btn btn-default blocks"
-                                                            ng-click="Filtercancel('Team Members')">
-                                                        Clear
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </span>
-             
-                
+                                                                                        )
+                                                                                    })}
+                                                                                </>
+                                                                            )}
+                                                                        </span>
+                                                                    </ul>
+                                                                </>
+                                                            }
+                                                            </div>
+                                                        </>
+                                                    )
+                                                })}
+                                            </td>
+                                        }
+                                    </>
+                                )
+                            })}
+                        </div>
+                        <div className="col-md-12 text-center padL-0 PadR0 mb-10 mt-10">
+                            <button type="button" 
+                                className="btn btn-primary">
+                                Apply
+                            </button>
+                            <button type="button" className="btn btn-default blocks"
+                          >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </span>
             </Modal>
-
             {/* Team Member popup end here */}
- {/* Item Rank Popup */}
- <Modal
+            {/* Item Rank Popup */}
+            <Modal
                 isOpen={ItemRankmodalIsOpen}
                 onDismiss={setItemRankmodalIsOpenToFalse}
-                isBlocking={false} 
+                isBlocking={false}
                 isModeless={true}>
-                       <span ng-if="ItemRankflag">
-                                            <div id="myDropdown1" className="dropdown-content">
-                                                
-                                                <h4 className="col-sm-12 siteColor quickheader">
-                                                    Item Rank <span title="Close popup" className="pull-right hreflink"
-                                                                    ng-click="cancelColumnFilter()"onClick={setItemRankmodalIsOpenToFalse}>
-                                                                    <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle/></i>
-                                                    </span>
-                                                </h4>
-                                                <div className="col-sm-12 padL-0 ml5" >
-                                                    <div className="checkbox mb0 ml15">
-                                                        <input ng-model="selectAll" type="checkbox" name="ItemRank1"
-                                                               ng-click="SelectAll(selectAll,'ItemRank')"/><span className="f-500">Select All</span>
-                                                    </div>
-                                                </div>
-                                                {AllItemRank.map(item=>{
-                                                    return(
-                                                <div className="col-sm-12 PadR0 ml5">
-                                                    <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
-                                                         ng-if="obj.TaxType =='ItemRank'" ng-repeat="obj in AllItems">
-                                                        <input ng-model="obj.Selected" type="checkbox"
-                                                               name="ItemRank"/><span className="">
-                                                                {item.Title}
-                                                                </span>
-                                                    </div>
-                                                </div>
-                                                )
-                                            })}
-                                                <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                                                    <button type="button" ng-click="FilterData('ItemRank')"
-                                                            className="btn btn-primary">
-                                                        Apply
-                                                    </button>
-                                                    <button type="button" className="btn btn-default blocks"
-                                                            ng-click="Filtercancel('ItemRank')">
-                                                        Clear
-                                                    </button>
-                                                </div>
-                                            </div>
+                <span >
+                    <div id="myDropdown1" className="dropdown-content">
+                        <h4 className="col-sm-12 siteColor quickheader">
+                            Item Rank <span title="Close popup" className="pull-right hreflink"
+                                onClick={setItemRankmodalIsOpenToFalse}>
+                                <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
+                            </span>
+                        </h4>
+                        <div className="col-sm-12 padL-0 ml5" >
+                            <div className="checkbox mb0 ml15">
+                                <input  type="checkbox" name="ItemRank1"
+                                   /><span className="f-500">Select All</span>
+                            </div>
+                        </div>
+                        {AllItemRank.map(item => {
+                            return (
+                                <div className="col-sm-12 PadR0 ml5">
+                                    <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
+                                  >
+                                        <input type="checkbox"
+                                            name="ItemRank" /><span className="">
+                                            {item.Title}
                                         </span>
-            
-             
-                
+                                    </div>
+                                </div>
+                            )
+                        })}
+                        <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
+                            <button type="button" 
+                                className="btn btn-primary">
+                                Apply
+                            </button>
+                            <button type="button" className="btn btn-default blocks"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </span>
             </Modal>
-
             {/* Item Rank popup end here */}
-
-            
             {/* Status Popup */}
- <Modal
+            <Modal
                 isOpen={StatusmodalIsOpen}
                 onDismiss={setStatusmodalIsOpenToFalse}
                 isBlocking={false}
                 isModeless={true}
-                >
-                      
-
-
-                       <span ng-if="PercentCompleteflag">
-                                            <div id="myDropdown1" className="dropdown-content">
-                                                
-                                                <h4 className="col-sm-12 siteColor quickheader">
-                                                    Status <span title="Close popup" className="pull-right hreflink"
-                                                                    onClick={setStatusmodalIsOpenToFalse}>
-                                                                    <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle/></i>
-                                                    </span>
-                                                </h4>
-                                                <div className="col-sm-12 padL-0 ml5">
-                                                    <div className="checkbox mb0 ml15 f-500">
-                                                        <span className="">
-                                                        <input ng-model="selectAll" type="checkbox"
-                                                               name="PercentComplete1"
-                                                            //    ng-click="SelectAll(selectAll,'PercentComplete')"
-                                                               />
-                                                            Select All
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-12 PadR0 ml5">
-                                                    {AllItems.map(items=>{
-                                                        return(
-                                                    <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
-                                                         ng-if="obj.TaxType =='PercentComplete'"
-                                                         ng-repeat="obj in AllItems">
-                                                        <input ng-model="obj.Selected" type="checkbox"
-                                                               name="PercentComplete"/><span className="">
-                                                                {items.Title}%
-                                                                </span>
-                                                    </div>
-                                                )    
-                                                })}
-                                                </div>
-                                                <div className="col-md-12 padL-0 PadR0 text-center mb-10 mt-10">
-                                                    <button type="button" ng-click="FilterData('PercentComplete')"
-                                                            className="btn btn-primary">
-                                                        Apply
-                                                    </button>
-                                                    <button type="button" className="btn btn-default blocks"
-                                                            ng-click="Filtercancel('PercentComplete')">
-                                                        Clear
-                                                    </button>
-                                                </div>
-                                            </div>
+            >
+                <span >
+                    <div id="myDropdown1" className="dropdown-content">
+                        <h4 className="col-sm-12 siteColor quickheader">
+                            Status <span title="Close popup" className="pull-right hreflink"
+                                onClick={setStatusmodalIsOpenToFalse}>
+                                <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
+                            </span>
+                        </h4>
+                        <div className="col-sm-12 padL-0 ml5">
+                            <div className="checkbox mb0 ml15 f-500">
+                                <span className="">
+                                    <input  type="checkbox"
+                                        name="PercentComplete1"
+                            
+                                    />
+                                    Select All
+                                </span>
+                            </div>
+                        </div>
+                        <div className="col-sm-12 PadR0 ml5">
+                            {AllItems.map(items => {
+                                return (
+                                    <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
+                                  >
+                                        <input type="checkbox"
+                                            name="PercentComplete" /><span className="">
+                                            {items.Title}%
                                         </span>
-
-
-                                      
-            
-             
-                
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div className="col-md-12 padL-0 PadR0 text-center mb-10 mt-10">
+                            <button type="button" 
+                                className="btn btn-primary">
+                                Apply
+                            </button>
+                            <button type="button" className="btn btn-default blocks"
+                           >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </span>
             </Modal>
-
             {/* Status popup end here */}
-
             <section className="TableContentSection">
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container pad0">
                             <div className="Alltable mt-10">
-                            <div className="tbl-headings">
+                                <div className="tbl-headings">
                                     <span className="leftsec w65">
-                                    <label>
-                        <span>
-                            <img style={{ height: "24px", width: "24px", marginTop: "-2px" }}
-                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
-                        </span>
-                        <span>
-                            {/* {data.map(item => <a>{item.Title}</a>)} */}
-                            {/* <a>Contact Database</a> */}
-                            <a>{props}</a>
-                        </span>
-                    </label>
+                                        <label>
+                                            <span>
+                                                <img style={{ height: "24px", width: "24px", marginTop: "-2px" }}
+                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                            </span>
+                                            <span>
+                                                {/* {data.map(item => <a>{item.Title}</a>)} */}
+                                                {/* <a>Contact Database</a> */}
+                                                <a>{props}</a>
+                                            </span>
+                                        </label>
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
                                             <span className="gsearch-btn" ><i><FaSearch /></i></span>
                                         </span>
-                                        
                                     </span>
                                     <span className="toolbox mx-auto">
                                         <button type="button" className="btn btn-primary"
-                                            ng-disabled="(isOwner!=true) || ( SelectedTasks.length > 0 || compareComponents[0].Item_x0020_Type =='Feature') "
-                                            onClick={addModal} title=" Add Structure">
+                                                        onClick={addModal} title=" Add Structure">
                                             Add Structure
                                         </button>
-
                                         <button type="button"
                                             className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                                            ng-click="openActivity()"
+                                           
                                             disabled={true}>
-
                                             <MdAdd />
                                             Add Activity-Task
                                         </button>
-
-
                                         <button type="button"
                                             className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                                            ng-click="openRestructure()"
+                                         
                                             disabled={true}>
                                             Restructure
                                         </button>
                                         <button type="button"
-                        className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                        disabled={true}>
-                        Compare
-                    </button>
-                    <a>
-                        <Tooltip />
-                    </a>
+                                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
+                                            disabled={true}>
+                                            Compare
+                                        </button>
+                                        <a>
+                                            <Tooltip />
+                                        </a>
                                         {/* <span>
                                         <ExpandTable/>
                                         </span> */}
@@ -2350,7 +2063,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                     <div className="section-event">
                                         <div className="wrapper">
                                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                            <thead>
+                                                <thead>
                                                     <tr>
                                                         <th style={{ width: "2%" }}>
                                                             <div></div>
@@ -2364,36 +2077,31 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                         {/* <th style={{ width: "2%" }}></th> */}
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "7%" }} className="smart-relative">
-                                                                <input type="search" placeholder="TaskId" className="full_width searchbox_height" 
+                                                                <input type="search" placeholder="TaskId" className="full_width searchbox_height"
                                                                 // onChange={(e)=>SearchVale(e,"TaskId")} 
                                                                 />
-
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-
-
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "30%" }}>
                                                             <div style={{ width: "30%" }} className="smart-relative">
                                                                 <input type="search" placeholder="Title" className="full_width searchbox_height"
                                                                 //  onChange={(e)=>SearchAll(e)}
-                                                                  />
-
+                                                                />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={(e)=>handleChange(e,"ClientCategory")}  />
+                                                                    onChange={(e) => handleChange(e, "ClientCategory")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2404,144 +2112,126 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                             <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="%"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={(e)=>handleChange(e,"ClientCategory")}  />
+                                                                    onChange={(e) => handleChange(e, "ClientCategory")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
                                                                 <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                //  href="#myDropdown1"
-                                                onClick={setStatusmodalIsOpenToTrue}
-                                                //   ng-click="myFunction('myDropdown1','PercentComplete')"
-                                                  >
-                                                    <i ><FaFilter onClick={setStatusmodalIsOpenToTrue}/></i>
-                                                    {/* <i title="Site" className="fa fa-filter hreflink " ng-show="StatusFilterGrey"></i>
-                                                    <i title="Site" className="fa fa-filter hreflink  glyphicon_active ng-hide" ng-show="!StatusFilterGrey"></i> */}
-                                                </span></span>
-                                                         
-                                                           
-                                                                
+                                                                    <span className="filter-iconfil"
+                                                                        //  href="#myDropdown1"
+                                                                        onClick={setStatusmodalIsOpenToTrue}
+                                                                 
+                                                                    >
+                                                                        <i ><FaFilter onClick={setStatusmodalIsOpenToTrue} /></i>
+                                                                       
+                                                                    </span></span>
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "6%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="ItemRank"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={(e)=>handleChange(e,"ClientCategory")}  />
+                                                                    onChange={(e) => handleChange(e, "ClientCategory")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
                                                                 <span className="dropdown filer-icons">
-                                                <span className="filter-iconfil"
-                                                //  href="#myDropdown1"
-                                                onClick={setItemRankmodalIsOpenToTrue}
-                                                //   ng-click="myFunction('myDropdown1','PercentComplete')"
-                                                  >
-                                                    <i ><FaFilter onClick={setItemRankmodalIsOpenToTrue}/></i>
-                                                    {/* <i title="Site" className="fa fa-filter hreflink " ng-show="StatusFilterGrey"></i>
-                                                    <i title="Site" className="fa fa-filter hreflink  glyphicon_active ng-hide" ng-show="!StatusFilterGrey"></i> */}
-                                                </span>
-                                            </span>
-
+                                                                    <span className="filter-iconfil"
+                                                                        //  href="#myDropdown1"
+                                                                        onClick={setItemRankmodalIsOpenToTrue}
+                                                                    
+                                                                    >
+                                                                        <i ><FaFilter onClick={setItemRankmodalIsOpenToTrue} /></i>
+                                                                      
+                                                                    </span>
+                                                                </span>
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "10%" }}>
                                                             <div style={{ width: "9%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={(e)=>handleChange(e,"Team")}/>
+                                                                    onChange={(e) => handleChange(e, "Team")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
                                                                 <span className="dropdown filer-icons">
-                                                <span className="filter-iconfil"
-                                                //  href="#myDropdown1"
-                                                onClick={setTeamMembermodalIsOpenToTrue}
-                                                //   ng-click="myFunction('myDropdown1','PercentComplete')"
-                                                  >
-                                                    <i ><FaFilter onClick={setTeamMembermodalIsOpenToTrue}/></i>
-                                                    {/* <i title="Site" className="fa fa-filter hreflink " ng-show="StatusFilterGrey"></i>
-                                                    <i title="Site" className="fa fa-filter hreflink  glyphicon_active ng-hide" ng-show="!StatusFilterGrey"></i> */}
-                                                </span>
-                                            </span>
-
+                                                                    <span className="filter-iconfil"
+                                                                        //  href="#myDropdown1"
+                                                                        onClick={setTeamMembermodalIsOpenToTrue}
+                                                                   
+                                                                    >
+                                                                        <i ><FaFilter onClick={setTeamMembermodalIsOpenToTrue} /></i>
+                                                               
+                                                                    </span>
+                                                                </span>
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "9%" }}>
                                                             <div style={{ width: "8%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Due Date"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={(e)=>handleChange(e,"Status")} />
+                                                                    onChange={(e) => handleChange(e, "Status")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
                                                                 <span className="dropdown filer-icons">
-                                                <span className="filter-iconfil"
-                                                //  href="#myDropdown1"
-                                                onClick={setDuemodalIsOpenToTrue}
-                                                //   ng-click="myFunction('myDropdown1','PercentComplete')"
-                                                  >
-                                                    <i ><FaFilter onClick={setDuemodalIsOpenToTrue}/></i>
-                                                    {/* <i title="Site" className="fa fa-filter hreflink " ng-show="StatusFilterGrey"></i>
-                                                    <i title="Site" className="fa fa-filter hreflink  glyphicon_active ng-hide" ng-show="!StatusFilterGrey"></i> */}
-                                                </span>
-                                            </span>
-                                                        
-                                                              
-
+                                                                    <span className="filter-iconfil"
+                                                                        //  href="#myDropdown1"
+                                                                        onClick={setDuemodalIsOpenToTrue}
+                                                               
+                                                                    >
+                                                                        <i ><FaFilter onClick={setDuemodalIsOpenToTrue} /></i>
+                                                                    
+                                                                    </span>
+                                                                </span>
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "9%" }}>
                                                             <div style={{ width: "8%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={(e)=>handleChange(e,"ItemRank")} />
+                                                                    onChange={(e) => handleChange(e, "ItemRank")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
                                                                 <span className="dropdown filer-icons">
-                                                <span className="filter-iconfil"
-                                                //  href="#myDropdown1"
-                                                onClick={setCreatedmodalIsOpenToTrue}
-                                                //   ng-click="myFunction('myDropdown1','PercentComplete')"
-                                                  >
-                                                    <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue}/></i>
-                                                </span>
-                                            </span>
+                                                                    <span className="filter-iconfil"
+                                                                        //  href="#myDropdown1"
+                                                                        onClick={setCreatedmodalIsOpenToTrue}
                                                                 
+                                                                    >
+                                                                        <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue} /></i>
+                                                                    </span>
+                                                                </span>
                                                             </div>
                                                         </th>
-                                                    
-                                                        
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "6%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Smart Time"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={(e)=>handleChange(e,"Due")} />
+                                                                    onChange={(e) => handleChange(e, "Due")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-                                                              
                                                                 <span className="dropdown filer-icons">
-                                                <span className="filter-iconfil"
-                                                //  href="#myDropdown1"
-                                                onClick={setModalSmartIsOpenToTrue}
-                                                //   ng-click="myFunction('myDropdown1','PercentComplete')"
-                                                  >
-                                                    <i ><FaFilter onClick={setModalSmartIsOpenToTrue}/></i>
-                                                    {/* <i title="Site" className="fa fa-filter hreflink " ng-show="StatusFilterGrey"></i>
-                                                    <i title="Site" className="fa fa-filter hreflink  glyphicon_active ng-hide" ng-show="!StatusFilterGrey"></i> */}
-                                                </span>
-                                            </span>
+                                                                    <span className="filter-iconfil"
+                                                                        //  href="#myDropdown1"
+                                                                        onClick={setModalSmartIsOpenToTrue}
+                                                                 
+                                                                    >
+                                                                        <i ><FaFilter onClick={setModalSmartIsOpenToTrue} /></i>
+                                                                   
+                                                                    </span>
+                                                                </span>
                                                             </div>
                                                         </th>
-                                                        
                                                         <th style={{ width: "2%" }}></th>
                                                         <th style={{ width: "2%" }}></th>
                                                         <th style={{ width: "2%" }}></th>
@@ -2551,11 +2241,8 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
                                                     <div id="SpfxProgressbar" style={{ display: "none" }}>
-
                                                         <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-
                                                     </div>
                                                     {data.length > 0 && data && data.map(function (item, index) {
                                                         item.ClientCategory != undefined
@@ -2566,10 +2253,9 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                         <td className="pad0" colSpan={12}>
                                                                             <table className="table" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
-
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
-                                                                                            {item.childs != undefined && item.childs.length>0 &&
+                                                                                            {item.childs != undefined && item.childs.length > 0 &&
                                                                                                 <a className='hreflink'
                                                                                                     title="Tap to expand the childs">
                                                                                                     <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
@@ -2578,20 +2264,16 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                 </a>
                                                                                             }
                                                                                         </div>
-
                                                                                     </td>
-                                                                                    <td style={{ width: "3%" }}><input  type="checkbox"  /></td>    
-                                                                                     {/*className="ng-pristine ng-untouched ng-valid ng-empty mt--2"  */}
-                                                                                    {/* <td><input style={{ width: "3%" }} type="checkbox" ng-click="setSelectTasks(item,item.select);" ng-model="item.select" className="ng-pristine ng-untouched ng-valid ng-empty mt--2"/></td>                                              */}
+                                                                                    <td style={{ width: "3%" }}><input type="checkbox" /></td>
+                                                                                                             
                                                                                     <td style={{ width: "3%" }}>
                                                                                         <div className="">
                                                                                             <span>
                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
-                                                                                                    
                                                                                                 </a>
                                                                                             </span>
-                                                                                           
                                                                                         </div>
                                                                                     </td>
                                                                                     <td style={{ width: "7%" }}><span className="ml-2">{item.Shareweb_x0020_ID}</span></td>
@@ -2605,10 +2287,8 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                         >{item.Title}
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
-                                                                                        
-                                                                                            <span>{item.childs.length==0?"":<span>({item.childs.length})</span>}</span>
+                                                                                            <span>{item.childs.length == 0 ? "" : <span>({item.childs.length})</span>}</span>
                                                                                         }
-
                                                                                         {item.Short_x0020_Description_x0020_On != null &&
                                                                                             <span className="project-tool"><img
                                                                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
@@ -2635,15 +2315,12 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                 })}</div>
                                                                                     </td>
                                                                                     <td style={{ width: "7%" }}>
-                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1:any) {
+                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1: any) {
                                                                                             return (
-                                                                                                <span 
-                                                                                                   title={client1.Title}>
-                                                                                                        
-
+                                                                                                <span
+                                                                                                    title={client1.Title}>
                                                                                                     {/* <a>{client1.Title.slice(0, 2).toUpperCase()}</a> */}
-                                                                                                    <img  className="ClientCategory-Usericon" src={client1.ItemCover.Url}/>
-
+                                                                                                    <img className="ClientCategory-Usericon" src={client1.ItemCover.Url} />
                                                                                                 </span>
                                                                                             )
                                                                                         })}</div></td>
@@ -2651,13 +2328,14 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
                                                                                     <td style={{ width: "9%" }}>
-                                                                                        {item.CreatedDateImg!=null?item.CreatedDateImg.map((Creates:any)=>{
-                                                                                                 return(
-                                                                                                       <span>
-                                                                                                           {Creates.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                                                           <img className='ClientCategory-Usericon' title={Creates.Title} src={Creates.Item_x0020_Cover.Description}/>
-                                                                                                       </span>                                       
-                                                                                                        )}):""}
+                                                                                        {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
+                                                                                            return (
+                                                                                                <span>
+                                                                                                    {Creates.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+                                                                                                    <img className='ClientCategory-Usericon' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                </span>
+                                                                                            )
+                                                                                        }) : ""}
                                                                                     </td>
                                                                                     <td style={{ width: "7%" }}></td>
                                                                                     {/* <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td> */}
@@ -2667,15 +2345,12 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                 </tr>
                                                                             </table>
                                                                         </td>
-
-
                                                                     </tr>
                                                                     {item.show && item.childs.length > 0 && (
                                                                         <>
                                                                             {item.childs.map(function (childitem: any) {
                                                                                 if (childitem.flag == true) {
                                                                                     return (
- 
                                                                                         <>
                                                                                             <tr >
                                                                                                 <td className="pad0" colSpan={12}>
@@ -2691,24 +2366,20 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                             </div>
                                                                                                                         </a>
                                                                                                                     }
-
                                                                                                                 </div>
                                                                                                             </td>
                                                                                                             {/* <td style={{ width: "2%" }}></td> */}
                                                                                                             <td style={{ width: "7%" }}>  <div className="d-flex">
                                                                                                                 <span>
-
                                                                                                                     <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
                                                                                                                         {/* <img className="icon-sites-img"
                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
                                                                                                                     </a>
-
                                                                                                                 </span>
                                                                                                                 <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
                                                                                                             </div>
                                                                                                             </td>
-
                                                                                                             <td style={{ width: "20%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
@@ -2721,7 +2392,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                 {childitem.childs != undefined &&
                                                                                                                     <span>({childitem.childs.length})</span>
                                                                                                                 }
-
                                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
                                                                                                                     <span className="project-tool"><img
                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
@@ -2750,9 +2420,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                     return (
                                                                                                                         <div className="ClientCategory-Usericon"
                                                                                                                             title={client1.Title}>
-
                                                                                                                             <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
                                                                                                                         </div>
                                                                                                                     )
                                                                                                                 })}</div></td>
@@ -2765,13 +2433,10 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                             <td></td>
                                                                                                             <td></td>
                                                                                                             <td></td>
-
-                                                                                                            
                                                                                                         </tr>
                                                                                                     </table>
                                                                                                 </td>
                                                                                             </tr>
-
                                                                                             {childitem.show && childitem.childs.length > 0 && (
                                                                                                 <>
                                                                                                     {childitem.childs.map(function (childinew: any) {
@@ -2791,30 +2456,22 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                                         : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
                                                                                                                                                     </div>
                                                                                                                                                 </a>
-
                                                                                                                                             </div>
                                                                                                                                         }
                                                                                                                                     </td>
-
-
                                                                                                                                     <td style={{ width: "7%" }}> <div className="d-flex">
                                                                                                                                         <span>
-
                                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                                                 {/* <img  className="icon-sites-img" 
                                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" /> */}
                                                                                                                                             </a>
-
                                                                                                                                         </span>
                                                                                                                                         <span className="ml-2">{childinew.Shareweb_x0020_ID}</span>
                                                                                                                                     </div>
                                                                                                                                     </td>
-
                                                                                                                                     <td style={{ width: "20%" }}>
-
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
@@ -2825,7 +2482,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                         {childinew.childs != undefined &&
                                                                                                                                             <span>({childinew.childs.length})</span>
                                                                                                                                         }
-
                                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
                                                                                                                                             <span className="project-tool"><img
                                                                                                                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
@@ -2854,9 +2510,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                             return (
                                                                                                                                                 <span className="ClientCategory-Usericon"
                                                                                                                                                     title={client1.Title}>
-
                                                                                                                                                     <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
                                                                                                                                                 </span>
                                                                                                                                             )
                                                                                                                                         })}</div></td>
@@ -2865,10 +2519,10 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
                                                                                                                                     {/* <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                                                     <td style={{ width: "3%" }}>{childinew.siteType == "Master Tasks" && <a onClick={(e) => editProfile(childinew)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td> */}
-                                                                                                                                <td>{childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}</td>
-                                                                                                            <td></td>
-                                                                                                            <td></td>
-                                                                                                            <td></td>
+                                                                                                                                    <td>{childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                                                                    <td></td>
+                                                                                                                                    <td></td>
+                                                                                                                                    <td></td>
                                                                                                                                 </tr>
                                                                                                                             </table>
                                                                                                                         </td>
@@ -2876,9 +2530,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                     {childinew.show && childinew.childs.length > 0 && (
                                                                                                                         <>
                                                                                                                             {childinew.childs.map(function (subchilditem: any) {
-
                                                                                                                                 return (
-
                                                                                                                                     <>
                                                                                                                                         <tr >
                                                                                                                                             <td className="pad0" colSpan={9}>
@@ -2894,24 +2546,20 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                                                 </div> */}
                                                                                                                                                                     </a>
                                                                                                                                                                 }
-
                                                                                                                                                             </div>
                                                                                                                                                         </td>
                                                                                                                                                         {/* <td style={{ width: "2%" }}></td> */}
                                                                                                                                                         <td style={{ width: "7%" }}>  <div className="d-flex">
                                                                                                                                                             <span>
-
                                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                                     <img className="icon-sites-img ml20" src={subchilditem.SiteIcon}></img>
                                                                                                                                                                     {/* <img className="icon-sites-img"
                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
                                                                                                                                                                 </a>
-
                                                                                                                                                             </span>
                                                                                                                                                             <span className="ml-2">{subchilditem.Shareweb_x0020_ID}</span>
                                                                                                                                                         </div>
                                                                                                                                                         </td>
-
                                                                                                                                                         <td style={{ width: "20%" }}>
                                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
@@ -2924,7 +2572,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                                             {subchilditem.childs != undefined &&
                                                                                                                                                                 <span>({subchilditem.childs.length})</span>
                                                                                                                                                             }
-
                                                                                                                                                             {subchilditem.Short_x0020_Description_x0020_On != null &&
                                                                                                                                                                 <span className="project-tool"><img
                                                                                                                                                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
@@ -2953,9 +2600,7 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                                                 return (
                                                                                                                                                                     <div className="ClientCategory-Usericon"
                                                                                                                                                                         title={client1.Title}>
-
                                                                                                                                                                         <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
                                                                                                                                                                     </div>
                                                                                                                                                                 )
                                                                                                                                                             })}</div></td>
@@ -2963,9 +2608,9 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                         <td>{subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}</td>
-                                                                                                            <td></td>
-                                                                                                            <td></td>
-                                                                                                            <td></td>
+                                                                                                                                                        <td></td>
+                                                                                                                                                        <td></td>
+                                                                                                                                                        <td></td>
                                                                                                                                                         {/* <td style={{ width: "3%" }}><td>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td></td>
                                                                                                                                                         <td style={{ width: "3%" }}></td> */}
                                                                                                                                                     </tr>
@@ -2977,8 +2622,6 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                                                                             })}
                                                                                                                         </>
                                                                                                                     )}
-
-
                                                                                                                 </>
                                                                                                             )
                                                                                                         }
@@ -2990,18 +2633,10 @@ const SmartTime = [{ 'Title': '', 'Group': 'SmartTime', 'TaxType': 'SmartTime', 
                                                                         </>
                                                                     )}
                                                                 </>
-
-
                                                             )
                                                         }
                                                     })}
-
-
-
                                                 </tbody>
-
-
-
                                             </table>
                                         </div>
                                     </div>
