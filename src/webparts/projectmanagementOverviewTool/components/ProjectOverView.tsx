@@ -6,7 +6,7 @@ import * as Moment from 'moment';
 import { Modal } from 'office-ui-fabric-react';
 import '../../cssFolder/Style.scss'
 var siteConfig: any = []
-var AllTaskUser: any = []
+var AllTaskUsers: any = []
 var Idd: number;
 export default function ProjectOverview() {
     const [listIsVisible, setListIsVisible] = React.useState(false);
@@ -34,6 +34,7 @@ export default function ProjectOverview() {
             .expand("AssingedToUser,Approver")
             .get();
         setAllTaskUser(taskUser);
+        AllTaskUsers = taskUser;
         // console.log("all task user =====", taskUser)
         setSearchedDataName(taskUser)
     }
@@ -46,23 +47,16 @@ export default function ProjectOverview() {
             .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title").expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).get();
         taskUsers.PercentComplete = (taskUsers.PercentComplete * 100).toFixed(0);
         // if(taskUsers.ItemType=="Project"){
-
         taskUsers.map((item: any) => {
             if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
                 Alltask.push(item)
             }
             Alltask.map((items: any) => {
-
                 items.AssignedUser = []
-
                 if (items.AssignedTo != undefined) {
-
                     items.AssignedTo.map((taskUser: any) => {
-
                         var newuserdata: any = {};
-
-                        AllTaskUser.map((user: any) => {
-
+                        AllTaskUsers.map((user: any) => {
                             if (user.AssingedToUserId == taskUser.Id) {
                                 newuserdata['useimageurl'] = user.Item_x0020_Cover.Url
                                 newuserdata['Suffix'] = user.Suffix
@@ -74,7 +68,6 @@ export default function ProjectOverview() {
                         items.AssignedUser.push(newuserdata);
                     })
                 }
-
             })
         })
         setAllTasks(Alltask)
@@ -93,27 +86,26 @@ export default function ProjectOverview() {
         })
     }
     //Just Check 
+    // AssignedUser: '',
     const [UpdateData, setUpdateData] = React.useState({
         Title: '',
         DueDate: '',
         Body: '',
-        AssignedUser: '',
         PercentComplete: '',
         Priority: ''
-
     })
     const updateDetails = async () => {
         try {
             let AssignedUsersArray = [];
-            AssignedUsersArray.push(UpdateData.AssignedUser)
-            let AssingedUser = {
-                "results": AssignedUsersArray
-            }
+            // AssignedUsersArray.push(UpdateData.AssignedUser)
+            // let AssingedUser = {
+            //     "results": AssignedUsersArray
+            // }
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
             if (Idd != undefined) {
                 await web.lists.getByTitle("Master%20Tasks").items.getById(Idd).update({
                     Title: `${UpdateData.Title}`,
-                    AssignedUser: AssingedUser,
+                    // AssignedUser: AssingedUser,
                     DueDate: `${UpdateData.DueDate}`,
                     Body: `${UpdateData.Body}`,
                     PercentComplete: `${UpdateData.PercentComplete}`,
@@ -127,7 +119,16 @@ export default function ProjectOverview() {
         } catch (error) {
             console.log("Error:", error.message);
         }
-
+    }
+    // Delete Project
+    const deleteUserDtl = async () => {
+        try {
+            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+            await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items.getById(Idd).delete();
+            GetMasterData();
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
     }
     const setEditmodalIsOpenToTrue = (Id: any) => {
         setEditmodalIsOpen(true)
@@ -135,7 +136,6 @@ export default function ProjectOverview() {
     }
     const setEditmodalIsOpenToFalse = () => {
         setEditmodalIsOpen(false)
-
     }
     const setAddmodalIsOpenToTrue = () => {
         setAddmodalIsOpen(true)
@@ -156,20 +156,12 @@ export default function ProjectOverview() {
             setSearchedDataName(AllTaskUser);
             setListIsVisible(false);
         }
-
-    }
-    const updateUser = (e: any, item: any) => {
-        setUpdateData({ ...UpdateData, AssignedUser: item.Id })
-        setSearchedDataName([]);
-        SetAssignedTaskUser(item);
-        setInputStatus(true);
-
     }
     const cancelButtonFunction = () => {
         SetAssignedTaskUser({ ...AssignedTaskUser, Title: "" })
         setInputStatus(false);
     }
-    // console.log(AllTasks);
+    console.log(AllTasks);
     return (
         <div>
             {/* Edit Popup */}
@@ -197,39 +189,17 @@ export default function ProjectOverview() {
                                                 <input type='text' className='form-control my-2' defaultValue={item.Title} onChange={(e) => setUpdateData({ ...UpdateData, Title: e.target.value })} />
                                             </span>
                                             <span>
-                                                <input type='text' className='form-control my-2' defaultValue={item.PercentComplete} onChange={(e) => setUpdateData({ ...UpdateData, PercentComplete: e.target.value })} />
+                                                <input type='text' className='form-control my-2' placeholder='Enter PercentComplete' defaultValue={item.PercentComplete} onChange={(e) => setUpdateData({ ...UpdateData, PercentComplete: e.target.value })} />
                                             </span>
                                         </div>
                                         <div>
                                             <span>
-                                                {/* <input type='text' placeholder='Assign To' defaultValue={item.AssignedUser.Title} onChange={(e) => setUpdateData({ ...UpdateData, AssignedUser: e.target.value })} /> */}
-                                                <input type='text' className='form-control my-2' placeholder="Assign To" defaultValue={item.AssignedUser.Title} onChange={(e) => searchedName(e)} />
-                                                {inputStatus ? <span className='form-control my-2 d-flex'>Assigned To :
-                                                    <span className='d-flex mx-3 justify-content-between' style={{ width: "200px", background: "#000066", color: "#fff", padding: "5px", borderRadius: "4px" }}>
-                                                        <span>{AssignedTaskUser.Title}</span>
-                                                        <span style={{ cursor: 'pointer' }} onClick={cancelButtonFunction}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
-                                                        </span>
-                                                    </span>
-                                                </span> : ""}
-                                                {listIsVisible ?
-                                                    <div>
-                                                        <ul className="list-group">
-                                                            {searchedNameData.map((item: any) => {
-                                                                return (
-                                                                    <li className="list-group-item" onClick={(e) => updateUser(e, item)}>{item.Title}</li>
-                                                                )
-                                                            })}
-                                                        </ul>
-                                                    </div>
-                                                    : null}
-                                            </span>
-                                            <span>
-                                                <input type='text' className='form-control my-2' defaultValue={item.DueDate} onChange={(e) => setUpdateData({ ...UpdateData, DueDate: e.target.value })} />
+                                                <input type='Date' placeholder="Select DueDate" className='form-control my-2' defaultValue={item.DueDate} onChange={(e) => setUpdateData({ ...UpdateData, DueDate: e.target.value })} />
                                             </span>
                                         </div>
                                         <div>
-                                            <span><input type='text' className='form-control my-2' defaultValue={item.Body} onChange={(e) => setUpdateData({ ...UpdateData, Body: e.target.value })} /></span>
-                                            <span><input type='text' className='form-control' defaultValue={item.Priority} onChange={(e) => setUpdateData({ ...UpdateData, Priority: e.target.value })} /></span>
+                                            <span><input type='text' placeholder="Enter Description" className='form-control my-2' defaultValue={item.Body} onChange={(e) => setUpdateData({ ...UpdateData, Body: e.target.value })} /></span>
+                                            <span><input type='text' placeholder="Enter Priority" className='form-control' defaultValue={item.Priority} onChange={(e) => setUpdateData({ ...UpdateData, Priority: e.target.value })} /></span>
                                         </div>
                                         <div className="d-flex flex-row-reverse my-2">
                                             <button type="button"
@@ -239,6 +209,12 @@ export default function ProjectOverview() {
                                             <button type="button" className="btn-sm btn-danger mx-2"
                                                 onClick={setEditmodalIsOpenToFalse}>
                                                 Cancel
+                                            </button>
+                                        </div>
+                                        <div className="d-flex flex-row-reverse mx-2">
+                                            <button type="button"
+                                                style={{ background: "#000066", color: "#fff", border: "none", outline: "none", padding: "6px", borderRadius: "5px" }} onClick={deleteUserDtl}>
+                                                Delete Item
                                             </button>
                                         </div>
                                     </span>
@@ -268,7 +244,8 @@ export default function ProjectOverview() {
                         <span >
                             <div>
                                 <span>
-                                    <input type='text' className='form-control' placeholder='Enter Task Name' defaultValue={title} onChange={(e) => { (e: any) => settitle(e.target.value) }} />
+                                    <input type='text' className='form-control' placeholder='Enter Task Name' value={title} onChange={(e) => { settitle(e.target.value) }} />
+                                    {/* <input type='text' className='form-control' placeholder='Enter Task Name' defaultValue={title} onChange={(e) => { (e: any) => settitle(e.target.value) }} /> */}
                                 </span>
                             </div>
                             <div className="d-flex flex-row-reverse my-2">
@@ -291,7 +268,7 @@ export default function ProjectOverview() {
                     <div className="wrapper">
                         <div className='header-section d-flex justify-content-between'>
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
-                            <button style={{ background: "#000066", color: "#fff", border: "none", outline: "none" }} className='text-end btn-sm' type='button' onClick={setAddmodalIsOpenToTrue}>Add Popup</button>
+                            <button style={{ background: "#000066", color: "#fff", border: "none", outline: "none" }} className='text-end btn-sm' type='button' onClick={setAddmodalIsOpenToTrue}>Create Project</button>
                         </div>
                         <table className="table table-hover my-3 py-3" id="EmpTable" style={{ width: "100%" }}>
                             <thead>
@@ -299,7 +276,6 @@ export default function ProjectOverview() {
                                     <th style={{ width: "40%" }}>
                                         <div className="smart-relative">
                                             <input type="search" placeholder="Title" className="full_width form-control searchbox_height" />
-
                                         </div>
                                     </th>
                                     <th style={{ width: "15%" }}>
@@ -311,14 +287,12 @@ export default function ProjectOverview() {
                                         <div className="smart-relative">
                                             <input id="searchClientCategory" type="search" placeholder="Priority"
                                                 title="Client Category" className="full_width searchbox_height form-control" />
-
                                         </div>
                                     </th>
                                     <th style={{ width: "15%" }}>
                                         <div className="smart-relative">
                                             <input id="searchClientCategory" type="search" placeholder="Team"
                                                 title="Client Category" className="full_width form-control searchbox_height" />
-
                                         </div>
                                     </th>
                                     <th style={{ width: "13%" }}>
@@ -342,28 +316,23 @@ export default function ProjectOverview() {
                                             <tr >
                                                 <td>
                                                     <span><a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`} target="_blank">{item.Title}</a></span>
-
                                                 </td>
                                                 <td><span className="ml-2">{item.PercentComplete}</span></td>
                                                 <td>{item.Priority}</td>
-
                                                 <td>
                                                     {item.AssignedUser != undefined &&
                                                         item.AssignedUser.map((Userda: any) => {
                                                             return (
                                                                 <span className="headign">
                                                                     <img src={Userda.useimageurl} title={Userda.Title} />
- 
                                                                 </span>
                                                             )
                                                         })
                                                     }
                                                 </td>
-
-                                                <td><span className="ml-2">{item.DueDate!=null?Moment(item.DueDate).format('DD/MM/YYYY'):""}</span></td>
+                                                <td><span className="ml-2">{item.DueDate != null ? Moment(item.DueDate).format('DD/MM/YYYY') : ""}</span></td>
                                                 <td><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e: any) => setEditmodalIsOpenToTrue(item.Id)}></img></td>
                                             </tr>
-
                                         </>
                                     )
                                 })}

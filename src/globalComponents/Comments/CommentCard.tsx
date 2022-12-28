@@ -3,6 +3,7 @@ import { Web } from "sp-pnp-js";
 import '../../webparts/cssFolder/foundation.scss'
 import '../../webparts/cssFolder/foundationmin.scss';
 import './CommentStyle.scss'
+import '../../webparts/cssFolder/Style.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -409,88 +410,47 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   public render(): React.ReactElement<ICommentCardProps> {
     return (
       <div>
-        <div className="panel panel-default">
-          <div className="panel-heading">
-            <h3 className="panel-title">Comments</h3>
-          </div>
-
-          <div className="panel-body">
-           
-            <div className="TopRecipients">
-                <span className="mt-2 mr-5"> <strong>To:</strong></span>
-                {this.topCommenters != null && this.topCommenters.length>0 && this.topCommenters.map( (topCmnt:any,i:any)=> {
-                  return <span className="Recipients ng-scope">
-                            <a className="hreflink" target="_blank">
-                              <img onClick={(e)=>this.topCommentersClick(e)} className="Recipients-image" title={topCmnt.Title}
+         <div className='mb-3 card commentsection'>
+                                    <div className='card-header'>
+                                        {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
+                                        <div className="mb-0 card-title h5">Comments</div>
+                                    </div>
+                                    <div className='card-body'>
+                                        <div className="comment-box  mb-2">
+                                            <span> <strong>To:</strong>  </span>
+                                            {this.topCommenters != null && this.topCommenters.length>0 && this.topCommenters.map( (topCmnt:any,i:any)=> {
+                  return <span>
+                            <a  target="_blank">
+                              <img onClick={(e)=>this.topCommentersClick(e)} className="circularImage rounded-circle " title={topCmnt.Title}
                                   id={topCmnt.id} src={topCmnt.ItemCoverURL}/>
                             </a>
                           </span>
                 })}
                   
                 
-                <span className="RecipientsNameField mt-0  mb-5">
+                <span>
                 <MentionsInput value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
-                      className="mentions"
+                      className="form-control"
                       classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} className={mentionClass.mentions__mention}/>            
                 </MentionsInput>
                 </span>
-            </div>            
-            <div className="RecipientsCommentsField ">
-                <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e)=>this.handleInputChange(e)} className="form-control ui-autocomplete-input ng-valid ng-touched ng-dirty ng-empty" rows={3} placeholder="Enter your comments here" autoComplete="off" style={{width: '286px', height: '58px'}}></textarea>
-                               
-                <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary pull-right mt-5 mb-5">
-                    Post
-                </button>
 
-            </div>
-            <div className="clearfix"></div>
+                                        </div>
+                                        <div>
+                                            <textarea placeholder="Enter your comments here" className='form-control' ></textarea>
+                                            {/* <p className="ng-hide">
+                                            <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
+                                            Comment shouldn't be empty
+                                        </p> */}
+                                            <button title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
+                                                Post
+                                            </button>
+                                        </div>
 
-            <div className="commentMedia">
-            {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 &&
-              <div className="card">
-                <ul className="list-unstyled">
-                {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 && this.state.Result["Comments"].slice(0,3).map( (cmtData:any,i:any)=> {
-                  return <li className="media ng-scope">
-                    <span className="round pt-2">
-                      <img className="align-self-start mr-3" title={cmtData.AuthorName}
-                          src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ? 
-                          cmtData.AuthorImage  :
-                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                            />
-                    </span>
-                    <div className="media-bodyy">
-                      <div className="col-sm-12 pad0 d-flex">
-                        <span className="comment-date pt-2 ng-binding">{cmtData.Created}</span>
-                          <div className="ml-auto media-icons pt-2">
-                            <a className="mr-5" onClick={()=>this.openEditModal(i)}>
-                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
-                            </a>
-                            <a title="Delete" onClick={()=>this.clearComment(i)}>
-                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
-                            </a>
-                          </div>
-                      </div>
-                      <div className="col-sm-12 pad0 d-flex">
-                        { cmtData.Header !='' && <h6 className="userid pt-2"><a className="ng-binding">{cmtData.Header}</a></h6>}
-                      </div>
-                      <p className="media-text ng-binding">{cmtData.Description}</p>
-                    </div>
-                  </li>
-                })}
-                </ul>
-                {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>3 &&
-                  <div className="MoreComments ng-hide">
-                        <a className="MoreComments ng-binding ng-hide" title="Click to Reply" onClick={()=>this.openAllCommentModal()}>
-                            All Comments({this.state.Result["Comments"].length})
-                        </a>
-                  </div>
-                }
-              </div>
-              }
-            </div>
-          </div>
-        </div>
+                                    </div>
+                                </div>
+
         
         <Modal isOpen={this.state.isModalOpen} isBlocking={false}>
               <div className='modal-dialog modal-help' style={{width: '890px'}}>

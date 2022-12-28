@@ -53,19 +53,19 @@ export default function ComponentTable({ props }: any) {
     //    Get query string id
     function getQueryVariable(variable: any) {
         var query = window.location.search.substring(1);
-        console.log(query)//"app=article&act=news_content&aid=160990"
+        // console.log(query)//"app=article&act=news_content&aid=160990"
         var vars = query.split("&");
-        console.log(vars)
+        // console.log(vars)
         for (var i = 0; i < vars.length; i++) {
             var pair = vars[i].split("=");
-            console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ] 
+            // console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ] 
             if (pair[0] == variable) { return pair[1]; }
         }
         return (false);
     }
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     const editProfile = (itemData: any) => {
-        console.log('test')
+        // console.log('test')
         setPopupItem(true);
         setItemData(['']);
         setItemData(itemData);// => ([...itemData]));
@@ -298,7 +298,7 @@ export default function ComponentTable({ props }: any) {
         $(' #SpfxProgressbar').hide();
     }
     React.useEffect(() => {
-        console.log("Use effect is running")
+        // console.log("Use effect is running")
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------

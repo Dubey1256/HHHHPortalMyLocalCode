@@ -97,7 +97,7 @@ function Portfolio({ ID }: any) {
                                         urln = data.d.__next;
                                        
                                     } else SetFolderData(responsen);
-                                    console.log(responsen);
+                                    // console.log(responsen);
                                 },
                                 error: function (error) {
                                     console.log(error);
@@ -105,7 +105,7 @@ function Portfolio({ ID }: any) {
                                 }
                             });
                         }
-                        console.log(folderId)
+                        // console.log(folderId)
                     })
                     
                     if (data.d.__next) {
@@ -168,7 +168,7 @@ function Portfolio({ ID }: any) {
 
 
                 }
-                console.log(myarray1);
+                // console.log(myarray1);
 
                 // if (items.ClienTimeDescription != undefined) {
                 //     items.ClienTimeDescription = parseFloat(item.ClienTimeDescription);
@@ -193,7 +193,7 @@ function Portfolio({ ID }: any) {
         }
         //    const letters = new Set([myarray2]);
 
-        console.log(myarray2)
+        // console.log(myarray2)
 
 
         // myarray.push();
@@ -363,10 +363,20 @@ function Portfolio({ ID }: any) {
                                 <div className='col-md-4 p-0'>
                                 {data.map((item:any)=>{
                                     return(
+                                        <>
+                                        {item.Portfolio_x0020_Type == "Component" &&
                                     <dl>
                                         <dt className='bg-fxdark'>Service Portfolio</dt>
                                         <dd className='bg-light'><a  style={{border:"0px"}}target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></dd>
                                     </dl>
+                             }
+                                 {item.Portfolio_x0020_Type == "Service" &&
+                                    <dl>
+                                        <dt className='bg-fxdark'>Component Portfolio</dt>
+                                        <dd className='bg-light'><a  style={{border:"0px"}}target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}>{item.ComponentPortfolio.Title}</a></dd>
+                                    </dl>
+                             }
+                             </>
                                 )})}
                                 {myarray1.length != 0 &&
                                     <dl className='Sitecomposition'>

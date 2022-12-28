@@ -184,13 +184,16 @@ aside .card {
 aside .card-header {
     padding: 0.6rem 0.6rem;
     margin-bottom: 0;
-    background-color: #fff;
+    background-color: #e7e7e7;
     border-bottom: 0 solid transparent;
 }
 aside .card-title {
     font-size: 0.95rem;
     font-weight: 500;
     color: #495057;
+}
+.commentsection .card-title{
+  font-size: 16px;
 }
 .card-actions button{
     border: none;
