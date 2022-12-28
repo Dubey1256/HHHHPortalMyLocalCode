@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Moment from 'moment';
-import styles from './CategoriesWeeklyMultipleReport.module.scss';
+// import styles from './CategoriesWeeklyMultipleReport.module.scss';
 import { ICategoriesWeeklyMultipleReportProps } from './ICategoriesWeeklyMultipleReportProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import '../../cssFolder/foundation.scss';
