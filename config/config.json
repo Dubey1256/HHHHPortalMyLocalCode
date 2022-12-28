@@ -90,8 +90,7 @@
         }
       ]
     },
-<<<<<<< HEAD
-=======
+
     "h-rjointcontactserach-web-part": {
       "components": [
         {
@@ -132,7 +131,7 @@
         }
       ]
     },
->>>>>>> a3270d8998e57b5fba36e573ab38c0e242ea64e7
+
     "categories-weekly-multiple-report-web-part": {
       "components": [
         {
@@ -172,14 +171,13 @@
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
-<<<<<<< HEAD
-=======
+
     "HRjointcontactserachWebPartStrings": "lib/webparts/hRjointcontactserach/loc/{locale}.js",
     "HRjointcontactprofileWebPartStrings": "lib/webparts/hRjointcontactprofile/loc/{locale}.js",
     "HrContractsearchWebPartStrings": "lib/webparts/hrContractsearch/loc/{locale}.js",
     "HRcontractProfileWebPartStrings": "lib/webparts/hRcontractProfile/loc/{locale}.js",
     "ProjectmanagementOverviewToolWebPartStrings": "lib/webparts/projectmanagementOverviewTool/loc/{locale}.js",
->>>>>>> a3270d8998e57b5fba36e573ab38c0e242ea64e7
+    
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js"
   }
 }
