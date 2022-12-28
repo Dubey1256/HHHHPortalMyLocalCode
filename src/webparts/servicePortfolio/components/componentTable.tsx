@@ -26,15 +26,22 @@ import CheckboxTree from 'react-checkbox-tree';
 function ComponentTable() {
 
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
+    // const [Editpopup, setEditpopup] = React.useState(false)
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [data, setData] = React.useState([])
     const [Title, setTitle] = React.useState()
     const [itemType, setitemType] = React.useState()
+    const [ComponentsData, setComponentsData] = React.useState([])
+    const [SubComponentsData, setSubComponentsData] = React.useState([])
+    const [FeatureData, setFeatureData] = React.useState([])
     const [table, setTable] = React.useState(data);
-    const [AllUsers, setTaskUser] = React.useState([])
+    const [AllUsers, setTaskUser] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
+    const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
+    const [Editpopup, setEditpopup] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
+    const [showItem, setshowItem] = React.useState(false);
     const [state, setState] = React.useState([]);
     const [filterGroups, setFilterGroups] = React.useState([])
     const [filterItems, setfilterItems] = React.useState([])
@@ -125,16 +132,16 @@ function ComponentTable() {
         // const { checked } = e.target;
 
     }
-    isItemExists = function (arr: any, Id: any) {
-        var isExists = false;
-        map(arr, (item) => {
-            if (item.Id == Id) {
-                isExists = true;
-                return false;
-            }
-        });
-        return isExists;
-    }
+    // const isItemExists = function (arr: any, Id: any) {
+    //     var isExists = false;
+    //     map(arr, (item) => {
+    //         if (item.Id == Id) {
+    //             isExists = true;
+    //             return false;
+    //         }
+    //     });
+    //     return isExists;
+    // }
     const Updateitem = () => {
         var filters: any[] = []
         var CategoryItems: any = [];
@@ -283,7 +290,381 @@ function ComponentTable() {
     }
 
 
+    const LoadAllSiteTasks = function () {
 
+        var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+        var Counter = 0;
+
+
+        $.each(siteConfig, function (index: any, config: any) {
+            if (config.Title != 'SDC Sites') {
+                //     $.each($scope.filterItems, function (filter) {
+                //         if (config.Title == filter.Title) {
+                //             filter.DataLoad = true;
+                //         }
+                //         if (filter.childs != undefined && filter.childs.length > 0) {
+                //             angular.forEach(filter.childs, function (child) {
+                //                 if (config.Title == child.Title) {
+                //                     child.DataLoad = true;
+                //                 }
+                //             })
+                //         }
+                //     })
+                config.DataLoad = true;
+                var Response: any = []
+                var select = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientCategory/Id,ClientCategory/Title,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories";
+                if (config.Title == 'Master Tasks') {
+                    select = "ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent";
+                }
+                var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('" + config.listId + "')/items?$select=" + select + '&$' + query;
+                $.ajax({
+                    url: url,
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json; odata=verbose"
+                    },
+                    success: function (data) {
+                        Counter++;
+                        $.each(data.d.results, function (index: any, item: any) {
+                            item.isDrafted = false;
+                            item.flag = true;
+                            item.siteType = config.Title;
+                            item.childs = [];
+
+                            if (item.SharewebCategories.results != undefined) {
+                                if (item.SharewebCategories.results.length > 0) {
+                                    $.each(item.SharewebCategories.results, function (ind: any, value: any) {
+                                        if (value.Title.toLowerCase() == 'draft') {
+                                            item.isDrafted = true;
+                                        }
+                                    });
+                                }
+                            }
+                        })
+                        AllTasks = AllTasks.concat(data.d.results);
+                        AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
+                        // var result = $.grep(AllTasks, function (mPho, index) {
+                        //     {return mPho.isDrafted == false};
+                        // });
+                        if (Counter == 18) {
+                            $.each(AllTasks, function (index: any, result: any) {
+                                result.TeamLeaderUser = []
+                                result.TeamLeaderUserTitle = ''
+                                result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
+
+                                if (result.DueDate == 'Invalid date' || '') {
+                                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                                }
+                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                                if (result.Short_x0020_Description_x0020_On != undefined) {
+                                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                                }
+
+                                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                                    $.each(result.AssignedTo, function (index: any, Assig: any) {
+                                        if (Assig.Id != undefined) {
+                                            $.each(TaskUsers, function (index: any, users: any) {
+
+                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                                    users.ItemCover = users.Item_x0020_Cover;
+                                                    result.TeamLeaderUser.push(users);
+                                                    result.TeamLeaderUserTitle += users.Title + ';';
+                                                }
+
+                                            })
+                                        }
+                                    })
+                                }
+                                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
+                                    $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
+                                        if (Assig.Id != undefined) {
+                                            $.each(TaskUsers, function (index: any, users: any) {
+                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                                    users.ItemCover = users.Item_x0020_Cover;
+                                                    result.TeamLeaderUser.push(users);
+                                                    result.TeamLeaderUserTitle += users.Title + ';';
+                                                }
+
+                                            })
+                                        }
+                                    })
+                                }
+                                result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
+                                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                                        result.ClientCategory.push(catego);
+                                    })
+                                }
+                                result['Shareweb_x0020_ID'] = getSharewebId(result);
+                                if (result['Shareweb_x0020_ID'] == undefined) {
+                                    result['Shareweb_x0020_ID'] = "";
+                                }
+                                TasksItem.push(result);
+                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
+
+                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
+                                //     })
+                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
+                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                 clientcategory.ParentClientCategoryStructure = '';
+                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
+                                //             }
+                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
+                                //             }
+                                //         })
+                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
+                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
+                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                         clientcategory.ParentClientCategoryStructure = '';
+                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
+                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
+                                //                     }
+                                //                 })
+                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
+                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
+                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                                 clientcategory.ParentClientCategoryStructure = '';
+                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
+                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
+                                //                             }
+                                //                         })
+                                //                     })
+
+                                //                 }
+                                //             })
+
+                                //         }
+                                //     })
+                                // } else task.ClientCategory = [];
+
+                                // task['Item_x0020_Type'] = 'Task';
+                                // task['flag'] = true;
+                                // task['newTitle'] = task.Title;
+                                // task['childsLength'] = 0;
+                                // task['childs'] = [];
+                                // task['select'] = false;
+                                // task['isShifted'] = false;
+                                // task['mailcomments'] = '';
+                                // if (task['Body'] != "") {
+                                //     task['WordCount'] = countOfWord(task['Body']);
+                                // }
+                                // task.Short_x0020_Description_x0020_On = []
+                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
+                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
+                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
+                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
+                                // }
+                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
+                                //     $.each(item.Comments, function (index: any, com: any) {
+                                //         task['searchSortDescription'] = com.Title;
+                                //     })
+                                // })
+                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
+                                //     task.mailComment = parseJSON(task.Comments)
+                                // $.each(task.mailComment, function (index: any, item: any) {
+                                //     task['mailcomments'] += item.Description
+                                // })
+                                // task['PortfolioItemsId'] = undefined
+                                // if (task.Component.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
+                                // }
+                                // else if (task.Services.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
+                                // }
+                                // else if (task.Events.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
+                                // }
+                                // if (task.SharewebTaskType.Title == undefined) {
+                                //     task.SharewebTaskType.Title = 'Task';
+                                // }
+                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
+                                // if (task['Shareweb_x0020_ID'] == undefined) {
+                                //     task['Shareweb_x0020_ID'] = "";
+                                // }
+                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
+                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
+                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
+                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
+                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
+                                // if (task['DueDate'] != undefined) {
+                                //     task['MainDueDate'] = (task.DueDate);
+                                //     var dateE = (new Date(task.DueDate));
+                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
+                                // }
+                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
+                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
+                                // task.AssignedUser = [];
+                                // task.TeamMemberUser = [];
+                                // task.AllTeamName = '';
+                                // task['AdditionalTeam'] = [];
+                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
+                                // task.TeamLeaderUser = []
+                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
+                                // getTeamLeadersName(task.Team_x0020_Members, task);
+
+                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
+                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
+                                // TasksItem.push(task);
+                                // task['AdditionalTeamName'] = '';
+                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
+                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
+                                // });
+                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
+
+                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
+                                //     })
+                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
+                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                 clientcategory.ParentClientCategoryStructure = '';
+                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
+                                //             }
+                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
+                                //             }
+                                //         })
+                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
+                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
+                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                         clientcategory.ParentClientCategoryStructure = '';
+                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
+                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
+                                //                     }
+                                //                 })
+                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
+                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
+                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                                 clientcategory.ParentClientCategoryStructure = '';
+                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
+                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
+                                //                             }
+                                //                         })
+                                //                     })
+
+                                //                 }
+                                //             })
+
+                                //         }
+                                //     })
+                                // } else task.ClientCategory = [];
+
+                                // task['Item_x0020_Type'] = 'Task';
+                                // task['flag'] = true;
+                                // task['newTitle'] = task.Title;
+                                // task['childsLength'] = 0;
+                                // task['childs'] = [];
+                                // task['select'] = false;
+                                // task['isShifted'] = false;
+                                // task['mailcomments'] = '';
+                                // if (task['Body'] != "") {
+                                //     task['WordCount'] = countOfWord(task['Body']);
+                                // }
+                                // task.Short_x0020_Description_x0020_On = []
+                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
+                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
+                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
+                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
+                                // }
+                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
+                                //     $.each(item.Comments, function (index: any, com: any) {
+                                //         task['searchSortDescription'] = com.Title;
+                                //     })
+                                // })
+                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
+                                //     task.mailComment = parseJSON(task.Comments)
+                                // $.each(task.mailComment, function (index: any, item: any) {
+                                //     task['mailcomments'] += item.Description
+                                // })
+                                // task['PortfolioItemsId'] = undefined
+                                // if (task.Component.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
+                                // }
+                                // else if (task.Services.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
+                                // }
+                                // else if (task.Events.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
+                                // }
+                                // if (task.SharewebTaskType.Title == undefined) {
+                                //     task.SharewebTaskType.Title = 'Task';
+                                // }
+                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
+                                // if (task['Shareweb_x0020_ID'] == undefined) {
+                                //     task['Shareweb_x0020_ID'] = "";
+                                // }
+                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
+                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
+                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
+                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
+                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
+                                // if (task['DueDate'] != undefined) {
+                                //     task['MainDueDate'] = (task.DueDate);
+                                //     var dateE = (new Date(task.DueDate));
+                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
+                                // }
+                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
+                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
+                                // task.AssignedUser = [];
+                                // task.TeamMemberUser = [];
+                                // task.AllTeamName = '';
+                                // task['AdditionalTeam'] = [];
+                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
+                                // task.TeamLeaderUser = []
+                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
+                                // getTeamLeadersName(task.Team_x0020_Members, task);
+
+                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
+                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
+                                // TasksItem.push(task);
+                                // task['AdditionalTeamName'] = '';
+                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
+                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
+                                // });
+                            })
+                            TasksItem = TasksItem.concat(AllTasks);
+                            console.log(Response);
+                            $.each(TasksItem, function (index: any, task: any) {
+                                if (!isItemExistsNew(CopyTaskData, task)) {
+                                    CopyTaskData.push(task);
+                                }
+                            })
+                            filterDataBasedOnList();
+                            // $scope.Advancefilter();
+                            // $scope.Advancefilter();
+                        }
+                        // if (data.d.__next) {
+                        //     url = data.d.__next;
+                        // }
+                        // else setTask(Response);
+                        // if (data.d.__next) {
+                        //     url = data.d.__next;
+                        // }
+                        // else setTask(Response);
+                    },
+                    error: function (error) {
+                        Counter++;
+                    }
+
+                });
+
+
+
+            } else Counter++;
+
+        })
+
+    }
     const handleOpen2 = (item: any) => {
 
         item.show = item.show = item.show == true ? false : true;
@@ -296,7 +677,8 @@ function ComponentTable() {
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
 
-    }; const handleEditPopup = (item: any) => {
+    }; 
+    const handleEditPopup = (item: any) => {
 
         //    item.Isclick = item.Isclick = item.Isclick == true ? false : true;
         //    setData(data => ([...data]));
@@ -305,6 +687,15 @@ function ComponentTable() {
         //setData(data => ([...data]));
 
     };
+   
+    // const handleTimeOpen = (item: any) => {
+
+    //     item.show = item.show = item.show == true ? false : true;
+    //     setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+    //     // setData(data => ([...data]));
+
+    // };
+
     // const handleTimeOpen = (item: any) => {
 
     //     item.show = item.show = item.show == true ? false : true;
@@ -320,7 +711,6 @@ function ComponentTable() {
     const setModalIsOpenToTrue = () => {
         setModalIsOpen(true)
     }
-
 
 
     const sortBy = () => {
@@ -341,6 +731,10 @@ function ComponentTable() {
         setTable(copy)
 
     }
+    // let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
+    //     setSearch(e.target.value.toLowerCase());
+    //     var Title = titleName;
+    // };
     // let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
     //     setSearch(e.target.value.toLowerCase());
     //     var Title = titleName;
@@ -439,8 +833,8 @@ function ComponentTable() {
     var AllComponetsData: any = [];
     var TaskUsers: any = [];
     var RootComponentsData: any = [];
-    var ComponentsData: any = [];
-    var SubComponentsData: any = []; var FeatureData: any = [];
+    // var ComponentsData: any = [];
+    // var SubComponentsData: any = []; var FeatureData: any = [];
     var MetaData: any = []
     var showProgressBar = () => {
         $(' #SpfxProgressbar').show();
@@ -451,6 +845,7 @@ function ComponentTable() {
     }
     React.useEffect(() => {
 
+
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------
@@ -459,13 +854,18 @@ function ComponentTable() {
 
             $.ajax({
 
+
                 url: url,
+
 
                 method: "GET",
 
+
                 headers: {
 
+
                     "Accept": "application/json; odata=verbose"
+
 
                 },
 
@@ -474,6 +874,17 @@ function ComponentTable() {
                     Response = Response.concat(data.d.results);
                     TaskUsers = Response;
                     console.log(Response);
+                    setTaskUser(Response);
+                    //   if (data.d.__next) {
+
+                    //   url = data.d.__next;
+
+
+
+                    // }
+                    //  else setTaskUser(Response);
+
+
                     setTaskUser(Response);
                     //   if (data.d.__next) {
 
@@ -504,6 +915,8 @@ function ComponentTable() {
             var filterItems: any = [];
             // siteConfig =[];
             // var filterGroups: any = [];
+            // siteConfig =[];
+            // var filterGroups: any = [];
             filterGroups.push("Portfolio");
             filterGroups.push("Sites");
             filterGroups.push("Type");
@@ -518,6 +931,7 @@ function ComponentTable() {
                 },
                 success: function (data) {
                     MetaData = MetaData.concat(data.d.results);
+                    setMetadata(MetaData);
                     setMetadata(MetaData);
                     $.each(MetaData, function (item: any, newtest) {
                         if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
@@ -608,7 +1022,7 @@ function ComponentTable() {
                         }
                     });
 
-                    filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true,'value':1000, 'label':"Component",  "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true,'value':10000, 'label':"SubComponent", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true,'value':100000000, 'label':"Feature", "childs": [] });
+                    filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true, 'value': 1000, 'label': "Component", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true, 'value': 10000, 'label': "SubComponent", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true, 'value': 100000000, 'label': "Feature", "childs": [] });
                     $.each(filterItems, function (neww: any, item) {
                         if (item.TaxType == "Sites" && item.Title == 'SDC Sites' || item.Title == 'Tasks') {
                             item.Selected = true;
@@ -656,6 +1070,10 @@ function ComponentTable() {
             spRequest.setRequestHeader("Accept", "application/json");
 
             spRequest.onreadystatechange = function () {
+                //  var RootComponentsData: any[] = [];
+                // var ComponentsData: any = [];
+                // var SubComponentsData: any = [];
+                // var FeatureData: any = [];
                 //  var RootComponentsData: any[] = [];
                 // var ComponentsData: any = [];
                 // var SubComponentsData: any = [];
@@ -968,14 +1386,16 @@ function ComponentTable() {
     }
     const getTeamLeadersName = function (Items: any, Item: any) {
         if (Items != undefined) {
-            $.each(Items.results, function (index: any, user: any) {
+           map(Items.results,  (index: any, user: any) => {
                 $.each(AllUsers, function (index: any, item: any) {
-                    if (user.Id == item.AssingedToUserId) {
-                        Item.AllTeamName = Item.AllTeamName + item.Title + ' ';
-                    }
-                });
+                    $.each(AllUsers, function (index: any, item: any) {
+                        if (user.Id == item.AssingedToUserId) {
+                            Item.AllTeamName = Item.AllTeamName + item.Title + ' ';
+                        }
+                    });
+                })
             })
-        }
+    }
     }
     var AllTasks: any = [];
     var CopyTaskData: any = [];
@@ -1148,6 +1568,10 @@ function ComponentTable() {
         //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
 
         //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
+        //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
+        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+
+        //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         var AllTaskData1: any = [];
         AllTaskData1 = AllTaskData1.concat(CopyTaskData);
         // CountOfAWTStructuredData();
@@ -1180,261 +1604,7 @@ function ComponentTable() {
         //  makeGroupingBasedOnLevel();
     }
     var TasksItem: any = [];
-    const LoadAllSiteTasks = function () {
 
-        var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
-        var Counter = 0;
-
-
-        $.each(siteConfig, function (index: any, config: any) {
-            if (config.Title != 'SDC Sites') {
-                //     $.each($scope.filterItems, function (filter) {
-                //         if (config.Title == filter.Title) {
-                //             filter.DataLoad = true;
-                //         }
-                //         if (filter.childs != undefined && filter.childs.length > 0) {
-                //             angular.forEach(filter.childs, function (child) {
-                //                 if (config.Title == child.Title) {
-                //                     child.DataLoad = true;
-                //                 }
-                //             })
-                //         }
-                //     })
-                config.DataLoad = true;
-                var Response: any = []
-                var select = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientCategory/Id,ClientCategory/Title,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories";
-                if (config.Title == 'Master Tasks') {
-                    select = "ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent";
-                }
-                var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('" + config.listId + "')/items?$select=" + select + '&$' + query;
-                $.ajax({
-                    url: url,
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json; odata=verbose"
-                    },
-                    success: function (data) {
-                        Counter++;
-                        $.each(data.d.results, function (index: any, item: any) {
-                            item.isDrafted = false;
-                            item.flag = true;
-                            item.siteType = config.Title;
-                            item.childs = [];
-
-                            if (item.SharewebCategories.results != undefined) {
-                                if (item.SharewebCategories.results.length > 0) {
-                                    $.each(item.SharewebCategories.results, function (ind: any, value: any) {
-                                        if (value.Title.toLowerCase() == 'draft') {
-                                            item.isDrafted = true;
-                                        }
-                                    });
-                                }
-                            }
-                        })
-                        AllTasks = AllTasks.concat(data.d.results);
-                        AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
-                        // var result = $.grep(AllTasks, function (mPho, index) {
-                        //     {return mPho.isDrafted == false};
-                        // });
-                        if (Counter == 18) {
-                            $.each(AllTasks, function (index: any, result: any) {
-                                result.TeamLeaderUser = []
-                                result.TeamLeaderUserTitle = ''
-                                result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
-
-                                if (result.DueDate == 'Invalid date' || '') {
-                                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-                                }
-                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-                                if (result.Short_x0020_Description_x0020_On != undefined) {
-                                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-                                }
-
-                                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                                    $.each(result.AssignedTo, function (index: any, Assig: any) {
-                                        if (Assig.Id != undefined) {
-                                            $.each(TaskUsers, function (index: any, users: any) {
-
-                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                                    users.ItemCover = users.Item_x0020_Cover;
-                                                    result.TeamLeaderUser.push(users);
-                                                    result.TeamLeaderUserTitle += users.Title + ';';
-                                                }
-
-                                            })
-                                        }
-                                    })
-                                }
-                                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
-                                    $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
-                                        if (Assig.Id != undefined) {
-                                            $.each(TaskUsers, function (index: any, users: any) {
-                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                                    users.ItemCover = users.Item_x0020_Cover;
-                                                    result.TeamLeaderUser.push(users);
-                                                    result.TeamLeaderUserTitle += users.Title + ';';
-                                                }
-
-                                            })
-                                        }
-                                    })
-                                }
-                                result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
-                                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                                        result.ClientCategory.push(catego);
-                                    })
-                                }
-                                result['Shareweb_x0020_ID'] = getSharewebId(result);
-                                if (result['Shareweb_x0020_ID'] == undefined) {
-                                    result['Shareweb_x0020_ID'] = "";
-                                }
-                                TasksItem.push(result);
-                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
-
-                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
-                                //     })
-                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
-                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                 clientcategory.ParentClientCategoryStructure = '';
-                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
-                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
-                                //             }
-                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
-                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
-                                //             }
-                                //         })
-                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
-                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
-                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                         clientcategory.ParentClientCategoryStructure = '';
-                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
-                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
-                                //                     }
-                                //                 })
-                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
-                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
-                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                                 clientcategory.ParentClientCategoryStructure = '';
-                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
-                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
-                                //                             }
-                                //                         })
-                                //                     })
-
-                                //                 }
-                                //             })
-
-                                //         }
-                                //     })
-                                // } else task.ClientCategory = [];
-
-                                // task['Item_x0020_Type'] = 'Task';
-                                // task['flag'] = true;
-                                // task['newTitle'] = task.Title;
-                                // task['childsLength'] = 0;
-                                // task['childs'] = [];
-                                // task['select'] = false;
-                                // task['isShifted'] = false;
-                                // task['mailcomments'] = '';
-                                // if (task['Body'] != "") {
-                                //     task['WordCount'] = countOfWord(task['Body']);
-                                // }
-                                // task.Short_x0020_Description_x0020_On = []
-                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
-                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
-                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
-                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
-                                // }
-                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
-                                //     $.each(item.Comments, function (index: any, com: any) {
-                                //         task['searchSortDescription'] = com.Title;
-                                //     })
-                                // })
-                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
-                                //     task.mailComment = parseJSON(task.Comments)
-                                // $.each(task.mailComment, function (index: any, item: any) {
-                                //     task['mailcomments'] += item.Description
-                                // })
-                                // task['PortfolioItemsId'] = undefined
-                                // if (task.Component.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
-                                // }
-                                // else if (task.Services.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
-                                // }
-                                // else if (task.Events.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
-                                // }
-                                // if (task.SharewebTaskType.Title == undefined) {
-                                //     task.SharewebTaskType.Title = 'Task';
-                                // }
-                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
-                                // if (task['Shareweb_x0020_ID'] == undefined) {
-                                //     task['Shareweb_x0020_ID'] = "";
-                                // }
-                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
-                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
-                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
-                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
-                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
-                                // if (task['DueDate'] != undefined) {
-                                //     task['MainDueDate'] = (task.DueDate);
-                                //     var dateE = (new Date(task.DueDate));
-                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
-                                // }
-                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
-                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
-                                // task.AssignedUser = [];
-                                // task.TeamMemberUser = [];
-                                // task.AllTeamName = '';
-                                // task['AdditionalTeam'] = [];
-                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
-                                // task.TeamLeaderUser = []
-                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
-                                // getTeamLeadersName(task.Team_x0020_Members, task);
-
-                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
-                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
-                                // TasksItem.push(task);
-                                // task['AdditionalTeamName'] = '';
-                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
-                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
-                                // });
-                            })
-                            TasksItem = TasksItem.concat(AllTasks);
-                            console.log(Response);
-                            $.each(TasksItem, function (index: any, task: any) {
-                                if (!isItemExistsNew(CopyTaskData, task)) {
-                                    CopyTaskData.push(task);
-                                }
-                            })
-                            filterDataBasedOnList();
-                            // $scope.Advancefilter();
-                        }
-                        // if (data.d.__next) {
-                        //     url = data.d.__next;
-                        // }
-                        // else setTask(Response);
-                    },
-                    error: function (error) {
-                        Counter++;
-                    }
-
-                });
-
-
-
-            } else Counter++;
-
-        })
-
-    }
     function Buttonclick(e: any) {
         e.preventDefault();
         this.setState({ callchildcomponent: true });
@@ -1499,7 +1669,7 @@ function ComponentTable() {
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
     var AllTimeSpentDetails: any = [];
-    var isItemExists = function (arr: any, Id: any) {
+    const isItemExists = function (arr: any, Id: any) {
         var isExists = false;
         $.each(arr, function (index: any, item: any) {
             if (item.Id == Id) {
@@ -1820,14 +1990,14 @@ function ComponentTable() {
                                                                                                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                                                         </span>
                                                                                                                     }
-                                                                                                                    <input type="checkbox" checked={child1.Selected == true}  className="icon-input mr0" ng-model="child1.Selected"
+                                                                                                                    <input type="checkbox" checked={child1.Selected == true} className="icon-input mr0" ng-model="child1.Selected"
                                                                                                                         onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
 
                                                                                                                     <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
                                                                                                                     >
                                                                                                                         {child1.childs.map(function (child2: any) {
                                                                                                                             <li>
-                                                                                                                                <input type="checkbox"  checked={child1.Selected == true}  
+                                                                                                                                <input type="checkbox" checked={child1.Selected == true}
 
                                                                                                                                     ng-model="child2.Selected"
                                                                                                                                     onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
@@ -1859,7 +2029,7 @@ function ComponentTable() {
                                                     </>
                                                 )
                                             })}
-                                           {/* {filterItems.length >0 && <CheckboxTree
+                                            {/* {filterItems.length >0 && <CheckboxTree
                                                 nodes={filterItems}
                                                 checked={checked}
                                                 // expanded={expanded}
@@ -2502,5 +2672,7 @@ function RetrieveSPData() {
 function openModal(): React.MouseEventHandler<HTMLAnchorElement> {
     throw new Error("Function not implemented.");
 }
+
+
 
 

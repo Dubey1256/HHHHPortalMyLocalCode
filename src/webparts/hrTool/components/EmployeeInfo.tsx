@@ -6,13 +6,13 @@ import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
 import Information from './TaxInformation';
-import PayrollComponents from './payRollAccount';
 import SalarySlipPopup from './SalarySlipPopup';
 import { Web } from "sp-pnp-js";
 import { useEffect, useState } from 'react';
 import * as moment from 'moment';
 import EditEmployeeInfo from './EditEmployeeInfo';
 import SalaryConfirmationPopup from './SalaryConfirmation';
+import PayrollComponents from './payRollAccount';
 
 
 const EmployeeInfo = () => {
@@ -91,7 +91,6 @@ const EmployeeInfo = () => {
 
     // employeeInfo ALl Information Data Start......
     const LoadHrData = async () => {
-
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
         await web.lists.getById('a7b80424-e5e1-47c6-80a1-0ee44a70f92c').items.select("Id,additionalContributionToHI,FirstName,IM,SmartLanguagesId,WorkCity,WorkZip,WorkAddress,WorkPhone,Email,Item_x0020_Cover,SmartContactId,Title,JobTitle,WebPage,SmartCountriesId,SmartStateId,Institution/Id,Institution/Title,SocialMediaUrls,levy2ContributionRate,SmartInstitutionId,contributionStatus,StaffID,netNonRecurringPayments,levy1ReimbursementRate,levy1RateOfContribution,levy1Type,healthInsuranceCompany,healthInsuranceType,NonRecurringPayments,PersonGroupKey,Country,Fedral_State,BIC,IBAN,contributionGroupNCI,contributionGroupUI,contributionGroupRI,contributionGroupHi,Parenthood,insuranceNo,childAllowance,monthlyTaxAllowance,solidaritySurcharge,taxClass,churchTax,taxNo,incomeTax,taxFreePayments,Languages,otherQualifications,highestVocationalEducation,highestSchoolDiploma,ZIP_x0020_Code,No_x002e_,City,Street,maritalStatus,Nationality,placeOfBirth,dateOfBirth,Created,Author/Title,Modified,Editor/Title,EmployeeID/Title,EmployeeID/Id").expand("EmployeeID,Institution,Author,Editor").filter("Id eq " + employeeId).get()
             .then((data) => {
@@ -139,8 +138,7 @@ const EmployeeInfo = () => {
 
     return (
         <div>
-            {
-                HrData &&
+            {HrData && 
                 <div className="col-sm-12 tableHeading  ">
                     <div className="col-sm-3 tableLeft  ">
                         {/* <img className="user-dp" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg" data-themekey="#" /> */}
@@ -156,7 +154,7 @@ const EmployeeInfo = () => {
                                 <span>
                                     {/* <span style={{ padding: 3 }} className="btn btn-outline btn-primary">
                                         <img />Edit HR Details</span> */}
-                                    <EditEmployeeInfo />
+                                    <EditEmployeeInfo props={employeeId}/>
                                 </span>
                             </div>
                         </div>
@@ -556,7 +554,7 @@ const EmployeeInfo = () => {
                                                                                         <td>{EmployeeSalary.fisicalDeduction}</td>
                                                                                         <td>{EmployeeSalary.totalContribution}</td>
                                                                                         <td>{EmployeeSalary.payOut.toFixed(2)}€</td>
-                                                                                        <td>{EmployeeSalary.accountingDate != null ? moment(EmployeeSalary.accountingDate).format('DD/MM/YYYY') : ""}</td>
+                                                                                        <td>{EmployeeSalary? moment(EmployeeSalary.accountingDate).format('DD/MM/YYYY'):''}</td>
                                                                                         <td><a><SalarySlipPopup props={EmployeeSalary.Id} /></a>
                                                                                         <a><SalaryConfirmationPopup props={EmployeeSalary.Id} contractData={ContractData}/></a></td>
                                                                                     </tr>

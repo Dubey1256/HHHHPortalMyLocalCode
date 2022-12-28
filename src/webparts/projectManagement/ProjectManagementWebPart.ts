@@ -72,7 +72,7 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
-
+  
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {

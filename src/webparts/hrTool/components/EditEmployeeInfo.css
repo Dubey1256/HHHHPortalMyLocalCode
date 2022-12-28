@@ -218,3 +218,35 @@ color: #fff;
         box-sizing: border-box;
         zoom: 1;
     }
+    .edit-icons {
+        top: 21px;
+        right: 1px;
+        background: #eee;
+        padding: 5px;
+        z-index: 1;
+    }
+.Alltable .section-event .table>thead .smart-relative .searchclear {
+    right: 16px!important;
+    bottom: auto;
+    top: 7px!important;
+    background: #fff;
+    padding: 0 1px!important;
+    position: absolute;
+    line-height: 30px;
+    height: 30px;
+}
+.tabletdRow {
+    background-color: #fff!important;
+    border: 1px solid #eee!important;
+}
+.container-new {
+    overflow-y: auto;
+    max-height: 407px;
+    overflow-x: hidden;
+    border: 0px solid #ccc!important;
+}
+button.btn.btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}

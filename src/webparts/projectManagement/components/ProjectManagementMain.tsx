@@ -7,8 +7,10 @@ import '../../cssFolder/site_color.scss';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import * as Moment from 'moment';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import axios, { AxiosResponse } from 'axios';
 var AllUser: any = []
 var siteConfig: any = []
+var DataSiteIcon:any=[]
 const ProjectManagementMain = () => {
     const [AllTasks, setAllTasks] = React.useState([])
     const[isOpenEditPopup,setisOpenEditPopup] = React.useState(false)
@@ -252,7 +254,26 @@ const ProjectManagementMain = () => {
         setisOpenEditPopup(true)
         setpassdata(item)
     },[])
+    const loadAdminConfigurations = function () {
+
+        var CurrentSiteType = ''
+
+        axios.get("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('e968902a-3021-4af2-a30a-174ea95cf8fa')/items?$select=Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
+            .then((response: AxiosResponse) => {
+                var SmartFavoritesConfig = [];
+                $.each(response.data.value, function (index: any, smart: any) {
+                    if (smart.Configurations != undefined) {
+                        DataSiteIcon = JSON.parse(smart.Configurations);
+                    }
+                });
+
+            },
+                function (error) {
+
+                });
+    }
     const LoadAllSiteTasks = function () {
+        loadAdminConfigurations();
         var AllTask: any = []
         var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         var Counter = 0;
@@ -283,6 +304,13 @@ const ProjectManagementMain = () => {
                     }
                     if (items.Services != undefined && items.Services.results && items.Services.results.length > 0) {
                         items['Portfoliotype'] = 'Service';
+                    }
+                    if(DataSiteIcon != undefined){
+                        DataSiteIcon.map((site:any)=>{
+                            if(site.Site == items.siteType){
+                                items['siteIcon']=site.SiteIcon
+                            }
+                        })
                     }
                     items.componentString = items.Component != undefined && items.Component != undefined && items.Component.length > 0 ? getComponentasString(items.Component) : '';
                     items.Shareweb_x0020_ID = getSharewebId(items);
@@ -416,13 +444,13 @@ const ProjectManagementMain = () => {
             <section>
                 <div className='container'>
                     <div className='row'>
-                        <div className='col-md-9 bg-white'>
+                        <div className='col-md-12 bg-white'>
                             {Masterdata.map((item: any) => {
                                 return (
                                     <>
 
                                         <div className='team_member row  py-2'>
-                                            <div className='col-md-4 p-0'>
+                                            <div className='col-md-6 p-0'>
                                                 <dl>
                                                     <dt className='bg-fxdark'>Due Date</dt>
                                                     <dd className='bg-light'>
@@ -455,7 +483,7 @@ const ProjectManagementMain = () => {
 
 
                                             </div>
-                                            <div className='col-md-4 p-0'>
+                                            <div className='col-md-6 p-0'>
 
                                                 <dl>
                                                     <dt className='bg-fxdark'>Assigned To</dt>
@@ -487,9 +515,9 @@ const ProjectManagementMain = () => {
                                             </div>
                                             <div className='team_member row  py-2'>
                                             <div className='col-md-12 p-0'>
-                                                <dl>
-                                                    <dt className='bg-fxdark' style={{width:"10%"}}>Description</dt>
-                                                    <dd className='bg-light'>
+                                                <dl  className='bg-light p-2'>
+                                                    
+                                                  
 
                                                         <a>{item.Body != null ? item.Body : ""}</a>
                                                         <span
@@ -498,7 +526,7 @@ const ProjectManagementMain = () => {
                                                             <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
                                                         </span>
 
-                                                    </dd>
+                                                  
                                                 </dl>
                                             </div>
                                             </div>
@@ -514,67 +542,40 @@ const ProjectManagementMain = () => {
             </section>
 
             {/* ======================================Show Table============================================================================================================================ */}
-
-            <div className="col-sm-12 pad0 smart">
-                <div className="section-event">
+<div className='container'>
+            <div className="row">
+                <div className="section-event border-top">
                     <div className="wrapper">
                         <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                             <thead>
                                 <tr>
-                                <th style={{ width: "2%" }}>
-                                        <div className="smart-relative">
-
-                                        </div>
-                                    </th>
+                                    <th></th>
                                     <th style={{ width: "10%" }}>
-                                        <div className="smart-relative">
-                                            <input type="search" placeholder="Task ID" className="full_width searchbox_height" />
+                                        <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Task Id </div></th>
 
-                                        </div>
-                                    </th>
+                                    <th style={{ width: "25%" }}> 
+                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Title </div></th>
 
-                                    <th style={{ width: "25%" }}>
-                                        <div className="smart-relative">
-                                            <input type="search" placeholder="Title" className="full_width searchbox_height" />
-
-                                        </div>
-                                    </th>
-                                    <th style={{ width: "25%" }}>
-                                        <div className="smart-relative">
-                                            <input type="search" placeholder="Portfolio Type" className="full_width searchbox_height" />
-
-                                        </div>
-                                    </th>
                                     <th style={{ width: "10%" }}>
-                                        <div className="smart-relative">
-                                            <input type="search" placeholder="% Complete" className="full_width searchbox_height" />
-
-
-                                        </div>
+                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Portfolio Type </div>
                                     </th>
+
+                                    <th style={{ width: "10%" }}>
+                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> % Complete </div>
+                                    </th>
+
                                     <th style={{ width: "13%" }}>
-                                        <div className="smart-relative">
-                                            <input id="searchClientCategory" type="search" placeholder="Priority"
-                                                title="Client Category" className="full_width searchbox_height" />
-
-                                        </div>
+                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Priority </div>
                                     </th>
+
                                     <th style={{ width: "15%" }}>
-                                        <div className="smart-relative">
-                                            <input id="searchClientCategory" type="search" placeholder="Team"
-                                                title="Client Category" className="full_width searchbox_height" />
-
-                                        </div>
+                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Team </div>
                                     </th>
+
                                     <th style={{ width: "13%" }}>
-                                        <div className="smart-relative">
-                                            <input id="searchClientCategory" type="search" placeholder="Due Date"
-                                                title="Client Category" className="full_width searchbox_height"
-                                            />
-
-
-                                        </div>
+                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Due Date </div>
                                     </th>
+
                                     <th style={{ width: "2%" }}>
                                     </th>
 
@@ -594,30 +595,11 @@ const ProjectManagementMain = () => {
                                         <>
                                             <tr >
                                             <td>
-                                                    {item.Component != undefined &&
-                                                    <>
-                                                    {item.Component.map((types:any)=>{
-                                                        return(
-                                                            <>
+                                                   
                                                             <img className="icon-sites-img"
-                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
-                                                            </>
-                                                        )
-                                                    })}
-                                                    </>
-                                                }
-                                                 {(item.Component == undefined && item.Services != undefined ) &&
-                                                    <>
-                                                    {item.Services.map((types:any)=>{
-                                                        return(
-                                                            <>
-                                                            <img className="icon-sites-img"
-                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" />
-                                                            </>
-                                                        )
-                                                    })}
-                                                    </>
-                                                }
+                                                            src={item.siteIcon} />
+                                                        
+                                                 
                                                 </td>
                                                 <td>{item.Shareweb_x0020_ID}</td>
                                                 <td>
@@ -684,6 +666,7 @@ const ProjectManagementMain = () => {
                         </table>
                     </div>
                 </div>
+            </div>
             </div>
             {isOpenEditPopup ? <EditTaskPopup Items={passdata} Call={CallBack}  />:''}
 
