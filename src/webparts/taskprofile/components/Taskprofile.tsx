@@ -463,8 +463,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </div>
                   }
                   <div className="col-sm-8">
-                    {this.state.Result["SharewebTaskType"] !=null && this.state.Result["SharewebTaskType"] !='' && 
-                    this.state.Result["SharewebTaskType"] == 'Task' && this.state.Result["FeedBack"] != null && 
+                    {this.state.Result["SharewebTaskType"] !=null && (this.state.Result["SharewebTaskType"] =='' || 
+                    this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
                       <div className="Addcomment">
