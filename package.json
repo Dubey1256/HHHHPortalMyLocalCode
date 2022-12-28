@@ -31,6 +31,7 @@
     "immutable": "^4.1.0",
     "office-ui-fabric-react": "7.174.1",
     "react": "16.13.1",
+    "react-autosuggest": "^10.1.0",
     "react-bootstrap": "^1.0.1",
     "react-checkbox-tree": "^1.8.0",
     "react-csv": "^2.2.2",

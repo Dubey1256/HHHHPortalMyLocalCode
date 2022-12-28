@@ -15,6 +15,8 @@ import { map } from 'jquery';
 import { concat } from 'lodash';
 import EditInstituton from '../../EditPopupFiles/EditComponent';
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+import { any, number } from 'prop-types';
+import CheckboxTree from 'react-checkbox-tree';
 
 
 
@@ -26,9 +28,6 @@ function ComponentTable() {
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
     // const [Editpopup, setEditpopup] = React.useState(false)
     const [maidataBackup, setmaidataBackup] = React.useState([])
-    const [show, setShow] = React.useState(false);
-    //const [passData, setPassData] = React.useState([]);
-    const [child, setChild] = React.useState(false);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [data, setData] = React.useState([])
     const [Title, setTitle] = React.useState()
@@ -37,7 +36,7 @@ function ComponentTable() {
     const [SubComponentsData, setSubComponentsData] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
     const [table, setTable] = React.useState(data);
-    const [AllUsers, setTaskUser] = React.useState([])
+    const [AllUsers, setTaskUser] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
     const [Editpopup, setEditpopup] = React.useState(false);
@@ -48,37 +47,84 @@ function ComponentTable() {
     const [filterItems, setfilterItems] = React.useState([])
     const [Editdata, setEditdata] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
-    //const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
-
-    //const [collapseItem, setcollapseItem] = React.useState(true);
-    const [EditTaskItemitle, setEditItem] = React.useState('');
-    const [popupStatus, setPopupItem] = React.useState(true);
-    const [itemData, setItemData] = React.useState([])
-    const [popupcount, setPopupcount] = React.useState(0);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([])
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
+    const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
+    const [checked, setchecked] = React.useState([]);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-   
+
+    var IsExitSmartfilter = function (array: any, Item: any) {
+        var isExists = false;
+        var count = 0;
+        Item.MultipleTitle = '';
+        map(array, (item) => {
+            if (item.TaxType != undefined && Item.Title != undefined && item.TaxType == Item.Title) {
+                isExists = true;
+                count++;
+                Item.MultipleTitle += item.Title + ', ';
+                return false;
+            }
+        });
+        if (Item.MultipleTitle != "")
+            Item.MultipleTitle = Item.MultipleTitle.substring(0, Item.MultipleTitle.length - 2);
+        Item.count = count;
+        return isExists;
+    }
+
+
+    var issmartExists = function (array: any, title: any) {
+        var isExists = false;
+        map(array, (item) => {
+            if (item.Title == title.Title) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
+    }
     const SingleLookDatatest = (e: any, item: any, value: any) => {
         const { checked } = e.target;
         if (checked) {
             state.push(item);
+            if (item.childs != undefined && item.childs.length > 0) {
+                map(item.childs, (child) => {
+                    state.push(child);
+                })
+            }
 
         }
         else {
             $.each(state, function (index: any, newite: any) {
-                // if (newite.Title != undefined) {
-                //     if (newite.Title == item.Title)
-                //         state.splice(index, 1);
-                // }
-                if (newite.Id == item.Id) {
+                if (newite.Title == item.Title) {
                     state.splice(index, 1);
                 }
+                if (item.childs != undefined && item.childs.length > 0) {
+                    for (var i: number = 0; item.childs > 0; i++) {
+                        state.splice(i, 1);
+                        --i;
+                    }
+                }
+
             })
         }
-        setState(state)
+        var ArrayItem: any = []
+        if (state != undefined) {
+            map(state, (smart) => {
+                var smartfilterItems: any = {};
+                smartfilterItems.Title = smart.TaxType;
+                if (IsExitSmartfilter(state, smartfilterItems)) {
+                    if (smartfilterItems.count >= 3) {
+                        smartfilterItems.selectTitle = ' : (' + smartfilterItems.count + ')';
+                    } else smartfilterItems.selectTitle = ' : ' + smartfilterItems.MultipleTitle;
+                }
+                if (!issmartExists(ArrayItem, smartfilterItems))
+                    ArrayItem.push(smartfilterItems);
+            })
+        }
+        setShowSelectdSmartfilter(ShowSelectdSmartfilter => ([...ArrayItem]));
+        // setState(state)
     }
     const Clearitem = () => {
         // setData(maini...[maidataBackup])
@@ -86,55 +132,539 @@ function ComponentTable() {
         // const { checked } = e.target;
 
     }
+    // const isItemExists = function (arr: any, Id: any) {
+    //     var isExists = false;
+    //     map(arr, (item) => {
+    //         if (item.Id == Id) {
+    //             isExists = true;
+    //             return false;
+    //         }
+    //     });
+    //     return isExists;
+    // }
     const Updateitem = () => {
         var filters: any[] = []
+        var CategoryItems: any = [];
+        var TeamUsers: any = [];
+        var IsTeamUsers: any = false;
+        var PriorityItems: any = [];
+        var isPrioritySelected: any = false;
+        var ResponsibilityItems: any = [];
+        var isResponsibilitySelected: any = false;
+        var PortfolioItems: any = [];
+        var isPortfolioSelected = false;
         if (state.length == 0) {
             setData(maidataBackup)
         }
         else {
-            $.each(maidataBackup, function (index: any, item) {
+            map(maidataBackup, (item) => {
 
-                $.each(state, function (index: any, select) {
-                    if (item.Id == select.Id) {
-                        filters.push(item);
-                    }
-                    $.each(item.TeamLeaderUser, function (index: any, team) {
-                        if (select.Title == team.Title) {
+                map(state, (select) => {
+                    if (select.Selected)
+                        switch (select.TaxType) {
+                            case 'Portfolio':
+                                if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                    item.flag = true
+                                    PortfolioItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.Item_x0020_Type != undefined && child.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                            child.flag = true
+                                            PortfolioItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.Item_x0020_Type != undefined && subchild.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                                    child.flag = true
+                                                    PortfolioItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
 
-                            filters.push(item);
+                            case 'Type':
+                                if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                    item.flag = true
+                                    CategoryItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.SharewebTaskType != undefined && child.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                            child.flag = true
+                                            CategoryItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.SharewebTaskType != undefined && subchild.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                                    child.flag = true
+                                                    CategoryItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+                            case 'Priority':
+                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                    item.flag = true
+                                    PriorityItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                            child.flag = true
+                                            PriorityItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                                    child.flag = true
+                                                    PriorityItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+                            case 'Sites':
+                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                    item.flag = true
+                                    PriorityItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                            child.flag = true
+                                            PriorityItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                                    child.flag = true
+                                                    PriorityItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+                            case 'Team Members':
+                                if (item.TeamLeaderUserTitle != undefined && item.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title) > -1 && !isItemExists(ResponsibilityItems, item.Id)) {
+                                    item.flag = true
+                                    ResponsibilityItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.TeamLeaderUserTitle != undefined && child.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title && !isItemExists(ResponsibilityItems, item.Id))) {
+                                            child.flag = true
+                                            ResponsibilityItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.TeamLeaderUserTitle != undefined && subchild.TeamLeaderUserTitle == select.Title && !isItemExists(ResponsibilityItems, item.Id)) {
+                                                    child.flag = true
+                                                    ResponsibilityItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+
                         }
-
-                    })
-                    $.each(item.Child, function (index: any, childitem) {
-                        if (childitem.Id == select.Id) {
-                            filters.push(childitem);
-                        }
-
-                    })
-                    $.each(item.Child.TeamLeaderUser, function (index: any, childteam) {
-                        if (select.Title == childteam.Title) {
-
-                            filters.push(childteam);
-                        }
-
-                    })
-
                 })
-
-
-
-
-
             })
-        }
 
-        setData(filters)
+        }
+        if (state.length > 0)
+            setData(CategoryItems)
 
 
     }
 
 
+    const LoadAllSiteTasks = function () {
 
+        var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+        var Counter = 0;
+
+
+        $.each(siteConfig, function (index: any, config: any) {
+            if (config.Title != 'SDC Sites') {
+                //     $.each($scope.filterItems, function (filter) {
+                //         if (config.Title == filter.Title) {
+                //             filter.DataLoad = true;
+                //         }
+                //         if (filter.childs != undefined && filter.childs.length > 0) {
+                //             angular.forEach(filter.childs, function (child) {
+                //                 if (config.Title == child.Title) {
+                //                     child.DataLoad = true;
+                //                 }
+                //             })
+                //         }
+                //     })
+                config.DataLoad = true;
+                var Response: any = []
+                var select = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientCategory/Id,ClientCategory/Title,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories";
+                if (config.Title == 'Master Tasks') {
+                    select = "ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent";
+                }
+                var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('" + config.listId + "')/items?$select=" + select + '&$' + query;
+                $.ajax({
+                    url: url,
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json; odata=verbose"
+                    },
+                    success: function (data) {
+                        Counter++;
+                        $.each(data.d.results, function (index: any, item: any) {
+                            item.isDrafted = false;
+                            item.flag = true;
+                            item.siteType = config.Title;
+                            item.childs = [];
+
+                            if (item.SharewebCategories.results != undefined) {
+                                if (item.SharewebCategories.results.length > 0) {
+                                    $.each(item.SharewebCategories.results, function (ind: any, value: any) {
+                                        if (value.Title.toLowerCase() == 'draft') {
+                                            item.isDrafted = true;
+                                        }
+                                    });
+                                }
+                            }
+                        })
+                        AllTasks = AllTasks.concat(data.d.results);
+                        AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
+                        // var result = $.grep(AllTasks, function (mPho, index) {
+                        //     {return mPho.isDrafted == false};
+                        // });
+                        if (Counter == 18) {
+                            $.each(AllTasks, function (index: any, result: any) {
+                                result.TeamLeaderUser = []
+                                result.TeamLeaderUserTitle = ''
+                                result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
+
+                                if (result.DueDate == 'Invalid date' || '') {
+                                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                                }
+                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                                if (result.Short_x0020_Description_x0020_On != undefined) {
+                                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                                }
+
+                                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                                    $.each(result.AssignedTo, function (index: any, Assig: any) {
+                                        if (Assig.Id != undefined) {
+                                            $.each(TaskUsers, function (index: any, users: any) {
+
+                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                                    users.ItemCover = users.Item_x0020_Cover;
+                                                    result.TeamLeaderUser.push(users);
+                                                    result.TeamLeaderUserTitle += users.Title + ';';
+                                                }
+
+                                            })
+                                        }
+                                    })
+                                }
+                                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
+                                    $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
+                                        if (Assig.Id != undefined) {
+                                            $.each(TaskUsers, function (index: any, users: any) {
+                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                                    users.ItemCover = users.Item_x0020_Cover;
+                                                    result.TeamLeaderUser.push(users);
+                                                    result.TeamLeaderUserTitle += users.Title + ';';
+                                                }
+
+                                            })
+                                        }
+                                    })
+                                }
+                                result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
+                                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                                        result.ClientCategory.push(catego);
+                                    })
+                                }
+                                result['Shareweb_x0020_ID'] = getSharewebId(result);
+                                if (result['Shareweb_x0020_ID'] == undefined) {
+                                    result['Shareweb_x0020_ID'] = "";
+                                }
+                                TasksItem.push(result);
+                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
+
+                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
+                                //     })
+                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
+                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                 clientcategory.ParentClientCategoryStructure = '';
+                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
+                                //             }
+                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
+                                //             }
+                                //         })
+                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
+                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
+                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                         clientcategory.ParentClientCategoryStructure = '';
+                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
+                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
+                                //                     }
+                                //                 })
+                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
+                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
+                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                                 clientcategory.ParentClientCategoryStructure = '';
+                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
+                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
+                                //                             }
+                                //                         })
+                                //                     })
+
+                                //                 }
+                                //             })
+
+                                //         }
+                                //     })
+                                // } else task.ClientCategory = [];
+
+                                // task['Item_x0020_Type'] = 'Task';
+                                // task['flag'] = true;
+                                // task['newTitle'] = task.Title;
+                                // task['childsLength'] = 0;
+                                // task['childs'] = [];
+                                // task['select'] = false;
+                                // task['isShifted'] = false;
+                                // task['mailcomments'] = '';
+                                // if (task['Body'] != "") {
+                                //     task['WordCount'] = countOfWord(task['Body']);
+                                // }
+                                // task.Short_x0020_Description_x0020_On = []
+                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
+                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
+                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
+                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
+                                // }
+                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
+                                //     $.each(item.Comments, function (index: any, com: any) {
+                                //         task['searchSortDescription'] = com.Title;
+                                //     })
+                                // })
+                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
+                                //     task.mailComment = parseJSON(task.Comments)
+                                // $.each(task.mailComment, function (index: any, item: any) {
+                                //     task['mailcomments'] += item.Description
+                                // })
+                                // task['PortfolioItemsId'] = undefined
+                                // if (task.Component.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
+                                // }
+                                // else if (task.Services.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
+                                // }
+                                // else if (task.Events.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
+                                // }
+                                // if (task.SharewebTaskType.Title == undefined) {
+                                //     task.SharewebTaskType.Title = 'Task';
+                                // }
+                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
+                                // if (task['Shareweb_x0020_ID'] == undefined) {
+                                //     task['Shareweb_x0020_ID'] = "";
+                                // }
+                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
+                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
+                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
+                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
+                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
+                                // if (task['DueDate'] != undefined) {
+                                //     task['MainDueDate'] = (task.DueDate);
+                                //     var dateE = (new Date(task.DueDate));
+                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
+                                // }
+                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
+                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
+                                // task.AssignedUser = [];
+                                // task.TeamMemberUser = [];
+                                // task.AllTeamName = '';
+                                // task['AdditionalTeam'] = [];
+                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
+                                // task.TeamLeaderUser = []
+                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
+                                // getTeamLeadersName(task.Team_x0020_Members, task);
+
+                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
+                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
+                                // TasksItem.push(task);
+                                // task['AdditionalTeamName'] = '';
+                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
+                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
+                                // });
+                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
+
+                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
+                                //     })
+                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
+                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                 clientcategory.ParentClientCategoryStructure = '';
+                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
+                                //             }
+                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
+                                //             }
+                                //         })
+                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
+                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
+                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                         clientcategory.ParentClientCategoryStructure = '';
+                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
+                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
+                                //                     }
+                                //                 })
+                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
+                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
+                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                                 clientcategory.ParentClientCategoryStructure = '';
+                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
+                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
+                                //                             }
+                                //                         })
+                                //                     })
+
+                                //                 }
+                                //             })
+
+                                //         }
+                                //     })
+                                // } else task.ClientCategory = [];
+
+                                // task['Item_x0020_Type'] = 'Task';
+                                // task['flag'] = true;
+                                // task['newTitle'] = task.Title;
+                                // task['childsLength'] = 0;
+                                // task['childs'] = [];
+                                // task['select'] = false;
+                                // task['isShifted'] = false;
+                                // task['mailcomments'] = '';
+                                // if (task['Body'] != "") {
+                                //     task['WordCount'] = countOfWord(task['Body']);
+                                // }
+                                // task.Short_x0020_Description_x0020_On = []
+                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
+                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
+                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
+                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
+                                // }
+                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
+                                //     $.each(item.Comments, function (index: any, com: any) {
+                                //         task['searchSortDescription'] = com.Title;
+                                //     })
+                                // })
+                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
+                                //     task.mailComment = parseJSON(task.Comments)
+                                // $.each(task.mailComment, function (index: any, item: any) {
+                                //     task['mailcomments'] += item.Description
+                                // })
+                                // task['PortfolioItemsId'] = undefined
+                                // if (task.Component.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
+                                // }
+                                // else if (task.Services.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
+                                // }
+                                // else if (task.Events.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
+                                // }
+                                // if (task.SharewebTaskType.Title == undefined) {
+                                //     task.SharewebTaskType.Title = 'Task';
+                                // }
+                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
+                                // if (task['Shareweb_x0020_ID'] == undefined) {
+                                //     task['Shareweb_x0020_ID'] = "";
+                                // }
+                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
+                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
+                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
+                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
+                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
+                                // if (task['DueDate'] != undefined) {
+                                //     task['MainDueDate'] = (task.DueDate);
+                                //     var dateE = (new Date(task.DueDate));
+                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
+                                // }
+                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
+                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
+                                // task.AssignedUser = [];
+                                // task.TeamMemberUser = [];
+                                // task.AllTeamName = '';
+                                // task['AdditionalTeam'] = [];
+                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
+                                // task.TeamLeaderUser = []
+                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
+                                // getTeamLeadersName(task.Team_x0020_Members, task);
+
+                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
+                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
+                                // TasksItem.push(task);
+                                // task['AdditionalTeamName'] = '';
+                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
+                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
+                                // });
+                            })
+                            TasksItem = TasksItem.concat(AllTasks);
+                            console.log(Response);
+                            $.each(TasksItem, function (index: any, task: any) {
+                                if (!isItemExistsNew(CopyTaskData, task)) {
+                                    CopyTaskData.push(task);
+                                }
+                            })
+                            filterDataBasedOnList();
+                            // $scope.Advancefilter();
+                            // $scope.Advancefilter();
+                        }
+                        // if (data.d.__next) {
+                        //     url = data.d.__next;
+                        // }
+                        // else setTask(Response);
+                        // if (data.d.__next) {
+                        //     url = data.d.__next;
+                        // }
+                        // else setTask(Response);
+                    },
+                    error: function (error) {
+                        Counter++;
+                    }
+
+                });
+
+
+
+            } else Counter++;
+
+        })
+
+    }
     const handleOpen2 = (item: any) => {
 
         item.show = item.show = item.show == true ? false : true;
@@ -147,7 +677,8 @@ function ComponentTable() {
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
 
-    }; const handleEditPopup = (item: any) => {
+    }; 
+    const handleEditPopup = (item: any) => {
 
         //    item.Isclick = item.Isclick = item.Isclick == true ? false : true;
         //    setData(data => ([...data]));
@@ -156,6 +687,15 @@ function ComponentTable() {
         //setData(data => ([...data]));
 
     };
+   
+    // const handleTimeOpen = (item: any) => {
+
+    //     item.show = item.show = item.show == true ? false : true;
+    //     setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+    //     // setData(data => ([...data]));
+
+    // };
+
     // const handleTimeOpen = (item: any) => {
 
     //     item.show = item.show = item.show == true ? false : true;
@@ -170,9 +710,6 @@ function ComponentTable() {
     }
     const setModalIsOpenToTrue = () => {
         setModalIsOpen(true)
-    }
-    const setModalIsTimeOpenToTrue = () => {
-        setTimeModalIsOpen(true)
     }
 
 
@@ -194,6 +731,10 @@ function ComponentTable() {
         setTable(copy)
 
     }
+    // let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
+    //     setSearch(e.target.value.toLowerCase());
+    //     var Title = titleName;
+    // };
     // let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
     //     setSearch(e.target.value.toLowerCase());
     //     var Title = titleName;
@@ -292,6 +833,8 @@ function ComponentTable() {
     var AllComponetsData: any = [];
     var TaskUsers: any = [];
     var RootComponentsData: any = [];
+    // var ComponentsData: any = [];
+    // var SubComponentsData: any = []; var FeatureData: any = [];
     var MetaData: any = []
     var showProgressBar = () => {
         $(' #SpfxProgressbar').show();
@@ -302,6 +845,7 @@ function ComponentTable() {
     }
     React.useEffect(() => {
 
+
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------
@@ -310,13 +854,18 @@ function ComponentTable() {
 
             $.ajax({
 
+
                 url: url,
+
 
                 method: "GET",
 
+
                 headers: {
 
+
                     "Accept": "application/json; odata=verbose"
+
 
                 },
 
@@ -325,6 +874,17 @@ function ComponentTable() {
                     Response = Response.concat(data.d.results);
                     TaskUsers = Response;
                     console.log(Response);
+                    setTaskUser(Response);
+                    //   if (data.d.__next) {
+
+                    //   url = data.d.__next;
+
+
+
+                    // }
+                    //  else setTaskUser(Response);
+
+
                     setTaskUser(Response);
                     //   if (data.d.__next) {
 
@@ -355,6 +915,8 @@ function ComponentTable() {
             var filterItems: any = [];
             // siteConfig =[];
             // var filterGroups: any = [];
+            // siteConfig =[];
+            // var filterGroups: any = [];
             filterGroups.push("Portfolio");
             filterGroups.push("Sites");
             filterGroups.push("Type");
@@ -369,6 +931,7 @@ function ComponentTable() {
                 },
                 success: function (data) {
                     MetaData = MetaData.concat(data.d.results);
+                    setMetadata(MetaData);
                     setMetadata(MetaData);
                     $.each(MetaData, function (item: any, newtest) {
                         if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
@@ -432,6 +995,8 @@ function ComponentTable() {
                             item.ID = item.Id = filterItem.Id;
                             item.Title = filterItem.Title;
                             item.Group = filterItem.TaxType;
+                            item.value = filterItem.Id;
+                            item.label = filterItem.Title;
                             item.TaxType = filterItem.TaxType;
                             if (item.Title == "Activities" || item.Title == "Workstream" || item.Title == "Task") {
                                 item.Selected = true;
@@ -457,7 +1022,7 @@ function ComponentTable() {
                         }
                     });
 
-                    filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true, "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true, "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true, "childs": [] });
+                    filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true, 'value': 1000, 'label': "Component", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true, 'value': 10000, 'label': "SubComponent", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true, 'value': 100000000, 'label': "Feature", "childs": [] });
                     $.each(filterItems, function (neww: any, item) {
                         if (item.TaxType == "Sites" && item.Title == 'SDC Sites' || item.Title == 'Tasks') {
                             item.Selected = true;
@@ -469,6 +1034,8 @@ function ComponentTable() {
                         item.childs = [];
                         $.each(items, function (child: any, childItem) {
                             if (childItem.UserGroupId != undefined && childItem.UserGroupId == item.Id) {
+                                childItem.value = childItem.Id;
+                                childItem.label = childItem.Title;
                                 item.childs.push(childItem);
                                 getChildsBasedonId(childItem, items);
                             }
@@ -478,6 +1045,8 @@ function ComponentTable() {
                         item.childs = [];
                         $.each(MetaData, function (news: any, childItem) {
                             if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
+                                childItem.value = childItem.Id;
+                                childItem.label = childItem.Title;
                                 item.childs.push(childItem);
                                 getChildsBasedOn(childItem, items);
                             }
@@ -501,6 +1070,10 @@ function ComponentTable() {
             spRequest.setRequestHeader("Accept", "application/json");
 
             spRequest.onreadystatechange = function () {
+                //  var RootComponentsData: any[] = [];
+                // var ComponentsData: any = [];
+                // var SubComponentsData: any = [];
+                // var FeatureData: any = [];
                 //  var RootComponentsData: any[] = [];
                 // var ComponentsData: any = [];
                 // var SubComponentsData: any = [];
@@ -813,14 +1386,16 @@ function ComponentTable() {
     }
     const getTeamLeadersName = function (Items: any, Item: any) {
         if (Items != undefined) {
-            $.each(Items.results, function (index: any, user: any) {
+           map(Items.results,  (index: any, user: any) => {
                 $.each(AllUsers, function (index: any, item: any) {
-                    if (user.Id == item.AssingedToUserId) {
-                        Item.AllTeamName = Item.AllTeamName + item.Title + ' ';
-                    }
-                });
+                    $.each(AllUsers, function (index: any, item: any) {
+                        if (user.Id == item.AssingedToUserId) {
+                            Item.AllTeamName = Item.AllTeamName + item.Title + ' ';
+                        }
+                    });
+                })
             })
-        }
+    }
     }
     var AllTasks: any = [];
     var CopyTaskData: any = [];
@@ -866,6 +1441,7 @@ function ComponentTable() {
     const bindData = function () {
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
+            result.TeamLeaderUserTitle = '';
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -886,6 +1462,7 @@ function ComponentTable() {
                             if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
+                                result.TeamLeaderUserTitle += users.Title + ';';
                             }
 
                         })
@@ -899,6 +1476,7 @@ function ComponentTable() {
                             if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
+                                result.TeamLeaderUserTitle += users.Title + ';';
                             }
 
                         })
@@ -990,6 +1568,10 @@ function ComponentTable() {
         //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
 
         //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
+        //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
+        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+
+        //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         var AllTaskData1: any = [];
         AllTaskData1 = AllTaskData1.concat(CopyTaskData);
         // CountOfAWTStructuredData();
@@ -1022,258 +1604,7 @@ function ComponentTable() {
         //  makeGroupingBasedOnLevel();
     }
     var TasksItem: any = [];
-    const LoadAllSiteTasks = function () {
 
-        var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
-        var Counter = 0;
-
-
-        $.each(siteConfig, function (index: any, config: any) {
-            if (config.Title != 'SDC Sites') {
-                //     $.each($scope.filterItems, function (filter) {
-                //         if (config.Title == filter.Title) {
-                //             filter.DataLoad = true;
-                //         }
-                //         if (filter.childs != undefined && filter.childs.length > 0) {
-                //             angular.forEach(filter.childs, function (child) {
-                //                 if (config.Title == child.Title) {
-                //                     child.DataLoad = true;
-                //                 }
-                //             })
-                //         }
-                //     })
-                config.DataLoad = true;
-                var Response: any = []
-                var select = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientCategory/Id,ClientCategory/Title,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories";
-                if (config.Title == 'Master Tasks') {
-                    select = "ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent";
-                }
-                var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('" + config.listId + "')/items?$select=" + select + '&$' + query;
-                $.ajax({
-                    url: url,
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json; odata=verbose"
-                    },
-                    success: function (data) {
-                        Counter++;
-                        $.each(data.d.results, function (index: any, item: any) {
-                            item.isDrafted = false;
-                            item.flag = true;
-                            item.siteType = config.Title;
-                            item.childs = [];
-
-                            if (item.SharewebCategories.results != undefined) {
-                                if (item.SharewebCategories.results.length > 0) {
-                                    $.each(item.SharewebCategories.results, function (ind: any, value: any) {
-                                        if (value.Title.toLowerCase() == 'draft') {
-                                            item.isDrafted = true;
-                                        }
-                                    });
-                                }
-                            }
-                        })
-                        AllTasks = AllTasks.concat(data.d.results);
-                        AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
-                        // var result = $.grep(AllTasks, function (mPho, index) {
-                        //     {return mPho.isDrafted == false};
-                        // });
-                        if (Counter == 18) {
-                            $.each(AllTasks, function (index: any, result: any) {
-                                result.TeamLeaderUser = []
-                                result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
-
-                                if (result.DueDate == 'Invalid date' || '') {
-                                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-                                }
-                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-                                if (result.Short_x0020_Description_x0020_On != undefined) {
-                                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-                                }
-
-                                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                                    $.each(result.AssignedTo, function (index: any, Assig: any) {
-                                        if (Assig.Id != undefined) {
-                                            $.each(TaskUsers, function (index: any, users: any) {
-
-                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                                    users.ItemCover = users.Item_x0020_Cover;
-                                                    result.TeamLeaderUser.push(users);
-                                                }
-
-                                            })
-                                        }
-                                    })
-                                }
-                                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
-                                    $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
-                                        if (Assig.Id != undefined) {
-                                            $.each(TaskUsers, function (index: any, users: any) {
-                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                                    users.ItemCover = users.Item_x0020_Cover;
-                                                    result.TeamLeaderUser.push(users);
-                                                }
-
-                                            })
-                                        }
-                                    })
-                                }
-                                result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
-                                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                                        result.ClientCategory.push(catego);
-                                    })
-                                }
-                                result['Shareweb_x0020_ID'] = getSharewebId(result);
-                                if (result['Shareweb_x0020_ID'] == undefined) {
-                                    result['Shareweb_x0020_ID'] = "";
-                                }
-                                TasksItem.push(result);
-                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
-
-                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
-                                //     })
-                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
-                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                 clientcategory.ParentClientCategoryStructure = '';
-                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
-                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
-                                //             }
-                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
-                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
-                                //             }
-                                //         })
-                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
-                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
-                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                         clientcategory.ParentClientCategoryStructure = '';
-                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
-                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
-                                //                     }
-                                //                 })
-                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
-                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
-                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                                 clientcategory.ParentClientCategoryStructure = '';
-                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
-                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
-                                //                             }
-                                //                         })
-                                //                     })
-
-                                //                 }
-                                //             })
-
-                                //         }
-                                //     })
-                                // } else task.ClientCategory = [];
-
-                                // task['Item_x0020_Type'] = 'Task';
-                                // task['flag'] = true;
-                                // task['newTitle'] = task.Title;
-                                // task['childsLength'] = 0;
-                                // task['childs'] = [];
-                                // task['select'] = false;
-                                // task['isShifted'] = false;
-                                // task['mailcomments'] = '';
-                                // if (task['Body'] != "") {
-                                //     task['WordCount'] = countOfWord(task['Body']);
-                                // }
-                                // task.Short_x0020_Description_x0020_On = []
-                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
-                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
-                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
-                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
-                                // }
-                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
-                                //     $.each(item.Comments, function (index: any, com: any) {
-                                //         task['searchSortDescription'] = com.Title;
-                                //     })
-                                // })
-                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
-                                //     task.mailComment = parseJSON(task.Comments)
-                                // $.each(task.mailComment, function (index: any, item: any) {
-                                //     task['mailcomments'] += item.Description
-                                // })
-                                // task['PortfolioItemsId'] = undefined
-                                // if (task.Component.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
-                                // }
-                                // else if (task.Services.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
-                                // }
-                                // else if (task.Events.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
-                                // }
-                                // if (task.SharewebTaskType.Title == undefined) {
-                                //     task.SharewebTaskType.Title = 'Task';
-                                // }
-                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
-                                // if (task['Shareweb_x0020_ID'] == undefined) {
-                                //     task['Shareweb_x0020_ID'] = "";
-                                // }
-                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
-                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
-                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
-                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
-                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
-                                // if (task['DueDate'] != undefined) {
-                                //     task['MainDueDate'] = (task.DueDate);
-                                //     var dateE = (new Date(task.DueDate));
-                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
-                                // }
-                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
-                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
-                                // task.AssignedUser = [];
-                                // task.TeamMemberUser = [];
-                                // task.AllTeamName = '';
-                                // task['AdditionalTeam'] = [];
-                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
-                                // task.TeamLeaderUser = []
-                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
-                                // getTeamLeadersName(task.Team_x0020_Members, task);
-
-                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
-                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
-                                // TasksItem.push(task);
-                                // task['AdditionalTeamName'] = '';
-                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
-                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
-                                // });
-                            })
-                            TasksItem = TasksItem.concat(AllTasks);
-                            console.log(Response);
-                            $.each(TasksItem, function (index: any, task: any) {
-                                if (!isItemExistsNew(CopyTaskData, task)) {
-                                    CopyTaskData.push(task);
-                                }
-                            })
-                            filterDataBasedOnList();
-                            // $scope.Advancefilter();
-                        }
-                        // if (data.d.__next) {
-                        //     url = data.d.__next;
-                        // }
-                        // else setTask(Response);
-                    },
-                    error: function (error) {
-                        Counter++;
-                    }
-
-                });
-
-
-
-            } else Counter++;
-
-        })
-
-    }
     function Buttonclick(e: any) {
         e.preventDefault();
         this.setState({ callchildcomponent: true });
@@ -1282,9 +1613,7 @@ function ComponentTable() {
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false)
     }
-    // const setModalTimmeIsOpenToFalse = () => {
-    //     setTimeModalIsOpen(false)
-    // }
+
     const closeModal = () => {
         setAddModalOpen(false)
     }
@@ -1308,18 +1637,7 @@ function ComponentTable() {
 
     }
 
-    // const openEditPopup = () => {
-    //     setEditpopup(true)
-    // }
-    // const EditpopupClose = () => {
-    //     setEditpopup(false)
-    // }
-    // const openexpendTime = () => {
-    //     setcollapseItem(true)
-    // }
-    // const collapseTime = () => {
-    //     setcollapseItem(false)
-    // }
+
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1351,7 +1669,7 @@ function ComponentTable() {
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
     var AllTimeSpentDetails: any = [];
-    var isItemExists = function (arr: any, Id: any) {
+    const isItemExists = function (arr: any, Id: any) {
         var isExists = false;
         $.each(arr, function (index: any, item: any) {
             if (item.Id == Id) {
@@ -1385,51 +1703,6 @@ function ComponentTable() {
         setTitle(e.target.value)
 
     };
-    // function AddItem() {
-    //     var MyData = JSON.stringify({
-    //         '__metadata': {
-    //             'type': 'SP.Data.Master_x0020_TasksListItem'
-    //         },
-    //         "Title": Title,
-    //         "Item_x0020_Type": itemType,
-    //         "Portfolio_x0020_Type": 'Component'
-    //     })
-    //     $.ajax({
-    //         url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/contextinfo",
-    //         type: "POST",
-    //         headers: {
-    //             "Accept": "application/json;odata=verbose"
-    //         },
-    //         success: function (contextData: any) {
-    //             $.ajax({
-    //                 url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items",
-    //                 method: "POST",
-    //                 contentType: "application/json;odata=verbose",
-    //                 data: MyData,
-    //                 async: false,
-    //                 headers: {
-    //                     "Accept": "application/json;odata=verbose",
-    //                     "X-RequestDigest": contextData.d.GetContextWebInformation.FormDigestValue,
-    //                     "IF-MATCH": "*",
-    //                     "X-HTTP-Method": "POST"
-    //                 },
-    //                 success: function (data: any) {
-    //                     alert('success');
-    //                     setModalIsOpenToFalse();
-    //                     window.location.reload();
-    //                 },
-    //                 error: function (jqXHR: any, textStatus: any, errorThrown: any) {
-    //                     alert('error');
-    //                 }
-    //             });
-    //         },
-    //         error: function (jqXHR: any, textStatus: any, errorThrown: any) {
-    //             alert('error');
-    //         }
-    //     });
-
-
-    // }
     const Call = React.useCallback((item1) => {
         setIsComponent(false);
     }, []);
@@ -1443,11 +1716,6 @@ function ComponentTable() {
         setSharewebComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    // React.useEffect(()=>{
-    //     eventBus.on("Successful", (data:any) =>
-    //     setPassData({data:selected2)
-    //   );
-    // },[])
     function AddItem() {
     }
     return (
@@ -1611,14 +1879,27 @@ function ComponentTable() {
                         <div className="togglebox">
                             <label className="toggler full_width mb-10">
                                 <span className=" siteColor">
-                                    <img className="hreflink wid22" ng-show="pagesType=='componentportfolio'"
+                                    <img className="hreflink wid22"
                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" />
                                     SmartSearch – Filters
                                 </span>
                                 <span className="ml-20 siteColor">
-                                    <span ng-repeat="obj in ShowSelectdSmartfilter">Sites<span
-                                        className="font-normal"> (14)</span><span
-                                            ng-if="$index != (ShowSelectdSmartfilter.length -1)"> | </span> </span>
+                                    {ShowSelectdSmartfilter != undefined && ShowSelectdSmartfilter.length > 0 &&
+
+                                        <>
+                                            {ShowSelectdSmartfilter.map(function (obj, index) {
+                                                return (
+                                                    <>
+                                                        {obj.Title}
+                                                        <span className="font-normal">{obj.selectTitle}</span>
+                                                        {index != ShowSelectdSmartfilter.length - 1 && <span> | </span>}
+                                                    </>
+                                                )
+                                            })
+                                            }
+                                        </>
+                                    }
+
                                 </span>
                                 <span className="pull-right siteColor">
                                     <img className="icon-sites-img  wid22 ml5" ng-show="pagesType=='componentportfolio'"
@@ -1647,95 +1928,99 @@ function ComponentTable() {
                                                             </fieldset>
                                                             {filterItems.map(function (ItemType, index) {
                                                                 return (
+
                                                                     <>
-                                                                        <div style={{ display: "block" }}> {ItemType.Group == item &&
-                                                                            <>
-                                                                                <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
-                                                                                    {ItemType.childs.length > 0 &&
-                                                                                        <a className='hreflink'
-                                                                                            title="Tap to expand the childs">
-                                                                                            {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
+                                                                        {ItemType.Group == item &&
+                                                                            <div style={{ display: "block" }}>
+                                                                                <>
+                                                                                    <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
+                                                                                        {ItemType.childs.length > 0 &&
+                                                                                            <a className='hreflink'
+                                                                                                title="Tap to expand the childs">
+                                                                                                {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                    : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
 
-                                                                                        </a>}
-                                                                                </span>
-                                                                                {ItemType.TaxType != 'Status' &&
-                                                                                    <span className="ml-1">
+                                                                                            </a>}
+                                                                                    </span>
+                                                                                    {ItemType.TaxType != 'Status' &&
+                                                                                        <span className="ml-1">
 
 
-                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                            <input type="checkbox" checked={ItemType.Selected == true} className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
 
-                                                                                        <span className="ml-2">
-                                                                                            {ItemType.Title}
+                                                                                            <span className="ml-2">
+                                                                                                {ItemType.Title}
+
+                                                                                            </span>
 
                                                                                         </span>
-
-                                                                                    </span>
-                                                                                }
-                                                                                {ItemType.TaxType == 'Status' &&
-                                                                                    <span className="ml-2">
-
-
-                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    }
+                                                                                    {ItemType.TaxType == 'Status' &&
                                                                                         <span className="ml-2">
-                                                                                            {ItemType.Title}
+
+
+                                                                                            <input type="checkbox" checked={ItemType.Selected == true} className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                            <span className="ml-2">
+                                                                                                {ItemType.Title}
+
+                                                                                            </span>
 
                                                                                         </span>
+                                                                                    }
+                                                                                    <ul id="id_{ItemType.Id}"
+                                                                                        className="subfilter width-85">
+                                                                                        <span>
+                                                                                            {ItemType.show && (
+                                                                                                <>
+                                                                                                    {ItemType.childs.map(function (child1: any, index: any) {
+                                                                                                        return (
+                                                                                                            <>
+                                                                                                                <div style={{ display: "block" }}>
+                                                                                                                    {child1.childs.length > 0 && !child1.expanded &&
+                                                                                                                        <span className="plus-icon hreflink"
+                                                                                                                            ng-click="loadMoreFilters(child1);">
+                                                                                                                            <img
+                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                                                                                                        </span>
+                                                                                                                    }
+                                                                                                                    {child1.childs.length > 0 && child1.expanded &&
+                                                                                                                        <span className="plus-icon hreflink"
+                                                                                                                            ng-click="loadMoreFilters(child1);">
+                                                                                                                            <img
+                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                        </span>
+                                                                                                                    }
+                                                                                                                    <input type="checkbox" checked={child1.Selected == true} className="icon-input mr0" ng-model="child1.Selected"
+                                                                                                                        onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
 
-                                                                                    </span>
-                                                                                }
-                                                                                <ul id="id_{ItemType.Id}"
-                                                                                    className="subfilter width-85">
-                                                                                    <span>
-                                                                                        {ItemType.show && (
-                                                                                            <>
-                                                                                                {ItemType.childs.map(function (child1: any, index: any) {
-                                                                                                    return (
-                                                                                                        <>
-                                                                                                            <div style={{ display: "block" }}>
-                                                                                                                {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                                    <span className="plus-icon hreflink"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                {child1.childs.length > 0 && child1.expanded &&
-                                                                                                                    <span className="plus-icon hreflink"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                <input type="checkbox" className="icon-input mr0" ng-model="child1.Selected"
-                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
+                                                                                                                    <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
+                                                                                                                    >
+                                                                                                                        {child1.childs.map(function (child2: any) {
+                                                                                                                            <li>
+                                                                                                                                <input type="checkbox" checked={child1.Selected == true}
 
-                                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
-                                                                                                                >
-                                                                                                                    {child1.childs.map(function (child2: any) {
-                                                                                                                        <li>
-                                                                                                                            <input type="checkbox"
+                                                                                                                                    ng-model="child2.Selected"
+                                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
+                                                                                                                            </li>
+                                                                                                                        })}
+                                                                                                                    </ul>
+                                                                                                                </div>
+                                                                                                            </>
+                                                                                                        )
 
-                                                                                                                                ng-model="child2.Selected"
-                                                                                                                                onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
-                                                                                                                        </li>
-                                                                                                                    })}
-                                                                                                                </ul>
-                                                                                                            </div>
-                                                                                                        </>
-                                                                                                    )
+                                                                                                    })}
+                                                                                                </>
+                                                                                            )}
+                                                                                        </span>
+                                                                                    </ul>
 
-                                                                                                })}
-                                                                                            </>
-                                                                                        )}
-                                                                                    </span>
-                                                                                </ul>
+                                                                                </>
 
-                                                                            </>
 
+                                                                            </div>
                                                                         }
-                                                                        </div>
                                                                     </>
+
                                                                 )
                                                             })}
 
@@ -1744,7 +2029,17 @@ function ComponentTable() {
                                                     </>
                                                 )
                                             })}
+                                            {/* {filterItems.length >0 && <CheckboxTree
+                                                nodes={filterItems}
+                                                checked={checked}
+                                                // expanded={expanded}
+                                                // onCheck={checked => setchecked({ checked })}
+                                                // onExpand={expanded => this.setState({ expanded })}
+                                                nativeCheckboxes={true}
+                                                showNodeIcon={false}
 
+                                            />
+                                           } */}
 
                                         </tr>
                                     </table>
@@ -1766,9 +2061,9 @@ function ComponentTable() {
                         </div>
                     </div>
                 </section>
-            </div>
+            </div >
 
-            <section className="TableContentSection">
+            <section className="TableContentSection taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container pad0">
@@ -1981,11 +2276,11 @@ function ComponentTable() {
                                                                                     <td style={{ width: "20%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
-                                                                                        >{item.Title}
+                                                                                        ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                                        >{item.Title}
+                                                                                        ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
                                                                                             <span>({item.childs.length})</span>
@@ -2365,7 +2660,7 @@ function ComponentTable() {
                 </div></section>
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-        </div>
+        </div >
     );
 }
 export default ComponentTable;
@@ -2377,4 +2672,7 @@ function RetrieveSPData() {
 function openModal(): React.MouseEventHandler<HTMLAnchorElement> {
     throw new Error("Function not implemented.");
 }
+
+
+
 
