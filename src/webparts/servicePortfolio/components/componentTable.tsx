@@ -14,7 +14,9 @@ import '../../cssFolder/site_color.scss'
 import { map } from 'jquery';
 import { concat } from 'lodash';
 import EditInstituton from '../../EditPopupFiles/EditComponent';
-import DisplayTimeEntry from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+import { any, number } from 'prop-types';
+import CheckboxTree from 'react-checkbox-tree';
 
 
 
@@ -25,37 +27,97 @@ function ComponentTable() {
 
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
     const [maidataBackup, setmaidataBackup] = React.useState([])
-    const [show, setShow] = React.useState(false);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [data, setData] = React.useState([])
     const [Title, setTitle] = React.useState()
     const [itemType, setitemType] = React.useState()
     const [table, setTable] = React.useState(data);
+    const [AllUsers, setTaskUser] = React.useState([])
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
     const [state, setState] = React.useState([]);
     const [filterGroups, setFilterGroups] = React.useState([])
     const [filterItems, setfilterItems] = React.useState([])
+    const [Editdata, setEditdata] = React.useState([]);
+    const [AllMetadata, setMetadata] = React.useState([])
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([])
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
+    const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
+    const [checked, setchecked] = React.useState([]);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
+    var IsExitSmartfilter = function (array: any, Item: any) {
+        var isExists = false;
+        var count = 0;
+        Item.MultipleTitle = '';
+        map(array, (item) => {
+            if (item.TaxType != undefined && Item.Title != undefined && item.TaxType == Item.Title) {
+                isExists = true;
+                count++;
+                Item.MultipleTitle += item.Title + ', ';
+                return false;
+            }
+        });
+        if (Item.MultipleTitle != "")
+            Item.MultipleTitle = Item.MultipleTitle.substring(0, Item.MultipleTitle.length - 2);
+        Item.count = count;
+        return isExists;
+    }
+
+
+    var issmartExists = function (array: any, title: any) {
+        var isExists = false;
+        map(array, (item) => {
+            if (item.Title == title.Title) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
+    }
     const SingleLookDatatest = (e: any, item: any, value: any) => {
         const { checked } = e.target;
         if (checked) {
             state.push(item);
+            if (item.childs != undefined && item.childs.length > 0) {
+                map(item.childs, (child) => {
+                    state.push(child);
+                })
+            }
 
         }
         else {
             $.each(state, function (index: any, newite: any) {
-                if (newite.Id == item.Id) {
+                if (newite.Title == item.Title) {
                     state.splice(index, 1);
                 }
+                if (item.childs != undefined && item.childs.length > 0) {
+                    for (var i: number = 0; item.childs > 0; i++) {
+                        state.splice(i, 1);
+                        --i;
+                    }
+                }
+
             })
         }
-        setState(state)
+        var ArrayItem: any = []
+        if (state != undefined) {
+            map(state, (smart) => {
+                var smartfilterItems: any = {};
+                smartfilterItems.Title = smart.TaxType;
+                if (IsExitSmartfilter(state, smartfilterItems)) {
+                    if (smartfilterItems.count >= 3) {
+                        smartfilterItems.selectTitle = ' : (' + smartfilterItems.count + ')';
+                    } else smartfilterItems.selectTitle = ' : ' + smartfilterItems.MultipleTitle;
+                }
+                if (!issmartExists(ArrayItem, smartfilterItems))
+                    ArrayItem.push(smartfilterItems);
+            })
+        }
+        setShowSelectdSmartfilter(ShowSelectdSmartfilter => ([...ArrayItem]));
+        // setState(state)
     }
     const Clearitem = () => {
         // setData(maini...[maidataBackup])
@@ -76,6 +138,14 @@ function ComponentTable() {
     const Updateitem = () => {
         var filters: any[] = []
         var CategoryItems: any = [];
+        var TeamUsers: any = [];
+        var IsTeamUsers: any = false;
+        var PriorityItems: any = [];
+        var isPrioritySelected: any = false;
+        var ResponsibilityItems: any = [];
+        var isResponsibilitySelected: any = false;
+        var PortfolioItems: any = [];
+        var isPortfolioSelected = false;
         if (state.length == 0) {
             setData(maidataBackup)
         }
@@ -85,6 +155,29 @@ function ComponentTable() {
                 map(state, (select) => {
                     if (select.Selected)
                         switch (select.TaxType) {
+                            case 'Portfolio':
+                                if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                    item.flag = true
+                                    PortfolioItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.Item_x0020_Type != undefined && child.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                            child.flag = true
+                                            PortfolioItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.Item_x0020_Type != undefined && subchild.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                                    child.flag = true
+                                                    PortfolioItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
                             case 'Type':
                                 if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
                                     item.flag = true
@@ -108,22 +201,22 @@ function ComponentTable() {
                                 }
                                 break;
 
-                            case 'Sites':
-                                if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                            case 'Priority':
+                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
                                     item.flag = true
-                                    CategoryItems.push(item);
+                                    PriorityItems.push(item);
                                 }
                                 if (item.childs != undefined && item.childs.length > 0) {
                                     map(item.childs, (child) => {
-                                        if (child.Item_x0020_Type != undefined && child.Item_x0020_Type == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
                                             child.flag = true
-                                            CategoryItems.push(item);
+                                            PriorityItems.push(item);
                                         }
                                         if (child.childs != undefined && child.childs.length > 0) {
                                             map(child.childs, (subchild) => {
-                                                if (subchild.Item_x0020_Type != undefined && subchild.Item_x0020_Type == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
                                                     child.flag = true
-                                                    CategoryItems.push(item);
+                                                    PriorityItems.push(item);
                                                 }
                                             })
                                         }
@@ -131,22 +224,45 @@ function ComponentTable() {
                                 }
                                 break;
 
-                            case 'Portfolio':
-                                if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                            case 'Sites':
+                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
                                     item.flag = true
-                                    CategoryItems.push(item);
+                                    PriorityItems.push(item);
                                 }
                                 if (item.childs != undefined && item.childs.length > 0) {
                                     map(item.childs, (child) => {
-                                        if (child.SharewebTaskType != undefined && child.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
                                             child.flag = true
-                                            CategoryItems.push(item);
+                                            PriorityItems.push(item);
                                         }
                                         if (child.childs != undefined && child.childs.length > 0) {
                                             map(child.childs, (subchild) => {
-                                                if (subchild.SharewebTaskType != undefined && subchild.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
                                                     child.flag = true
-                                                    CategoryItems.push(item);
+                                                    PriorityItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+                            case 'Team Members':
+                                if (item.TeamLeaderUserTitle != undefined && item.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title) > -1 && !isItemExists(ResponsibilityItems, item.Id)) {
+                                    item.flag = true
+                                    ResponsibilityItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.TeamLeaderUserTitle != undefined && child.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title && !isItemExists(ResponsibilityItems, item.Id))) {
+                                            child.flag = true
+                                            ResponsibilityItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.TeamLeaderUserTitle != undefined && subchild.TeamLeaderUserTitle == select.Title && !isItemExists(ResponsibilityItems, item.Id)) {
+                                                    child.flag = true
+                                                    ResponsibilityItems.push(item);
                                                 }
                                             })
                                         }
@@ -156,30 +272,6 @@ function ComponentTable() {
 
 
                         }
-
-                    // if (item.Id == select.Id) {
-                    //     filters.push(item);
-                    // }
-                    // map(item.TeamLeaderUser, (team) => {
-                    //     if (select.Title == team.Title) {
-
-                    //         filters.push(item);
-                    //     }
-
-                    // })
-                    // map(item.Child, (childitem) => {
-                    //     if (childitem.Id == select.Id) {
-                    //         filters.push(childitem);
-                    //     }
-
-                    // })
-                    // map(item.Child.TeamLeaderUser, (childteam) => {
-                    //     if (select.Title == childteam.Title) {
-
-                    //         filters.push(childteam);
-                    //     }
-
-                    // })
                 })
             })
 
@@ -204,10 +296,29 @@ function ComponentTable() {
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
 
+    }; const handleEditPopup = (item: any) => {
+
+        //    item.Isclick = item.Isclick = item.Isclick == true ? false : true;
+        //    setData(data => ([...data]));
+
+        // item.Isclick = item.Isclick = item.Isclick == true ? false : true;
+        //setData(data => ([...data]));
+
     };
+    // const handleTimeOpen = (item: any) => {
+
+    //     item.show = item.show = item.show == true ? false : true;
+    //     setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+    //     // setData(data => ([...data]));
+
+    // };
+
 
     const addModal = () => {
         setAddModalOpen(true)
+    }
+    const setModalIsOpenToTrue = () => {
+        setModalIsOpen(true)
     }
 
 
@@ -230,7 +341,10 @@ function ComponentTable() {
         setTable(copy)
 
     }
-
+    // let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
+    //     setSearch(e.target.value.toLowerCase());
+    //     var Title = titleName;
+    // };
     var stringToArray = function (input: any) {
         if (input) {
             return input.match(/\S+/g);
@@ -326,8 +440,7 @@ function ComponentTable() {
     var TaskUsers: any = [];
     var RootComponentsData: any = [];
     var ComponentsData: any = [];
-    var SubComponentsData: any = [];
-    var FeatureData: any = [];
+    var SubComponentsData: any = []; var FeatureData: any = [];
     var MetaData: any = []
     var showProgressBar = () => {
         $(' #SpfxProgressbar').show();
@@ -337,6 +450,7 @@ function ComponentTable() {
         $(' #SpfxProgressbar').hide();
     }
     React.useEffect(() => {
+
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------
@@ -344,10 +458,15 @@ function ComponentTable() {
             var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$top=1000";
 
             $.ajax({
+
                 url: url,
+
                 method: "GET",
+
                 headers: {
+
                     "Accept": "application/json; odata=verbose"
+
                 },
 
                 success: function (data) {
@@ -355,6 +474,17 @@ function ComponentTable() {
                     Response = Response.concat(data.d.results);
                     TaskUsers = Response;
                     console.log(Response);
+                    setTaskUser(Response);
+                    //   if (data.d.__next) {
+
+                    //   url = data.d.__next;
+
+
+
+                    // }
+                    //  else setTaskUser(Response);
+
+
                 },
 
                 error: function (error) {
@@ -372,6 +502,8 @@ function ComponentTable() {
 
             var metadatItem: any = []
             var filterItems: any = [];
+            // siteConfig =[];
+            // var filterGroups: any = [];
             filterGroups.push("Portfolio");
             filterGroups.push("Sites");
             filterGroups.push("Type");
@@ -386,6 +518,7 @@ function ComponentTable() {
                 },
                 success: function (data) {
                     MetaData = MetaData.concat(data.d.results);
+                    setMetadata(MetaData);
                     $.each(MetaData, function (item: any, newtest) {
                         if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
                             TaxonomyItems.push(newtest);
@@ -448,6 +581,8 @@ function ComponentTable() {
                             item.ID = item.Id = filterItem.Id;
                             item.Title = filterItem.Title;
                             item.Group = filterItem.TaxType;
+                            item.value = filterItem.Id;
+                            item.label = filterItem.Title;
                             item.TaxType = filterItem.TaxType;
                             if (item.Title == "Activities" || item.Title == "Workstream" || item.Title == "Task") {
                                 item.Selected = true;
@@ -473,7 +608,7 @@ function ComponentTable() {
                         }
                     });
 
-                    filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true, "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true, "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true, "childs": [] });
+                    filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true,'value':1000, 'label':"Component",  "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true,'value':10000, 'label':"SubComponent", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true,'value':100000000, 'label':"Feature", "childs": [] });
                     $.each(filterItems, function (neww: any, item) {
                         if (item.TaxType == "Sites" && item.Title == 'SDC Sites' || item.Title == 'Tasks') {
                             item.Selected = true;
@@ -485,6 +620,8 @@ function ComponentTable() {
                         item.childs = [];
                         $.each(items, function (child: any, childItem) {
                             if (childItem.UserGroupId != undefined && childItem.UserGroupId == item.Id) {
+                                childItem.value = childItem.Id;
+                                childItem.label = childItem.Title;
                                 item.childs.push(childItem);
                                 getChildsBasedonId(childItem, items);
                             }
@@ -494,6 +631,8 @@ function ComponentTable() {
                         item.childs = [];
                         $.each(MetaData, function (news: any, childItem) {
                             if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
+                                childItem.value = childItem.Id;
+                                childItem.label = childItem.Title;
                                 item.childs.push(childItem);
                                 getChildsBasedOn(childItem, items);
                             }
@@ -517,6 +656,10 @@ function ComponentTable() {
             spRequest.setRequestHeader("Accept", "application/json");
 
             spRequest.onreadystatechange = function () {
+                //  var RootComponentsData: any[] = [];
+                // var ComponentsData: any = [];
+                // var SubComponentsData: any = [];
+                // var FeatureData: any = [];
                 var maiArrayBackup: any = []
 
                 if (spRequest.readyState === 4 && spRequest.status === 200) {
@@ -826,7 +969,7 @@ function ComponentTable() {
     const getTeamLeadersName = function (Items: any, Item: any) {
         if (Items != undefined) {
             $.each(Items.results, function (index: any, user: any) {
-                $.each(TaskUsers, function (index: any, item: any) {
+                $.each(AllUsers, function (index: any, item: any) {
                     if (user.Id == item.AssingedToUserId) {
                         Item.AllTeamName = Item.AllTeamName + item.Title + ' ';
                     }
@@ -878,6 +1021,7 @@ function ComponentTable() {
     const bindData = function () {
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
+            result.TeamLeaderUserTitle = '';
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -898,6 +1042,7 @@ function ComponentTable() {
                             if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
+                                result.TeamLeaderUserTitle += users.Title + ';';
                             }
 
                         })
@@ -911,6 +1056,7 @@ function ComponentTable() {
                             if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
+                                result.TeamLeaderUserTitle += users.Title + ';';
                             }
 
                         })
@@ -998,6 +1144,10 @@ function ComponentTable() {
         bindData();
     }
     const filterDataBasedOnList = function () {
+        //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
+        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+
+        //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         var AllTaskData1: any = [];
         AllTaskData1 = AllTaskData1.concat(CopyTaskData);
         // CountOfAWTStructuredData();
@@ -1089,6 +1239,7 @@ function ComponentTable() {
                         if (Counter == 18) {
                             $.each(AllTasks, function (index: any, result: any) {
                                 result.TeamLeaderUser = []
+                                result.TeamLeaderUserTitle = ''
                                 result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
 
                                 if (result.DueDate == 'Invalid date' || '') {
@@ -1108,6 +1259,7 @@ function ComponentTable() {
                                                 if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                                     users.ItemCover = users.Item_x0020_Cover;
                                                     result.TeamLeaderUser.push(users);
+                                                    result.TeamLeaderUserTitle += users.Title + ';';
                                                 }
 
                                             })
@@ -1121,6 +1273,7 @@ function ComponentTable() {
                                                 if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                                     users.ItemCover = users.Item_x0020_Cover;
                                                     result.TeamLeaderUser.push(users);
+                                                    result.TeamLeaderUserTitle += users.Title + ';';
                                                 }
 
                                             })
@@ -1138,6 +1291,121 @@ function ComponentTable() {
                                     result['Shareweb_x0020_ID'] = "";
                                 }
                                 TasksItem.push(result);
+                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
+
+                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
+                                //     })
+                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
+                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                 clientcategory.ParentClientCategoryStructure = '';
+                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
+                                //             }
+                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
+                                //             }
+                                //         })
+                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
+                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
+                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                         clientcategory.ParentClientCategoryStructure = '';
+                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
+                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
+                                //                     }
+                                //                 })
+                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
+                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
+                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                                 clientcategory.ParentClientCategoryStructure = '';
+                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
+                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
+                                //                             }
+                                //                         })
+                                //                     })
+
+                                //                 }
+                                //             })
+
+                                //         }
+                                //     })
+                                // } else task.ClientCategory = [];
+
+                                // task['Item_x0020_Type'] = 'Task';
+                                // task['flag'] = true;
+                                // task['newTitle'] = task.Title;
+                                // task['childsLength'] = 0;
+                                // task['childs'] = [];
+                                // task['select'] = false;
+                                // task['isShifted'] = false;
+                                // task['mailcomments'] = '';
+                                // if (task['Body'] != "") {
+                                //     task['WordCount'] = countOfWord(task['Body']);
+                                // }
+                                // task.Short_x0020_Description_x0020_On = []
+                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
+                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
+                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
+                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
+                                // }
+                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
+                                //     $.each(item.Comments, function (index: any, com: any) {
+                                //         task['searchSortDescription'] = com.Title;
+                                //     })
+                                // })
+                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
+                                //     task.mailComment = parseJSON(task.Comments)
+                                // $.each(task.mailComment, function (index: any, item: any) {
+                                //     task['mailcomments'] += item.Description
+                                // })
+                                // task['PortfolioItemsId'] = undefined
+                                // if (task.Component.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
+                                // }
+                                // else if (task.Services.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
+                                // }
+                                // else if (task.Events.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
+                                // }
+                                // if (task.SharewebTaskType.Title == undefined) {
+                                //     task.SharewebTaskType.Title = 'Task';
+                                // }
+                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
+                                // if (task['Shareweb_x0020_ID'] == undefined) {
+                                //     task['Shareweb_x0020_ID'] = "";
+                                // }
+                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
+                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
+                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
+                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
+                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
+                                // if (task['DueDate'] != undefined) {
+                                //     task['MainDueDate'] = (task.DueDate);
+                                //     var dateE = (new Date(task.DueDate));
+                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
+                                // }
+                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
+                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
+                                // task.AssignedUser = [];
+                                // task.TeamMemberUser = [];
+                                // task.AllTeamName = '';
+                                // task['AdditionalTeam'] = [];
+                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
+                                // task.TeamLeaderUser = []
+                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
+                                // getTeamLeadersName(task.Team_x0020_Members, task);
+
+                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
+                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
+                                // TasksItem.push(task);
+                                // task['AdditionalTeamName'] = '';
+                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
+                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
+                                // });
                             })
                             TasksItem = TasksItem.concat(AllTasks);
                             console.log(Response);
@@ -1147,7 +1415,12 @@ function ComponentTable() {
                                 }
                             })
                             filterDataBasedOnList();
+                            // $scope.Advancefilter();
                         }
+                        // if (data.d.__next) {
+                        //     url = data.d.__next;
+                        // }
+                        // else setTask(Response);
                     },
                     error: function (error) {
                         Counter++;
@@ -1170,6 +1443,7 @@ function ComponentTable() {
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false)
     }
+
     const closeModal = () => {
         setAddModalOpen(false)
     }
@@ -1192,6 +1466,8 @@ function ComponentTable() {
         setSearch('')
 
     }
+
+
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1438,9 +1714,22 @@ function ComponentTable() {
                                     SmartSearch – Filters
                                 </span>
                                 <span className="ml-20 siteColor">
-                                    <span ng-repeat="obj in ShowSelectdSmartfilter">Sites<span
-                                        className="font-normal"> (14)</span><span
-                                            ng-if="$index != (ShowSelectdSmartfilter.length -1)"> | </span> </span>
+                                    {ShowSelectdSmartfilter != undefined && ShowSelectdSmartfilter.length > 0 &&
+
+                                        <>
+                                            {ShowSelectdSmartfilter.map(function (obj, index) {
+                                                return (
+                                                    <>
+                                                        {obj.Title}
+                                                        <span className="font-normal">{obj.selectTitle}</span>
+                                                        {index != ShowSelectdSmartfilter.length - 1 && <span> | </span>}
+                                                    </>
+                                                )
+                                            })
+                                            }
+                                        </>
+                                    }
+
                                 </span>
                                 <span className="pull-right siteColor">
                                     <img className="icon-sites-img  wid22 ml5" ng-show="pagesType=='componentportfolio'"
@@ -1487,7 +1776,7 @@ function ComponentTable() {
                                                                                         <span className="ml-1">
 
 
-                                                                                            <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                            <input type="checkbox" checked={ItemType.Selected == true} className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
 
                                                                                             <span className="ml-2">
                                                                                                 {ItemType.Title}
@@ -1500,7 +1789,7 @@ function ComponentTable() {
                                                                                         <span className="ml-2">
 
 
-                                                                                            <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                            <input type="checkbox" checked={ItemType.Selected == true} className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
                                                                                             <span className="ml-2">
                                                                                                 {ItemType.Title}
 
@@ -1531,14 +1820,14 @@ function ComponentTable() {
                                                                                                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                                                         </span>
                                                                                                                     }
-                                                                                                                    <input type="checkbox" className="icon-input mr0" ng-model="child1.Selected"
+                                                                                                                    <input type="checkbox" checked={child1.Selected == true}  className="icon-input mr0" ng-model="child1.Selected"
                                                                                                                         onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
 
                                                                                                                     <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
                                                                                                                     >
                                                                                                                         {child1.childs.map(function (child2: any) {
                                                                                                                             <li>
-                                                                                                                                <input type="checkbox"
+                                                                                                                                <input type="checkbox"  checked={child1.Selected == true}  
 
                                                                                                                                     ng-model="child2.Selected"
                                                                                                                                     onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
@@ -1570,7 +1859,17 @@ function ComponentTable() {
                                                     </>
                                                 )
                                             })}
+                                           {/* {filterItems.length >0 && <CheckboxTree
+                                                nodes={filterItems}
+                                                checked={checked}
+                                                // expanded={expanded}
+                                                // onCheck={checked => setchecked({ checked })}
+                                                // onExpand={expanded => this.setState({ expanded })}
+                                                nativeCheckboxes={true}
+                                                showNodeIcon={false}
 
+                                            />
+                                           } */}
 
                                         </tr>
                                     </table>
@@ -1592,7 +1891,7 @@ function ComponentTable() {
                         </div>
                     </div>
                 </section>
-            </div>
+            </div >
 
             <section className="TableContentSection taskprofilepagegreen">
                 <div className="container-fluid">
@@ -2190,8 +2489,8 @@ function ComponentTable() {
                         </div></section>
                 </div></section>
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
-            {IsTimeEntry && <DisplayTimeEntry props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></DisplayTimeEntry>}
-        </div>
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
+        </div >
     );
 }
 export default ComponentTable;

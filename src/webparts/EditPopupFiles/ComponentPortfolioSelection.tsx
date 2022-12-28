@@ -177,7 +177,7 @@ const ComponentPortPolioPopup = (item: any) => {
     return (
         <Modal
             isOpen={modalIsOpen}
-            onDismiss={setModalIsOpenToFalse}
+            // onDismiss={setModalIsOpenToFalse}
             isBlocking={false}>
             <div className="modal-dailog modal-lg">
                 <div className="modal-content">

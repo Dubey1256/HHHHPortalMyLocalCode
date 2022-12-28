@@ -8,38 +8,39 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'TaskUserManagementWebPartStrings';
-import TaskUserManagement from './components/TaskUserManagement';
-import { ITaskUserManagementProps } from './components/ITaskUserManagementProps';
+import * as strings from 'CategoriesWeeklyMultipleReportWebPartStrings';
+import CategoriesWeeklyMultipleReport from './components/CategoriesWeeklyMultipleReport';
+import { ICategoriesWeeklyMultipleReportProps } from './components/ICategoriesWeeklyMultipleReportProps';
 
-export interface ITaskUserManagementWebPartProps {
+export interface ICategoriesWeeklyMultipleReportWebPartProps {
   description: string;
 }
 
-export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITaskUserManagementWebPartProps> {
+export default class CategoriesWeeklyMultipleReportWebPart extends BaseClientSideWebPart<ICategoriesWeeklyMultipleReportWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
-
-  public render(): void {
-    const element: React.ReactElement<ITaskUserManagementProps> = React.createElement(
-      TaskUserManagement,
-      {
-        description: this.properties.description,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
-      }
-    );
-
-    ReactDom.render(element, this.domElement);
-  }
 
   protected onInit(): Promise<void> {
     this._environmentMessage = this._getEnvironmentMessage();
 
     return super.onInit();
+  }
+
+  public render(): void {
+    const element: React.ReactElement<ICategoriesWeeklyMultipleReportProps> = React.createElement(
+      CategoriesWeeklyMultipleReport,
+      {
+        description: this.properties.description,
+        isDarkTheme: this._isDarkTheme,
+        environmentMessage: this._environmentMessage,
+        hasTeamsContext: !!this.context.sdks.microsoftTeams,
+        userDisplayName: this.context.pageContext.user.displayName,
+        Context: this.context
+      }
+    );
+
+    ReactDom.render(element, this.domElement);
   }
 
   private _getEnvironmentMessage(): string {
@@ -59,12 +60,9 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
     const {
       semanticColors
     } = currentTheme;
-
-    if (semanticColors) {
-      this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
-      this.domElement.style.setProperty('--link', semanticColors.link || null);
-      this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
-    }
+    this.domElement.style.setProperty('--bodyText', semanticColors.bodyText);
+    this.domElement.style.setProperty('--link', semanticColors.link);
+    this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered);
 
   }
 
@@ -72,9 +70,6 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
-  // protected get dataVersion(): Version {
-  //   return Version.parse('1.0');
-  // }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {

@@ -1,10 +1,7 @@
 import * as React from 'react';
-//import './styles.css';
-import "../../cssFolder/Style.scss";
-import "../../cssFolder/site_color.scss";
-import Tabs from './Tabs';
 
 import '../../cssFolder/Style.scss';
+import Tabs from './Tabs';
 type Props = {
   title: string
   index: number

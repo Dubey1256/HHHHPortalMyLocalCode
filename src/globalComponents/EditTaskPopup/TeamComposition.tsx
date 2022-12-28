@@ -607,26 +607,22 @@ const changeTimesDec=(items:any)=>{
     }
     return (
         <>
-            <div className='taskuserpopuptemplate'>
-                <div className="col-sm-7 padL-0 PadR0">
-                    <div className="col-sm-12 padL-0 PadR0 mb-15 taskuserpopuptemplate" ng-cloak>
-                        <div className="col-sm-12 pull-left HedaBackclr">
-                            <div ng-if="teamUserExpanded" className="col-sm-11 padL-0 hreflink" ng-click="forCollapse()">
+            <div className='col'>
+                <div className="col-sm-7">
+                            <div className="row bg-ee p-1" ng-if="teamUserExpanded"  ng-click="forCollapse()">
                                 <img style={{ width: "10px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP//SiteCollectionImages/ICONS/32/list-iconwhite.png" />
                                 <span className="txtSizeClr">Select Team Members</span>
                             </div>
-                        </div>
-
-                    </div>
-                    <div className="col-sm-12 mb-10 padL-0 BdrBoxBlue" ng-show="teamUserExpanded">
-                        <div className="taskTeamBox col-sm-12">
+           
+                    <div className="border row" ng-show="teamUserExpanded">
+                        <div className="col-sm-12">
 
                             {Task.map(function (index: any, user: any) {
                                 return (
 
 
 
-                                    <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign" ng-repeat="user in taskUsers">
+                                    <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="assign-User" ng-repeat="user in taskUsers">
                                         <fieldset ng-if="user.childs.length >0" className="team">
                                             <legend className="ng-binding BdrBtm" style={{ marginBottom: "7px !important" }}>
                                                 {index.Title}
@@ -636,8 +632,6 @@ const changeTimesDec=(items:any)=>{
                                             {index.childs.map(function (item: any, index: any) {
                                                 return (
                                                     <>
-
-
                                                         <div className="marginR41">
                                                             {(item.Item_x0020_Cover != undefined && item.Item_x0020_Cover.Url != undefined) &&
                                                                 <span>
@@ -956,7 +950,7 @@ const changeTimesDec=(items:any)=>{
                                 </div>
                             </div>
 
-                            <div className='row'>
+                            <div className='col'>
                             <TimeEntryPopup props={props.props.Items} />
                             </div>
                         </div>

@@ -88,9 +88,12 @@
     font-size: 25px;
 } 
 .headign img{
-    width: 25px;
-    margin-right: 5px;
-} 
+  width: 30px;
+  margin-right: 5px;
+  border-radius: 17px;
+  height: 30px;
+}
+
 /*----top left side bar -----*/
 
 .team_member dl{
@@ -176,7 +179,7 @@ aside .card {
     border: 0 solid transparent;
     // border-radius: 0.25rem;
     margin-bottom: 24px;
-    box-shadow: 0 0 0.875rem 0 rgb(41 48 66 / 5%);
+   // box-shadow: 0 0 0.875rem 0 rgb(41 48 66 / 5%);
 }
 aside .card-header {
     padding: 0.6rem 0.6rem;
@@ -228,49 +231,6 @@ tab menu popup
 .modal-lg, .modal-xl {
     --bs-modal-width: auto;
 }
-/* --------------tab css------------*/
-.tabmenu .nav{
-
-   
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  padding-left: 0;
-
-  margin-bottom: 0;
-
-  list-style: none;
-
-}
-
-.tabmenu .nav-tabs {
-
-border-bottom: 1px solid #dee2e6;
-
-}
-
-.tabmenu .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-
-color: #495057;
-
-background-color: #fff;
-
-border-color: #dee2e6 #dee2e6 #fff;
-
-}
-
-.tabmenu .nav-tabs .nav-link {
-
-margin-bottom: -1px;
-
-background: 0 0;
-
-border-top-left-radius: 0.25rem;
-
-border-top-right-radius: 0.25rem;
-
 }
 
 .modal-fixed {
@@ -459,6 +419,48 @@ background-color: #f4f4f4;
 
 /*------comman class end --------------
 ---------------------------------*/
-// .headign a{
-//   color: #000069;
- }
+.headign a{
+  color: #000069;
+}
+
+.input-group-text {
+
+  padding: 3px;
+
+}
+
+.input-group-text svg {
+
+  vertical-align: middle;
+
+  font-size: 5px !important;
+
+  width: 20px;
+
+  height: 25px;
+
+}
+
+.Task-pannel .form-check label {
+
+  font-weight: normal;
+
+}
+
+
+
+.assign-User {
+
+  display: -ms-inline-flexbox!important;
+
+  display: inline-flex!important;
+
+}
+
+fieldset.team {
+
+  padding-bottom: 5px;
+
+  margin-right: 10px;
+
+}

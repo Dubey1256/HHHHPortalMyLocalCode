@@ -8,22 +8,22 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'TaskUserManagementWebPartStrings';
-import TaskUserManagement from './components/TaskUserManagement';
-import { ITaskUserManagementProps } from './components/ITaskUserManagementProps';
+import * as strings from 'ProjectManagementWebPartStrings';
+import ProjectManagement from './components/ProjectManagement';
+import { IProjectManagementProps } from './components/IProjectManagementProps';
 
-export interface ITaskUserManagementWebPartProps {
+export interface IProjectManagementWebPartProps {
   description: string;
 }
 
-export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITaskUserManagementWebPartProps> {
+export default class ProjectManagementWebPart extends BaseClientSideWebPart<IProjectManagementWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ITaskUserManagementProps> = React.createElement(
-      TaskUserManagement,
+    const element: React.ReactElement<IProjectManagementProps> = React.createElement(
+      ProjectManagement,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -72,9 +72,7 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
-  // protected get dataVersion(): Version {
-  //   return Version.parse('1.0');
-  // }
+
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {

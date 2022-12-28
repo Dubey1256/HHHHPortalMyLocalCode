@@ -1,4 +1,4 @@
-export interface IHhhhHrToolProps {
+export interface IProjectManagementProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;

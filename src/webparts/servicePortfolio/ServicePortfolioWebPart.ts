@@ -91,9 +91,7 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
-  protected get dataVersion(): Version {
-    return Version.parse('1.0');
-  }
+ 
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
