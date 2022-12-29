@@ -1722,7 +1722,7 @@ function ComponentTable() {
         <div className="app component taskprofilepagegreen">
 
             {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
-            <Modal
+            {/* <Modal
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 isBlocking={false} >
@@ -1839,10 +1839,10 @@ function ComponentTable() {
                     <button type="button" className="btn btn-primary m-2" onClick={AddItem}>Save</button>
                     <button type="button" className="btn btn-danger" onClick={setModalIsOpenToFalse}>Cancel</button>
                 </div>
-            </Modal>
+            </Modal> */}
             {/* ------------------------Add Popup------------------------------------------------------------------------------------------------------------------------------ */}
 
-            <Modal
+            {/* <Modal
                 isOpen={addModalOpen}
                 onDismiss={closeModal}
                 isBlocking={false}>
@@ -1863,7 +1863,7 @@ function ComponentTable() {
                     <button type="button" className="btn btn-primary m-2" disabled={true}> Create & Open Popup</button>
                     <button type="button" className="btn btn-primary" disabled={true} onClick={closeModal}>Create</button>
                 </div>
-            </Modal>
+            </Modal> */}
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
             <div className="col-sm-12 padL-0 PadR0">
                 <h2 className="alignmentitle ng-binding">
