@@ -186,21 +186,33 @@ export default function ProjectOverview() {
                                     <span >
                                         <div>
                                             <span>
+                                            <label>Title</label>
                                                 <input type='text' className='form-control my-2' defaultValue={item.Title} onChange={(e) => setUpdateData({ ...UpdateData, Title: e.target.value })} />
                                             </span>
                                             <span>
+                                            <label>% Complete</label>
                                                 <input type='text' className='form-control my-2' placeholder='Enter PercentComplete' defaultValue={item.PercentComplete} onChange={(e) => setUpdateData({ ...UpdateData, PercentComplete: e.target.value })} />
                                             </span>
                                         </div>
                                         <div>
                                             <span>
+                                            <label>Due Date</label>
                                                 <input type='Date' placeholder="Select DueDate" className='form-control my-2' defaultValue={item.DueDate} onChange={(e) => setUpdateData({ ...UpdateData, DueDate: e.target.value })} />
                                             </span>
                                         </div>
                                         <div>
+                                        <label>Description</label>
                                             <span><input type='text' placeholder="Enter Description" className='form-control my-2' defaultValue={item.Body} onChange={(e) => setUpdateData({ ...UpdateData, Body: e.target.value })} /></span>
+                                            <label>Priority</label>
                                             <span><input type='text' placeholder="Enter Priority" className='form-control' defaultValue={item.Priority} onChange={(e) => setUpdateData({ ...UpdateData, Priority: e.target.value })} /></span>
                                         </div>
+                                        <div className="d-flex justify-content-between">
+                                        <div className='my-2'>
+                                                <button type="button" className="btn-sm btn-danger mx-2"
+                                                    onClick={deleteUserDtl} title="Delete this Project">
+                                                    Delete
+                                                </button>
+                                            </div>
                                         <div className="d-flex flex-row-reverse my-2">
                                             <button type="button"
                                                 style={{ background: "#000066", color: "#fff", border: "none", outline: "none", padding: "6px", borderRadius: "5px" }} onClick={updateDetails}>
@@ -210,6 +222,7 @@ export default function ProjectOverview() {
                                                 onClick={setEditmodalIsOpenToFalse}>
                                                 Cancel
                                             </button>
+                                        </div>
                                         </div>
                                         <div className="d-flex flex-row-reverse mx-2">
                                             <button type="button"
@@ -234,7 +247,7 @@ export default function ProjectOverview() {
                 <div className='card' style={{ width: "600px" }}>
                     <div className='card-header'>
                         <div className="d-flex justify-content-between">
-                            <h4 style={{ color: "#000066" }} >Create Task</h4>
+                            <h4 style={{ color: "#000066" }} >Create Project</h4>
                             <i className="fa fa-times-circle" onClick={setAddmodalIsOpenToFalse}>
                                 <img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
                             </i>

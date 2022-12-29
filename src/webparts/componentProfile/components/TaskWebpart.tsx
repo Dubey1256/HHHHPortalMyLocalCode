@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import '../../cssFolder/Style.scss'
-import '../../cssFolder/sitecolorservice.scss'
+// import '../../cssFolder/sitecolorservice.scss'
+import '../../cssFolder/site_color.scss';
 import { Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
@@ -44,6 +45,9 @@ export default function ComponentTable({ props }: any) {
     const [TeamMembermodalIsOpen, setTeamMembermodalIsOpen] = React.useState(false);
     const [ItemRankmodalIsOpen, setItemRankmodalIsOpen] = React.useState(false);
     const [StatusmodalIsOpen, setStatusmodalIsOpen] = React.useState(false);
+     //    Array For TaskUser
+    //  const Tasks = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
+    
     //    Array For Status
     const AllItems = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
     // Array of Rank
@@ -334,7 +338,7 @@ export default function ComponentTable({ props }: any) {
             filterGroups.push("Type");
             filterGroups.push("Team Members");
             // setFilterGroups(filterGroups);
-            var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('01a34938-8c7e-4ea6-a003-cee649e8c67a')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent&$orderby=SortOrder&$top=4999";
+            var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('01a34938-8c7e-4ea6-a003-cee649e8c67a')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,Author/Id,Author/Title,Editor/Id,Editor/Title,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Author,Editor,Parent&$orderby=SortOrder&$top=4999";
             $.ajax({
                 url: url,
                 method: "GET",
@@ -455,7 +459,7 @@ export default function ComponentTable({ props }: any) {
             });
             //---------------------------------------End SmartMetaData-------------------------------------------------------------------------------------------------------------------------------------
             var spRequest = new XMLHttpRequest();
-            var query = "Id,Mileage,TaskListId,TaskListName,WorkspaceType,PortfolioLevel,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,SiteCompositionSettings,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,TechnicalExplanations,Idea,ValueAdded,Synonyms,Package,Short_x0020_Description_x0020_On,Admin_x0020_Notes,AdminStatus,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,DueDate,PercentComplete,Modified,CompletedDate,ItemRank,Title,Portfolio_x0020_Type,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title&$expand=SharewebCategories,ClientCategory,Parent,Component,Services,Events,AssignedTo,Team_x0020_Members&$filter=((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) or (Portfolio_x0020_Type eq 'Component')or (Portfolio_x0020_Type eq 'Services')&$top=4999";
+            var query = "Id,Mileage,TaskListId,TaskListName,WorkspaceType,PortfolioLevel,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,SiteCompositionSettings,StartDate,Created,Author/Id,Author/Title,Editor/Id,Editor/Title,Item_x0020_Type,Help_x0020_Information,Background,Categories,TechnicalExplanations,Idea,ValueAdded,Synonyms,Package,Short_x0020_Description_x0020_On,Admin_x0020_Notes,AdminStatus,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,DueDate,PercentComplete,Modified,CompletedDate,ItemRank,Title,Portfolio_x0020_Type,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,SharewebCategories,ClientCategory,Parent,Component,Services,Events,AssignedTo,Team_x0020_Members&$filter=((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) or (Portfolio_x0020_Type eq 'Component')or (Portfolio_x0020_Type eq 'Services')&$top=4999";
             spRequest.open('GET', "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query);
             spRequest.setRequestHeader("Accept", "application/json");
             spRequest.onreadystatechange = function () {
@@ -1022,6 +1026,7 @@ export default function ComponentTable({ props }: any) {
                             item.childs = [];
                             item.TeamLeaderUser = []
                             item.CreatedDateImg = []
+                            
                             if (item.SharewebCategories.results != undefined) {
                                 if (item.SharewebCategories.results.length > 0) {
                                     $.each(item.SharewebCategories.results, function (ind: any, value: any) {
@@ -1031,7 +1036,8 @@ export default function ComponentTable({ props }: any) {
                                     });
                                 }
                             }
-                        })
+                        }
+                        )
                         AllTasks = AllTasks.concat(data.d.results);
                         AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
                         // var result = $.grep(AllTasks, function (mPho, index) {
@@ -1043,6 +1049,7 @@ export default function ComponentTable({ props }: any) {
                         if (Counter == 18) {
                             $.each(AllTasks, function (index: any, result: any) {
                                 //result.TeamLeaderUser = []
+                                
                                 result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
                                 if (result.DueDate == 'Invalid date' || '') {
                                     result.DueDate = result.DueDate.replaceAll("Invalid date", "")
@@ -1061,7 +1068,7 @@ export default function ComponentTable({ props }: any) {
                                                 }
                                             })
                                         }
-                                    })
+                                    }) 
                                 }
                                 if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
                                     $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
@@ -1082,9 +1089,15 @@ export default function ComponentTable({ props }: any) {
                                                 users.ItemCover = users.Item_x0020_Cover;
                                                 result.CreatedDateImg.push(users);
                                             }
+                                            // if(result.Author.Title=="Hochhuth Consulting (Support)"){
+                                            //     users.ItemCover={Description:"https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"}
+                                            //     result.CreatedDateImg.push(users);
+                                            // }
                                         })
                                     }
                                 }
+
+                              
                                 result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
                                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
                                     $.each(result.Team_x0020_Members, function (index: any, catego: any) {
@@ -1633,6 +1646,12 @@ export default function ComponentTable({ props }: any) {
     //     setPassData({data:selected2)
     //   );
     // },[])
+
+
+    
+
+
+        
     return (
         <div className="app component">
             {/* Smart Time Popup */}
@@ -2013,15 +2032,18 @@ export default function ComponentTable({ props }: any) {
                                 <div className="tbl-headings">
                                     <span className="leftsec w65">
                                         <label>
-                                            <span>
-                                                <img style={{ height: "24px", width: "24px", marginTop: "-2px" }}
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
-                                            </span>
-                                            <span>
-                                                {/* {data.map(item => <a>{item.Title}</a>)} */}
-                                                {/* <a>Contact Database</a> */}
-                                                <a>{props}</a>
-                                            </span>
+                                            <span className='headign'> 
+                                                 {props.Portfolio_x0020_Type=='Component' &&
+                                <>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{props.Title}</a>
+                                </>
+                                  }
+                                    {props.Portfolio_x0020_Type=='Service' &&
+                                <>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{props.Title}</a>
+                                </>}
+                        
+                                            </span> 
                                         </label>
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
@@ -2244,6 +2266,8 @@ export default function ComponentTable({ props }: any) {
                                                     <div id="SpfxProgressbar" style={{ display: "none" }}>
                                                         <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
                                                     </div>
+
+                                                    
                                                     {data.length > 0 && data && data.map(function (item, index) {
                                                         item.ClientCategory != undefined
                                                         if (item.flag == true) {
@@ -2327,15 +2351,22 @@ export default function ComponentTable({ props }: any) {
                                                                                     <td style={{ width: "7%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
+                                                                                    
                                                                                     <td style={{ width: "9%" }}>
-                                                                                        {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
-                                                                                            return (
+                                                                                        
+                                                                                           
                                                                                                 <span>
-                                                                                                    {Creates.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+                                                                                                    {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+
+                                                                                                    </span>
+                                                                                                    <span>
+                                                                                                    {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
+                                                                                                         return (
                                                                                                     <img className='ClientCategory-Usericon' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                                </span>
-                                                                                            )
-                                                                                        }) : ""}
+                                                                                                    )
+                                                                                                }) : ""}
+                                                                                                    </span>
+                                                                                          
                                                                                     </td>
                                                                                     <td style={{ width: "7%" }}></td>
                                                                                     {/* <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td> */}

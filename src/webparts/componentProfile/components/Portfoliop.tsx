@@ -2,7 +2,15 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import Modal from 'react-bootstrap/Modal';
 import '../../cssFolder/Style.scss'
-import '../../cssFolder/sitecolorservice.scss'
+var TypeSite: string;
+// if(TypeSite=="Service"){
+//     require('../../cssFolder/sitecolorservice.scss');
+// }
+// if(TypeSite=="Component"){
+//     require('../../cssFolder/site_color.scss');
+// }
+import '../../cssFolder/site_color.scss';
+
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
 import Tooltip from './Tooltip';
@@ -15,11 +23,6 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
 
-
-
-
-
- 
 function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
@@ -155,6 +158,9 @@ function Portfolio({ ID }: any) {
     var FolderID:any='';
 
     data.map(item => {
+        if(item.Portfolio_x0020_Type!=undefined){
+            TypeSite=item.Portfolio_x0020_Type
+        }
         if (item.Sitestagging != null) {
             myarray.push(JSON.parse(item.Sitestagging));
         }
@@ -225,7 +231,7 @@ function Portfolio({ ID }: any) {
                                 <li>
                                     {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                                     {item.Portfolio_x0020_Type != undefined &&
-                                    <a 
+                                    <a target='_blank'
                                         href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${item.Portfolio_x0020_Type}-Portfolio-SPFx.aspx`}>
                                         {item.Portfolio_x0020_Type}-Portfolio
                                     </a>
@@ -235,15 +241,25 @@ function Portfolio({ ID }: any) {
                                 </>
                             )})}
                             </ul>
-                            <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
+                            <span className="text-end"><a target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                         </div>
                     </div>
 
                     <div className='row'>
                         <div className='p-0' style={{ verticalAlign: "top" }}>
+                        {data.map(item =>
                             <h2 className='headign'>
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />   {data.map(item => <a>{item.Title}</a>)}
+                                {item.Portfolio_x0020_Type=='Component' &&
+                                <>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>
+                                </>
+                                  }
+                                    {item.Portfolio_x0020_Type=='Service' &&
+                                <>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>
+                                </>}
                             </h2>
+                            )}
                         </div>
                     </div>
 
@@ -706,7 +722,7 @@ function Portfolio({ ID }: any) {
                                 <Groupby Id={item.Id} level={item.PortfolioLevel}/>
                                 ))} */}
                                 {data.map(item => (
-                                <ComponentTable props={item.Title} />
+                                <ComponentTable props={item} />
                                 ))}
                             </div>
 
