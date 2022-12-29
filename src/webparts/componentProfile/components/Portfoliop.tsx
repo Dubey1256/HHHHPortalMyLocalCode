@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as $ from 'jquery';
-import "bootstrap/dist/css/bootstrap.min.css";
+import Modal from 'react-bootstrap/Modal';
 import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
+import '../../cssFolder/sitecolorservice.scss'
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
 import Tooltip from './Tooltip';
@@ -15,12 +15,11 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
 
-SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css');
-SPComponentLoader.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js');
 
 
 
 
+ 
 function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
@@ -206,25 +205,35 @@ function Portfolio({ ID }: any) {
 
 
 
-  
+  const [lgShow, setLgShow] = React.useState(false);
+    const handleClose = () => setLgShow(false);
 
     return (
         <div>
+
             {/* breadcrumb & title */}
             <section>
                 <div className='container'>
 
                     <div className='row'>
-                        <div className='d-flex justify-content-between p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
+                        <div className='d-flex justify-content-between p-0' >
                             <ul className="spfxbreadcrumb m-0 p-0">
                                 <li><a href='#'><FaHome /> </a></li>
+                                {data.map((item:any) => {
+                                    return(
+                                    <>
                                 <li>
-                                    <a ng-if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')"
-                                        href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">
-                                        Component-Portfolio
+                                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                                    {item.Portfolio_x0020_Type != undefined &&
+                                    <a 
+                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${item.Portfolio_x0020_Type}-Portfolio-SPFx.aspx`}>
+                                        {item.Portfolio_x0020_Type}-Portfolio
                                     </a>
+                                    }
                                 </li>
-                                <li> {data.map(item => <a>{item.Title}</a>)}</li>
+                                <li><a>{item.Title}</a></li>
+                                </>
+                            )})}
                             </ul>
                             <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                         </div>
@@ -261,7 +270,7 @@ function Portfolio({ ID }: any) {
                                             </span>
                                             <span
                                                 className="pull-right" title="Edit Inline"
-                                                ng-click="EditContents(Task,'editableDueDate')">
+                                                >
                                                 <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
                                             </span>
                                         </dd>
@@ -274,7 +283,7 @@ function Portfolio({ ID }: any) {
                                             )}
                                             <span
                                                 className="hreflink pull-right" title="Edit Inline"
-                                                ng-click="EditContents(Task,'editableStartDate')">
+                                              >
                                                 <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
                                             </span>
 
@@ -340,7 +349,7 @@ function Portfolio({ ID }: any) {
                                             {data.map(item => <a>{item.PercentComplete}</a>)}
                                             <span className="pull-right">
                                                 <span className="pencil_icon">
-                                                    <span ng-show="isOwner" className="hreflink"
+                                                    <span className="hreflink"
                                                         title="Edit Inline"
                                                     >
                                                         <i className="fa fa-pencil" aria-hidden="true"></i>
@@ -401,7 +410,7 @@ function Portfolio({ ID }: any) {
                                                                                 return (
                                                                                     <div className="Members-Item">
 
-                                                                                        <div ng-show="client.siteName=='EPS'" className="user-Member-img"   ng-repeat="client in Task.ClientCategory.results">
+                                                                                        <div  className="user-Member-img"   >
                                                                                             {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
                                                                                                 <span>
 
@@ -421,7 +430,7 @@ function Portfolio({ ID }: any) {
                                                                                 return (
                                                                                     <div className="Members-Item">
 
-                                                                                        <div className="user-Member-img" ng-repeat="client in Task.ClientCategory.results">
+                                                                                        <div className="user-Member-img">
                                                                                             {(client.Title == "Contact Management") &&
                                                                                                 <span>
 
@@ -436,12 +445,12 @@ function Portfolio({ ID }: any) {
                                                                         </span>
                                                                     }
                                                                     {item.Title == 'EI' &&
-                                                                        <span  ng-show="item.Title=='EI'" >
+                                                                        <span  >
                                                                             {myarray2.length != 0 ? myarray2.map((client: any) => {
                                                                                 return (
                                                                                     <div className="Members-Item">
-                                                                                        <div ng-show="client.siteName=='EI'" className="user-Member-img"
-                                                                                            ng-repeat="client in Task.ClientCategory.results">
+                                                                                        <div className="user-Member-img"
+                                                                                           >
                                                                                             {(client.Title == "Nutzer Verwaltung" || client.Title == "Shareweb Maintenance" || client.Title == "EI fachspezifische Aufgaben" || client.Title == "EI Projekt-Übersicht" || client.Title == "Mithilfe Zugriffsrechte-Konzepts") &&
                                                                                                 <span>
 
@@ -535,7 +544,7 @@ function Portfolio({ ID }: any) {
                                             
                                                 <div className="accordion-item border-0" id="t_draggable1">
                                                     <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                    <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" ng-bind-html="GetColumnDetails('Idea') | trustedHTML"> Idea</span></button></div>
+                                                    <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Idea</span></button></div>
                                                     <div className="accordion-collapse collapse show"  >
 
                                                         {item.shows &&
@@ -606,7 +615,7 @@ function Portfolio({ ID }: any) {
                         </div>
                         <div className='col-md-3'>
                             <aside>
-                                <div className='mb-3 card'>
+                                {/* <div className='mb-3 card'>
                                     <div className='card-header'>
                                         <div className='card-actions float-end'>  <Tooltip /></div>
                                         <div className="mb-0 card-title h5">Smart Information</div>
@@ -653,7 +662,7 @@ function Portfolio({ ID }: any) {
 
                                 </div>
                             )})} </>
-                               } 
+                               }  */}
                                 <div className='mb-3 card'>
                                     <>
                                     {data.map(item =>

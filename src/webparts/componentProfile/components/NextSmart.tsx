@@ -68,16 +68,16 @@ export default function Smartinfo() {
 
       {/* Edit Modal */}
       <div className="modal-header">
-      <h3 ng-if="type=='edit'" className="modal-title">
+      <h3  className="modal-title">
             Edit SmartInformation - 
             {/* {{Item.Title}} */}
-            <span ng-if="type=='edit'" className="pull-right">
+            <span  className="pull-right">
                 {/* <page-settings-info webpartid="'sharewebEditSmartInfoPopup'"></page-settings-info> */}
             </span>
         </h3>
 
 
-        <button type="button" className="close" ng-click="CancelPopup()" onClick={setModalSmartIsOpenToFalse} style={{minWidth: "10px"}}>
+        <button type="button" className="close" onClick={setModalSmartIsOpenToFalse} style={{minWidth: "10px"}}>
             &times;
         </button>
          </div>
@@ -85,18 +85,18 @@ export default function Smartinfo() {
             {/*END Edit Modal */}
 
         {/* Start Modal */}
-        <div className="modal-content" ng-cloak>
+        <div className="modal-content" >
     <div className="modal-header">
-        <h3 ng-if="type=='add'" className="modal-title">
+        <h3  className="modal-title">
             Add SmartInformation
-            <span ng-if="type=='add'" className="pull-right">
+            <span  className="pull-right">
                 {/* <page-settings-info webpartid="'sharewebAddSmartInfoPopup'"></page-settings-info> */}
             </span>
         </h3>
 
      
 
-        <button type="button" className="close" ng-click="CancelPopup()" onClick={setModalSmartIsOpenToFalse} style={{minWidth: "10px"}}>
+        <button type="button" className="close"  onClick={setModalSmartIsOpenToFalse} style={{minWidth: "10px"}}>
             &times;
         </button>
     </div>
@@ -106,14 +106,14 @@ export default function Smartinfo() {
                 <div className="col-sm-8 form-group">
                     <label className="full_width">Title<span className="required">*</span></label>
                     <input id="Title" className="form-control" type="text" placeholder="Title"
-                           ng-model="Item.Title" autoComplete="off"/>
+                            autoComplete="off"/>
                 </div>
 
                 <div className="col-sm-4 form-group mt-19">
                     <label className="full_width">InfoType</label>
 
-                    <select className="full-width searchbox_height" name="txtInfoType" id="txtInfoType" ng-model="selectedSmartInfoName">
-                        <option value="{{item.Title}}" ng-repeat="item in SmartInformation">
+                    <select className="full-width searchbox_height" name="txtInfoType" id="txtInfoType" >
+                        <option value="{{item.Title}}" >
                             {/* {{item.Title}} */}
                             Itme Title
                             </option>
@@ -123,9 +123,9 @@ export default function Smartinfo() {
                 <div className="col-sm-8 form-group">
                     <form name="createlinktodocumentForm" noValidate role="form">
                         <label className="full_width">Url</label>
-                        <input id="linkTitle" className="form-control" type="text" name="linkDocUrl" placeholder="Url" ng-pattern="/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/"
-                               ng-model="Item.URL.Url"/>
-                        <span className="required" ng-show="createlinktodocumentForm.linkDocUrl.$error.pattern">
+                        <input id="linkTitle" className="form-control" type="text" name="linkDocUrl" placeholder="Url" 
+                              />
+                        <span className="required" >
                             Not
                             a valid url!
                         </span>
@@ -133,14 +133,14 @@ export default function Smartinfo() {
                 </div>
                 <div className="col-sm-4 form-group mt-19">
                     <label className="full_width">Acronym</label>
-                    <input type="text" ng-required="true" autoComplete="off" title="Acronym"
-                           placeholder="Acronym" className="form-control" id="txtAcronym" ng-model="Item.Acronym" />
+                    <input type="text"  autoComplete="off" title="Acronym"
+                           placeholder="Acronym" className="form-control" id="txtAcronym"  />
                 </div>
-                <div className="col-sm-12 form-group" ng-if="type=='add'">
+                <div className="col-sm-12 form-group" >
                     <div className="forFullScreenButton" id="discription"></div>
                     <div className="clearfix"></div>
                 </div>
-                <div className="col-sm-12 form-group" ng-if="type=='edit'">
+                <div className="col-sm-12 form-group" >
                     <div className="forFullScreenButton" id="discriptionEdit"></div>
                     <div className="clearfix"></div>
                 </div>
@@ -150,7 +150,7 @@ export default function Smartinfo() {
         </div>
 
         {/* <!-- SmartInfo Table--> */}
-        <div className="Alltable"ng-show="type=='add'">
+        <div className="Alltable">
             <div className="tbl-headings">
                 <span className="leftsec">
                     <span>
@@ -162,11 +162,11 @@ export default function Smartinfo() {
                     </span>
                     <span className="g-search">
                         <input type="text" id="searchinput" className="searchbox_height full_width"  placeholder="search all"
-                               ng-model="globalSearch"/>
+                              />
                                {/* id="globalSearch" */}
-                        <span ng-show="globalSearch.length>0" className="g-searchclear"
-                              ng-click="clearControl('searchinput')">X</span>
-                        <span className="gsearch-btn" ng-click="GlobalSearchAllItems()"><i className="fa fa-search"></i></span>
+                        <span  className="g-searchclear"
+                             >X</span>
+                        <span className="gsearch-btn" ><i className="fa fa-search"></i></span>
                     </span>
                 </span>
             </div>
@@ -174,7 +174,7 @@ export default function Smartinfo() {
             <div id="Projectes">
                 <div id="Projects" className="col-sm-12 pad0 smart">
                     <div id="printtable-wrapper" className="section-event">
-                        <div className="container-new" id="table-wrapper1" ng-show="SmartItemId!=4539&&SmartItemId!=5527">
+                        <div className="container-new" id="table-wrapper1" >
                             <table id="Projects" className="table table-hover" cellSpacing="0" width="100%">
                                 <thead>
                                     <tr>
@@ -186,17 +186,17 @@ export default function Smartinfo() {
                                             </div>
                                             <div className="headcontainer smart-relative" style={{width: "38%"}}>
                                                 <input type="text" id="searchItem" className="searchbox_height full_width"
-                                                       placeholder="Title" ng-model="searchTitle" />
-                                                <span ng-show="searchTitle.length>0" className="searchclear"
-                                                      ng-click="clearControl('searchTitle')">X</span>
+                                                       placeholder="Title"  />
+                                                <span  className="searchclear"
+                                                     >X</span>
                                                 <span className="sorticon">
                                                     <span>
                                                         <i className="fa fa-angle-up hreflink {{orderBy=='Newtitle'&&!reverse?'footerUsercolor':''}}"
-                                                           ng-click="sortBy('Newtitle', false)"></i>
+                                                         ></i>
                                                     </span>
                                                     <span>
                                                         <i className="fa fa-angle-down hreflink {{orderBy=='Newtitle'&&reverse?'footerUsercolor':''}}"
-                                                           ng-click="sortBy('Newtitle', true)"></i>
+                                                          ></i>
                                                     </span>
                                                 </span>
                                             </div>
@@ -207,15 +207,15 @@ export default function Smartinfo() {
                                             </div>
                                             <div className="headcontainer smart-relative" style={{width: "58%"}}>
                                                 <input type="text" id="searchDescription" className="searchbox_height full_width"
-                                                       placeholder="Description" ng-model="searchDescription" />
-                                                <span ng-show="searchDescription.length>0" className="searchclear"
-                                                      ng-click="clearControl('searchDescription')">X</span>
+                                                       placeholder="Description"  />
+                                                <span  className="searchclear"
+                                                     >X</span>
                                                 <span className="sorticon">
                                                     <span>
-                                                        <i className="fa fa-angle-up hreflink {{orderBy=='FileLeafRef'&&!reverse?'siteColor':''}}" ng-click="sortBy('FileLeafRef', false)"></i>
+                                                        <i className="fa fa-angle-up hreflink {{orderBy=='FileLeafRef'&&!reverse?'siteColor':''}}"></i>
                                                     </span>
                                                     <span>
-                                                        <i className="fa fa-angle-down hreflink {{orderBy=='FileLeafRef'&&reverse?'siteColor':''}}" ng-click="sortBy('FileLeafRef', true)"></i>
+                                                        <i className="fa fa-angle-down hreflink {{orderBy=='FileLeafRef'&&reverse?'siteColor':''}}"></i>
                                                     </span>
                                                 </span>
                                             </div>
@@ -225,19 +225,19 @@ export default function Smartinfo() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in AllSmartInfromation = (AllSmartInfromation |orderBy:orderBy:reverse | filter:{Newtitle:searchTitle,Description:searchDescription}) track by $index">
+                                    <tr >
                                         <td>
                                             <input type="checkbox"
-                                                   ng-model="item.Checkbox" ng-click="selectitem(item,item.Checkbox)"
+                                                    
                                                    className="mt--5 no-padding"/>
                                         </td>
                                         <td>
-                                            <span ng-show="item.Acronym!=undefined && item.Acronym!=''">
+                                            <span >
                                                 {/* ({{item.Acronym}}) */}
                                                 </span>
                                         </td>
-                                        <td ng-model="searchDescription"><span ng-bind-html="item.Description | trustedHTML"></span></td>
-                                        <td><a ng-if="isOwner==true" title="Edit" ng-click="editSmartInfoItem(item,'edit')"><img src="/_layouts/images/edititem.gif"/></a></td>
+                                        <td ><span ></span></td>
+                                        <td><a  title="Edit" ><img src="/_layouts/images/edititem.gif"/></a></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -255,20 +255,20 @@ export default function Smartinfo() {
     
 
     <div className="modal-footer">
-        <div ng-if="type=='edit'" className="col-sm-6 pad0 text-left">
+        <div  className="col-sm-6 pad0 text-left">
             {/* <item-info></item-info> */}
         </div>
         <div className="col-sm-6 pad0 pull-right">
-            <span ng-if="type=='edit'">
-                <a target="_blank" ng-href="{{baseUrl}}/Lists/SmartInformation/EditForm.aspx?ID={{Item.ID}}">
+            <span >
+                <a target="_blank" >
                     Open
                     out-of-the-box form
                 </a>
             </span>
-            <button type="button" className="btn btn-primary" ng-click="saveuploaddocument()">+ Add Items</button>
-            {/* <!--<button type="button" className="btn btn-primary" ng-disabled="Item.Title==undefined || Item.Title==''" ng-click="saveSharewebItem()">Save</button>--> */}
-            <button type="button" className="btn btn-primary"  ng-click="saveSharewebItem()">Save</button>
-            <button type="button" className="btn btn-default" onClick={setModalSmartIsOpenToFalse} ng-click="CancelPopup()">Cancel</button>
+            <button type="button" className="btn btn-primary" >+ Add Items</button>
+         
+            <button type="button" className="btn btn-primary" >Save</button>
+            <button type="button" className="btn btn-default" onClick={setModalSmartIsOpenToFalse}>Cancel</button>
         </div>
     </div>
   

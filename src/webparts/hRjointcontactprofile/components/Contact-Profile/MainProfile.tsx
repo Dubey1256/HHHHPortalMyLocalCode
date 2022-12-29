@@ -22,7 +22,8 @@ const MainProfile = () => {
     sLanguage: { Title: "" },
   });
 
-  const contactID = window.location.href.toString().split("contactId=")[1];
+  const searchParams = new URLSearchParams(window.location.search);
+   const contactID = searchParams.get("contactId");
   const contactFunc = async () => {
     const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
     await web.lists

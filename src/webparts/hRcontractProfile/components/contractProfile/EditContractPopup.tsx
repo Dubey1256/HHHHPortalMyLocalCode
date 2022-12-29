@@ -12,10 +12,9 @@ function EditContractPopup(item: any) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const [editState, setEditState] = React.useState({
-    Title: item.props.Title,
-    startDate: item.props.startDate,
-  })
+  // const [editState, setEditState] = React.useState({
+
+  // })
 
   const [Title, setTitle] = React.useState(item.props.Title)
   const [startDate, setStartDate] = React.useState(item.props.newDate)
@@ -24,7 +23,6 @@ function EditContractPopup(item: any) {
   const [ContractChanged, setContractChanged] = React.useState(item.props.ContractChanged)
   const [GrossSalary, setGrossSalary] = React.useState(item.props.GrossSalary)
   const [HolidayEntitlement, setHolidayEntitlement] = React.useState(item.props.HolidayEntitlement)
-    // const [ContractId, setContractId] = React.useState(item.props.ContractId)
   const ContractId = item.props.ContractId;
   const typeOfContract = item.props.typeOfContract
 
@@ -50,7 +48,7 @@ function EditContractPopup(item: any) {
         HolidayEntitlement: HolidayEntitlement,
       })
       .then((Data:any)=>{
-        alert('Updated Successfully')
+        Data;
       })
       .catch((err)=>{
         console.log(err.message);
@@ -62,65 +60,66 @@ function EditContractPopup(item: any) {
   return (
     <>
     <div style={{display:'flex'}}>
-    <h1 style={{color:'blue'}}>Contract Management {item.props.contractNumber} - {item.props.Title}</h1>
-    <Button onClick={handleShow}>
-    <img src='https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif'/>
-    </Button>
+      <h2 style={{color:'blue'}}>Contract Management {item.props.contractNumber} - {item.props.Title}</h2>
+      <div role={'button'} onClick={handleShow}>
+      <img src='https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif'/>
+      </div>
     </div>
     <Modal size='xl' show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
+      <Modal.Header>
+        
         <Modal.Title>Edit Contract - {item.props.Title}</Modal.Title>
+        <div role={'button'} onClick={handleClose}>X</div>
       </Modal.Header>
       <Modal.Body>
-        <div className="col-sm-12 row">
-          <div className='col-sm-2 form-group'>
-            <label>Contract ID:</label><br/>
-             <input type={'text'} defaultValue={item.props.ContractId} readOnly/>
+        <div className="row d-flex">
+          <div className='col form-group'>
+            <label className='form-label'>Contract ID:</label><br/>
+             <input className='form-control' type={'text'} defaultValue={item.props.ContractId} readOnly/>
           </div>
-          <div className='col-sm-4 form-group'>
-            <label>Contract Title:</label><br/>
-            <input type={'text'} defaultValue={item.props.Title} onChange={(e)=>setTitle(e.target.value)} value={Title}/>
+          <div className='col form-group'>
+            <label className='form-label'>Contract Title:</label><br/>
+            <input className='form-control' type={'text'} defaultValue={item.props.Title} onChange={(e)=>setTitle(e.target.value)} value={Title}/>
           </div>
-          <div className='col-sm-2 form-group'>
-            <label>Start Date:</label>
-            <input type={'date'} defaultValue={item.StartDate} onChange={(e)=>setStartDate(e.target.value)} value={startDate}/>
+          <div className='col form-group'>
+            <label className='form-label'>Start Date:</label>
+            <input className='form-control' type={'date'} defaultValue={item.StartDate} onChange={(e)=>setStartDate(e.target.value)} value={startDate}/>
+          </div> 
+          <div className='col form-group'>
+            <label className='form-label'>End Date:</label>
+            <input className='form-control' type={'date'} defaultValue={item.EndDate} onChange={(e)=>setEndDate(e.target.value)} value={endDate}/>
           </div>
-          <div className='col-sm-2 form-group'>
-            <label>End Date:</label>
-            <input type={'date'} defaultValue={item.EndDate} onChange={(e)=>setEndDate(e.target.value)} value={endDate}/>
-          </div>
-          <div className='col-sm-2 form-group'>
-            <label>Employee Name:</label> 
-            <input type={'text'} defaultValue={item.props2.FullName} readOnly/>
+          <div className='col form-group'>
+            <label className='form-label'>Employee Name:</label> 
+            <input className='form-control' type={'text'} defaultValue={item.props2.FullName} readOnly/>
           </div>
         </div>
-        <div className='col-sm-12 row'>
-            <div className='col-sm-2 form-group'>
-              <label>Contract Signed:</label>
-              <input type={'date'} defaultValue={item.ContractSigned} onChange={(e)=>setContractSigned(e.target.value)} value={ContractSigned}/>
+        <div className='row'>
+            <div className='col form-group'>
+              <label className='form-label'>Contract Signed:</label>
+              <input className='form-control' type={'date'} defaultValue={item.ContractSigned} onChange={(e)=>setContractSigned(e.target.value)} value={ContractSigned}/>
             </div>
-            <div className='col-sm-2 form-group'>
-              <label>Contract Changed:</label>
-              <input type={'date'} defaultValue={item.ContractChanged} onChange={(e)=>setContractChanged(e.target.value)} value={ContractChanged}/>
+            <div className='col form-group'>
+              <label className='form-label'>Contract Changed:</label>
+              <input className='form-control' type={'date'} defaultValue={item.ContractChanged} onChange={(e)=>setContractChanged(e.target.value)} value={ContractChanged}/>
             </div>
-            <div className='col-sm-2 form-group'>
-              <label>Gross Salary:</label>
-              <input type={'text'} defaultValue={item.props.GrossSalary} onChange={(e)=>setGrossSalary(e.target.value)} value={GrossSalary}/>
+            <div className='col form-group'>
+              <label className='form-label'>Gross Salary:</label>
+              <input className='form-control' type={'text'} defaultValue={item.props.GrossSalary} onChange={(e)=>setGrossSalary(e.target.value)} value={GrossSalary}/>
             </div>
-           <div className='col-sm-2 form-group'>
-            <label>Contract Type:</label>
-            <input type={'text'} defaultValue={item.props.typeOfContract} readOnly/>
+           <div className='col form-group'>
+            <label className='form-label'>Contract Type:</label>
+            <input className='form-control' type={'text'} defaultValue={item.props.typeOfContract} readOnly/>
             </div>
-            <div className='col-sm-2 form-group'>
-              <label>Weekly Working Hours:</label>
-              <input type={'text'} defaultValue={item.props.WorkingHours}/>
+            <div className='col col-md-3 form-group'>
+              <label className='form-label'>Weekly Working Hours:</label>
+              <input className='form-control' type={'text'} defaultValue={item.props.WorkingHours}/>
             </div>
-            <div className='col-sm-2 form-group'>
-              <label>Holiday Entitlement:</label>
-              <input type={'number'} defaultValue={item.props.HolidayEntitlement} onChange={(e)=>setHolidayEntitlement(parseInt(e.target.value))} value={HolidayEntitlement}/>
+            <div className='col form-group'>
+              <label className='form-label'>Holiday Entitlement:</label>
+              <input  className='form-control' type={'number'} defaultValue={item.props.HolidayEntitlement} onChange={(e)=>setHolidayEntitlement(parseInt(e.target.value))} value={HolidayEntitlement}/>
             </div>
         </div>
-        
       </Modal.Body>
       
       <Modal.Footer>

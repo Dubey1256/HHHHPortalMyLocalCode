@@ -17,10 +17,10 @@ import { MdOpenInFull } from 'react-icons/Md';
 const ContactMainPage = () => {
     const [EmployeeData, setEmployeeData] = useState([]);
     const [institutionData, setInstitutionsData] = useState([]);
-    const [inputField, setInputField] = useState({ FullName: '', EmailAddress: '', Organization: '', Department: '', Position: '', Sites: '', SearchInstitution: '', City: '', Country: '', InstituteSites: '' });
+    const [inputField, setInputField] = useState({ FullName: '', EmailAddress: '', Organization: '', Department: '', Position: '', Sites: '', SearchInstitution: '', City: '', Country: '', InstituteSites: '', mainSearch: '' });
     const [EditContactStatus, setEditContactStatus] = useState(false);
     const [EditContactData, setEditContactData] = useState([]);
-    const [isChecked, setIsChecked] = useState(false);
+    const [count, setCount] = useState(0);
     const [userEmails, setUserEmails] = useState([]);
     const [tableStatus, setTableStatus] = useState(true);
     const [searchedData, setSearchedData] = useState([]);
@@ -42,7 +42,7 @@ const ContactMainPage = () => {
             let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
             let data = await web.lists.getById('edc879b9-50d2-4144-8950-5110cacc267a')
                 .items
-                .select("Id", "Title", "FirstName", "FullName", "Department", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "Site", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "Site", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "SmartCountries/Title", "SmartCountries/Id", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName","IM")
+                .select("Id", "Title", "FirstName", "FullName", "Department", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "Site", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "Site", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "SmartCountries/Title", "SmartCountries/Id", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
                 .expand("EmployeeID", "Division", "Author", "Editor", "SmartCountries", "Institution")
                 .orderBy("Created", true)
                 .get();
@@ -66,7 +66,6 @@ const ContactMainPage = () => {
         } catch (error) {
             console.log("Error:", error.message);
         }
-
     }
     const InstitutionDetails = async () => {
         try {
@@ -111,10 +110,10 @@ const ContactMainPage = () => {
     const SearchData = (e: any, item: any) => {
         let Key: any = e.target.value.toLowerCase();
         if (item == "Main-Search") {
-            // setInputField({ ...inputField, FullName: Key });
+            setInputField({ ...inputField, mainSearch: Key });
             const data: any = {
                 nodes: EmployeeData.filter((items: any) =>
-                    items.FullName?.toLowerCase().includes(Key)
+                    ((items.FullName ? items.FullName : "") || (item.Email ? item.Email : "") || (items.Institution ? items.Institution.FullName : '') || (items.Department ? items.Department : "") || (items.JobTitle ? items.JobTitle : "") || (items.SitesTagged ? items.SitesTagged : "")).toLowerCase().includes(Key)
                 ),
             };
             setSearchedData(data.nodes);
@@ -158,7 +157,7 @@ const ContactMainPage = () => {
             })
             const data: any = {
                 nodes: temp.filter((items) =>
-                    items.Email?.toLowerCase().includes(Key)
+                    items.Institution.FullName?.toLowerCase().includes(Key)
                 ),
             };
             setSearchedData(data.nodes);
@@ -253,43 +252,81 @@ const ContactMainPage = () => {
         }
     }
     const allChecked = (e: any) => {
-        if (isChecked) {
-            setIsChecked(false);
-            setIsDisabled(true);
-            setUserEmails([])
-        } else {
-            setIsChecked(true);
+        var key = e.currentTarget.checked;
+        if (key == true) {
+            console.log(EmployeeData);
+            searchedData.map((item, index) => {
+                item.isselect = key;
+            })
+            console.log(EmployeeData)
             setIsDisabled(false);
             setUserEmails(EmployeeData)
+        } if (key == false) {
+            searchedData.map((item, index) => {
+                item.isselect = key;
+            })
+            setIsDisabled(true);
+            setUserEmails([])
         }
     }
-    const checkedData = (e: any, item: any, index:any) => {
-        setIsDisabled(false);
+    const checkedData = (e: any, item: any, index: number) => {
+        var key = e.currentTarget.checked;
+        var selectarray: any = [];
+        if (key == true) {
+            setCount(count + 1);
+            searchedData.map((items, index) => {
+                if (items.Id == item.Id) {
+                    selectarray.push(items);
+                    item.isselect = key;
+                }
+                if (items.Id != item.Id) {
+                    selectarray.push(items);
+                }
+            })
+            setSearchedData(selectarray);
+            setIsDisabled(false);
+        }
+        if (key == false) {
+            setCount(count - 1);
+            searchedData.map((items, index) => {
+                if (items.Id == item.Id) {
+                    item.isselect = key;
+                    selectarray.push(items);
+
+                }
+                if (items.Id != item.Id) {
+                    selectarray.push(items);
+                } if (count == 1) {
+                    setIsDisabled(true);
+                }
+            })
+        }
         userEmails.push(item);
-        // setIndex(index);
-        console.log("user email ===", userEmails);
     }
     const sendEmail = () => {
         let emails = '';
         var ContactsNothavingEmail: any = [];
         userEmails.map((item: any) => {
             console.log("sent mail ===", userEmails);
-            if (item.Email == null) {
-                ContactsNothavingEmail.push(item);
-                console.log("null emails")
-            }
-            if (item.Email != null) {
-                emails += item.Email + ";";
-                console.log("emails")
+            if (item.isselect == true) {
+                if (item.Email == null) {
+                    ContactsNothavingEmail.push(item);
+                    console.log("null emails")
+                }
+                if (item.Email != null) {
+                    emails += item.Email + ";";
+                    console.log("emails")
 
+                }
             }
+
         })
         window.location.href = 'mailto:' + emails;
     }
     const clearFilter = () => {
         setSearchedData(EmployeeData);
         setSearchedInstitueData(institutionData);
-        setInputField({ FullName: '', EmailAddress: '', Organization: '', Department: '', Position: '', Sites: '', SearchInstitution: '', City: '', Country: '', InstituteSites: '' });
+        setInputField({ FullName: '', EmailAddress: '', Organization: '', Department: '', Position: '', Sites: '', SearchInstitution: '', City: '', Country: '', InstituteSites: '', mainSearch: '' });
     }
     const printFunction = () => {
         window.print();
@@ -349,7 +386,7 @@ const ContactMainPage = () => {
                             <table className="table">
                                 <thead>
                                     <tr>
-                                        <th><input type='checkbox' checked={isChecked} onChange={(e) => allChecked(e)} />All</th>
+                                        <th><input type='checkbox' onChange={(e) => allChecked(e)} />All</th>
                                         <th><input type='text' id='FullName' className='search-input' placeholder='Name' value={inputField.FullName} onChange={(e) => SearchData(e, 'FullName')} /></th>
                                         <th><input type='text' id='Email-Address' className='search-input' placeholder='Email Address' value={inputField.EmailAddress} onChange={(e) => SearchData(e, 'Email-Address')} /></th>
                                         <th><input type='text' id='Organization' className='search-input' placeholder='Organization' value={inputField.Organization} onChange={(e) => SearchData(e, 'Organization')} /></th>
@@ -359,12 +396,12 @@ const ContactMainPage = () => {
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className='contact-table'>
                                     {searchedData?.map((items, index) => {
                                         return (
                                             <tr key={index}>
-                                                <th scope="row"><input type="checkbox" checked={isChecked} onChange={(e) => checkedData(e, items, index)} /></th>
-                                                <td className='full-name'><img className="userImg" src={items.Item_x0020_Cover != undefined ? items.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />{items.FullName ? items.FullName : "NA"}</td>
+                                                <th scope="row"><input type="checkbox" checked={items.isselect} onChange={(e) => checkedData(e, items, index)} /></th>
+                                                <td className='full-name'><img className="userImg" src={items.Item_x0020_Cover != undefined ? items.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} /><a href={"https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Contact-Profile-SPFx.aspx?contactId="+items.Id} target="_blank"> {items.FullName ? items.FullName : "NA"}</a></td>
                                                 <td>{items.Email ? items.Email : "NA"}</td>
                                                 <td className="full-name">{items.Institution ? items.Institution.FullName : "NA"}</td>
                                                 <td>{items.Department ? items.Department : "NA"}</td>
@@ -404,7 +441,7 @@ const ContactMainPage = () => {
 
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className='institute-table'>
                                         {searchedInstitueData?.map((items, index) => {
                                             return (
                                                 <tr key={index}>

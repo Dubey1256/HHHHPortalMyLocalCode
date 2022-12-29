@@ -11,9 +11,12 @@ import { Web } from "sp-pnp-js";
 import ComponentPortPolioPopup from './ComponentPortfolioSelection';
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
-
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { map } from "lodash";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 
 function EditInstitution(item: any) {
     // Id:any
@@ -30,7 +33,10 @@ function EditInstitution(item: any) {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [AllComponents, setComponentsData] = React.useState([]);
     const [CollapseExpend, setCollapseExpend] = React.useState(false);
-    $('.ms-Dialog-main .main-153').hide();
+    const [date, setDate] = React.useState(undefined);
+    const [Startdate, setStartdate] = React.useState(undefined);
+    const [Completiondate, setCompletiondate] = React.useState(undefined);
+    // $('.ms-Dialog-main .main-153').hide();
     const setModalIsOpenToTrue = (e: any) => {
         // e.preventDefault()
         setModalIsOpen(true)
@@ -40,7 +46,21 @@ function EditInstitution(item: any) {
         EditComponentCallback();
         setModalIsOpen(false)
     }
-
+    const handleDate = (date: any) => {
+        CompoenetItem[0].CompletedDate = date;
+        setCompletiondate(date);
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    };
+    const handleDatestart = (date: any) => {
+        CompoenetItem[0].StartDate = date;
+        setStartdate(date);
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    };
+    const handleDatedue = (date: any) => {
+        CompoenetItem[0].DueDate = date;
+        setDate(date);
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    };
     const Call = React.useCallback((item1) => {
         if (CompoenetItem != undefined && item1 != undefined) {
             item.props.smartComponent = item1.smartComponent;
@@ -48,22 +68,22 @@ function EditInstitution(item: any) {
         }
         setIsComponent(false);
     }, []);
-    var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-        if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
+    // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
+    //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
 
-        // below logic works fine in all condition 
-        if (LocalDateTime != '') {
-            var serverDateTime;
-            var vLocalDateTime = new Date(LocalDateTime);
-            //var offsetObj = GetServerOffset();
-            //var IANATimeZoneName = GetIANATimeZoneName();
-            var mDateTime = moment(LocalDateTime);
-            // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
-            //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
-            return serverDateTime;
-        }
-        return '';
-    }
+    //     // below logic works fine in all condition 
+    //     if (LocalDateTime != '') {
+    //         var serverDateTime;
+    //         var vLocalDateTime = new Date(LocalDateTime);
+    //         //var offsetObj = GetServerOffset();
+    //         //var IANATimeZoneName = GetIANATimeZoneName();
+    //         var mDateTime = moment(LocalDateTime);
+    //         // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
+    //         //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
+    //         return serverDateTime;
+    //     }
+    //     return '';
+    // }
     var getMultiUserValues = function (item: any) {
         var users = '';
         var isuserexists = false;
@@ -109,17 +129,7 @@ function EditInstitution(item: any) {
         }
         return IconUrl;
     }
-    var getpriority = function (item: any) {
-        if (item.PriorityRank >= 0 && item.PriorityRank <= 3) {
-            item.Item.Priority = '(3) Low';
-        }
-        if (item.PriorityRank >= 4 && item.PriorityRank <= 7) {
-            item.Item.Priority = '(2) Normal';
-        }
-        if (item.PriorityRank >= 8) {
-            item.Item.Priority = '(1) High';
-        }
-    }
+
     // var SelectPriority = function (Item:any) {
     //     switch (Item.Priority) {
     //         case '(3) Low':
@@ -133,6 +143,22 @@ function EditInstitution(item: any) {
     //             break;
     //     }
     // }
+    const handleChange = (newValue: any) => {
+        console.log("newValue: ", newValue);
+        // setStartdate(newValue);
+        //  props.setDate( newValue );
+    };
+    const getpriority = function (item: any) {
+        if (item.PriorityRank >= 0 && item.PriorityRank <= 3) {
+            item.Priority = '(3) Low';
+        }
+        if (item.PriorityRank >= 4 && item.PriorityRank <= 7) {
+            item.Priority = '(2) Normal';
+        }
+        if (item.PriorityRank >= 8) {
+            item.Priority = '(1) High';
+        }
+    }
     var getMasterTaskListTasks = function () {
         var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
         $.ajax({
@@ -146,14 +172,16 @@ function EditInstitution(item: any) {
                 $.each(Tasks, function (index: any, item: any) {
                     item.DateTaskDueDate = new Date(item.DueDate);
                     if (item.DueDate != null)
-                        item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
+                        item.TaskDueDate = moment(item.DueDate).format('DD/MM/YYYY');
+                    // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
                     item.FilteredModifiedDate = item.Modified;
                     item.DateModified = new Date(item.Modified);
                     item.DateCreatedNew = new Date(item.Created);
 
-                    item.DateCreated = item.CreatedDate = ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-                    item.Creatednewdate = ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
-                    item.Modified = ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+                    item.DateCreated = item.CreatedDate = moment(item.Created).format('DD/MM/YYYY');// ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
+                    item.Creatednewdate = moment(item.Created).format('DD/MM/YYYY');//ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
+                    // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
+                    //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
                     if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
                         switch (item.Priority) {
                             case '(1) High':
@@ -169,6 +197,7 @@ function EditInstitution(item: any) {
 
                         }
                     }
+                    getpriority(item)
                     item.assigned = getMultiUserValues(item);
                     if (item.ItemRank != undefined)
                         item.ItemRankTitle = TaskItemRank[0].filter((option: { rank: any; }) => option.rank == item.ItemRank)[0].rankTitle;
@@ -190,9 +219,25 @@ function EditInstitution(item: any) {
                         item.taskLeader = getMultiUserValues(item);
                     if (item.Task_x0020_Type == undefined)
                         item.Task_x0020_Type = 'Activity Tasks';
+                    if (item.DueDate != undefined) {
+                        item.DueDate = moment(item.DueDate).format('DD/MM/YYYY')
+                        // setDate(item.DueDate);
+                    }
+                    if (item.StartDate != undefined) {
+                        item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
+                        //setStartdate(item.StartDate);
+                    }
+                    if (item.CompletedDate != undefined) {
+                        item.CompletedDate = moment(item.CompletedDate).format('DD/MM/YYYY')
+                        // item.CompletedDate = item.CompletedDate.toString();
+                        // setCompletiondatenew(item.CompletedDate);
+                    }
                     item.SmartCountries = [];
                     item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                     item['SiteIcon'] = item.siteType == "Master Tasks" ? GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined) : GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+                    if (item.Synonyms != undefined && item.Synonyms.length > 0) {
+                        item.Synonyms = JSON.parse(item.Synonyms);
+                    }
                 });
                 //  deferred.resolve(Tasks);
                 setComponent(Tasks);
@@ -231,7 +276,7 @@ function EditInstitution(item: any) {
                 getMasterTaskListTasks();
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
-                TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: 67677 }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
+                TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
                 setSharewebItemRank(TaskItemRank[0]);
                 if (useeffectdata == false)
                     setuseeffectdata(true);
@@ -275,62 +320,59 @@ function EditInstitution(item: any) {
     //     return({id : i.Title,display: i.Title})
     // });
 
-    // var generateHierarchichalData = function (item, items) {
-    //     var autoCompleteItem = {};
-    //     autoCompleteItem['value'] = item.Title;
-    //     autoCompleteItem['Id'] = item.Id;
-    //     autoCompleteItem['description'] = item.Description1;
-    //     autoCompleteItem['TaxType'] = item.TaxType;
-    //     if (item.SiteType != undefined)
-    //         autoCompleteItem['SiteType'] = item.SiteType
-    //     autoCompleteItem['label'] = item.Title;
-    //     angular.forEach(items, function (parentItem) {
-    //         if (item.ParentID == parentItem.Id) {
-    //             autoCompleteItem['label'] = parentItem.Title + ' > ' + item.Title;
-    //             if (parentItem.ParentID > 0) {
-    //                 angular.forEach(items, function (gParentItem) {
-    //                     if (parentItem.ParentID == gParentItem.Id) {
-    //                         autoCompleteItem['label'] = gParentItem.Title + ' > ' + autoCompleteItem.label;
+    var generateHierarchichalData = function (item: any, items: any) {
+        var autoCompleteItem: any = {};
+        autoCompleteItem["value"] = item.Title;
+        autoCompleteItem['Id'] = item.Id;
+        autoCompleteItem['description'] = item.Description1;
+        autoCompleteItem['TaxType'] = item.TaxType;
+        if (item.SiteType != undefined)
+            autoCompleteItem['SiteType'] = item.SiteType
+        autoCompleteItem['label'] = item.Title;
+        map(items, (parentItem) => {
+            if (item.ParentID == parentItem.Id) {
+                autoCompleteItem['label'] = parentItem.Title + ' > ' + item.Title;
+                if (parentItem.ParentID > 0) {
+                    map(items, (gParentItem) => {
+                        if (parentItem.ParentID == gParentItem.Id) {
+                            autoCompleteItem['label'] = gParentItem.Title + ' > ' + autoCompleteItem.label;
+                            if (gParentItem.ParentID > 0) {
+                                map(items, (mParentItem) => {
+                                    if (gParentItem.ParentID == mParentItem.Id) {
+                                        autoCompleteItem['label'] = mParentItem.Title + ' > ' + autoCompleteItem.label;
+
+                                        return false;
+
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
 
 
+                return false;
+            }
+        });
 
-    //                         if (gParentItem.ParentID > 0) {
-    //                             angular.forEach(items, function (mParentItem) {
-    //                                 if (gParentItem.ParentID == mParentItem.Id) {
-    //                                     autoCompleteItem['label'] = mParentItem.Title + ' > ' + autoCompleteItem.label;
-
-    //                                     return false;
-
-    //                                 }
-    //                             });
-    //                         }
-    //                     }
-    //                 });
-    //             }
-
-
-    //             return false;
-    //         }
-    //     });
-
-    //     return autoCompleteItem;
-    // }
+        return autoCompleteItem;
+    }
     // const bindAutoCompleteId = function (countrolId:any, taxItems:any, taxType:any, service:any, CompositionSiteType:any) {
     //     var Items:any = [];
     //     $.each(taxItems, function (taxItem:any) {
     //         if (taxItem.TaxType == taxType && taxItem.TaxType != 'Components') {
-    //             var item = SharewebCommonFactoryService.generateHierarchichalData(taxItem, taxItems);
+    //             var item = generateHierarchichalData(taxItem, taxItems);
     //             item["Title"] = item.value;
     //             Items.push(item);
     //         }
     //         if (taxItem.TaxType == 'Components') {
-    //             var item = SharewebCommonFactoryService.generateHierarchichalData(taxItem, taxItems);
+    //             var item = generateHierarchichalData(taxItem, taxItems);
     //             item["Title"] = item.value;
     //             Items.push(item);
     //         }
     //     });
     //     $("#" + countrolId).autocomplete({
-    //         source: function (request, response) {
+    //         source: function (request:any, response:any) {
     //             // delegate back to autocomplete, but extract the last term
     //             //var index= request.term.indexOf("@");
     //             // if (request.term != undefined && request.term[index] == '@') 
@@ -442,8 +484,129 @@ function EditInstitution(item: any) {
     const setPriority = function (item: any, val: number) {
         item.Priority_x0020_Rank = val;
 
-        setComponent(CompoenetItem => ([...item]));
+        setComponent(CompoenetItem => ([...CompoenetItem]));
     }
+    const setTime = function (item: any, val: any) {
+        item.Mileage = val;
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    }
+    const setStatus = function (item: any, val: any) {
+        item.AdminStatus = val;
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    }
+    const expendcollapsAccordion = (item: any, title: any) => {
+        item[title] = item[title] = item[title] == true ? false : true;
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    };
+    const test12 = (e: any, item: any) => {
+        item.SynonymsTitle = e.target.value;
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    };
+    const createSynonyms = (item: any) => {
+        if (item.SynonymsTitle == undefined || item.SynonymsTitle == '') {
+            alert('You have not enter Synonym name.');
+        } else {
+            let flag = true;
+            if (item['Synonyms'] != undefined && item['Synonyms'].length > 0) {
+                if (item['Synonyms'][item['Synonyms'].length - 1]['Title'] == item.SynonymsTitle) {
+                    flag = false;
+                    alert('You have a blank synonym try to fill it first');
+                } else if (item['Synonyms'][item['Synonyms'].length - 1]['status'] == false) {
+                    flag = false;
+                    alert('You have not saved your last item.');
+                }
+            } else
+                item['Synonyms'] = [];
+            flag ? item['Synonyms'].push({ 'status': true, 'Title': item.SynonymsTitle, 'Id': '' }) : null;
+            item.SynonymsTitle = '';
+        }
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    }
+    const deleteItem = (item: any) => {
+        if (item['Synonyms'] != undefined && item['Synonyms'].length > 0) {
+            map(item['Synonyms'], (val, index) => {
+                item['Synonyms'].splice(index, 1)
+            })
+        }
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    }
+    const SaveData = async () => {
+        var UploadImage: any = []
+
+        var item: any = {}
+        var smartComponentsIds: any[] = [];
+        var Items = CompoenetItem[0];
+
+        if (Items.smartComponent != undefined) {
+            Items.smartComponent.map((com: any) => {
+                // if (com.Title != undefined) {
+
+                //     component = com.Title
+
+                // }
+
+                if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
+
+                    $.each(Items.smartComponent, function (index: any, smart: any) {
+
+                        smartComponentsIds.push(smart.Id);
+
+                    })
+                }
+            })
+        }
+        if (Items.ItemRankTitle != undefined && Items.ItemRankTitle != 'Select Item Rank')
+            var ItemRank = SharewebItemRank.filter((option: { rankTitle: any; }) => option.rankTitle == Items.ItemRankTitle)[0].rank;
+        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        await web.lists.getById('ec34b38f-0669-480a-910c-f84e92e58adf').items.getById(Items.ID).update({
+
+            Title: Items.Title,
+
+            ItemRank: ItemRank,
+            Priority_x0020_Rank: Items.Priority_x0020_Rank,
+            ComponentId: { "results": smartComponentsIds },
+            Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
+            StartDate: Startdate != undefined ? new Date(Startdate).toDateString() : Startdate,
+            DueDate: date != undefined ? new Date(date).toDateString() : date,
+            CompletedDate: Completiondate != undefined ? new Date(Startdate).toDateString() : Completiondate,
+            Synonyms: JSON.stringify(Items['Synonyms']),
+            Package: Items.Package,
+            AdminStatus: Items.AdminStatus,
+            Priority: Items.Priority,
+            Mileage: Items.Mileage,
+            ValueAdded: Items.ValueAdded,
+            Idea: Items.Idea,
+            Background: Items.Background,
+            Admin_x0020_Notes: Items.Admin_x0020_Notes,
+            // component_x0020_link: {
+            //     '__metadata': { 'type': 'SP.FieldUrlValue' },
+            //     'Description': Items.component_x0020_link != undefined ? Items.component_x0020_link.Url : null,
+            //     'Url': Items.component_x0020_link != undefined ? Items.component_x0020_link.Url : null,
+            // },
+            // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete,
+
+
+
+            // Categories: Items.Categories
+
+            // BasicImageInfo: JSON.stringify(UploadImage)
+
+        })
+            .then((res: any) => {
+                console.log(res);
+
+                setModalIsOpenToFalse();
+
+
+
+
+            })
+
+
+
+    }
+
+
 
     return (
         <>
@@ -451,7 +614,7 @@ function EditInstitution(item: any) {
                 src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> */}
             <Modal
                 isOpen={modalIsOpen}
-                onDismiss={setModalIsOpenToFalse}
+                // onDismiss={setModalIsOpenToFalse}
                 isBlocking={false}
             // {width:"1250px"}
             >
@@ -482,26 +645,29 @@ function EditInstitution(item: any) {
                                             <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
                                         </li>
                                         <li className="nav-item" role="presentation">
-                                            <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Architecture & Technologies</button>
+                                            <button className="nav-link" id="cncept-tab" data-bs-toggle="tab" data-bs-target="#concept" type="button" role="tab" aria-controls="concept" aria-selected="false">Concept</button>
                                         </li>
                                         <li className="nav-item" role="presentation">
-                                            <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Help</button>
+                                            <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Architecture & Technologies</button>
                                         </li>
+                                        {/* <li className="nav-item" role="presentation">
+                                            <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Help</button>
+                                        </li> */}
                                     </ul>
-                                    <div className="tab-content border border-top-0" id="myTabContent">
+                                    <div className="tab-content border border-top-0 clearfix " id="myTabContent">
                                         <div className="tab-pane  show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                            <div className="row  p-2">
+                                            <div className="col  p-2">
                                                 <div>
                                                     <div className="col-sm-5 mt-10">
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-6">
-                                                                <label className="full_width">Title</label>
-                                                                <input type="text" className="full_width searchbox_height"
-                                                                    defaultValue={item.Title != undefined ? item.Title : ""} />
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <label className="form-label">Title</label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={item.Title != undefined ? item.Title : ""} onChange={(e) => item.Title = e.target.value} />
                                                             </div>
-                                                            <div className="col-sm-6 padL-0" title="Email">
-                                                                <label className="full_width">Item Rank</label>
-                                                                <select className="full_width searchbox_height" value={item.ItemRankTitle}>
+                                                            <div className="col-sm-6 pe0" title="Email">
+                                                                <label className="form-label">Item Rank</label>
+                                                                <select className="form-control" defaultValue={item.ItemRankTitle} onChange={(e) => item.ItemRankTitle = e.target.value}>
                                                                     {
                                                                         SharewebItemRank &&
                                                                         SharewebItemRank.map((h: any, i: any): JSX.Element => {
@@ -515,173 +681,221 @@ function EditInstitution(item: any) {
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-6">
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
                                                                 <div className="col-sm-11 padL-0 PadR0">
-                                                                    <label className="full_width">
+                                                                    <label className="form-label">
                                                                         Component Portfolio
                                                                     </label>
-                                                                    <input style={{ width: "100%" }} type="text"
-                                                                        className="full_width searchbox_height" id="txtSmartCountries" defaultValue={item.Priority_x0020_Rank != undefined ? item.Priority_x0020_Rank : ""} />
-
-
-                                                                </div>
-                                                                <div className="col-sm-1 PadR0">
-                                                                    <label className="full_width">&nbsp;</label>
+                                                                    <input  type="text"
+                                                                        className="form-control" />
+                                                                    {/* <AutoSuggest
+                                                                        options={stateOptions}
+                                                                        handleChange={setState}
+                                                                        value={state}
+                                                                        name="State"
+                                                                    /> */}
+                                                               <span className="input-group-text">
                                                                     <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                         onClick={(e) => EditComponent(item, 'Componet')} />
+                                                                </span>
                                                                 </div>
-                                                                <div className="col-sm-11 padL-0 PadR0 inner-tabb">
-                                                                    <div className="row">
-                                                                        <div className="col-sm-12 PadR0">
+                                                               
+                                                                <div className="col-sm-11  inner-tabb">
+                                                                    <div>
+                                                                      
                                                                             {item != undefined && item.smartComponent != undefined && item.smartComponent.map((childinew: any) =>
                                                                                 < div className="block bgsiteColor"
-                                                                                    ng-mouseover="HoverIn(item);"
-                                                                                    ng-mouseleave="ComponentTitle.STRING='';"
-                                                                                    title="{{ ComponentTitle.STRING }}"
+
                                                                                 >
                                                                                     <a className="hreflink" target="_blank"
-                                                                                        ng-href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{childinew.Title}</a>
+                                                                                        href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{childinew.Title}</a>
                                                                                     <a className="hreflink"
-                                                                                        ng-click="removeSmartComponent(item.Id)">
-                                                                                        <img ng-src="/_layouts/images/delete.gif"></img>
+                                                                                    >
+                                                                                        <img src="/_layouts/images/delete.gif"></img>
                                                                                     </a>
                                                                                 </div>
                                                                             )}
-                                                                        </div>
+                                                                     
                                                                     </div>
                                                                 </div>
 
                                                             </div>
                                                             <div className="col-sm-6 padL-0">
-                                                                <label className="full_width">Deliverable-Synonyms</label>
+                                                                <label className="form-label">Deliverable-Synonyms</label>
 
-                                                                <input type="text" className="full_width searchbox_height"
-                                                                    defaultValue={item.WorkAddress != undefined ? item.WorkAddress : ""} />
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={item.Deliverable_x002d_Synonyms != undefined ? item.Deliverable_x002d_Synonyms : ""} onChange={(e) => item.Deliverable_x002d_Synonyms = e.target.value} />
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-4">
-                                                                <label className="full_width">Start Date</label>
-                                                                <input type="text" className="full_width searchbox_height"
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-4 ps-0">
+                                                                <label className="form-label">Start Date</label>
+                                                                {/* <input type="text" className="form-control"
                                                                     defaultValue={item.CellPhone != null ? item.CellPhone : ""}
+                                                                /> */}
+                                                                <DatePicker className="form-control"
+                                                                    selected={Startdate}
+                                                                    // onChange={(Startdate) => setStartdate(Startdate)}
+                                                                    value={item.StartDate}
+                                                                    onChange={handleDatestart}
+                                                                    //  value={item.Startdate}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    locale="es"
                                                                 />
                                                             </div>
-                                                            <div className="col-sm-4 padL-0">
-                                                                <label className="full_width">Due Date</label>
-                                                                <input type="text" className="full_width searchbox_height"
-                                                                    defaultValue={item.HomePhone != null ? item.HomePhone : ""} />
+                                                            <div className="col-sm-4 ">
+                                                                <label className="form-label">Due Date</label>
+                                                                {/* <input type="text" className="form-control"
+                                                                    defaultValue={item.HomePhone != null ? item.HomePhone : ""} /> */}
+                                                                {/* <DatePicker onSelectDate={dueDate} dateFormat="dd/MM/yyyy" onChange={(date) => setStartDate(dueDate)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" /> */}
+                                                                <DatePicker className="form-control"
+                                                                    selected={date}
+                                                                    // onChange={(date) => setDate(date)}
+                                                                    value={item.DueDate}
+                                                                    onChange={handleDatedue}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    locale="es"
+                                                                />
                                                             </div>
 
-                                                            <div className="col-sm-4 padL-0">
-                                                                <label className="full_width">
-                                                                    Completion Date <a className="hreflink" href={item.LinkedIn != null ? item.LinkedIn.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-linkedin"></i></span></a></label>
-                                                                <input type="text" className="full_width searchbox_height"
-                                                                    defaultValue={item.LinkedIn != null ? item.LinkedIn.Description : ""} />
+                                                            <div className="col-sm-4 pe-0">
+                                                                <label className="form-label">
+                                                                    Completion Date </label>
+                                                                {/* <input type="text" className="form-control"
+                                                                    defaultValue={item.LinkedIn != null ? item.LinkedIn.Description : ""} /> */}
+                                                                <DatePicker className="form-control"
+                                                                    name="CompletionDate"
+                                                                    selected={Completiondate}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    value={item.CompletedDate}
+
+                                                                    // onChange={(Completiondate) => setCompletiondate(Completiondate)}
+                                                                    onChange={handleDate}
+                                                                    locale="es"
+                                                                />
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group">
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-4 ps-0">
+                                                                <label className="form-label">Synonyms <a className="hreflink" target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={item.SynonymsTitle} onChange={(e) => item.SynonymsTitle = e.target.value} />
+                                                                <span className="input-group-text" onClick={(e) => createSynonyms(item)}> <img  src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span> 
+                                                                {item["Synonyms"] != undefined && item["Synonyms"].length > 0 && map(item["Synonyms"], (obj, index) => {
+                                                                    return (
+                                                                        <>
+                                                                            <div className="block full_width">
+                                                                                {
+                                                                                    obj.Title
+                                                                                }
+                                                                                <a className="input-group-text" onClick={(e) => deleteItem(item)}>
+                                                                                  <img src="/_layouts/images/delete.gif"></img>
+                                                                                </a>
+                                                                            </div>
+                                                                        </>
+                                                                    )
+                                                                })
+                                                                }
+                                                            </div>
+
                                                             <div className="col-sm-4">
-                                                                <label className="full_width">Synonyms <a className="hreflink" href={item.Instagram != null ? item.Instagram.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
-                                                                <input type="text" className="full_width searchbox_height"
-                                                                    defaultValue={item.Instagram != null ? item.Instagram.Description : ""} />
-                                                            </div>
-
-                                                            <div className="col-sm-4 padL-0">
-                                                                <label className="full_width">Client Activity <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                <input type="text" className="full_width searchbox_height"
+                                                                <label className="form-label">Client Activity <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                <input type="text" className="form-control"
                                                                     defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
                                                             </div>
 
-                                                            <div className="col-sm-4 padL-0">
-                                                                <label className="full_width">Package <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                <input type="text" className="full_width searchbox_height"
-                                                                    defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
+                                                            <div className="col-sm-4 pe-0">
+                                                                <label className="form-label">Package</label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={item.Package != null ? item.Package : ""} onChange={(e) => item.Package = e.target.value} />
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-6">
-                                                                <label className="full_width">Status</label>
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <label className="form-label">Status</label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={item.AdminStatus} />
                                                                 <div className="radio">
                                                                     <label>
                                                                         <input className="form-check-input"
-                                                                            ng-checked="Item.AdminStatus=='Not Started'"
-                                                                            name="Not Started" type="radio" value="Not Started"
-                                                                            defaultChecked={item.Status === "Not Started"} ng-click="Adminstatus('Not Started')"
+                                                                            name="NotStarted" type="radio" value="Not Started"
+                                                                            checked={item.AdminStatus == "Not Started"}
+                                                                            onChange={(e) => setStatus(item, 'Not Started')}
                                                                         ></input> Not Started
                                                                     </label>
                                                                 </div>
                                                                 <div className="radio">
                                                                     <label>
                                                                         <input className="form-check-input"
-                                                                            name="In Preparation" type="radio"
+                                                                            name="NotStarted" type="radio"
                                                                             value="In Preparation"
-                                                                            ng-click="Adminstatus('In Preparation')"
-                                                                            defaultChecked={item.Status === "In Preparation"}></input> In Preparation
+                                                                            onChange={(e) => setStatus(item, 'In Preparation')}
+                                                                            defaultChecked={item.AdminStatus == "In Preparation"}></input> In Preparation
                                                                     </label>
                                                                 </div>
                                                                 <div className="radio">
                                                                     <label>
                                                                         <input className="form-check-input"
-                                                                            name="In Development" type="radio"
+                                                                            name="NotStarted" type="radio"
                                                                             value="In Development"
-                                                                            ng-click="Adminstatus('In Development')"
-                                                                            defaultChecked={item.Status === "In Development"}></input> In Development
+                                                                            onChange={(e) => setStatus(item, 'In Development')}
+                                                                            defaultChecked={item.AdminStatus == "In Development"}></input> In Development
                                                                     </label>
                                                                 </div>
                                                                 <div className="radio">
                                                                     <label>
-                                                                        <input className="form-check-input" name="Active"
+                                                                        <input className="form-check-input" name="NotStarted"
                                                                             type="radio" value="Active"
-                                                                            ng-click="Adminstatus( 'Active')"
-                                                                            defaultChecked={item.Status === "Active"}></input> Active
+                                                                            onChange={(e) => setStatus(item, 'Active')}
+                                                                            defaultChecked={item.AdminStatus == "Active"}></input> Active
                                                                     </label>
                                                                 </div>
                                                                 <div className="radio">
                                                                     <label>
                                                                         <input className="form-check-input"
-                                                                            name="Archived" type="radio" value="Archived"
-                                                                            ng-click="Adminstatus('Archived')"
-                                                                            defaultChecked={item.Status === "Archived"}></input> Archived
+                                                                            name="NotStarted" type="radio" value="Archived"
+                                                                            onChange={(e) => setStatus(item, 'Archived')}
+                                                                            defaultChecked={item.AdminStatus == "Archived"}></input> Archived
                                                                     </label>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-sm-6 padL-0">
-                                                                <label className="full_width">Time <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                <input type="text" className="full_width searchbox_height"
-                                                                    defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
+                                                            <div className="col-sm-6 pe-0">
+                                                                <label className="form-label">Time <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={item.Mileage != null ? item.Mileage : ""} />
                                                                 <div className="radio">
                                                                     <label>
-                                                                        <input name="radioTime" defaultChecked={item.Mileage === "05"}
-                                                                            type="radio" ng-click="SelectTime('05')"></input>Very Quick
+                                                                        <input name="radioTime" onChange={(e) => setTime(item, '05')} defaultChecked={item.Mileage == "05" ? true : false}
+                                                                            type="radio"></input>Very Quick
                                                                     </label>
                                                                 </div>
                                                                 <div className="radio">
                                                                     <label>
-                                                                        <input name="radioTime" defaultChecked={item.Mileage === "15"}
-                                                                            type="radio" ng-click="SelectTime('15')"></input>Quick
+                                                                        <input name="radioTime" onChange={(e) => setTime(item, '15')} defaultChecked={item.Mileage == "15"}
+                                                                            type="radio" ></input>Quick
                                                                     </label>
                                                                 </div>
                                                                 <div className="radio">
                                                                     <label>
-                                                                        <input name="radioTime" defaultChecked={item.Mileage === "60"}
-                                                                            type="radio" ng-click="SelectTime('60')"></input>Medium
+                                                                        <input name="radioTime" onChange={(e) => setTime(item, '60')} defaultChecked={item.Mileage == "60"}
+                                                                            type="radio" ></input>Medium
                                                                     </label>
                                                                 </div>
                                                                 <div className="radio">
                                                                     <label>
-                                                                        <input name="radioTime" defaultChecked={item.Mileage === "240"}
-                                                                            type="radio" ng-click="SelectTime('240')"></input>Long
+                                                                        <input name="radioTime" onChange={(e) => setTime(item, "240")} defaultChecked={item.Mileage == "240"}
+                                                                            type="radio" ></input>Long
                                                                     </label>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="col-sm-3 mt-10">
-                                                        <div className="col-sm-12 padL-0" title="Priority">
-                                                            <label className="full_width">Priority</label>
-                                                            <input type="text" className="full_width searchbox_height"
-                                                                defaultValue={item.Priority_x0020_Rank != undefined ? item.Priority_x0020_Rank : ""} />
+                                                        <div className="col" title="Priority">
+                                                            <label className="form-label">Priority</label>
+                                                            <input type="text" className="form-control"
+                                                                defaultValue={item.Priority_x0020_Rank} onChange={(e) => setPriority(item, 4)} value={item.Priority_x0020_Rank} />
                                                             <div className="radio">
                                                                 <label>
                                                                     <input className="form-check-input" name="radioPriority"
@@ -704,20 +918,25 @@ function EditInstitution(item: any) {
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                        <div className="col-sm-12 padL-0">
-                                                            <label className="full_width">Categories <a className="hreflink" href={item.Facebook != null ? item.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
-                                                            <input type="text" className="full_width searchbox_height"
+                                                        <div className="col position-relative mt-10">
+                                                            <label className="form-label">Categories <a className="hreflink" href={item.Facebook != null ? item.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
+                                                            <input type="text" className="form-control"
                                                                 defaultValue={item.Facebook != null ? item.Facebook.Description : ""} />
+                                                            <span className="input-group-text"  >
+
+                                                                <Picker />
+                                                                
+                                                            </span>
                                                         </div>
                                                     </div>
-                                                    <div className="col-sm-4 padL-0 mt-10">
+                                                    <div className="col-sm-4  mt-10">
                                                         <CommentCard siteUrl={item.siteUrl} userDisplayName={item.userDisplayName} listName={item.siteType} itemID={item.Id}></CommentCard>
 
 
                                                     </div>
-                                                    <div className="col-sm-8 mb-10">
-                                                        <label className="full_width">Url</label>
-                                                        <input type="text" className="full_width searchbox_height" placeholder="Url" ng-model="Item.component_x0020_link.Url"></input>
+                                                    <div className="col-sm-8 ps-0 mb-10">
+                                                        <label className="form-label">Url</label>
+                                                        <input type="text" className="form-control" placeholder="Url"></input>
 
                                                     </div>
                                                 </div>
@@ -725,9 +944,229 @@ function EditInstitution(item: any) {
 
 
                                         </div>
+                                        <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
+
+                                            <div className="col  p-2">
+                                                <div className="container">
+                                                    <section className='accordionbox'>
+
+                                                        <div className="accordion p-0  overflow-hidden">
+                                                            <div className="card shadow-none mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(item, 'showsAdmin')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{item.showsAdmin ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Admin Notes</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {item.showsAdmin &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                <textarea defaultValue={item.Admin_x0020_Notes} onChange={(e) => item.Admin_x0020_Notes = e.target.value}>
+
+                                                                                </textarea>
+                                                                            </div>
+
+
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div className="card shadow-none  mb-2">
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(item, 'showdes')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showdes ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span> Description</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {item.showdes &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                                {/* <input type="textarea"
+                                                                                    name="textValue" defaultValue={item.Short_x0020_Description_x0020_On}
+                                                                                    onChange={this.handleChange}
+                                                                                /> */}
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={item.descriptionVerified == true}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <Editor
+                                                                                    toolbarClassName="toolbarClassName"
+                                                                                    wrapperClassName="wrapperClassName"
+                                                                                    editorClassName="editorClassName"
+                                                                                    // defaultValue={item.Short_x0020_Description_x0020_On}
+                                                                                    wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                                />
+
+                                                                                {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Short_x0020_Description_x0020_On }}>
+                                                                                   
+                                                                                </p> */}
+                                                                            </div>
+                                                                        }
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div className="card shadow-none  mb-2">
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(item, 'show')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {item.show &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={item.ShortDescriptionVerified == true}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <Editor
+                                                                                    toolbarClassName="toolbarClassName"
+                                                                                    wrapperClassName="wrapperClassName"
+                                                                                    editorClassName="editorClassName"
+                                                                                    // defaultValue={item.Short_x0020_Description_x0020_On}
+                                                                                    wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                                />
+                                                                                {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Short_x0020_Description_x0020_On }}>
+                                                                                   
+                                                                                </p> */}
+                                                                            </div>
+                                                                        }
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+
+
+                                                            <div className="card shadow-none  mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(item, 'showl')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{item.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
+                                                                    <div className="accordion-collapse collapse show" >
+
+
+                                                                        {item.showl &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* <p className="m-0" > <a>{item.Background}</a></p> */}
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={item.BackgroundVerified == true} onChange={(e) => item.BackgroundVerified = e.target.value}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <textarea defaultValue={item.Background} onChange={(e) => item.Background = e.target.value}>
+
+                                                                                </textarea>
+                                                                            </div>
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div className="card shadow-none mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(item, 'shows')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Idea</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {item.shows &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={item.IdeaVerified == true} onChange={(e) => item.BackgroundVerified = e.target.value}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <textarea defaultValue={item.Idea} onChange={(e) => item.Idea = e.target.value}>
+
+                                                                                </textarea>
+                                                                            </div>
+
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+
+
+
+
+                                                            <div className="card shadow-none mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(item, 'showj')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{item.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {item.showj &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={item.ValueAddedVerified == true} onChange={(e) => item.ValueAddedVerified = e.target.value}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: item.ValueAdded }}></p> */}
+
+                                                                                <textarea defaultValue={item.ValueAdded} onChange={(e) => item.ValueAdded = e.target.value}>
+
+                                                                                </textarea>
+                                                                            </div>
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div className="card shadow-none mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(item, 'showm')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{item.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {item.showm &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Deliverables }}></p> */}
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={item.DeliverablesVerified == true}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <Editor
+                                                                                    toolbarClassName="toolbarClassName"
+                                                                                    wrapperClassName="wrapperClassName"
+                                                                                    editorClassName="editorClassName"
+                                                                                    // defaultValue={item.Short_x0020_Description_x0020_On}
+                                                                                    wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                                />
+                                                                            </div>
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+
+
+
+                                                    </section>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div className="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
-                                            <div className="row  p-2">
+                                            <div className="col  p-2">
                                                 <div className="container">
                                                     <dl className='Sitecomposition'>
                                                         <div className="dropdown">
@@ -742,7 +1181,6 @@ function EditInstitution(item: any) {
                                                                 <div className='spxdropdown-menu'>
                                                                     <span className="pull-right">
                                                                         <input type="checkbox"
-                                                                            ng-click="chTechnicalExplanationsVerified(TechnicalExplanationsVerified)"
                                                                             defaultValue={item.TechnicalExplanationsVerified} />
                                                                         <span>Verified</span>
                                                                     </span>
@@ -761,13 +1199,13 @@ function EditInstitution(item: any) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                        {/* <div className="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">
 
                                             <div className="row  p-2">
                                                 <div className="col-sm-12 mb-10">
                                                     <div className="col-sm-12 pull-left HedaBackclr">
-                                                        <div ng-if="!HelpInformationExpandad" className="col-sm-11 padL-0 hreflink"
-                                                            ng-click="forExpand('HelpInformation')">
+                                                        <div className="col-sm-11 padL-0 hreflink"
+                                                           >
                                                             <img
                                                                 ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/right-list-iconwhite.png"></img>
                                                             <span className="txtSizeClr">
@@ -1008,7 +1446,7 @@ function EditInstitution(item: any) {
                                                 </div>
                                             </div>
 
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
 
@@ -1025,20 +1463,20 @@ function EditInstitution(item: any) {
                                         <div className="row">
                                             <div className="ItemInfo col-sm-6">
                                                 <div className="text-left">
-                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{item.Created != null ? moment(item.Created).format('DD/MM/YYYY') : ""}</span> by
+                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{item.Created != null ? moment(item.Created).format('DD/MM/YYYY MM:SS') : ""}</span> by 
                                                     <span className="footerUsercolor">
                                                         {/* {{Item.Author.Title}} */}
                                                         {item.Author.Title != undefined ? item.Author.Title : ""}
                                                     </span>
                                                 </div>
                                                 <div className="text-left">
-                                                    Last modified <span ng-bind="Item.Modified | date:'dd/MM/yyyy hh:mm'">{item.Modified != null ? moment(item.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
+                                                    Last modified <span>{item.Modified != null ? moment(item.Modified).format('DD/MM/YYYY MM:SS') : ""}</span> by <span className="footerUsercolor">
                                                         {/* {{Item.Editor.Title}} */}
                                                         {item.Editor.Title != undefined ? item.Editor.Title : ""}
                                                     </span>
                                                 </div>
                                                 <div className="text-left">
-                                                    <a className="hreflink" ng-click="removeItem(institution.Id)">
+                                                    <a className="hreflink">
                                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
                                                     </a>
                                                 </div>
@@ -1049,13 +1487,13 @@ function EditInstitution(item: any) {
                                                         <a className="ForAll hreflink" target="_blank"
                                                             href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Id}&name=${item.Title}`}>
                                                             <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
-                                                                ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
+                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
                                                         </a>
                                                     </span>
                                                     <span className="ml5">|</span>
-                                                    <a className="ml5" ng-href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${item.Id}`}
+                                                    <a className="ml5" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${item.Id}`}
                                                         target="_blank">Open out-of-the-box form</a>
-                                                    <button type="button" className="btn btn-primary ml5" ng-click="SaveItem()">Save</button>
+                                                    <button type="button" className="btn btn-primary ml5" onClick={(e) => SaveData()}>Save</button>
                                                     <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
                                                 </div>
                                             </div>
@@ -1074,4 +1512,4 @@ function EditInstitution(item: any) {
             </Modal>
         </>
     )
-} export default React.memo(EditInstitution);
+} export default EditInstitution;

@@ -1,6 +1,8 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import {Web} from 'sp-pnp-js';
+import { VscClearAll } from 'react-icons/Vsc';
+
 const orgContactEditPopup = (props: any) => {
     const [institutionData, setInstitutionData] = useState([]);
     const [searchedData, setSearchedData] = useState([]);
@@ -103,7 +105,7 @@ const orgContactEditPopup = (props: any) => {
                                             <th style={{ width: "400px" }}><input type='text' onChange={(e) => searchFunction(e, 'FullName')} placeholder="Title" value={searchKeys.FullName} /><button>=</button></th>
                                             <th><input type='text' onChange={(e) => searchFunction(e, 'City')} placeholder="City" value={searchKeys.City}/><button>=</button></th>
                                             <th><input type='text' onChange={(e) => searchFunction(e, 'Country')} placeholder="Country" value={searchKeys.Country}/><button>=</button></th>
-                                            <th><button onClick={ClearFilter}>Clear</button></th>
+                                            <th><button onClick={ClearFilter}><VscClearAll /></button></th>
                                         </tr>
                                     </thead>
                                     <tbody>

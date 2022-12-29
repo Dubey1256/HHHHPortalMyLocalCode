@@ -418,6 +418,7 @@ function DisplayTimeEntry(item: any) {
     
     return (
         <div>
+              <TimeEntryPopup props={item.props}></TimeEntryPopup>
             <Modal
                 isOpen={modalTimeIsOpen}
                 onDismiss={setModalTimmeIsOpenToFalse}

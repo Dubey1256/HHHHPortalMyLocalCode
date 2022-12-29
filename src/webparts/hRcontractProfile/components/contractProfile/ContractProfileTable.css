@@ -1,11 +1,15 @@
 shareweb-breadcrumb-item .Breadcrumb {
 
- display: none;
-
-}
-
-div#workbenchPageContent {
-
-    max-width: none;
-
-}
+    display: none;
+   
+   }
+   
+   div#workbenchPageContent {
+   
+       max-width: none;
+   
+   }
+   
+   .leftCornerTable{
+       padding-right: 0%;
+   }
