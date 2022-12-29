@@ -14,6 +14,7 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+
 export interface ICategoriesWeeklyMultipleReportState {  
   Result : any;  
   taskUsers : any;
@@ -24,6 +25,7 @@ export interface ICategoriesWeeklyMultipleReportState {
   startdate : Date;
   enddate : Date;
   SitesConfig : any;
+  AllTimeEntry: any;
 }
 
 export default class CategoriesWeeklyMultipleReport extends React.Component<ICategoriesWeeklyMultipleReportProps, ICategoriesWeeklyMultipleReportState> {
@@ -39,7 +41,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       ImageSelectedUsers : [],
       startdate : new Date(),
       enddate : new Date(),
-      SitesConfig : []  
+      SitesConfig : [],
+      AllTimeEntry: []  
     }    
     //this.GetResult();   
     this.GetTaskUsers();
@@ -465,7 +468,8 @@ private setEndDate(dt:any){
   
   private async generateTimeEntry(){
     //Create filter Creteria based on Dates and Selected users
-    let filters = '((';
+    //let filters = '(('; //use when with date filter
+    let filters = '('; //use when without date filter
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
     if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
       ImageSelectedUsers.forEach(function (obj:any, index:any) {
@@ -475,9 +479,9 @@ private setEndDate(dt:any){
               else 
                   filters += "(Author eq '" + obj.AssingedToUserId + "') or ";
           }
-      })
-      filters += ") and ((TaskDate le '"+ this.state.enddate.toISOString()  +"') and ";
-      filters += "(TaskDate ge '"+ this.state.startdate.toISOString()  +"'))";   
+      });
+      //filters += ") and ((TaskDate le '"+ this.state.enddate.toISOString()  +"') and ";
+      //filters += "(TaskDate ge '"+ this.state.startdate.toISOString()  +"'))";   
       filters += ")";
     }
 
@@ -492,7 +496,7 @@ private setEndDate(dt:any){
     .expand('TaskMigration')    
     .getAll(4999);
     console.log(resultsOfTimeSheet2);
-
+    
     let resultsofTimeSheetNew = await web.lists
     .getByTitle('TaskTimeSheetListNew')
     .items
@@ -502,7 +506,7 @@ private setEndDate(dt:any){
     .getAll(4999);
     console.log(resultsofTimeSheetNew);   
     
-    let AllTimeSheetResult = resultsOfTimeSheet2.concat(resultsofTimeSheetNew);
+    let AllTimeSheetResult = (resultsOfTimeSheet2).concat(resultsofTimeSheetNew);
     console.log(AllTimeSheetResult);
 
     this.LoadTimeSheetData(AllTimeSheetResult);
@@ -515,13 +519,14 @@ private setEndDate(dt:any){
     AllTimeSheetResult.forEach(function (timeTab:any) {
       for (let i = 0; i < getSites.length; i++) {
           let config = getSites[i];
-
+          
           if (config.Title != undefined && config.Title.toLowerCase() == "offshore tasks")
               config.Title = config.Title.replace(" ", "");
 
           let ColumnName = "Task" + config.Title.replace(" ", "");
-          if (timeTab[ColumnName] != undefined && timeTab[ColumnName].Title != undefined) {
-              timeTab.selectedSiteType = config.CopyTitle;
+          
+          if (timeTab[ColumnName] != undefined && timeTab[ColumnName].Title != undefined) {              
+              timeTab.selectedSiteType = config.Title;
               timeTab.getUserName = '';
               timeTab.siteType = config.Title;
               timeTab.SiteIcon = '';
@@ -547,7 +552,8 @@ private setEndDate(dt:any){
                 let addtime = Additionaltimeentry[index];
                 if (addtime.TaskDate != undefined) {
                   let TaskDateConvert = addtime.TaskDate.split("/");
-                  let TaskDate = TaskDateConvert[2] + '/' + TaskDateConvert[1] + '/' + TaskDateConvert[0];                      
+                  let TaskDate = new Date(TaskDateConvert[2] + '/' + TaskDateConvert[1] + '/' + TaskDateConvert[0]);    
+                  if (TaskDate >= this.state.startdate && TaskDate <= this.state.enddate) {                  
                       let hours = addtime.TaskTime;
                       let minutes = hours * 60;
                       addtime.TaskItemID = time.TaskItemID;
@@ -571,7 +577,8 @@ private setEndDate(dt:any){
                       addtime.ImageUrl = time.ImageUrl;
                       if (time.TaskCreated != undefined)
                           addtime.TaskCreatednew = this.ConvertLocalTOServerDate(time.TaskCreated, 'DD/MM/YYYY');
-                      getAllTimeEntry.push(addtime);                      
+                      getAllTimeEntry.push(addtime);
+                  }                      
                 }
               }              
           } 
@@ -694,6 +701,8 @@ private setEndDate(dt:any){
       let filterItems = this.state.filterItems;
       getAllTimeEntry.forEach(function (filterItem:any) {
         AllSharewebSiteTasks.forEach(function (getItem:any) {
+              if (filterItem.TaskItemID == '3018')
+                debugger;
                 if (filterItem.TaskItemID == getItem.Id && filterItem.selectedSiteType == getItem.siteName) {
                     filterItem.clientCategory = '';
                     filterItem.clientCategoryIds = '';
@@ -760,10 +769,13 @@ private setEndDate(dt:any){
         })
         
         AllTimeEntryItem = getAllTimeEntry;
+        console.log('All Time Entry');
         console.log(AllTimeEntryItem);
+        console.log('Filtered Items after all entry');
+        console.log(filterItems);
         this.setState({
           filterItems : filterItems
-        }, ()=>{
+        }, ()=>{          
           this.getFilterTask(AllTimeEntryItem);
         })
         
@@ -815,6 +827,8 @@ private setEndDate(dt:any){
         let isSitesSelected = false;
         for (let index = 0; index < filterTask.length; index++) {
           let item = filterTask[index];
+          if(item.TaskItemID == '3018')
+            debugger;
           item.TimeEntryIDunique = index + 1;
             for (let i = 0; i < selectedFilters.length; i++) {
                 //if (selectedFilters[i].Selected) {
@@ -953,10 +967,141 @@ private setEndDate(dt:any){
           }
           this.groupby_accordingTo_dateNew(commonItemsbackup, NotUndefineddate);
       }
+
+      let AdjustedimeEntry:any;
+      if (this.CategoryItemsArray != undefined && this.CategoryItemsArray.length > 0) {
+        let smattime = 0;
+        let roudfigersmattime = 0;
+        let SmartHoursTimetotal = 0;
+        
+        this.CategoryItemsArray.forEach(function (filte:any) {
+            let total = 0;
+            let Roundfigurtotal = 0;
+            let SmartHoursTimetotal = 0;
+            let TimeInExcel = 0;
+            if (filte.childs != undefined) {
+              filte.childs.forEach(function (child:any) {
+                    let totalnew = 0;
+                    if (child.AllTask != undefined && child.AllTask.length > 0) {
+                      child.AllTask.forEach(function (time:any) {
+                            if (time.ClientTime != undefined && time.ClientTime.length > 0 && time.siteType == 'Shareweb') {
+                              time.ClientTime.forEach(function (client:any) {
+                                    if (client.SiteName != undefined && client.SiteName == 'EI' && time.First == 'e+i')
+                                        totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+                                    if (client.SiteName != undefined && client.SiteName == 'EPS' && time.First == 'PSE')
+                                        totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+                                    if (client.SiteName != undefined && client.SiteName == 'Migration' && time.First == 'Migration')
+                                        totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+                                    if (client.SiteName != undefined && client.SiteName == 'Education' && time.First == 'Education')
+                                        totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+
+                                    //  child.TotalValue = child.TotalSmartTime.toFixed(2)
+                                })
+                            } else totalnew += time.Effort;
+                        })
+
+                    }
+                    child.AdjustedTime = totalnew;
+                    child.TotalValue = totalnew;
+                    child.TotalSmartTime = totalnew;
+                    child.SmartHoursTime = parseFloat(totalnew.toString()).toFixed(2);
+                    child.Rountfiguretime = parseFloat(totalnew.toString()).toFixed(2);
+                    if (child.Rountfiguretime != undefined && child.Rountfiguretime.toString().indexOf('.') > -1) {                       
+                        let Rountfiguretime = child.Rountfiguretime.toString().split('.')[1];
+                        let RoundAdvalue = child.Rountfiguretime.toString().split('.')[0];
+                        let Rountfiguretimenew = child.AdjustedTime.toString().split('.')[0];
+                        if (Rountfiguretime < 25) {
+                            child.Rountfiguretime = parseInt(RoundAdvalue);
+                        }
+                        if (Rountfiguretime >= 25 && Rountfiguretime < 75)
+                            child.Rountfiguretime = parseInt(RoundAdvalue) + 0.5
+
+                        if (Rountfiguretime >= 75)
+                            child.Rountfiguretime = parseInt(RoundAdvalue) + 1;
+                    }
+                    if (child.SmartHoursTime != undefined && child.SmartHoursTime.toString().indexOf('.') > -1) {
+                        let Rountfiguretime = child.SmartHoursTime.toString().split('.')[1];
+                        let Rountfiguretime1 = child.SmartHoursTime.toString().split('.')[0];
+                        if (Rountfiguretime < 25)
+                            child.SmartHoursTime = parseInt(Rountfiguretime1);
+                        if (Rountfiguretime >= 25 && Rountfiguretime < 75)
+                            child.SmartHoursTime = parseInt(Rountfiguretime1) + 0.5;
+                        if (Rountfiguretime >= 75)
+                            child.SmartHoursTime = parseInt(Rountfiguretime1) + 1;
+                    }
+                    if (child.TotalSmartTime != 0 && child.TotalSmartTime != undefined) {
+                        smattime += child.TotalSmartTime;
+                        TimeInExcel += child.TotalSmartTime;
+                    }
+                    if (child.TotalValue != undefined && child.TotalValue != 0)
+                        total += child.TotalValue;
+                    if (child.Rountfiguretime != 0 && child.Rountfiguretime != undefined)
+                        roudfigersmattime += child.Rountfiguretime;
+                    if (child.Rountfiguretime != undefined && child.Rountfiguretime != 0)
+                        Roundfigurtotal += child.Rountfiguretime;
+                    if (child.SmartHoursTime != 0 && child.SmartHoursTime != undefined)
+                        SmartHoursTimetotal += child.SmartHoursTime;
+                    // if (child.SmartHoursTime != undefined && child.SmartHoursTime != 0)
+                    //     SmartHoursTimetotal += child.SmartHoursTime;
+                })
+            }
+            filte.TotalValue = total;
+            filte.AdjustedTime = filte.TotalValue;
+            filte.RoundAdjustedTime = Roundfigurtotal;
+            filte.TimeInExcel = TimeInExcel;
+            filte.SmartHoursTotal = SmartHoursTimetotal;
+
+            if (AdjustedimeEntry == undefined || AdjustedimeEntry == '')
+              AdjustedimeEntry = 0
+            AdjustedimeEntry += filte.AdjustedTime;
+        })
+        this.SmartTotalTimeEntry = parseFloat(smattime.toString()).toFixed(2);
+        this.RoundSmartTotalTimeEntry = parseFloat(roudfigersmattime.toString()).toFixed(2);
+        this.SmartHoursTimetotalTimeEntry = parseFloat(SmartHoursTimetotal.toString()).toFixed(2);
+        this.RoundAdjustedTimeTimeEntry = parseFloat(roudfigersmattime.toString()).toFixed(2);
+
+
+    }
+    this.SmartTotalTimeEntry = parseFloat(this.SmartTotalTimeEntry).toFixed(2);;
+    this.AdjustedimeEntry = AdjustedimeEntry.toFixed(2);
+    this.TotalTimeEntry = this.SmartTotalTimeEntry;
+    //  $scope.TotalTimeEntry 
+    this.CategoryItemsArray.forEach(function (filte:any) {
+        if (filte.AdjustedTime != undefined) {
+            filte.AdjustedTime = filte.AdjustedTime.toFixed(2);;
+        }
+        if (filte.TotalValue != undefined) {
+            filte.TotalValue = filte.TotalValue.toFixed(2);;
+        }
+        if (filte.childs != undefined) {
+          filte.childs.forEach(function (child:any) {
+                child.TotalValue = child.TotalValue.toFixed(2);;
+                child.TotalSmartTime = child.TotalSmartTime.toFixed(2);;
+                child.AdjustedTime = child.AdjustedTime.toFixed(2);;
+
+            })
+        }
+    })
+    this.AllTimeEntry = this.CategoryItemsArray;
+
+    console.log('All Time Entry');
+    console.log(this.AllTimeEntry);
+
+    this.setState({
+      AllTimeEntry : this.AllTimeEntry
+    })
+    //$scope.CopyAllTimeEntry = SharewebCommonFactoryService.ArrayCopy($scope.AllTimeEntry);
           
-      }     
+    }     
   }
 
+  private AdjustedimeEntry:any;
+  private SmartTotalTimeEntry:any;
+  private RoundSmartTotalTimeEntry:any;
+  private SmartHoursTimetotalTimeEntry:any;
+  private RoundAdjustedTimeTimeEntry:any;
+  private TotalTimeEntry:any;
+  private AllTimeEntry:any=[];
 
   private getParentTitle(item:any, filter:any){
     let isExistsTitle = '';
@@ -1423,7 +1568,7 @@ private setEndDate(dt:any){
                       onExpand={expanded => this.setState({ expanded })}
                       nativeCheckboxes={true}
                       showNodeIcon={false}
-                      
+                      checkModel={'all'}
                   />
                   </div>
 
@@ -1447,6 +1592,225 @@ private setEndDate(dt:any){
         
         
         </div>
+
+        
+          <div id="showSearchBox" className="col-sm-12 padL-0 PadR0 mb-10">
+          <div className='Alltable mt-5'>
+            <div className='tbl-headings'>
+
+            </div>
+            
+            { this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
+            <div id="contact" className="col-sm-12 padL-0 PadR0 ng-hide">
+                <div className="current_commnet">No entries available</div>
+            </div>
+            }
+
+            { this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
+            <div id="contact" className="col-sm-12 padL-0 PadR0 ng-hide">
+              <div className='table-responsive fortablee'>
+                <div className='dash-wrapper'>
+                  <ul id='tasks'>
+                  <li className="for-lis">
+                    <div style={{width: "2%"}}>
+                       <div style={{width: '80%'}}>
+                          <a className="hreflink ng-hide" ng-show="expand_collapse" ng-click="filterExpanded()" title="Tap to expand the childs">
+                          <img style={{width: "10px;"}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/right-list-icon.png"/>
+                          </a>
+                          <a className="hreflink" ng-show="!expand_collapse" ng-click="filterCollapsed()" title="Tap to Shrink the childs">
+                          <img style={{width: "10px;"}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png"/>
+                          </a>
+                       </div>
+                    </div>
+                    <div style={{width:"16%"}} className="">
+                       <div style={{width:"94%"}} className="colm-relative">
+                          <input type="text" id="searchTaskId" placeholder="User Name" title="Smart time" className="full_width ng-pristine ng-untouched ng-valid ng-empty" ng-model="globalItem.getUserName" />
+                          <span ng-show="globalItem.getUserName.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('getUserName')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('getUserName', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink " ng-click="sortBy('getUserName', true)"></i>
+                          </span>
+                          </span>
+                       </div>
+                    </div>
+                    <div style={{width:"9%"}}>
+                       <div style={{width:"80%"}} className="colm-relative">
+                          <input id="searchsiteType" style={{fontWeight:"normal", width:"100%;"}} type="search" placeholder="Site" title="Smart time" className="full_width ng-pristine ng-valid ng-empty ng-touched" ng-model="globalItem.searchFirstlevel"/>
+                          <span ng-show="globalItem.searchFirstlevel.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('searchFirstlevel')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('Firstlevel', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink " ng-click="sortBy('Firstlevel', true)"></i>
+                          </span>
+                          </span>
+                          <span className="dropdown filer-icons">
+                          <span className="filter-iconfil" ng-click="myFunction('myDropdown1','Site')">
+                          <i title="Site" className="fa fa-filter hreflink " ng-show="SiteFilterGrey"></i>
+                          <i title="Site" className="fa fa-filter hreflink  glyphicon_active ng-hide" ng-show="!SiteFilterGrey"></i>
+                          </span>
+                          </span>
+                       </div>
+                            
+                    </div>
+                    <div style={{width:"25%"}} className="padLR">
+                       <div style={{width:"99%"}} className="colm-relative">
+                          <input type="text" id="searchSecondlevel" placeholder="First level" title="Smart time" className="full_width ng-pristine ng-untouched ng-valid ng-empty" ng-model="globalItem.searchSecondlevel"/>
+                          <span ng-show="globalItem.searchSecondlevel.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('searchSecondlevel')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('Secondlevel', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink " ng-click="sortBy('Secondlevel', true)"></i>
+                          </span>
+                          </span>
+                       </div>
+                    </div>
+                    <div style={{width:"9%"}} className="">
+                       <div style={{width:"95%"}} className="colm-relative">
+                          <input id="searchTotalValue" type="text" placeholder="Time" title="Smart time" className="full_width ng-pristine ng-untouched ng-valid ng-empty" ng-model="globalItem.searchTotalValue"/>
+                          <span ng-show="globalItem.searchTotalValue.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('searchTotalValue')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('TotalValue', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink " ng-click="sortBy('TotalValue', true)"></i>
+                          </span>
+                          </span>
+                       </div>
+                    </div>
+                    <div style={{width:"27%"}}>
+                       <div style={{width:"96%"}} className="colm-relative">
+                          <input id="searchCategoriesItems" style={{fontWeight:"normal;"}} type="search" placeholder="Categories" title="categories" className="full_width ng-pristine ng-untouched ng-valid ng-empty" ng-model="globalItem.searchclientCategory"/>
+                          <span ng-show="globalItem.searchclientCategory.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('searchclientCategory')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('clientCategory', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink " ng-click="sortBy('clientCategory', true)"></i>
+                          </span>
+                          </span>
+                       </div>
+                    </div>
+                    <div style={{width:"5%"}}>
+                       <div style={{width:"100%"}} className="colm-relative">
+                          <input id="searchTotalSmartTime" style={{fontWeight:"normal;"}} type="search" placeholder="Smart Hours" title="Smart Hours" className="full_width ng-pristine ng-untouched ng-valid ng-empty" ng-model="globalItem.searchTotalSmartTime"/>
+                          <span ng-show="globalItem.searchTotalSmartTime.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('searchTotalSmartTime')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('TotalSmartTime', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink " ng-click="sortBy('TotalSmartTime', true)"></i>
+                          </span>
+                          </span>
+                       </div>
+                    </div>
+                    <div style={{width:"5%"}}>
+                       <div style={{width:"100%"}} className="colm-relative">
+                          <input id="searchSmartHoursTime" style={{fontWeight:"normal;"}} type="search" placeholder="Smart Hours (Roundup)" title="Smart Hours (Roundup)" className="full_width ng-pristine ng-untouched ng-valid ng-empty" ng-model="globalItem.SmartHoursTime"/>
+                          <span ng-show="globalItem.SmartHoursTime.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('searchSmartHoursTime')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('SmartHoursTime', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink " ng-click="sortBy('SmartHoursTime', true)"></i>
+                          </span>
+                          </span>
+                       </div>
+                    </div>
+                    <div style={{width:"5%"}}>
+                       <div style={{width:"100%"}} className="colm-relative">
+                          <input id="searchAdjustedTime" style={{fontWeight:"normal;"}} type="search" placeholder="Adjusted Hours" title="Adjusted Hours" className="full_width ng-pristine ng-valid ng-empty ng-touched" ng-model="globalItem.AdjustedTime"/>
+                          <span ng-show="globalItem.AdjustedTime.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('searchAdjustedTime')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('AdjustedTime', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink  footerUsercolor" ng-click="sortBy('AdjustedTime', true)"></i>
+                          </span>
+                          </span>
+                       </div>
+                    </div>
+                    <div style={{width:"5%"}}>
+                       <div style={{width:"100%"}} className="colm-relative">
+                          <input id="searchAdjustedHoursTime" style={{fontWeight:"normal;"}} type="search" placeholder="Adjusted Hours (Roundup)" title="Adjusted Hours (Roundup)" className="full_width ng-pristine ng-valid ng-empty ng-touched" ng-model="globalItem.AdjustedHoursTime"/>
+                          <span ng-show="globalItem.AdjustedHoursTime.length>0" className="searchclear-bg ng-hide" ng-click="clearControl('searchAdjustedHoursTime')">X</span>
+                          <span className="sortingfilter">
+                          <span className="ml0">
+                          <i className="fa fa-angle-up hreflink " ng-click="sortBy('Rountfiguretime', false)"></i>
+                          </span>
+                          <span className="ml0">
+                          <i className="fa fa-angle-down hreflink " ng-click="sortBy('Rountfiguretime', true)"></i>
+                          </span>
+                          </span>
+                       </div>
+                    </div>
+                    <div style={{width:"2%"}} className="padLR">
+                       <div style={{width:"80%"}} className=""></div>
+                    </div>
+                  </li>
+                  {this.state.AllTimeEntry.map((item:any) => item).reverse().map( (userTask :any,i:any)=> { 
+                    return <>
+                    <li className='for-lis for-c02  tdrows'>
+                                <div style={{width:"2%"}}>
+                                    <a className="hreflink ng-hide" ng-show="userTask.childs.length>0&amp;&amp;!userTask.expanded" ng-click="userTask.expanded=true" title="Expand  childs">
+                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/right-list-icon.png" data-themekey="#"/>
+                                    </a>
+                                    <a className="hreflink" ng-show="userTask.childs.length>0&amp;&amp;userTask.expanded" ng-click="userTask.expanded=false" title="Collapse  childs">
+                                        <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png" data-themekey="#" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/list-icon.png"/>
+                                    </a>
+                                </div>
+                                <div style={{width:"16%"}} className="padLR ng-binding">{userTask.getUserName}</div>
+                                <div style={{width:"9%"}} className="ng-binding"></div>
+                                <div style={{width:"25%"}} className="padLR ng-binding"></div>
+                                <div style={{width:"9%"}} className="padLR ng-binding">{userTask.TotalValue}</div>
+                                <div style={{width:"27%"}} className="padLR ng-binding"></div>
+                                <div style={{width:"5%"}} className="padLR ng-binding">{userTask.SmartHoursTotal}</div>
+                                <div style={{width:"5%"}} className="padLR ng-binding">{userTask.SmartHoursTotal}</div>
+                                <div style={{width:"5%"}} className="padLR ng-binding">{userTask.AdjustedTime}</div>                               
+                                <div style={{width:"5%"}} className="padLR ng-binding">{userTask.RoundAdjustedTime}</div>
+                                <div style={{width:"2%"}} className="padLR"></div>
+                            </li>
+                            {userTask.childs.length > 0 && userTask.childs.map((child:any,j:any)=> { 
+                              return <li className='for-lis project_actives tdrows serviceColor_Active'>
+                                        <div style={{width:"2%"}}></div>
+                                        <div style={{width:"16%"}} className="padLR ng-binding"></div>
+                                        <div style={{width:"9%"}} className="ng-binding">{child.Firstlevel}</div>
+                                        <div style={{width:"25%"}} className="padLR ng-binding">{child.Secondlevel}</div>
+                                        <div style={{width:"9%"}} className="padLR ng-binding">{child.TotalValue}</div>
+                                        <div style={{width:"27%"}} className="padLR ng-binding">{child.clientCategory}</div>
+                                        <div style={{width:"5%"}} className="padLR ng-binding">{child.TotalSmartTime}</div>
+                                        <div style={{width:"5%"}} className="padLR ng-binding">{child.SmartHoursTime}</div>
+                                        <div style={{width:"5%"}} className="padLR ng-binding">{child.AdjustedTime}</div>                               
+                                        <div style={{width:"5%"}} className="padLR ng-binding">{child.Rountfiguretime}</div>
+                                        <div style={{width:"2%"}} className="padLR"></div>
+                              </li>
+                            })
+                            }
+                            </>
+                          })
+                        }
+
+                  </ul>
+                </div>
+              </div>
+            </div>
+            }
+
+          </div>
+        </div>
+        
+        
 
       </div>
     );
