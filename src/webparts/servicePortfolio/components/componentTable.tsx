@@ -2664,14 +2664,9 @@ function ComponentTable() {
     );
 }
 export default ComponentTable;
-function RetrieveSPData() {
-    throw new Error("Function not implemented.");
-}
 
 
-function openModal(): React.MouseEventHandler<HTMLAnchorElement> {
-    throw new Error("Function not implemented.");
-}
+
 
 
 
