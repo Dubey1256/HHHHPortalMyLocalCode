@@ -375,6 +375,28 @@ function Portfolio({ ID }: any) {
 
                                         </dd>
                                     </dl>
+                                    {data.map((item:any) => {
+                                        return(
+                                            <>                                    
+                                    {item.Parent.Title!=undefined &&
+                                    <dl>
+                                        <dt className='bg-fxdark'>Parent</dt>
+                                        <dd className='bg-light'>
+                                           <a target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Parent.Id}`}>{item.Parent.Title}</a>
+                                            <span className="pull-right">
+                                                <span className="pencil_icon">
+                                                    <span className="hreflink"
+                                                        title="Edit Inline"
+                                                    >
+                                                        <i className="fa fa-pencil" aria-hidden="true"></i>
+                                                    </span>
+                                                </span>
+                                            </span>
+
+                                        </dd>
+                                    </dl>
+                                    }
+                                    </>)})}
                                 </div>
                                 <div className='col-md-4 p-0'>
                                 {data.map((item:any)=>{

@@ -224,12 +224,7 @@ export default function ProjectOverview() {
                                             </button>
                                         </div>
                                         </div>
-                                        <div className="d-flex flex-row-reverse mx-2">
-                                            <button type="button"
-                                                style={{ background: "#000066", color: "#fff", border: "none", outline: "none", padding: "6px", borderRadius: "5px" }} onClick={deleteUserDtl}>
-                                                Delete Item
-                                            </button>
-                                        </div>
+                                     
                                     </span>
                                 </div>
                             </div>

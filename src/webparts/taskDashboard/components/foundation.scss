@@ -577,7 +577,7 @@ ul {list-style: none;}
 #SmartTaxonomyPopup .divPanelBody #main-menu > li > a, #SmartTaxonomyPicker .divPanelBody #main-menu > li > a {color: #006699 !important;font-size: 13px;padding: 8px 15px 8px 15px;text-decoration: none;display: block;}
 #SmartTaxonomyPicker .divPanelBody ul.sub-menu li a {font-size: 13px !important;}
 #SmartTaxonomyPopup .divPanelBody #main-menu > li:hover {background: #ccc !important;}
-#SmartTaxonomyPopup .modal-body > .divPanelBody ul.sub-menu {left: 269px !important;top: 1px !important;width: 25% !important;z-index: inherit !important;position: absolute;height: 100%;}
+#SmartTaxonomyPopup .modal-body > .divPanelBody ul.sub-menu {left: 304px !important;top: 1px !important;width: 25% !important;z-index: inherit !important;position: absolute;height: 100%;}
  #SmartTaxonomyPicker .modal-body > .divPanelBody ul.sub-menu  {left: 401px !important;top: 1px !important;width: 33% !important;z-index: inherit !important;position: absolute;height: 100%;}
 #SmartMasterTaskPopup #main-menu li {display: inherit !important;border-left: 1px solid #ccc;border-radius: 0px;position: static !important;background: #fff;}
 #SmartTaxonomyPopup .divPanelBody ul.sub-menu > li, #SmartTaxonomyPicker .divPanelBody ul.sub-menu > li {border-radius: 0px;margin: 2px;position: static !important;}
@@ -1620,7 +1620,7 @@ fieldset.team {
 }
 
 .divPanelBody #main-menu li:hover > ul.sub-menu {
-    display: none;
+    display: block !important;
 }
 
 #contentRow {
@@ -2283,3 +2283,4 @@ table.indicator_search td fieldset legend span, .smartSearch-Filter-Section .td-
     letter-spacing: 0;
     display: block;
 }
+

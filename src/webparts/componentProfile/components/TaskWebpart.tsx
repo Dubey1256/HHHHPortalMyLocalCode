@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import Tooltip from './Tooltip';
+import EditInstituton from '../../EditPopupFiles/EditComponent'
 import { create } from 'lodash';
 export default function ComponentTable({ props }: any) {
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
@@ -45,9 +46,11 @@ export default function ComponentTable({ props }: any) {
     const [TeamMembermodalIsOpen, setTeamMembermodalIsOpen] = React.useState(false);
     const [ItemRankmodalIsOpen, setItemRankmodalIsOpen] = React.useState(false);
     const [StatusmodalIsOpen, setStatusmodalIsOpen] = React.useState(false);
-     //    Array For TaskUser
+    const [IsComponent, setIsComponent] = React.useState(false);
+    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    //    Array For TaskUser
     //  const Tasks = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
-    
+
     //    Array For Status
     const AllItems = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
     // Array of Rank
@@ -73,6 +76,16 @@ export default function ComponentTable({ props }: any) {
         setPopupItem(true);
         setItemData(['']);
         setItemData(itemData);// => ([...itemData]));
+    }
+    const Call = React.useCallback((item1) => {
+        setIsComponent(false);
+    }, []);
+
+    const EditComponentPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     const SingleLookDatatest = (e: any, item: any, value: any) => {
         const { checked } = e.target;
@@ -1026,7 +1039,7 @@ export default function ComponentTable({ props }: any) {
                             item.childs = [];
                             item.TeamLeaderUser = []
                             item.CreatedDateImg = []
-                            
+
                             if (item.SharewebCategories.results != undefined) {
                                 if (item.SharewebCategories.results.length > 0) {
                                     $.each(item.SharewebCategories.results, function (ind: any, value: any) {
@@ -1049,7 +1062,7 @@ export default function ComponentTable({ props }: any) {
                         if (Counter == 18) {
                             $.each(AllTasks, function (index: any, result: any) {
                                 //result.TeamLeaderUser = []
-                                
+
                                 result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
                                 if (result.DueDate == 'Invalid date' || '') {
                                     result.DueDate = result.DueDate.replaceAll("Invalid date", "")
@@ -1068,7 +1081,7 @@ export default function ComponentTable({ props }: any) {
                                                 }
                                             })
                                         }
-                                    }) 
+                                    })
                                 }
                                 if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
                                     $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
@@ -1097,7 +1110,7 @@ export default function ComponentTable({ props }: any) {
                                     }
                                 }
 
-                              
+
                                 result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
                                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
                                     $.each(result.Team_x0020_Members, function (index: any, catego: any) {
@@ -1648,10 +1661,12 @@ export default function ComponentTable({ props }: any) {
     // },[])
 
 
-    
+    const myData = [].concat(data).sort((a, b) => a.itemM > b.itemM ? 1 : -1);
+    console.log(myData);
 
 
-        
+
+
     return (
         <div className="app component">
             {/* Smart Time Popup */}
@@ -1671,7 +1686,7 @@ export default function ComponentTable({ props }: any) {
                         </h4>
                         <div className="col-md-12 mb-10 mt-10">
                             <select className="form-control"
-                          >
+                            >
                                 <option value="">Select</option>
                                 <option value="Equal to">Equal to</option>
                                 <option value="Greater than">Greater than</option>
@@ -1680,15 +1695,15 @@ export default function ComponentTable({ props }: any) {
                             </select>
                         </div>
                         <div className="col-md-12 mb-10 mt-10">
-                            <input type="text" placeholder="Effort"  className="form-control full-width ng-pristine ng-untouched ng-valid ng-empty" id="txtSmartTime" />
+                            <input type="text" placeholder="Effort" className="form-control full-width ng-pristine ng-untouched ng-valid ng-empty" id="txtSmartTime" />
                         </div>
                         <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                            <button type="button" 
+                            <button type="button"
                                 className="btn btn-primary">
                                 Apply
                             </button>
                             <button type="button" className="btn btn-default blocks"
-                               >
+                            >
                                 Clear
                             </button>
                         </div>
@@ -1706,7 +1721,7 @@ export default function ComponentTable({ props }: any) {
                     <div id="myDropdown4" className="dropdown-content">
                         <h4 className="col-sm-12 siteColor quickheader">
                             Created Date <span title="Close popup" className="pull-right hreflink"
-                             onClick={setCreatedmodalIsOpenToFalse}>
+                                onClick={setCreatedmodalIsOpenToFalse}>
                                 <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
                             </span>
                         </h4>
@@ -1731,12 +1746,12 @@ export default function ComponentTable({ props }: any) {
                                 style={{ marginRight: "10px" }}></i>
                         </div>
                         <div className="col-md-12 text-center PadR0 mb-10 mt-10">
-                            <button type="button" 
+                            <button type="button"
                                 className="btn btn-primary">
                                 Apply
                             </button>
                             <button type="button" className="btn btn-default blocks"
-                                >
+                            >
                                 Clear
                             </button>
                         </div>
@@ -1755,13 +1770,13 @@ export default function ComponentTable({ props }: any) {
                     <div id="myDropdown4" className="dropdown-content">
                         <h4 className="col-sm-12 siteColor quickheader">
                             Due Date <span title="Close popup" className="pull-right hreflink"
-                               onClick={setDuemodalIsOpenToFalse}>
+                                onClick={setDuemodalIsOpenToFalse}>
                                 <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
                             </span>
                         </h4>
                         <div className="col-md-12 mb-10 mt-10">
                             <select id="selectCreatedValue" className="form-control"
-                             >
+                            >
                                 <option value="">Select</option>
                                 <option value="Equal to">Equal to</option>
                                 <option value="Greater than">Greater than</option>
@@ -1775,7 +1790,7 @@ export default function ComponentTable({ props }: any) {
                             className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
                             <input type="date" placeholder="dd/mm/yyyy"
                                 className="form-control date-picker" id="txtDate4"
-                              />
+                            />
                             <i className="fa fa-calendar form-control-feedback mt-10"
                                 style={{ marginRight: "10px" }}></i>
                         </div>
@@ -1803,15 +1818,15 @@ export default function ComponentTable({ props }: any) {
                     <div id="myDropdown1" className="dropdown-content">
                         <h4 className="col-sm-12 siteColor quickheader">
                             Team Members <span title="Close popup" className="pull-right hreflink"
-                               onClick={setTeamMembermodalIsOpenToFalse}>
+                                onClick={setTeamMembermodalIsOpenToFalse}>
                                 <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
                             </span>
                         </h4>
                         <div className="col-sm-12 padL-0 ml5">
                             <div className="checkbox mb0 ml15">
-                                <input  type="checkbox"
+                                <input type="checkbox"
                                     name="Responsibility1"
-                                    /><span className=" f-500">
+                                /><span className=" f-500">
                                     Select All
                                 </span>
                             </div>
@@ -1866,26 +1881,26 @@ export default function ComponentTable({ props }: any) {
                                                                                                 <div style={{ display: "block" }}>
                                                                                                     {child1.childs.length > 0 && !child1.expanded &&
                                                                                                         <span className="plus-icon hreflink"
-                                                                                                         >
+                                                                                                        >
                                                                                                             <img
                                                                                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
                                                                                                         </span>
                                                                                                     }
                                                                                                     {child1.childs.length > 0 && child1.expanded &&
                                                                                                         <span className="plus-icon hreflink"
-                                                                                                         >
+                                                                                                        >
                                                                                                             <img
                                                                                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                                         </span>
                                                                                                     }
-                                                                                                    <input type="checkbox" className="icon-input mr0" 
+                                                                                                    <input type="checkbox" className="icon-input mr0"
                                                                                                         onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
                                                                                                     <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
                                                                                                     >
                                                                                                         {child1.childs.map(function (child2: any) {
                                                                                                             <li>
                                                                                                                 <input type="checkbox"
-                                                                                                                   
+
                                                                                                                     onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
                                                                                                             </li>
                                                                                                         })}
@@ -1911,12 +1926,12 @@ export default function ComponentTable({ props }: any) {
                             })}
                         </div>
                         <div className="col-md-12 text-center padL-0 PadR0 mb-10 mt-10">
-                            <button type="button" 
+                            <button type="button"
                                 className="btn btn-primary">
                                 Apply
                             </button>
                             <button type="button" className="btn btn-default blocks"
-                          >
+                            >
                                 Clear
                             </button>
                         </div>
@@ -1940,15 +1955,15 @@ export default function ComponentTable({ props }: any) {
                         </h4>
                         <div className="col-sm-12 padL-0 ml5" >
                             <div className="checkbox mb0 ml15">
-                                <input  type="checkbox" name="ItemRank1"
-                                   /><span className="f-500">Select All</span>
+                                <input type="checkbox" name="ItemRank1"
+                                /><span className="f-500">Select All</span>
                             </div>
                         </div>
                         {AllItemRank.map(item => {
                             return (
                                 <div className="col-sm-12 PadR0 ml5">
                                     <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
-                                  >
+                                    >
                                         <input type="checkbox"
                                             name="ItemRank" /><span className="">
                                             {item.Title}
@@ -1958,7 +1973,7 @@ export default function ComponentTable({ props }: any) {
                             )
                         })}
                         <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                            <button type="button" 
+                            <button type="button"
                                 className="btn btn-primary">
                                 Apply
                             </button>
@@ -1989,9 +2004,9 @@ export default function ComponentTable({ props }: any) {
                         <div className="col-sm-12 padL-0 ml5">
                             <div className="checkbox mb0 ml15 f-500">
                                 <span className="">
-                                    <input  type="checkbox"
+                                    <input type="checkbox"
                                         name="PercentComplete1"
-                            
+
                                     />
                                     Select All
                                 </span>
@@ -2001,7 +2016,7 @@ export default function ComponentTable({ props }: any) {
                             {AllItems.map(items => {
                                 return (
                                     <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
-                                  >
+                                    >
                                         <input type="checkbox"
                                             name="PercentComplete" /><span className="">
                                             {items.Title}%
@@ -2011,12 +2026,12 @@ export default function ComponentTable({ props }: any) {
                             })}
                         </div>
                         <div className="col-md-12 padL-0 PadR0 text-center mb-10 mt-10">
-                            <button type="button" 
+                            <button type="button"
                                 className="btn btn-primary">
                                 Apply
                             </button>
                             <button type="button" className="btn btn-default blocks"
-                           >
+                            >
                                 Clear
                             </button>
                         </div>
@@ -2032,18 +2047,18 @@ export default function ComponentTable({ props }: any) {
                                 <div className="tbl-headings">
                                     <span className="leftsec w65">
                                         <label>
-                                            <span className='headign'> 
-                                                 {props.Portfolio_x0020_Type=='Component' &&
-                                <>
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{props.Title}</a>
-                                </>
-                                  }
-                                    {props.Portfolio_x0020_Type=='Service' &&
-                                <>
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{props.Title}</a>
-                                </>}
-                        
-                                            </span> 
+                                            <span className='headign'>
+                                                {props.Portfolio_x0020_Type == 'Component' &&
+                                                    <>
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{props.Title}</a>
+                                                    </>
+                                                }
+                                                {props.Portfolio_x0020_Type == 'Service' &&
+                                                    <>
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{props.Title}</a>
+                                                    </>}
+
+                                            </span>
                                         </label>
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
@@ -2052,19 +2067,19 @@ export default function ComponentTable({ props }: any) {
                                     </span>
                                     <span className="toolbox mx-auto">
                                         <button type="button" className="btn btn-primary"
-                                                        onClick={addModal} title=" Add Structure">
+                                            onClick={addModal} title=" Add Structure">
                                             Add Structure
                                         </button>
                                         <button type="button"
                                             className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                                           
+
                                             disabled={true}>
                                             <MdAdd />
                                             Add Activity-Task
                                         </button>
                                         <button type="button"
                                             className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                                         
+
                                             disabled={true}>
                                             Restructure
                                         </button>
@@ -2143,10 +2158,10 @@ export default function ComponentTable({ props }: any) {
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
                                                                         onClick={setStatusmodalIsOpenToTrue}
-                                                                 
+
                                                                     >
                                                                         <i ><FaFilter onClick={setStatusmodalIsOpenToTrue} /></i>
-                                                                       
+
                                                                     </span></span>
                                                             </div>
                                                         </th>
@@ -2163,10 +2178,10 @@ export default function ComponentTable({ props }: any) {
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
                                                                         onClick={setItemRankmodalIsOpenToTrue}
-                                                                    
+
                                                                     >
                                                                         <i ><FaFilter onClick={setItemRankmodalIsOpenToTrue} /></i>
-                                                                      
+
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -2184,10 +2199,10 @@ export default function ComponentTable({ props }: any) {
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
                                                                         onClick={setTeamMembermodalIsOpenToTrue}
-                                                                   
+
                                                                     >
                                                                         <i ><FaFilter onClick={setTeamMembermodalIsOpenToTrue} /></i>
-                                                               
+
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -2205,10 +2220,10 @@ export default function ComponentTable({ props }: any) {
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
                                                                         onClick={setDuemodalIsOpenToTrue}
-                                                               
+
                                                                     >
                                                                         <i ><FaFilter onClick={setDuemodalIsOpenToTrue} /></i>
-                                                                    
+
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -2226,7 +2241,7 @@ export default function ComponentTable({ props }: any) {
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
                                                                         onClick={setCreatedmodalIsOpenToTrue}
-                                                                
+
                                                                     >
                                                                         <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue} /></i>
                                                                     </span>
@@ -2246,10 +2261,10 @@ export default function ComponentTable({ props }: any) {
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
                                                                         onClick={setModalSmartIsOpenToTrue}
-                                                                 
+
                                                                     >
                                                                         <i ><FaFilter onClick={setModalSmartIsOpenToTrue} /></i>
-                                                                   
+
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -2267,7 +2282,7 @@ export default function ComponentTable({ props }: any) {
                                                         <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
                                                     </div>
 
-                                                    
+
                                                     {data.length > 0 && data && data.map(function (item, index) {
                                                         item.ClientCategory != undefined
                                                         if (item.flag == true) {
@@ -2290,7 +2305,7 @@ export default function ComponentTable({ props }: any) {
                                                                                         </div>
                                                                                     </td>
                                                                                     <td style={{ width: "3%" }}><input type="checkbox" /></td>
-                                                                                                             
+
                                                                                     <td style={{ width: "3%" }}>
                                                                                         <div className="">
                                                                                             <span>
@@ -2351,24 +2366,28 @@ export default function ComponentTable({ props }: any) {
                                                                                     <td style={{ width: "7%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
-                                                                                    
-                                                                                    <td style={{ width: "9%" }}>
-                                                                                        
-                                                                                           
-                                                                                                <span>
-                                                                                                    {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
 
-                                                                                                    </span>
-                                                                                                    <span>
-                                                                                                    {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
-                                                                                                         return (
+                                                                                    <td style={{ width: "9%" }}>
+
+
+                                                                                        <span>
+                                                                                            {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+
+                                                                                        </span>
+                                                                                        <span>
+                                                                                            {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
+                                                                                                return (
                                                                                                     <img className='ClientCategory-Usericon' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                                    )
-                                                                                                }) : ""}
-                                                                                                    </span>
-                                                                                          
+                                                                                                )
+                                                                                            }) : ""}
+                                                                                        </span>
+
                                                                                     </td>
-                                                                                    <td style={{ width: "7%" }}></td>
+                                                                                    <td style={{ width: "7%" }}>
+                                                                                    {item.childs != undefined && item.childs.length > 0 &&
+                                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+                                                                                    }
+                                                                                        </td>
                                                                                     {/* <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td> */}
                                                                                     <td style={{ width: "2%" }}></td>
                                                                                     <td style={{ width: "2%" }}></td>
@@ -2676,6 +2695,7 @@ export default function ComponentTable({ props }: any) {
                         </div></section>
                 </div></section>
             {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
+            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
         </div>
     );
 }

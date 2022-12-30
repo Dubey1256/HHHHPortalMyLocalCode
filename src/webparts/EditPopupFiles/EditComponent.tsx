@@ -36,7 +36,7 @@ function EditInstitution(item: any) {
     const [date, setDate] = React.useState(undefined);
     const [Startdate, setStartdate] = React.useState(undefined);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
-    $('.ms-Dialog-main .main-153').hide();
+    // $('.ms-Dialog-main .main-153').hide();
     const setModalIsOpenToTrue = (e: any) => {
         // e.preventDefault()
         setModalIsOpen(true)
@@ -46,7 +46,21 @@ function EditInstitution(item: any) {
         EditComponentCallback();
         setModalIsOpen(false)
     }
-
+    const handleDate = (date: any) => {
+        CompoenetItem[0].CompletedDate = date;
+        setCompletiondate(date);
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    };
+    const handleDatestart = (date: any) => {
+        CompoenetItem[0].StartDate = date;
+        setStartdate(date);
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    };
+    const handleDatedue = (date: any) => {
+        CompoenetItem[0].DueDate = date;
+        setDate(date);
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+    };
     const Call = React.useCallback((item1) => {
         if (CompoenetItem != undefined && item1 != undefined) {
             item.props.smartComponent = item1.smartComponent;
@@ -54,22 +68,22 @@ function EditInstitution(item: any) {
         }
         setIsComponent(false);
     }, []);
-    var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-        if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
+    // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
+    //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
 
-        // below logic works fine in all condition 
-        if (LocalDateTime != '') {
-            var serverDateTime;
-            var vLocalDateTime = new Date(LocalDateTime);
-            //var offsetObj = GetServerOffset();
-            //var IANATimeZoneName = GetIANATimeZoneName();
-            var mDateTime = moment(LocalDateTime);
-            // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
-            //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
-            return serverDateTime;
-        }
-        return '';
-    }
+    //     // below logic works fine in all condition 
+    //     if (LocalDateTime != '') {
+    //         var serverDateTime;
+    //         var vLocalDateTime = new Date(LocalDateTime);
+    //         //var offsetObj = GetServerOffset();
+    //         //var IANATimeZoneName = GetIANATimeZoneName();
+    //         var mDateTime = moment(LocalDateTime);
+    //         // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
+    //         //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
+    //         return serverDateTime;
+    //     }
+    //     return '';
+    // }
     var getMultiUserValues = function (item: any) {
         var users = '';
         var isuserexists = false;
@@ -115,17 +129,7 @@ function EditInstitution(item: any) {
         }
         return IconUrl;
     }
-    var getpriority = function (item: any) {
-        if (item.PriorityRank >= 0 && item.PriorityRank <= 3) {
-            item.Item.Priority = '(3) Low';
-        }
-        if (item.PriorityRank >= 4 && item.PriorityRank <= 7) {
-            item.Item.Priority = '(2) Normal';
-        }
-        if (item.PriorityRank >= 8) {
-            item.Item.Priority = '(1) High';
-        }
-    }
+
     // var SelectPriority = function (Item:any) {
     //     switch (Item.Priority) {
     //         case '(3) Low':
@@ -139,6 +143,22 @@ function EditInstitution(item: any) {
     //             break;
     //     }
     // }
+    const handleChange = (newValue: any) => {
+        console.log("newValue: ", newValue);
+        // setStartdate(newValue);
+        //  props.setDate( newValue );
+    };
+    const getpriority = function (item: any) {
+        if (item.PriorityRank >= 0 && item.PriorityRank <= 3) {
+            item.Priority = '(3) Low';
+        }
+        if (item.PriorityRank >= 4 && item.PriorityRank <= 7) {
+            item.Priority = '(2) Normal';
+        }
+        if (item.PriorityRank >= 8) {
+            item.Priority = '(1) High';
+        }
+    }
     var getMasterTaskListTasks = function () {
         var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
         $.ajax({
@@ -152,14 +172,16 @@ function EditInstitution(item: any) {
                 $.each(Tasks, function (index: any, item: any) {
                     item.DateTaskDueDate = new Date(item.DueDate);
                     if (item.DueDate != null)
-                        item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
+                        item.TaskDueDate = moment(item.DueDate).format('DD/MM/YYYY');
+                    // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
                     item.FilteredModifiedDate = item.Modified;
                     item.DateModified = new Date(item.Modified);
                     item.DateCreatedNew = new Date(item.Created);
 
-                    item.DateCreated = item.CreatedDate = ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-                    item.Creatednewdate = ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
-                    item.Modified = ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+                    item.DateCreated = item.CreatedDate = moment(item.Created).format('DD/MM/YYYY');// ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
+                    item.Creatednewdate = moment(item.Created).format('DD/MM/YYYY');//ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
+                    // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
+                    //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
                     if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
                         switch (item.Priority) {
                             case '(1) High':
@@ -175,6 +197,7 @@ function EditInstitution(item: any) {
 
                         }
                     }
+                    getpriority(item)
                     item.assigned = getMultiUserValues(item);
                     if (item.ItemRank != undefined)
                         item.ItemRankTitle = TaskItemRank[0].filter((option: { rank: any; }) => option.rank == item.ItemRank)[0].rankTitle;
@@ -196,6 +219,19 @@ function EditInstitution(item: any) {
                         item.taskLeader = getMultiUserValues(item);
                     if (item.Task_x0020_Type == undefined)
                         item.Task_x0020_Type = 'Activity Tasks';
+                    if (item.DueDate != undefined) {
+                        item.DueDate = moment(item.DueDate).format('DD/MM/YYYY')
+                        // setDate(item.DueDate);
+                    }
+                    if (item.StartDate != undefined) {
+                        item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
+                        //setStartdate(item.StartDate);
+                    }
+                    if (item.CompletedDate != undefined) {
+                        item.CompletedDate = moment(item.CompletedDate).format('DD/MM/YYYY')
+                        // item.CompletedDate = item.CompletedDate.toString();
+                        // setCompletiondatenew(item.CompletedDate);
+                    }
                     item.SmartCountries = [];
                     item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                     item['SiteIcon'] = item.siteType == "Master Tasks" ? GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined) : GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
@@ -240,7 +276,7 @@ function EditInstitution(item: any) {
                 getMasterTaskListTasks();
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
-                TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: 67677 }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
+                TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
                 setSharewebItemRank(TaskItemRank[0]);
                 if (useeffectdata == false)
                     setuseeffectdata(true);
@@ -519,22 +555,29 @@ function EditInstitution(item: any) {
                 }
             })
         }
+        if (Items.ItemRankTitle != undefined && Items.ItemRankTitle != 'Select Item Rank')
+            var ItemRank = SharewebItemRank.filter((option: { rankTitle: any; }) => option.rankTitle == Items.ItemRankTitle)[0].rank;
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
         await web.lists.getById('ec34b38f-0669-480a-910c-f84e92e58adf').items.getById(Items.ID).update({
 
             Title: Items.Title,
 
-            Created: Items.ItemRankTitle,
+            ItemRank: ItemRank,
             Priority_x0020_Rank: Items.Priority_x0020_Rank,
             ComponentId: { "results": smartComponentsIds },
             Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-            // StartDate: Startdate,
-            // DueDate: date,
-            // tartDate: Completiondate,
+            StartDate: Startdate != undefined ? new Date(Startdate).toDateString() : Startdate,
+            DueDate: date != undefined ? new Date(date).toDateString() : date,
+            CompletedDate: Completiondate != undefined ? new Date(Startdate).toDateString() : Completiondate,
             Synonyms: JSON.stringify(Items['Synonyms']),
             Package: Items.Package,
             AdminStatus: Items.AdminStatus,
             Priority: Items.Priority,
+            Mileage: Items.Mileage,
+            ValueAdded: Items.ValueAdded,
+            Idea: Items.Idea,
+            Background: Items.Background,
+            Admin_x0020_Notes: Items.Admin_x0020_Notes,
             // component_x0020_link: {
             //     '__metadata': { 'type': 'SP.FieldUrlValue' },
             //     'Description': Items.component_x0020_link != undefined ? Items.component_x0020_link.Url : null,
@@ -562,6 +605,8 @@ function EditInstitution(item: any) {
 
 
     }
+
+
 
     return (
         <>
@@ -609,20 +654,20 @@ function EditInstitution(item: any) {
                                             <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Help</button>
                                         </li> */}
                                     </ul>
-                                    <div className="tab-content border border-top-0" id="myTabContent">
+                                    <div className="tab-content border border-top-0 clearfix " id="myTabContent">
                                         <div className="tab-pane  show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                            <div className="row  p-2">
+                                            <div className="col  p-2">
                                                 <div>
                                                     <div className="col-sm-5 mt-10">
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-6">
-                                                                <label className="full_width">Title</label>
-                                                                <input type="text" className="full_width searchbox_height"
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <label className="form-label">Title</label>
+                                                                <input type="text" className="form-control"
                                                                     defaultValue={item.Title != undefined ? item.Title : ""} onChange={(e) => item.Title = e.target.value} />
                                                             </div>
-                                                            <div className="col-sm-6 padL-0" title="Email">
-                                                                <label className="full_width">Item Rank</label>
-                                                                <select className="full_width searchbox_height" value={item.ItemRankTitle}>
+                                                            <div className="col-sm-6 pe0" title="Email">
+                                                                <label className="form-label">Item Rank</label>
+                                                                <select className="form-control" defaultValue={item.ItemRankTitle} onChange={(e) => item.ItemRankTitle = e.target.value}>
                                                                     {
                                                                         SharewebItemRank &&
                                                                         SharewebItemRank.map((h: any, i: any): JSX.Element => {
@@ -636,30 +681,29 @@ function EditInstitution(item: any) {
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-6">
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
                                                                 <div className="col-sm-11 padL-0 PadR0">
-                                                                    <label className="full_width">
+                                                                    <label className="form-label">
                                                                         Component Portfolio
                                                                     </label>
-                                                                    <input style={{ width: "100%" }} type="text"
-                                                                        className="full_width searchbox_height" defaultValue={item.Priority_x0020_Rank != undefined ? item.Priority_x0020_Rank : ""} />
+                                                                    <input  type="text"
+                                                                        className="form-control" />
                                                                     {/* <AutoSuggest
                                                                         options={stateOptions}
                                                                         handleChange={setState}
                                                                         value={state}
                                                                         name="State"
                                                                     /> */}
-
-                                                                </div>
-                                                                <div className="col-sm-1 PadR0">
-                                                                    <label className="full_width">&nbsp;</label>
+                                                               <span className="input-group-text">
                                                                     <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                         onClick={(e) => EditComponent(item, 'Componet')} />
+                                                                </span>
                                                                 </div>
-                                                                <div className="col-sm-11 padL-0 PadR0 inner-tabb">
-                                                                    <div className="row">
-                                                                        <div className="col-sm-12 PadR0">
+                                                               
+                                                                <div className="col-sm-11  inner-tabb">
+                                                                    <div>
+                                                                      
                                                                             {item != undefined && item.smartComponent != undefined && item.smartComponent.map((childinew: any) =>
                                                                                 < div className="block bgsiteColor"
 
@@ -672,60 +716,72 @@ function EditInstitution(item: any) {
                                                                                     </a>
                                                                                 </div>
                                                                             )}
-                                                                        </div>
+                                                                     
                                                                     </div>
                                                                 </div>
 
                                                             </div>
                                                             <div className="col-sm-6 padL-0">
-                                                                <label className="full_width">Deliverable-Synonyms</label>
+                                                                <label className="form-label">Deliverable-Synonyms</label>
 
-                                                                <input type="text" className="full_width searchbox_height"
+                                                                <input type="text" className="form-control"
                                                                     defaultValue={item.Deliverable_x002d_Synonyms != undefined ? item.Deliverable_x002d_Synonyms : ""} onChange={(e) => item.Deliverable_x002d_Synonyms = e.target.value} />
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-4">
-                                                                <label className="full_width">Start Date</label>
-                                                                {/* <input type="text" className="full_width searchbox_height"
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-4 ps-0">
+                                                                <label className="form-label">Start Date</label>
+                                                                {/* <input type="text" className="form-control"
                                                                     defaultValue={item.CellPhone != null ? item.CellPhone : ""}
                                                                 /> */}
-                                                                <DatePicker
+                                                                <DatePicker className="form-control"
                                                                     selected={Startdate}
-                                                                    onChange={(Startdate) => setStartdate(Startdate)}
+                                                                    // onChange={(Startdate) => setStartdate(Startdate)}
+                                                                    value={item.StartDate}
+                                                                    onChange={handleDatestart}
+                                                                    //  value={item.Startdate}
+                                                                    dateFormat="dd/MM/yyyy"
                                                                     locale="es"
                                                                 />
                                                             </div>
-                                                            <div className="col-sm-4 padL-0">
-                                                                <label className="full_width">Due Date</label>
-                                                                {/* <input type="text" className="full_width searchbox_height"
+                                                            <div className="col-sm-4 ">
+                                                                <label className="form-label">Due Date</label>
+                                                                {/* <input type="text" className="form-control"
                                                                     defaultValue={item.HomePhone != null ? item.HomePhone : ""} /> */}
                                                                 {/* <DatePicker onSelectDate={dueDate} dateFormat="dd/MM/yyyy" onChange={(date) => setStartDate(dueDate)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" /> */}
-                                                                <DatePicker
+                                                                <DatePicker className="form-control"
                                                                     selected={date}
-                                                                    onChange={(date) => setDate(date)}
+                                                                    // onChange={(date) => setDate(date)}
+                                                                    value={item.DueDate}
+                                                                    onChange={handleDatedue}
+                                                                    dateFormat="dd/MM/yyyy"
                                                                     locale="es"
                                                                 />
                                                             </div>
 
-                                                            <div className="col-sm-4 padL-0">
-                                                                <label className="full_width">
-                                                                    Completion Date <a className="hreflink" href={item.LinkedIn != null ? item.LinkedIn.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-linkedin"></i></span></a></label>
-                                                                {/* <input type="text" className="full_width searchbox_height"
+                                                            <div className="col-sm-4 pe-0">
+                                                                <label className="form-label">
+                                                                    Completion Date </label>
+                                                                {/* <input type="text" className="form-control"
                                                                     defaultValue={item.LinkedIn != null ? item.LinkedIn.Description : ""} /> */}
-                                                                <DatePicker
+                                                                <DatePicker className="form-control"
+                                                                    name="CompletionDate"
                                                                     selected={Completiondate}
-                                                                    onChange={(Completiondate) => setCompletiondate(Completiondate)}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    value={item.CompletedDate}
+
+                                                                    // onChange={(Completiondate) => setCompletiondate(Completiondate)}
+                                                                    onChange={handleDate}
                                                                     locale="es"
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-4">
-                                                                <label className="full_width">Synonyms <a className="hreflink" target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
-                                                                <input type="text" className="full_width searchbox_height"
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-4 ps-0">
+                                                                <label className="form-label">Synonyms <a className="hreflink" target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
+                                                                <input type="text" className="form-control"
                                                                     defaultValue={item.SynonymsTitle} onChange={(e) => item.SynonymsTitle = e.target.value} />
-                                                                <img onClick={(e) => createSynonyms(item)} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img>
+                                                                <span className="input-group-text" onClick={(e) => createSynonyms(item)}> <img  src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span> 
                                                                 {item["Synonyms"] != undefined && item["Synonyms"].length > 0 && map(item["Synonyms"], (obj, index) => {
                                                                     return (
                                                                         <>
@@ -733,8 +789,8 @@ function EditInstitution(item: any) {
                                                                                 {
                                                                                     obj.Title
                                                                                 }
-                                                                                <a className="hreflink" onClick={(e) => deleteItem(item)}>
-                                                                                    <img src="/_layouts/images/delete.gif"></img>
+                                                                                <a className="input-group-text" onClick={(e) => deleteItem(item)}>
+                                                                                  <img src="/_layouts/images/delete.gif"></img>
                                                                                 </a>
                                                                             </div>
                                                                         </>
@@ -743,22 +799,22 @@ function EditInstitution(item: any) {
                                                                 }
                                                             </div>
 
-                                                            <div className="col-sm-4 padL-0">
-                                                                <label className="full_width">Client Activity <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                <input type="text" className="full_width searchbox_height"
+                                                            <div className="col-sm-4">
+                                                                <label className="form-label">Client Activity <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                <input type="text" className="form-control"
                                                                     defaultValue={item.Twitter != null ? item.Twitter.Description : ""} />
                                                             </div>
 
-                                                            <div className="col-sm-4 padL-0">
-                                                                <label className="full_width">Package</label>
-                                                                <input type="text" className="full_width searchbox_height"
+                                                            <div className="col-sm-4 pe-0">
+                                                                <label className="form-label">Package</label>
+                                                                <input type="text" className="form-control"
                                                                     defaultValue={item.Package != null ? item.Package : ""} onChange={(e) => item.Package = e.target.value} />
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group">
-                                                            <div className="col-sm-6">
-                                                                <label className="full_width">Status</label>
-                                                                <input type="text" className="full_width searchbox_height"
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <label className="form-label">Status</label>
+                                                                <input type="text" className="form-control"
                                                                     defaultValue={item.AdminStatus} />
                                                                 <div className="radio">
                                                                     <label>
@@ -804,9 +860,9 @@ function EditInstitution(item: any) {
                                                                     </label>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-sm-6 padL-0">
-                                                                <label className="full_width">Time <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                <input type="text" className="full_width searchbox_height"
+                                                            <div className="col-sm-6 pe-0">
+                                                                <label className="form-label">Time <a className="hreflink" href={item.Twitter != null ? item.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                <input type="text" className="form-control"
                                                                     defaultValue={item.Mileage != null ? item.Mileage : ""} />
                                                                 <div className="radio">
                                                                     <label>
@@ -836,9 +892,9 @@ function EditInstitution(item: any) {
                                                         </div>
                                                     </div>
                                                     <div className="col-sm-3 mt-10">
-                                                        <div className="col-sm-12 padL-0" title="Priority">
-                                                            <label className="full_width">Priority</label>
-                                                            <input type="text" className="full_width searchbox_height"
+                                                        <div className="col" title="Priority">
+                                                            <label className="form-label">Priority</label>
+                                                            <input type="text" className="form-control"
                                                                 defaultValue={item.Priority_x0020_Rank} onChange={(e) => setPriority(item, 4)} value={item.Priority_x0020_Rank} />
                                                             <div className="radio">
                                                                 <label>
@@ -862,27 +918,25 @@ function EditInstitution(item: any) {
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                        <div className="col-sm-12 padL-0">
-                                                            <label className="full_width">Categories <a className="hreflink" href={item.Facebook != null ? item.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
-                                                            <input type="text" className="full_width searchbox_height"
+                                                        <div className="col position-relative mt-10">
+                                                            <label className="form-label">Categories <a className="hreflink" href={item.Facebook != null ? item.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
+                                                            <input type="text" className="form-control"
                                                                 defaultValue={item.Facebook != null ? item.Facebook.Description : ""} />
                                                             <span className="input-group-text"  >
 
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><Picker />
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
-                                                                </svg>
-
+                                                                {/* <Picker /> */}
+                                                                
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div className="col-sm-4 padL-0 mt-10">
+                                                    <div className="col-sm-4  mt-10">
                                                         <CommentCard siteUrl={item.siteUrl} userDisplayName={item.userDisplayName} listName={item.siteType} itemID={item.Id}></CommentCard>
 
 
                                                     </div>
-                                                    <div className="col-sm-8 mb-10">
-                                                        <label className="full_width">Url</label>
-                                                        <input type="text" className="full_width searchbox_height" placeholder="Url"></input>
+                                                    <div className="col-sm-8 ps-0 mb-10">
+                                                        <label className="form-label">Url</label>
+                                                        <input type="text" className="form-control" placeholder="Url"></input>
 
                                                     </div>
                                                 </div>
@@ -892,9 +946,9 @@ function EditInstitution(item: any) {
                                         </div>
                                         <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
 
-                                            <div className="row  p-2">
+                                            <div className="col  p-2">
                                                 <div className="container">
-                                                    <section className='row  accordionbox'>
+                                                    <section className='accordionbox'>
 
                                                         <div className="accordion p-0  overflow-hidden">
                                                             <div className="card shadow-none mb-2">
@@ -906,7 +960,7 @@ function EditInstitution(item: any) {
 
                                                                         {item.showsAdmin &&
                                                                             <div className="accordion-body pt-1" id="testDiv1">
-                                                                                <textarea defaultValue={item.Idea}>
+                                                                                <textarea defaultValue={item.Admin_x0020_Notes} onChange={(e) => item.Admin_x0020_Notes = e.target.value}>
 
                                                                                 </textarea>
                                                                             </div>
@@ -999,10 +1053,10 @@ function EditInstitution(item: any) {
                                                                             <div className="accordion-body pt-1" id="testDiv1">
                                                                                 {/* <p className="m-0" > <a>{item.Background}</a></p> */}
                                                                                 <span className="pull-right">
-                                                                                    <input type="checkbox" defaultChecked={item.BackgroundVerified == true}></input>
+                                                                                    <input type="checkbox" defaultChecked={item.BackgroundVerified == true} onChange={(e) => item.BackgroundVerified = e.target.value}></input>
                                                                                     <span>Verified</span>
                                                                                 </span>
-                                                                                <textarea defaultValue={item.Background}>
+                                                                                <textarea defaultValue={item.Background} onChange={(e) => item.Background = e.target.value}>
 
                                                                                 </textarea>
                                                                             </div>
@@ -1024,10 +1078,10 @@ function EditInstitution(item: any) {
                                                                         {item.shows &&
                                                                             <div className="accordion-body pt-1" id="testDiv1">
                                                                                 <span className="pull-right">
-                                                                                    <input type="checkbox" defaultChecked={item.IdeaVerified == true}></input>
+                                                                                    <input type="checkbox" defaultChecked={item.IdeaVerified == true} onChange={(e) => item.BackgroundVerified = e.target.value}></input>
                                                                                     <span>Verified</span>
                                                                                 </span>
-                                                                                <textarea defaultValue={item.Idea}>
+                                                                                <textarea defaultValue={item.Idea} onChange={(e) => item.Idea = e.target.value}>
 
                                                                                 </textarea>
                                                                             </div>
@@ -1054,12 +1108,12 @@ function EditInstitution(item: any) {
                                                                         {item.showj &&
                                                                             <div className="accordion-body pt-1" id="testDiv1">
                                                                                 <span className="pull-right">
-                                                                                    <input type="checkbox" defaultChecked={item.ValueAddedVerified == true}></input>
+                                                                                    <input type="checkbox" defaultChecked={item.ValueAddedVerified == true} onChange={(e) => item.ValueAddedVerified = e.target.value}></input>
                                                                                     <span>Verified</span>
                                                                                 </span>
                                                                                 {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: item.ValueAdded }}></p> */}
 
-                                                                                <textarea defaultValue={item.ValueAdded}>
+                                                                                <textarea defaultValue={item.ValueAdded} onChange={(e) => item.ValueAdded = e.target.value}>
 
                                                                                 </textarea>
                                                                             </div>
@@ -1112,7 +1166,7 @@ function EditInstitution(item: any) {
                                         </div>
                                         <div className="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
-                                            <div className="row  p-2">
+                                            <div className="col  p-2">
                                                 <div className="container">
                                                     <dl className='Sitecomposition'>
                                                         <div className="dropdown">
@@ -1409,14 +1463,14 @@ function EditInstitution(item: any) {
                                         <div className="row">
                                             <div className="ItemInfo col-sm-6">
                                                 <div className="text-left">
-                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{item.Created != null ? moment(item.Created).format('DD/MM/YYYY') : ""}</span> by
+                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{item.Created != null ? moment(item.Created).format('DD/MM/YYYY MM:SS') : ""}</span> by 
                                                     <span className="footerUsercolor">
                                                         {/* {{Item.Author.Title}} */}
                                                         {item.Author.Title != undefined ? item.Author.Title : ""}
                                                     </span>
                                                 </div>
                                                 <div className="text-left">
-                                                    Last modified <span>{item.Modified != null ? moment(item.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
+                                                    Last modified <span>{item.Modified != null ? moment(item.Modified).format('DD/MM/YYYY MM:SS') : ""}</span> by <span className="footerUsercolor">
                                                         {/* {{Item.Editor.Title}} */}
                                                         {item.Editor.Title != undefined ? item.Editor.Title : ""}
                                                     </span>
