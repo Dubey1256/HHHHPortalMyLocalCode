@@ -1751,8 +1751,6 @@ function ComponentTable() {
                                                     <option value="2">2</option>
                                                     <option value="3">3</option>
                                                 </select>
-
-
                                             </div>
                                             <div className="col-4 mb-10">
                                                 <label>Item Type</label>
@@ -1764,7 +1762,6 @@ function ComponentTable() {
                                             </div>
                                         </div>
                                         <div className="row">
-
                                             <div className="col-sm-6 pad0">
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Service'"
                                                     className="col-sm-12 mb-10 Doc-align padL-0">
@@ -1776,9 +1773,7 @@ function ComponentTable() {
                                                                 data-content="Click to activate auto suggest for components/services"
                                                                 data-original-title="Click to activate auto suggest for components/services"
                                                                 title="Click to activate auto suggest for components/services">
-
                                                             </span>
-
                                                         </label>
                                                         <input type="text" className="form-control ui-autocomplete-input"
                                                             id="txtSharewebComponent" ng-model="SearchComponent"
@@ -1790,12 +1785,10 @@ function ComponentTable() {
                                                         <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/edititem.gif"
                                                             ng-click="EditComponent('Components',item)" />
                                                     </div>
-
                                                 </div>
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Component'"
                                                     className="col-sm-12 padL-0">
                                                     <div className="col-sm-11 pad0 Doc-align">
-
                                                         <label>
                                                             Service Portfolio
                                                             <span data-toggle="popover" data-placement="right"
@@ -1803,9 +1796,7 @@ function ComponentTable() {
                                                                 data-content="Click to activate auto suggest for components/services"
                                                                 data-original-title="Click to activate auto suggest for components/services"
                                                                 title="Click to activate auto suggest for components/services">
-
                                                             </span>
-
                                                         </label>
                                                         <input type="text" className="form-control ui-autocomplete-input"
                                                             id="txtServiceSharewebComponent" ng-model="SearchService"
@@ -1814,11 +1805,8 @@ function ComponentTable() {
                                                     </div>
                                                     <div className="col-sm-1 no-padding">
                                                         <label className="full_width">&nbsp;</label>
-
                                                     </div>
-
                                                 </div>
-
                                             </div>
                                             <div className="col-sm-6 padR0">
                                                 <label>Deliverable-Synonyms </label>
@@ -2037,7 +2025,6 @@ function ComponentTable() {
                                                 // onExpand={expanded => this.setState({ expanded })}
                                                 nativeCheckboxes={true}
                                                 showNodeIcon={false}
-
                                             />
                                            } */}
 
@@ -2664,15 +2651,3 @@ function ComponentTable() {
     );
 }
 export default ComponentTable;
-function RetrieveSPData() {
-    throw new Error("Function not implemented.");
-}
-
-
-function openModal(): React.MouseEventHandler<HTMLAnchorElement> {
-    throw new Error("Function not implemented.");
-}
-
-
-
-

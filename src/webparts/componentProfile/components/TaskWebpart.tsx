@@ -2160,7 +2160,7 @@ export default function ComponentTable({ props }: any) {
                                                                         onClick={setStatusmodalIsOpenToTrue}
 
                                                                     >
-                                                                        <i ><FaFilter onClick={setStatusmodalIsOpenToTrue} /></i>
+                                                                        {/* <i ><FaFilter onClick={setStatusmodalIsOpenToTrue} /></i> */}
 
                                                                     </span></span>
                                                             </div>
@@ -2180,7 +2180,7 @@ export default function ComponentTable({ props }: any) {
                                                                         onClick={setItemRankmodalIsOpenToTrue}
 
                                                                     >
-                                                                        <i ><FaFilter onClick={setItemRankmodalIsOpenToTrue} /></i>
+                                                                        {/* <i ><FaFilter onClick={setItemRankmodalIsOpenToTrue} /></i> */}
 
                                                                     </span>
                                                                 </span>
@@ -2201,7 +2201,7 @@ export default function ComponentTable({ props }: any) {
                                                                         onClick={setTeamMembermodalIsOpenToTrue}
 
                                                                     >
-                                                                        <i ><FaFilter onClick={setTeamMembermodalIsOpenToTrue} /></i>
+                                                                        {/* <i ><FaFilter onClick={setTeamMembermodalIsOpenToTrue} /></i> */}
 
                                                                     </span>
                                                                 </span>
@@ -2222,7 +2222,7 @@ export default function ComponentTable({ props }: any) {
                                                                         onClick={setDuemodalIsOpenToTrue}
 
                                                                     >
-                                                                        <i ><FaFilter onClick={setDuemodalIsOpenToTrue} /></i>
+                                                                        {/* <i ><FaFilter onClick={setDuemodalIsOpenToTrue} /></i> */}
 
                                                                     </span>
                                                                 </span>
@@ -2243,7 +2243,7 @@ export default function ComponentTable({ props }: any) {
                                                                         onClick={setCreatedmodalIsOpenToTrue}
 
                                                                     >
-                                                                        <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue} /></i>
+                                                                        {/* <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue} /></i> */}
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -2263,7 +2263,7 @@ export default function ComponentTable({ props }: any) {
                                                                         onClick={setModalSmartIsOpenToTrue}
 
                                                                     >
-                                                                        <i ><FaFilter onClick={setModalSmartIsOpenToTrue} /></i>
+                                                                        {/* <i ><FaFilter onClick={setModalSmartIsOpenToTrue} /></i> */}
 
                                                                     </span>
                                                                 </span>

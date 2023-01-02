@@ -18,12 +18,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 
+
 function EditInstitution(item: any) {
     // Id:any
 
 
 
-
+    const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [CompoenetItem, setComponent] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [useeffectdata, setuseeffectdata] = React.useState(false);
@@ -31,6 +32,7 @@ function EditInstitution(item: any) {
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [AllComponents, setComponentsData] = React.useState([]);
     const [CollapseExpend, setCollapseExpend] = React.useState(false);
     const [date, setDate] = React.useState(undefined);
@@ -605,7 +607,12 @@ function EditInstitution(item: any) {
 
 
     }
-
+    const EditComponentPicker = (item: any, title: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponentPicker(true);
+        setSharewebCategory(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
 
 
     return (
@@ -919,15 +926,18 @@ function EditInstitution(item: any) {
                                                             </div>
                                                         </div>
                                                         <div className="col position-relative mt-10">
-                                                            <label className="form-label">Categories <a className="hreflink" href={item.Facebook != null ? item.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
+                                                            <label className="form-label">Categories </label>
                                                             <input type="text" className="form-control"
                                                                 defaultValue={item.Facebook != null ? item.Facebook.Description : ""} />
                                                             <span className="input-group-text"  >
 
                                                                 {/* <Picker /> */}
-                                                                
+                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                    onClick={(e) => EditComponentPicker(item, 'Categories')} />
+
                                                             </span>
                                                         </div>
+                                                        
                                                     </div>
                                                     <div className="col-sm-4  mt-10">
                                                         <CommentCard siteUrl={item.siteUrl} userDisplayName={item.userDisplayName} listName={item.siteType} itemID={item.Id}></CommentCard>
@@ -1506,10 +1516,11 @@ function EditInstitution(item: any) {
                         </div>
 
                         {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
+                        {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
 
                     </div>
                 )}
             </Modal>
-        </>
+        </> 
     )
 } export default EditInstitution;

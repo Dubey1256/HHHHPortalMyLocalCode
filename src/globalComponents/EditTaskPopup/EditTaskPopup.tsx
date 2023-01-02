@@ -527,7 +527,7 @@ let PercentComplete= saveData.PercentComplete/10
                                             <div ng-show="Completed==='For Approval'" className="radio">
                                                 <label className="l-radio">
                                                     <input className="form-check-input mt-4" name="radioCompleted"
-                                                        type="radio" value="For Approval" defaultChecked={PercentComplete}
+                                                        type="radio" value="For Approval" defaultChecked={item.PercentComplete }
                                                         onClick={() => PercentCompleted(item.Title, item.status, index)} />
                                                     {item.Title}
                                                 </label>
@@ -557,7 +557,6 @@ let PercentComplete= saveData.PercentComplete/10
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 isBlocking={false}
-
             > */}
             <Modal
                 isOpen={modalIsOpen}
@@ -1062,7 +1061,6 @@ let PercentComplete= saveData.PercentComplete/10
                                                             {/* {composition === true ?
                                                                             <div className='spxdropdown-menu'>
                                                     
-
                                                                             <ul>
                                                                                 {  myarray1.map((item: any) =>
                     
@@ -1391,7 +1389,6 @@ let PercentComplete= saveData.PercentComplete/10
                                                     <div className="clearfix"></div>
                                                 </div> */}
                                                 {/* </div>
-
                                      </div> */}
                                             </div>
                                         </div>

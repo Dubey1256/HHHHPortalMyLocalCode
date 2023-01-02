@@ -11,7 +11,7 @@ import { BsSearch } from 'react-icons/Bs';
 import { VscClearAll } from 'react-icons/Vsc';
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import { AiFillPrinter } from 'react-icons/ai';
-import { MdOpenInFull } from 'react-icons/Md';
+import { MdOpenInFull } from 'react-icons/md';
 
 
 const ContactMainPage = (props: any) => {
