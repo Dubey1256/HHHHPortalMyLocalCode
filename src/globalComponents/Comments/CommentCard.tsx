@@ -135,6 +135,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
  
   private async GetTaskUsers(){
     let web = new Web(this.props.siteUrl);
+    let currentUser = await web.currentUser.get();
+    //.then((r: any) => {  
+     // console.log("Cuurent User Name - " + r['Title']);  
+    //}); 
     let taskUsers = [];    
     taskUsers = await web.lists
       .getByTitle('Task Users')
@@ -161,6 +165,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
           })
         }
+
+        if (this.taskUsers[index].AssingedToUser !=null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'] )
+          this.currentUser= this.taskUsers[index];          
       }       
       console.log(this.topCommenters);
       console.log(this.mentionUsers);
@@ -176,7 +183,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
       let temp = {
-        AuthorImage: this.currentUser['userImage'] != null ? this.currentUser['userImage'] : '', 
+        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '', 
         AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '', 
         Created: (new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',',''),
         Description:txtComment,
@@ -438,12 +445,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
                                         </div>
                                         <div>
-                                            <textarea placeholder="Enter your comments here" className='form-control' ></textarea>
+                                            <textarea id='txtComment' onChange={(e)=>this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
                                             {/* <p className="ng-hide">
                                             <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
                                             Comment shouldn't be empty
                                         </p> */}
-                                            <button title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
+                                            <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
                                                 Post
                                             </button>
                                         </div>
@@ -495,7 +502,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         </div>
                         <div className="col-sm-1 padL-0">
                           <div className="icon_post">
-                            <img onClick={()=>this.PostComment('txtCommentModal')} title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/>
+                            <a onClick={()=>this.PostComment('txtCommentModal')} ><img title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/></a>
                           </div>
                         </div>
                       </div>
@@ -631,8 +638,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <tr>
                   <td></td>
                 </tr>                
-                {this.state.Result["SharewebTaskType"] !=null && this.state.Result["SharewebTaskType"] !='' && 
-                    this.state.Result["SharewebTaskType"] == 'Task' && this.state.Result["FeedBack"] != null && 
+                {this.state.Result["SharewebTaskType"] !=null && (this.state.Result["SharewebTaskType"] !='' || 
+                    this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
