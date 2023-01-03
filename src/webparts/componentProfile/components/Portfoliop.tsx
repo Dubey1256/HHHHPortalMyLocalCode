@@ -2,7 +2,15 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import Modal from 'react-bootstrap/Modal';
 import '../../cssFolder/Style.scss'
-import '../../cssFolder/sitecolorservice.scss'
+var TypeSite: string;
+// if(TypeSite=="Service"){
+//     require('../../cssFolder/sitecolorservice.scss');
+// }
+// if(TypeSite=="Component"){
+//     require('../../cssFolder/site_color.scss');
+// }
+import '../../cssFolder/site_color.scss';
+
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
 import Tooltip from './Tooltip';
@@ -15,11 +23,6 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
 
-
-
-
-
- 
 function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
@@ -97,7 +100,7 @@ function Portfolio({ ID }: any) {
                                         urln = data.d.__next;
                                        
                                     } else SetFolderData(responsen);
-                                    console.log(responsen);
+                                    // console.log(responsen);
                                 },
                                 error: function (error) {
                                     console.log(error);
@@ -105,7 +108,7 @@ function Portfolio({ ID }: any) {
                                 }
                             });
                         }
-                        console.log(folderId)
+                        // console.log(folderId)
                     })
                     
                     if (data.d.__next) {
@@ -155,6 +158,9 @@ function Portfolio({ ID }: any) {
     var FolderID:any='';
 
     data.map(item => {
+        if(item.Portfolio_x0020_Type!=undefined){
+            TypeSite=item.Portfolio_x0020_Type
+        }
         if (item.Sitestagging != null) {
             myarray.push(JSON.parse(item.Sitestagging));
         }
@@ -168,7 +174,7 @@ function Portfolio({ ID }: any) {
 
 
                 }
-                console.log(myarray1);
+                // console.log(myarray1);
 
                 // if (items.ClienTimeDescription != undefined) {
                 //     items.ClienTimeDescription = parseFloat(item.ClienTimeDescription);
@@ -193,7 +199,7 @@ function Portfolio({ ID }: any) {
         }
         //    const letters = new Set([myarray2]);
 
-        console.log(myarray2)
+        // console.log(myarray2)
 
 
         // myarray.push();
@@ -225,7 +231,7 @@ function Portfolio({ ID }: any) {
                                 <li>
                                     {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                                     {item.Portfolio_x0020_Type != undefined &&
-                                    <a 
+                                    <a target='_blank'
                                         href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${item.Portfolio_x0020_Type}-Portfolio-SPFx.aspx`}>
                                         {item.Portfolio_x0020_Type}-Portfolio
                                     </a>
@@ -235,15 +241,25 @@ function Portfolio({ ID }: any) {
                                 </>
                             )})}
                             </ul>
-                            <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
+                            <span className="text-end"><a target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                         </div>
                     </div>
 
                     <div className='row'>
                         <div className='p-0' style={{ verticalAlign: "top" }}>
+                        {data.map(item =>
                             <h2 className='headign'>
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />   {data.map(item => <a>{item.Title}</a>)}
+                                {item.Portfolio_x0020_Type=='Component' &&
+                                <>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>
+                                </>
+                                  }
+                                    {item.Portfolio_x0020_Type=='Service' &&
+                                <>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>
+                                </>}
                             </h2>
+                            )}
                         </div>
                     </div>
 
@@ -359,14 +375,46 @@ function Portfolio({ ID }: any) {
 
                                         </dd>
                                     </dl>
+                                    {data.map((item:any) => {
+                                        return(
+                                            <>                                    
+                                    {item.Parent.Title!=undefined &&
+                                    <dl>
+                                        <dt className='bg-fxdark'>Parent</dt>
+                                        <dd className='bg-light'>
+                                           <a target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Parent.Id}`}>{item.Parent.Title}</a>
+                                            <span className="pull-right">
+                                                <span className="pencil_icon">
+                                                    <span className="hreflink"
+                                                        title="Edit Inline"
+                                                    >
+                                                        <i className="fa fa-pencil" aria-hidden="true"></i>
+                                                    </span>
+                                                </span>
+                                            </span>
+
+                                        </dd>
+                                    </dl>
+                                    }
+                                    </>)})}
                                 </div>
                                 <div className='col-md-4 p-0'>
                                 {data.map((item:any)=>{
                                     return(
+                                        <>
+                                        {item.Portfolio_x0020_Type == "Component" &&
                                     <dl>
                                         <dt className='bg-fxdark'>Service Portfolio</dt>
                                         <dd className='bg-light'><a  style={{border:"0px"}}target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></dd>
                                     </dl>
+                             }
+                                 {item.Portfolio_x0020_Type == "Service" &&
+                                    <dl>
+                                        <dt className='bg-fxdark'>Component Portfolio</dt>
+                                        <dd className='bg-light'><a  style={{border:"0px"}}target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}>{item.ComponentPortfolio.Title}</a></dd>
+                                    </dl>
+                             }
+                             </>
                                 )})}
                                 {myarray1.length != 0 &&
                                     <dl className='Sitecomposition'>
@@ -696,7 +744,7 @@ function Portfolio({ ID }: any) {
                                 <Groupby Id={item.Id} level={item.PortfolioLevel}/>
                                 ))} */}
                                 {data.map(item => (
-                                <ComponentTable props={item.Title} />
+                                <ComponentTable props={item} />
                                 ))}
                             </div>
 

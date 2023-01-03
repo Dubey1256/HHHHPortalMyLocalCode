@@ -162,3 +162,24 @@ background-color: #000066;
 .CanvasComponent.LCS .CanvasZone, .f_a_8474018e {
     width: 1850px!important;
 }
+
+span.toltrippopup {
+    position: absolute;
+    top: 41%;
+    right: 35%;
+    width: 36px;
+    height: 37px;
+    line-height: 29px;
+    text-align: center;
+    background: #000066;
+}
+span.toltrippopup-2 {
+    position: absolute;
+    top: 41%;
+    right: 2%;
+    width: 36px;
+    height: 37px;
+    line-height: 29px;
+    text-align: center;
+    background: #006;
+}

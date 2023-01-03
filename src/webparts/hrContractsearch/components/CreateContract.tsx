@@ -210,10 +210,12 @@ const CreateContract=(prop:any)=>{
 
       
         return(
-         <div>
+         <div  className="modal show"
+         style={{ display: 'block', position: 'initial' }}>
        <Modal show={show} onHide={handleClose} size="lg"aria-labelledby="contained-modal-title-vcenter">
-        <Modal.Header closeButton>
+        <Modal.Header >
           <Modal.Title>Create Contract</Modal.Title>
+        <span onClick={handleClose} >x</span>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -224,14 +226,25 @@ const CreateContract=(prop:any)=>{
         </Form.Group>
         <Form.Group as={Col} controlId="formGridCity">
           <Form.Label>Employee Name</Form.Label>
-          <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"value={ContactDetailsItem}></input>
-          <Button type="button" className="btn btn-primary btn-sm" onClick={openEmployeeDetailspopup}>Search</Button>
+          <div> <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"value={ContactDetailsItem}></input>
+          <span className="toltrippopup">
+        <img  onClick={openEmployeeDetailspopup} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png" data-themekey="#"/>
+         </span>
+         </div>
+         
+         
         </Form.Group>
 
         <Form.Group as={Col} controlId="formGridCity">
           <Form.Label>Contract Type</Form.Label>
+          <div>
           <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"value={contractTypeItem}></input>
-          <Button type="button" className="btn btn-primary btn-sm" onClick={()=>openContractTypepopup(contractTypeItem)}>Search</Button>
+          <span className="toltrippopup-2" >
+            <img  onClick={()=>openContractTypepopup(contractTypeItem)} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png" data-themekey="#"/>
+            </span>
+          </div>
+         
+   
         </Form.Group>
       </Row>
     </Form>

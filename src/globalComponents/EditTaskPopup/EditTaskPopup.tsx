@@ -557,7 +557,6 @@ let PercentComplete= saveData.PercentComplete/10
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 isBlocking={false}
-
             > */}
             <Modal
                 isOpen={modalIsOpen}
@@ -1062,7 +1061,6 @@ let PercentComplete= saveData.PercentComplete/10
                                                             {/* {composition === true ?
                                                                             <div className='spxdropdown-menu'>
                                                     
-
                                                                             <ul>
                                                                                 {  myarray1.map((item: any) =>
                     
@@ -1391,7 +1389,6 @@ let PercentComplete= saveData.PercentComplete/10
                                                     <div className="clearfix"></div>
                                                 </div> */}
                                                 {/* </div>
-
                                      </div> */}
                                             </div>
                                         </div>
