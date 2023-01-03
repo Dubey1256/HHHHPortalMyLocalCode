@@ -744,7 +744,7 @@ function Portfolio({ ID }: any) {
                                 <Groupby Id={item.Id} level={item.PortfolioLevel}/>
                                 ))} */}
                                 {data.map(item => (
-                                <ComponentTable props={item} />
+                                <ComponentTable props={item} NextProp={myarray2}/>
                                 ))}
                             </div>
 

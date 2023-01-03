@@ -1,11 +1,14 @@
 /*------comman class --------------
 ---------------------------------*/
-a:active, a:hover, a:link, a:visited{
+a:active, a:hover, a:link, a:visited, body a{
     color: #000069;
     text-decoration: none;
 }
 .bg-light{
     background-color: #f4f4f4;
+}
+.bg-e9{
+    background-color: #e9e9e9;
 }
 .bg-fxdark{
     background-color: #e7e7e7;
@@ -36,12 +39,15 @@ background-color: #f4f4f4;
 /*------comman class end --------------
 ---------------------------------*/
 .headign a{
+    color: #000069 !important;
+}
+.fw-medium, .panel-title, .headign a, .spfxbreadcrumb li a,  svg {
     color: #000069;
 }
 /*------breadcrumb class --------------
 ---------------------------------*/
 
-.spfxbreadcrumb li a:hover {
+.spfxbreadcrumb li a:hover .active{
     background-color: #000069;
     color: #fff;
   }
@@ -59,4 +65,97 @@ background-color: #f4f4f4;
   .spfxbreadcrumb svg {
     font-size: 23px;
 }
+.btn-primary {
+    background-color: #000069 !important;
+    border-color: #000069 !important;
+}
+.Sitecomposition .btn-secondary:hover{
+    color: #fff;
+    background: #000069;
+  }
+
+
+/*------services pnel class --------------
+---------------------------------*/
+
+  
+.serviepannelgreena a:active, a:hover, a:link, a:visited, body a{
+    color: #228b22 !important;
+    text-decoration: none !important;
+}
+.serviepannelgreena .bg-light{
+    background-color: #f4f4f4;
+}
+.bg-fxdark{
+    background-color: #e7e7e7;
+}
+.root-61 {
+    background-color: #f5f5f5;
+    color: rgb(50, 49, 48);
+}
+.bg-wihite{
+    background-color: #fff;
+    color: #000;
+}
+
+.serviepannelgreena .bg-69{
+    background-color: #228b22;
+    color: #fff;
+}
+.bg-f4{
+background-color: #f4f4f4;
+}
+.bg-ee{
+    background-color: #eee;
+}
+.bg-th{
+    background-color: #eee;
+}
+
+/*------comman class end --------------
+---------------------------------*/
+.serviepannelgreena .headign a{
+    color: #228b22 !important;
+    font-size: 25px;
+
+}
+.serviepannelgreena .Sitecomposition .btn-secondary:hover{
+    color: #fff;
+    background: #228b22;
+
+}
+
+.serviepannelgreena  .fw-medium, .panel-title, .headign a, .spfxbreadcrumb li a,  svg {
+    color: #228b22 !important;
+}
+/*------breadcrumb class --------------
+---------------------------------*/
+
+.serviepannelgreena .spfxbreadcrumb li a:hover .active {
+    background-color: #228b22;
+    color: #fff;
+  }
+  .serviepannelgreena .spfxbreadcrumb li a:hover:before {
+    border-color: #228b22;
+    border-left-color: transparent;
+  }
+  .serviepannelgreena .spfxbreadcrumb li a:hover:after {
+    border-left-color: #228b22;
+  }
+  .serviepannelgreena .spfxbreadcrumb li a:last-child:active {
+    background-color: #228b22;
+    color: #fff;
+  }
+  .serviepannelgreena .spfxbreadcrumb svg {
+    font-size: 23px;
+}
+
+  .serviepannelgreena  .btn-primary {
+    background-color: #228b22 !important;
+    border-color: #228b22 !important;
+}
+.serviepannelgreena  .btn-primary:hover{
+        background-color: #228b22 !important;
+}
+
 
