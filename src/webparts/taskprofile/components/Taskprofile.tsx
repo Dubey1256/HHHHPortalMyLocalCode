@@ -5,7 +5,8 @@ import TaskFeedbackCard from './TaskFeedbackCard';
 import { escape } from '@microsoft/sp-lodash-subset';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
-import CommentCard from '../../../globalComponents/Comments/CommentCard'
+import CommentCard from '../../../globalComponents/Comments/CommentCard';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 //import '../../cssFolder/foundation.scss';
 //import '../../cssFolder/foundationmin.scss';
 import './Taskprofile.module.scss';
@@ -23,6 +24,8 @@ export interface ITaskprofileState {
   showcomment: string;
   updateComment: boolean;
   showComposition: boolean;
+  isOpenEditPopup : boolean;
+  showPopup : any;
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
@@ -46,7 +49,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Display : 'none',
       showcomment : 'none',
       updateComment : false,
-      showComposition: true
+      showComposition: true,
+      isOpenEditPopup : false,
+      showPopup : 'none'
     }
 
     this.GetResult();
@@ -107,6 +112,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   
   private async GetTaskUsers(){
     let web = new Web(this.props.siteUrl);
+    web.currentUser.get().then((r: any) => {  
+      console.log("Cuurent User Name - " + r['Title']);  
+    });  
     let taskUsers = [];    
     taskUsers = await web.lists
     .getByTitle('Task Users')
@@ -149,6 +157,21 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     if (listName.toLowerCase() == 'alakdigital') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png';
     }
+    if (listName.toLowerCase() == 'hhhh') 
+      siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png';
+    
+    if (listName.toLowerCase() == 'gruene')
+      siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png';
+    
+    if (listName.toLowerCase() == 'shareweb')
+      siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png' ;
+    
+    if (listName.toLowerCase() == 'small projects')
+      siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/small_project.png';
+
+    if (listName.toLowerCase() == 'Offshore tasks')
+      siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png';
+  
     return siteicon;
   }
 
@@ -202,7 +225,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     console.log(item);
     this.setState({ 
       isModalOpen:true,
-      imageInfo: item
+      imageInfo: item,
+      showPopup : 'block'
     });
   }
 
@@ -211,7 +235,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     e.preventDefault();
     this.setState({ 
       isModalOpen:false,
-      imageInfo: {} 
+      imageInfo: {},
+      showPopup : 'none' 
     });
   }
 
@@ -260,6 +285,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     
   }
 
+  private OpenEditPopUp(){
+    this.setState({
+      isOpenEditPopup : true
+    })
+  }
+
+  private CallBack(){
+    this.setState({
+      isOpenEditPopup : false
+    })
+  }
+
   public render(): React.ReactElement<ITaskprofileProps> {
     const {
       description,
@@ -276,6 +313,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             <h2 className="headign">
               <img className={styles.imgWid29} src={this.state.Result["SiteIcon"]}/>
                 {this.state.Result['Title']}
+                <a className="hreflink ng-scope" onClick={()=>this.OpenEditPopUp()}>
+                  <img style={{width: '16px',height: '16px',borderRadius: '0'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
+                </a>
               </h2>
         </section>
 <section>
@@ -437,9 +477,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <div className="col-sm-4 bg-white col-sm-4 pt-3 ps-0">
                   {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].map( (imgData:any,i:any)=> {
                   return <div className="taskimage border mb-3">
-                          
+                         {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
+                            
                                 <a className='images' target="_blank" href={imgData.ImageUrl}>
-                                  <img alt={imgData.ImageName} src={imgData.ImageUrl} onMouseOver={(e) =>this.OpenModal(e, imgData)}></img>
+                                  <img alt={imgData.ImageName} src={imgData.ImageUrl} 
+                                  onMouseOver={(e) =>this.OpenModal(e, imgData)}
+                                  onMouseOut={(e)=>this.CloseModal(e)} ></img>
                                 </a>
                              
               
@@ -458,6 +501,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               </div>
                               
                             </div>
+                             
                     </div>
                   })}
                   </div>
@@ -480,6 +524,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </div>
                 </div>
           </div>
+          {/*
           <div className='row'>
           <Modal isOpen={this.state.isModalOpen} isBlocking={false} containerClassName={styles.custommodalpopup}>
             <div className={styles.parentDiv}>
@@ -489,15 +534,26 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
           </Modal>
           </div>
+                  */}
           </section>
     
   </div>
   <div className="col-md-3">
   <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
   </div>
+  
 </section>
 
+      <div style={{display : this.state.showPopup}}>
+        <div className={styles.popup}>
+          <div className={styles.parentDiv}>            
+              <span style={{color:'white'}}>{this.state.imageInfo["ImageName"]}</span>
+              <img style={{maxWidth: '100%'}} src={this.state.imageInfo["ImageUrl"]}></img>
+          </div>
+        </div>
+      </div>
 
+{this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} Call={()=>{this.CallBack()}} />:''}
   
        </div> 
     );
