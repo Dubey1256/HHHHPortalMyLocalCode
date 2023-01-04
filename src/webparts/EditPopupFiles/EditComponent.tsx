@@ -733,8 +733,8 @@ function EditInstitution(item: any) {
                                                                         }
                                                                         )
                                                                     }
-                                                                </select>
-                                                            </div>
+                                                                                </select>
+                                                                            </div>
                                                         </div>
                                                         <div className="row mb-10">
                                                             <div className="col-sm-6 ps-0">

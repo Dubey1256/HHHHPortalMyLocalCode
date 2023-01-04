@@ -1713,7 +1713,7 @@ export default function ComponentTable({ props }: any) {
 const [lgShow, setLgShow] = React.useState(props.isopen);
     const handleClose = () => setLgShow(false);
     return (
-        <div className="app component serviepannelgreena">
+        <div  className={props.Portfolio_x0020_Type=='Service'?'serviepannelgreena':""}>
 
             {/* Add activity task */}
 

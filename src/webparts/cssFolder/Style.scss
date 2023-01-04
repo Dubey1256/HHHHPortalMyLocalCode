@@ -101,13 +101,21 @@ display: flex;
 margin: 0px;
 }
 
+// .team_member dt, dd {
+//   padding: 5px 5px;
+//   border-bottom: 2px solid #fff;
+//   vertical-align: middle;
+//   width: 49%;
+//   margin: 0px;
+// }
 .team_member dt, dd {
-  padding: 5px 5px;
-  border-bottom: 2px solid #fff;
-  vertical-align: middle;
-  width: 49%;
-  margin: 0px;
+padding: 5px 5px !important;
+border-bottom: 2px solid #fff;
+vertical-align: middle;
+width: 49% !important;
+margin: 0 !important;
 }
+
 .Sitecomposition .dropdown{
   display: flex;
   width: 100%;
