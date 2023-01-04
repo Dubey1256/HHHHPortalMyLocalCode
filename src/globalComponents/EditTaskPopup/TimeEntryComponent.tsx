@@ -4,8 +4,12 @@ import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
 import * as moment from 'moment';
 import { post } from 'jquery';
-var AllTimeSpentDetails: any = [];
-
+import { CurrentUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
+import pnp, { PermissionKind } from "sp-pnp-js";
+var AllTimeSpentDetails: any = []; 
+var CurntUserId=''
+var changeTime=0;
+var childs: any = []
 function TimeEntryPopup(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
@@ -19,21 +23,21 @@ function TimeEntryPopup(item: any) {
     const [AddTaskTimepopup, setAddTaskTimepopup] = React.useState(false);
     const [TimeSheet, setTimeSheets] = React.useState([])
     const [changeDates, setchangeDates] = React.useState(moment().format('MMMM Do YYYY'))
-    const [changeTime, setchangeTime] = React.useState(0)
     const [changeTimeAdd, setchangeTimeAdd] = React.useState()
     const [AdditionalTime, setAdditionalTime] = React.useState([])
     const [count, setCount] = React.useState(1)
     const [month, setMonth] = React.useState(1)
     const [saveEditTaskTime, setsaveEditTaskTime] = React.useState([])
-    const [postData, setPostData] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
+    const [postData, setPostData] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime:'' })
+    const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '',TaskTime:'' })
+    const [add, setAdd] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
     const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState([])
     const [AllUser, setAllUser] = React.useState([])
     const [checkCategories, setcheckCategories] = React.useState()
-    // const [AllTimeSpentDetail, setAllTimeSpentDetails] = React.useState()
-    //const [postData, setpostData] = React.useState()
 
     const [year, setYear] = React.useState(1)
     const [TimeInHours, setTimeInHours] = React.useState(0)
+    var smartTermName = "Task" + item.props.siteType;
 
     const GetTaskUsers = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -48,46 +52,52 @@ function TimeEntryPopup(item: any) {
         //console.log(this.taskUsers);
 
     }
-    const changeDate = (item: any) => {
+    pnp.sp.web.currentUser.get().then(result => {
+        CurntUserId = result.Id;
+       console.log(CurntUserId)
+       
+     });
+   
+    const changeDate = (val: any) => {
 
 
-        if (item === 'Date') {
+        if (val === 'Date') {
             setCount(count + 1)
             setchangeDates(moment().add(count, 'days').format("MMMM Do YYYY"))
 
         }
-        if (item === 'month') {
+        if (val === 'month') {
             setMonth(month + 1)
             setchangeDates(moment().add(month, 'months').format("MMMM Do YYYY"))
 
         }
-        if (item === 'Year') {
+        if (val === 'Year') {
             setYear(year + 1)
             setchangeDates(moment().add(year, 'years').format("MMMM Do YYYY"))
 
         }
     }
-    const changeDateDec = (item: any) => {
+    const changeDateDec = (val: any) => {
 
 
-        if (item === 'Date') {
+        if (val === 'Date') {
             setCount(count - 1)
             setchangeDates(moment().add(count, 'days').format("MMMM Do YYYY"))
         }
-        if (item === 'month') {
+        if (val === 'month') {
             setMonth(month - 1)
             setchangeDates(moment().add(month, 'months').format("MMMM Do YYYY"))
         }
-        if (item === 'Year') {
+        if (val === 'Year') {
             setYear(year - 1)
             setchangeDates(moment().add(year, 'years').format("MMMM Do YYYY"))
         }
     }
 
-    const changeTimes = (items: any) => {
-        if (items === '15') {
-            setchangeTime(changeTime + 15)
-
+    const changeTimes = (val: any) => {
+        if (val === '15') {
+           // setchangeTime(changeTime + 15)
+          changeTime= changeTime + 15
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -95,8 +105,9 @@ function TimeEntryPopup(item: any) {
             }
 
         }
-        if (items === '60') {
-            setchangeTime(changeTime + 60)
+        if (val === '60') {
+            //setchangeTime(changeTime + 60)
+            changeTime= changeTime + 60
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -127,19 +138,26 @@ function TimeEntryPopup(item: any) {
     }
     const closeTaskStatusUpdatePoup = () => {
         setTaskStatuspopup(false)
+        setTimeInHours(0)
+        changeTime=0;
+        setCount(0)
     }
     const closeCopyTaskpopup = () => {
         setCopyTaskpopup(false)
     }
     const closeAddTaskTimepopup = () => {
         setAddTaskTimepopup(false)
+       setTimeInHours(0)
+        changeTime=0;
+        setCount(0)
     }
     const closeTaskStatusUpdatePoup2 = () => {
         setTaskStatuspopup2(false)
     }
     const changeTimesDec = (items: any) => {
         if (items === '15') {
-            setchangeTime(changeTime - 15)
+            //setchangeTime(changeTime - 15)
+            changeTime= changeTime - 15
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -147,7 +165,8 @@ function TimeEntryPopup(item: any) {
 
         }
         if (items === '60') {
-            setchangeTime(changeTime - 60)
+            //setchangeTime(changeTime - 60)
+            changeTime= changeTime - 60
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -230,12 +249,12 @@ function TimeEntryPopup(item: any) {
     }
 
     const getStructureData = function () {
-        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-            if (item.TimesheetTitle.Id === undefined) {
-                item.Expanded = true;
-                item.isAvailableToDelete = false;
+        $.each(AllTimeSpentDetails, function (index: any, items: any) {
+            if (items.TimesheetTitle.Id === undefined) {
+                items.Expanded = true;
+                items.isAvailableToDelete = false;
                 $.each(AllTimeSpentDetails, function (index: any, val: any) {
-                    if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === item.Id) {
+                    if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === items.Id) {
                         val.isShifted = true;
                         val.show = true;
                         $.each(val.AdditionalTime, function (index: any, value: any) {
@@ -245,32 +264,37 @@ function TimeEntryPopup(item: any) {
                             value.AuthorTitle = val.Author.Title;
                             value.EditorTitle = val.Editor.Title;
                             value.show = true;
-                            if (val.Created != undefined)
+                           // if (val.Created != undefined)
                                 //  value.TaskTimeCreatedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Created, 'DD/MM/YYYY HH:mm');
-                                if (val.Modified != undefined)
+                               // if (val.Modified != undefined)
                                     // value.TaskTimeModifiedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Modified, 'DD/MM/YYYY HH:mm');
-                                    item.AdditionalTime.push(value);
+                                   // 
+                                   if(!isItemExists(items.AdditionalTime,value.ID))
+                                   items.AdditionalTime.push(value);
+                                   
                         })
+                       // setAdditionalTime(item.AdditionalTime)
+                        
 
                     }
                 })
             }
         })
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { return type.isShifted === false });
-        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-            if (item.AdditionalTime.length === 0) {
-                item.isAvailableToDelete = true;
+        $.each(AllTimeSpentDetails, function (index: any, items: any) {
+            if (items.AdditionalTime.length === 0) {
+                items.isAvailableToDelete = true;
             }
-            if (item.AdditionalTime != undefined && item.AdditionalTime.length > 0) {
-                $.each(item.AdditionalTime, function (index: any, type: any) {
+            if (items.AdditionalTime != undefined && items.AdditionalTime.length > 0) {
+                $.each(items.AdditionalTime, function (index: any, type: any) {
                     if (type.Id != undefined)
                         type.Id = type.ID;
                 })
             }
         });
-        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-            if (item.AdditionalTime.length > 0) {
-                $.each(item.AdditionalTime, function (index: any, val: any) {
+        $.each(AllTimeSpentDetails, function (index: any, items: any) {
+            if (items.AdditionalTime.length > 0) {
+                $.each(items.AdditionalTime, function (index: any, val: any) {
                     var NewDate = val.TaskDate;
                     try {
                         getDateForTimeEntry(NewDate, val);
@@ -278,39 +302,43 @@ function TimeEntryPopup(item: any) {
                 })
             }
         })
-        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-            if (item.Category.Title === undefined)
-                checkCategory(item, 319);
+        $.each(AllTimeSpentDetails, function (index: any, items: any) {
+            if (items.Category.Title === undefined)
+                checkCategory(items, 319);
             else
-                checkCategory(item, item.Category.Id);
+                checkCategory(items, items.Category.Id);
         })
         var IsTimeSheetAvailable = false;
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, item: any) {
-            if (item.Childs.length > 0) {
+        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
+            if (items.Childs.length > 0) {
                 IsTimeSheetAvailable = true;
             }
         });
-
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, item: any) {
-            var AdditionalTime: any = []
-            if (item.Childs != undefined && item.Childs.length > 0) {
-                $.each(item.Childs, function (index: any, child: any) {
+        var AdditionalTimes: any = []
+        
+        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
+           
+            if (items.Childs != undefined && items.Childs.length > 0) {
+                $.each(items.Childs, function (index: any, child: any) {
+                    childs.push(child)
+                    if(child.AdditionalTime != undefined && child.AdditionalTime.length>0){
                     $.each(child.AdditionalTime, function (index: any, Subchild: any) {
                         if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
 
-                            AdditionalTime.push(Subchild)
+                            AdditionalTimes.push(Subchild)
+                           
                         }
-
+                        
+                       
                     })
-
-                    setAdditionalTime(AdditionalTime)
-
-
+                   
+                  }
+               
                 })
             }
 
         });
-
+        setAdditionalTime(AdditionalTimes)
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
         setModalIsTimeOpenToTrue();
     }
@@ -561,8 +589,8 @@ function TimeEntryPopup(item: any) {
         // setTable(copy)
 
     }
-    function AddItem() {
-    }
+   
+  
     const deleteTaskTime = async (childinew: any) => {
         var UpdatedData: any = []
         confirm("Are you sure, you want to delete this?")
@@ -581,6 +609,7 @@ function TimeEntryPopup(item: any) {
                 })
             }
         })
+        setAdditionalTime({...AdditionalTime})
       //  setTimeSheet(AllTimeSheetDataNew)
 
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
@@ -593,10 +622,8 @@ function TimeEntryPopup(item: any) {
         }).then((res: any) => {
 
             console.log(res);
-            setAddTaskTimepopup(false)
-           
-          
-
+            
+        
         })
 
     }
@@ -608,9 +635,9 @@ function TimeEntryPopup(item: any) {
                 if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
                     //updateitem.AuthorId = _spPageContextInfo.userId;
                     updateitem.Id = child.ID;
-                    updateitem.TaskTime = postData.TaskTime;
-                    updateitem.TaskDate = postData.TaskDate;
-                    updateitem.Description = postData.Description
+                    updateitem.TaskTime = postData.TaskTime != undefined?postData.TaskTime:child.TaskTime;
+                    updateitem.TaskDate = postData.TaskDate != undefined?postData.TaskDate:child.TaskDate;
+                    updateitem.Description = postData.Description != undefined?postData.Description:child.Description;
                     // if  ((update.AdditionalTime.sitebasedcomposition != undefined && update.AdditionalTime.sitebasedcomposition.length > 0) {
                     //     $.each((update.AdditionalTime.sitebasedcomposition, function (val:any) {
                     //         val.releventTime = ( $scope.AdditionalTimeSpentInHours / 100) * val.ClienTimeDescription;
@@ -633,14 +660,120 @@ function TimeEntryPopup(item: any) {
         }).then((res: any) => {
 
             console.log(res);
-            setTaskStatuspopup2(false)
+            closeTaskStatusUpdatePoup();
 
         })
 
     }
+    const saveTimeSpent = async () => {
+        var UpdatedData: any = {}
+        var smartTermId = "Task" + item.props.siteType +"Id";
+       
+       
+        var AddedData: any = []
 
+        if (checkCategories == undefined && checkCategories == undefined) {
+            alert("please select category or Title");
+            return false;
+        }
+       
+        $.each(AllUser, function (index: any, taskUser: any) {
+            if (taskUser.AssingedToUserId == CurntUserId) {
+                UpdatedData['AuthorName'] = taskUser.Title;
+                UpdatedData['Company'] = taskUser.Company;
+                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+            }
+
+        });
+        $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
+         
+         $.each(items.Childs, function (index: any, subItem: any) {
+        var timeSpentDetails: any = {};
+       // timeSpentDetails['ParentID'] = getParentId[0].Id
+        timeSpentDetails['AuthorId'] = CurntUserId
+        timeSpentDetails['MainParentId'] = item.props.Id;
+        timeSpentDetails['TaskDate'] = changeDates;
+        timeSpentDetails['AuthorImage'] = UpdatedData.UserImage != undefined ? UpdatedData.UserImage : '';
+        timeSpentDetails['AuthorName'] = UpdatedData.AuthorName;
+        timeSpentDetails['TaskTime'] = newData.TaskTime;
+        timeSpentDetails['Description'] = newData.Description;
+
+        //timeSpentDetails['showDetailsReport'] = $scope.showDetailsReport;
+        timeSpentDetails['showTimesheetDescription'] = newData.Description;
+        if (AllTimeSpentDetails == '' || AllTimeSpentDetails == undefined) {
+            timeSpentDetails['ID'] = 0;
+        }
+
+         else {
+            var timeSpentId = AllTimeSpentDetails[AllTimeSpentDetails.length - 1];
+            timeSpentDetails['ID'] = timeSpentId.ID + 1;
+        }
+        subItem.AdditionalTime.push(timeSpentDetails)
+         AddedData = subItem.AdditionalTime
+       // AddedData.push(timeSpentDetails)
+         })
+       
+   })
+         
+        var TimeInHours: any = changeTime / 60;
+        TimeInHours = TimeInHours.toFixed(2);
+        
+        
+     
+        if (AllTimeSpentDetails == undefined) {
+            var AllTimeSpentDetails: any = []
+        }
+        var TimeListName = 'TaskTimeSheetListNew'
+        var Company = 'Smalsus'
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+
+        let ParentId = await web.lists
+            .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
+            .items
+            .filter(`FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar`)
+            .add({
+                Title: checkCategories,
+                [smartTermId]: item.props.Id,
+            })
+        console.log(ParentId)
+
+        let getParentId = await web.lists
+            .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
+            .items
+            .select("ID,Title")
+            .orderBy("ID", false)
+            .top(1)
+            .get();
+        console.log(getParentId);
+        AddedData.map((val:any)=>{
+            val['ParentID']=getParentId[0].Id
+        })
+        var Category = '';
+        TimeSheet.map((items:any)=>{
+            if(items.Title==getParentId[0].Title){
+                Category = items.Id
+            }
+        })
+
+
+        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter(`FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar`).getById(getParentId[0].Id).update({
+
+            AdditionalTimeEntry: JSON.stringify(AddedData),
+            CategoryId:Category
+
+        }).then((res: any) => {
+
+            console.log(res);
+            //setTimeSheet({...AllTimeSheetDataNew})
+            closeTaskStatusUpdatePoup();
+
+        })
+
+
+    }
     const AddTaskTime = async () => {
         var UpdatedData: any = []
+        var TimeInMinute:any = changeTime / 60
         $.each(AllUser, function (index: any, taskUser: any) {
             if (taskUser.AssingedToUserId === item.props.EditorId
             ) {
@@ -650,27 +783,42 @@ function TimeEntryPopup(item: any) {
 
         });
 
-        var timeSpentId = AdditionalTime[AdditionalTime.length - 1];
-        //timeSpentDetails['ID'] = timeSpentId.ID + 1;
+       
+            // timeSpentId['ID'] = timeSpentId.ID + 1;
 
 
         $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
             if (items.Childs.length > 0 && items.Childs != undefined) {
                 $.each(items.Childs, function (index: any, subItem: any) {
                     if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
+                        var timeSpentId = subItem.AdditionalTime[subItem.AdditionalTime.length - 1]; 
                         $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
                         })
                         var update: any = {};
                         update['AuthorName'] = item.AuthorName;
                         update['AuthorImage'] = item.AuthorImage;
                         update['ID'] = timeSpentId.ID + 1;
-                        update['MainParentId'] = AdditionalTime[0].MainParentId;
-                        update['ParentID'] = AdditionalTime[0].ParentID;
-                        update['TaskTime'] = postData.TaskTime;
-                        update['TaskDate'] = postData.TaskDate;
+                        update['MainParentId'] = item.props.Id;
+                        update['ParentID'] = subItem.AdditionalTime[0].ParentID;
+                        update['TaskTime'] = TimeInMinute;
+                        update['TaskDate'] = postData.TaskDate!= undefined?postData.TaskDate:changeDates;
                         update['Description'] = postData.Description
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
+                    }
+                    else{
+                        var update: any = {};
+                        update['AuthorName'] = item.AuthorName;
+                        update['AuthorImage'] = item.AuthorImage;
+                        update['ID'] = 0;
+                        update['MainParentId'] = item.props.Id;
+                        update['ParentID'] = childs[0].ID;
+                        update['TaskTime'] = TimeInMinute;
+                        update['TaskDate'] = postData.TaskDate!= undefined?postData.TaskDate:changeDates;
+                        update['Description'] = postData.Description
+                        subItem.AdditionalTime.push(update)
+                        UpdatedData = subItem.AdditionalTime
+
                     }
                 })
             }
@@ -678,7 +826,7 @@ function TimeEntryPopup(item: any) {
 
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
-        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(AdditionalTime[0].ParentID).update({
+        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(childs[0].ID).update({
 
 
             // TaskDate:postData.TaskDate,
@@ -687,13 +835,13 @@ function TimeEntryPopup(item: any) {
         }).then((res: any) => {
 
             console.log(res);
-            setAddTaskTimepopup(false)
+            closeAddTaskTimepopup();
 
         })
 
     }
 
-
+    
 
     return (
         <div>
@@ -1008,7 +1156,8 @@ function TimeEntryPopup(item: any) {
                                         <label>Title</label>
                                         <input type="text" autoComplete="off"
                                             className="form-control" name="TimeTitle"
-                                            value={checkCategories} />
+                                            defaultValue={checkCategories}
+                                            onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
                                     </div>
                                     <div className="col-sm-12 pad0 form-group">
                                         <div className="col-sm-6 padL-0">
@@ -1050,7 +1199,8 @@ function TimeEntryPopup(item: any) {
                                                     ng-required="true"
                                                     placeholder="DD/MM/YYYY"
                                                     ng-model="AdditionalnewDate"
-                                                    value={changeDates} />
+                                                    defaultValue={changeDates}
+                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
 
                                             </div>
                                         </div>
@@ -1121,7 +1271,8 @@ function TimeEntryPopup(item: any) {
                                                     ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                     name="timeSpent"
                                                     ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                    value={changeTime} />
+                                                    defaultValue={item.Title}
+                                                    onChange={(e) => setNewData({ ...newData, TimeSpentInMinute: e.target.value })} />
 
                                             </div>
                                             <div
@@ -1161,7 +1312,8 @@ function TimeEntryPopup(item: any) {
                                         <div className="col-sm-12 pad0 form-group">
                                             <div className="col-sm-6 padL-0">
                                                 <label>Time Spent (in hours)</label>
-                                                <input className="form-control" type="text" value={TimeInHours} />
+                                                <input className="form-control" type="text" value={TimeInHours}
+                                                                            />
                                             </div>
                                         </div>
 
@@ -1170,6 +1322,8 @@ function TimeEntryPopup(item: any) {
                                             <textarea
                                                 id="AdditionalshortDescription"
                                                 cols={15} rows={4}
+                                                defaultValue={item.Description}
+                                                onChange={(e) => setNewData({ ...newData, Description: e.target.value })}
                                             ></textarea>
                                         </div>
 
@@ -1209,7 +1363,7 @@ function TimeEntryPopup(item: any) {
 
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" ng-click="saveTaskStatusUpdatePoup()">
+                                <button type="button" className="btn btn-primary" onClick={saveTimeSpent}>
                                     Submit
                                 </button>
 
@@ -1565,9 +1719,9 @@ function TimeEntryPopup(item: any) {
                                                                             autoComplete="off"
                                                                             id="AdditionalNewDatePicker"
                                                                             className="form-control"
-                                                                            ng-required="true"
+                                                                           
                                                                             placeholder="DD/MM/YYYY"
-                                                                            ng-model="AdditionalnewDate"
+                                                                           
                                                                             defaultValue={child.TaskDate}
                                                                             onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
 
@@ -1636,10 +1790,6 @@ function TimeEntryPopup(item: any) {
                                                                         <input type="text"
                                                                             autoComplete="off"
                                                                             className="form-control"
-                                                                            ng-required="true"
-                                                                            ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
-                                                                            name="timeSpent"
-                                                                            ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
                                                                             defaultValue={changeTime} />
 
                                                                     </div>
@@ -1887,11 +2037,7 @@ function TimeEntryPopup(item: any) {
                                                 <input type="text"
                                                     autoComplete="off"
                                                     className="form-control"
-                                                    ng-required="true"
-                                                    ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
-                                                    name="timeSpent"
-                                                    ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                    value={changeTime} />
+                                                    defaultValue={changeTime}  onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })}/>
 
                                             </div>
                                             <div
@@ -1931,8 +2077,8 @@ function TimeEntryPopup(item: any) {
                                         <div className="col-sm-12 pad0 form-group">
                                             <div className="col-sm-6 padL-0">
                                                 <label>Time Spent (in hours)</label>
-                                                <input className="form-control" type="text" value={TimeInHours}
-                                                    onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
+                                                <input className="form-control" type="text" 
+                                                   value={TimeInHours} />
                                             </div>
                                         </div>
 
@@ -1963,18 +2109,7 @@ function TimeEntryPopup(item: any) {
                                             </div>
                                         </div>
                                         <div className="col-sm-6 padR0">
-                                            {/* <a target="_blank"
-                                                                            ng-if="AdditionalTaskTime.siteListName != 'SP.Data.TasksTimesheet2ListItem'"
-                                                                            ng-href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID={{AdditionalTaskTime.ParentID}}">
-                                                                            Open out-of-the-box
-                                                                            form
-                                                                        </a> */}
-                                            {/* <a target="_blank"
-                                                                        ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
-                                                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
-                                                                        Open out-of-the-box
-                                                                        form
-                                                                    </a> */}
+                                         
                                             <button type="button" className="btn btn-primary"
                                                 onClick={AddTaskTime}>
                                                 Save
