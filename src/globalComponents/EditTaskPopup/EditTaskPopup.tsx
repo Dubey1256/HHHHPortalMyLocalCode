@@ -28,6 +28,7 @@ var FolderID: any = '';
 var CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
 
 var IsShowFullViewImage = false;
+
 const EditTaskPopup = (Items: any) => {
 
     const [CompoenetItem, setComponent] = React.useState([]);
@@ -689,7 +690,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                                         <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                             onClick={(e) => EditComponent(EditData, 'Componet')} />
                                                                     </span>
-                                                            {(Items.Items.smartComponent != undefined) ?
+                                                            {(Items !=undefined && Items.Items !=undefined && Items.Items.smartComponent != undefined) ?
                                                                 <>
                                                                     {Items.Items.smartComponent.map((com: any) => {
                                                                         return (
@@ -792,7 +793,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                                     </span>
 
                                                                 </div>
-                                                                {Items.Items.Categories != "" ?
+                                                                {Items !=undefined && Items.Items !=undefined && Items.Items.Categories != "" ?
                                                                  <>   
                                                                 <div className="block">
                                                                 <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=123`}>{Items.Items.Categories}</a>
@@ -807,7 +808,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                             </div>
                                                             </>:
                                                              ''}
-                                                         {Items.Items.Categories != "" ?
+                                                         {Items?.Items?.Categories != "" ?
                                                                  <>   
                                                                 <div className="block">
                                                                 <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=123`}>{Items.Items.Categories}</a>
@@ -950,7 +951,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                                     })}
                                                                 </> :
                                                                 ''}
-                                                                {((Items.Items.linkedComponent != undefined) && (Items.Items.linkedComponent.length>0)) ?
+                                                                {((Items?.Items?.linkedComponent != undefined) && (Items?.Items?.linkedComponent.length>0)) ?
                                                                 <>
                                                                     {Items.Items.linkedComponent.map((com: any) => {
                                                                         return (
@@ -1417,12 +1418,12 @@ let PercentComplete= saveData.PercentComplete/10
                                 <div className="col-sm-12 p-0">
                                     <div className="col-md-4 text-left ps-0">
                                         <div className="d-flex   align-content-center">
-                                            Created <span>{Items.Items.Created}</span> by <span
-                                                className="siteColor">{Items.Items.Author.Title}</span>
+                                            Created <span>{Items?.Items?.Created}</span> by <span
+                                                className="siteColor">{Items?.Items?.Author.Title}</span>
                                         </div>
                                         <div>
-                                            Last modified <span>{Items.Items.Modified}</span> by <span
-                                                className="siteColor">{Items.Items.Editor.Title}</span>
+                                            Last modified <span>{Items?.Items?.Modified}</span> by <span
+                                                className="siteColor">{Items?.Items?.Editor.Title}</span>
                                         </div>
                                         <div>
                                             <a ng-if="isOwner===true" className="hreflink">
@@ -1449,7 +1450,7 @@ let PercentComplete= saveData.PercentComplete/10
                                         <div>
                                             <span>
                                                 <a className="ForAll hreflink" target="_blank" ng-if="Item.siteType!='Master Tasks'"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${Items.Items.Id}&Site=${Items.Items.siteType}`}>
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${Items?.Items.Id}&Site=${Items.Items.siteType}`}>
                                                     Go
                                                     to
                                                     profile
