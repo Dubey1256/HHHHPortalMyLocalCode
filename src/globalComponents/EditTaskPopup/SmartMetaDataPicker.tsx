@@ -23,6 +23,10 @@ const Picker=(item:any)=>{
     }
     const saveCategories=()=>{
         item.props.categories = [];
+        item.props.smartCategories = [];
+        var title:any ={}
+        title.Title =select;
+        item.props.smartCategories.push(title);
         item.props.categories = select;
         Example(item);
 
@@ -90,7 +94,7 @@ const Picker=(item:any)=>{
         });
         return uniqueNames;
     }
-    loadGmBHTaskUsers();
+   
     const getChilds =(item:any, items:any)=> {
         item.childs = [];
         $.each(items, function (index:any,childItem:any) {
