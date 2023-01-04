@@ -456,4 +456,13 @@ textarea{
     #Breadcrumb .col000 span:last-child {
         color: #0000BC !important;
         font-weight: 600;
+    }    
+
+    .popup {
+      position: fixed;      
+      top: 15%;
+      left: 35%;
+      text-align: center;
+      background-color: #0000BC;
+      width: 50%;
     }

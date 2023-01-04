@@ -18,11 +18,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 
+
+
 function EditInstitution(item: any) {
     // Id:any
-
-
-
 
     const [CompoenetItem, setComponent] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -31,11 +30,13 @@ function EditInstitution(item: any) {
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [AllComponents, setComponentsData] = React.useState([]);
     const [CollapseExpend, setCollapseExpend] = React.useState(false);
     const [date, setDate] = React.useState(undefined);
     const [Startdate, setStartdate] = React.useState(undefined);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
+    const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     // $('.ms-Dialog-main .main-153').hide();
     const setModalIsOpenToTrue = (e: any) => {
         // e.preventDefault()
@@ -66,7 +67,15 @@ function EditInstitution(item: any) {
             item.props.smartComponent = item1.smartComponent;
             // setComponent([ item.props]);
         }
+        if (item1 != undefined && item1.Categories != "") {
+            var title: any = {};
+            title.Title = item1.categories;
+            item.props.smartCategories.push(title);
+
+        }
+        setIsComponentPicker(false);
         setIsComponent(false);
+       // setComponent(CompoenetItem => ([...CompoenetItem]));
     }, []);
     // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
     //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
@@ -159,99 +168,124 @@ function EditInstitution(item: any) {
             item.Priority = '(1) High';
         }
     }
-    var getMasterTaskListTasks = function () {
-        var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
-        $.ajax({
-            url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
-            method: "GET",
-            headers: {
-                "Accept": "application/json; odata=verbose"
-            },
-            success: function (data) {
-                var Tasks = data.d.results;
-                $.each(Tasks, function (index: any, item: any) {
-                    item.DateTaskDueDate = new Date(item.DueDate);
-                    if (item.DueDate != null)
-                        item.TaskDueDate = moment(item.DueDate).format('DD/MM/YYYY');
-                    // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
-                    item.FilteredModifiedDate = item.Modified;
-                    item.DateModified = new Date(item.Modified);
-                    item.DateCreatedNew = new Date(item.Created);
+    var getMasterTaskListTasks = async function () {
+        //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let componentDetails = [];
+        componentDetails = await web.lists
+            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            // .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            .getByTitle('Master Tasks')
+            .items
+            .select("ComponentCategory/Id", "ComponentCategory/Title", "ComponentPortfolio/Id", "ComponentPortfolio/Title", "ServicePortfolio/Id", "ServicePortfolio/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
 
-                    item.DateCreated = item.CreatedDate = moment(item.Created).format('DD/MM/YYYY');// ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-                    item.Creatednewdate = moment(item.Created).format('DD/MM/YYYY');//ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
-                    // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
-                    //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
-                    if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
-                        switch (item.Priority) {
-                            case '(1) High':
-                                item.Priority_x0020_Rank = 8;
-                                break;
-                            case '(2) Normal':
-                                item.Priority_x0020_Rank = 4;
-                                break;
-                            case '(3) Low':
-                                item.Priority_x0020_Rank = 1;
-                                break;
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "ComponentPortfolio", "ServicePortfolio", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .filter("Id eq " + item.props.Id + "")
+            .get()
+        console.log(componentDetails);
+        // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
+        // $.ajax({
+        //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
+        //     method: "GET",
+        //     headers: {
+        //         "Accept": "application/json; odata=verbose"
+        //     },
+        //     success: function (data) {
+        var Tasks = componentDetails;
+        $.each(Tasks, function (index: any, item: any) {
+            item.DateTaskDueDate = new Date(item.DueDate);
+            if (item.DueDate != null)
+                item.TaskDueDate = moment(item.DueDate).format('DD/MM/YYYY');
+            // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
+            item.FilteredModifiedDate = item.Modified;
+            item.DateModified = new Date(item.Modified);
+            item.DateCreatedNew = new Date(item.Created);
+
+            item.DateCreated = item.CreatedDate = moment(item.Created).format('DD/MM/YYYY');// ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
+            item.Creatednewdate = moment(item.Created).format('DD/MM/YYYY');//ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
+            // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
+            //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+            if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
+                switch (item.Priority) {
+                    case '(1) High':
+                        item.Priority_x0020_Rank = 8;
+                        break;
+                    case '(2) Normal':
+                        item.Priority_x0020_Rank = 4;
+                        break;
+                    case '(3) Low':
+                        item.Priority_x0020_Rank = 1;
+                        break;
 
 
-                        }
+                }
+            }
+            getpriority(item)
+            item.assigned = getMultiUserValues(item);
+            if (item.ItemRank != undefined)
+                item.ItemRankTitle = TaskItemRank[0].filter((option: { rank: any; }) => option.rank == item.ItemRank)[0].rankTitle;
+            item.PercentComplete = item.PercentComplete <= 1 ? item.PercentComplete * 100 : item.PercentComplete;
+            if (item.PercentComplete != undefined) {
+                item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+            }
+            item.smartComponent = [];
+            item.smartCategories = [];
+            if (item.ComponentPortfolio != undefined) {
+                if (item.ComponentPortfolio.Id != undefined) {
+                    if (item.smartComponent != undefined)
+                        item.smartComponent.push({ 'Title': item.ComponentPortfolio.Title, 'Id': item.ComponentPortfolio.Id });
+
+                }
+            }
+            if (item.SharewebCategories != undefined) {
+                if (item.SharewebCategories.results != undefined) {
+                    map(item.SharewebCategories.results, (bj) => {
+                        if (bj.Title != undefined)
+                            item.smartCategories.push({ 'Title': bj.Title, 'Id': bj.Id });
+
                     }
-                    getpriority(item)
-                    item.assigned = getMultiUserValues(item);
-                    if (item.ItemRank != undefined)
-                        item.ItemRankTitle = TaskItemRank[0].filter((option: { rank: any; }) => option.rank == item.ItemRank)[0].rankTitle;
-                    item.PercentComplete = item.PercentComplete <= 1 ? item.PercentComplete * 100 : item.PercentComplete;
-                    if (item.PercentComplete != undefined) {
-                        item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
-                    }
-                    item.smartComponent = [];
-                    if (item.ComponentPortfolio != undefined) {
-                        if (item.ComponentPortfolio.Id != undefined) {
-                            if (item.smartComponent != undefined)
-                                item.smartComponent.push({ 'Title': item.ComponentPortfolio.Title, 'Id': item.ComponentPortfolio.Id });
-
-                        }
-                    }
-                    item.siteType = 'Master Tasks';
-                    item.taskLeader = 'None';
-                    if (item.AssignedTo != undefined && item.AssignedTo.results != undefined && item.AssignedTo.results.length > 0)
-                        item.taskLeader = getMultiUserValues(item);
-                    if (item.Task_x0020_Type == undefined)
-                        item.Task_x0020_Type = 'Activity Tasks';
-                    if (item.DueDate != undefined) {
-                        item.DueDate = moment(item.DueDate).format('DD/MM/YYYY')
-                        // setDate(item.DueDate);
-                    }
-                    if (item.StartDate != undefined) {
-                        item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
-                        //setStartdate(item.StartDate);
-                    }
-                    if (item.CompletedDate != undefined) {
-                        item.CompletedDate = moment(item.CompletedDate).format('DD/MM/YYYY')
-                        // item.CompletedDate = item.CompletedDate.toString();
-                        // setCompletiondatenew(item.CompletedDate);
-                    }
-                    item.SmartCountries = [];
-                    item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                    item['SiteIcon'] = item.siteType == "Master Tasks" ? GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined) : GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
-                    if (item.Synonyms != undefined && item.Synonyms.length > 0) {
-                        item.Synonyms = JSON.parse(item.Synonyms);
-                    }
-                });
-                //  deferred.resolve(Tasks);
-                setComponent(Tasks);
-                setModalIsOpenToTrue(true)
-
-                //  setModalIsOpenToTrue();
-            },
-
-            error: function (error) {
-
-
+                    )
+                }
+            }
+            item.siteType = 'Master Tasks';
+            item.taskLeader = 'None';
+            if (item.AssignedTo != undefined && item.AssignedTo.results != undefined && item.AssignedTo.results.length > 0)
+                item.taskLeader = getMultiUserValues(item);
+            if (item.Task_x0020_Type == undefined)
+                item.Task_x0020_Type = 'Activity Tasks';
+            if (item.DueDate != undefined) {
+                item.DueDate = moment(item.DueDate).format('DD/MM/YYYY')
+                // setDate(item.DueDate);
+            }
+            if (item.StartDate != undefined) {
+                item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
+                //setStartdate(item.StartDate);
+            }
+            if (item.CompletedDate != undefined) {
+                item.CompletedDate = moment(item.CompletedDate).format('DD/MM/YYYY')
+                // item.CompletedDate = item.CompletedDate.toString();
+                // setCompletiondatenew(item.CompletedDate);
+            }
+            item.SmartCountries = [];
+            item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+            item['SiteIcon'] = item.siteType == "Master Tasks" ? GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined) : GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+            if (item.Synonyms != undefined && item.Synonyms.length > 0) {
+                item.Synonyms = JSON.parse(item.Synonyms);
             }
         });
-    }
+        //  deferred.resolve(Tasks);
+        setComponent(Tasks);
+        setModalIsOpenToTrue(true)
+
+        //  setModalIsOpenToTrue();
+    };
+
+    //     error: function (error) {
+
+
+    //     }
+    // });
+    // }
 
 
 
@@ -266,6 +300,21 @@ function EditInstitution(item: any) {
 
     var Item: any = '';
     const TaskItemRank: any = [];
+    const GetSmartmetadata = async () => {
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let smartmetaDetails = [];
+        smartmetaDetails = await web.lists
+            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            .getByTitle('SmartMetadata')
+            .items
+            //.getById(this.state.itemID)
+            .select("ID", "Title")
+            .top(4999)
+            .filter("TaxType eq 'Categories'")
+            .get()
+
+        console.log(smartmetaDetails);
+    }
     React.useEffect(() => {
         var initLoading = function () {
             if (item.props != undefined && item.props.siteType != undefined) {
@@ -273,6 +322,7 @@ function EditInstitution(item: any) {
                 if (Item.siteType == 'HTTPS:') {
                     Item.siteType = 'HHHH';
                 }
+                GetSmartmetadata();
                 getMasterTaskListTasks();
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
@@ -605,7 +655,12 @@ function EditInstitution(item: any) {
 
 
     }
-
+    const EditComponentPicker = (item: any, title: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponentPicker(true);
+        setSharewebCategory(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
 
 
     return (
@@ -687,7 +742,7 @@ function EditInstitution(item: any) {
                                                                     <label className="form-label">
                                                                         Component Portfolio
                                                                     </label>
-                                                                    <input  type="text"
+                                                                    <input type="text"
                                                                         className="form-control" />
                                                                     {/* <AutoSuggest
                                                                         options={stateOptions}
@@ -695,28 +750,28 @@ function EditInstitution(item: any) {
                                                                         value={state}
                                                                         name="State"
                                                                     /> */}
-                                                               <span className="input-group-text">
-                                                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                        onClick={(e) => EditComponent(item, 'Componet')} />
-                                                                </span>
+                                                                    <span className="input-group-text">
+                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                            onClick={(e) => EditComponent(item, 'Componet')} />
+                                                                    </span>
                                                                 </div>
-                                                               
+
                                                                 <div className="col-sm-11  inner-tabb">
                                                                     <div>
-                                                                      
-                                                                            {item != undefined && item.smartComponent != undefined && item.smartComponent.map((childinew: any) =>
-                                                                                < div className="block bgsiteColor"
 
+                                                                        {item != undefined && item.smartComponent != undefined && item.smartComponent.map((childinew: any) =>
+                                                                            < div className="block bgsiteColor"
+
+                                                                            >
+                                                                                <a className="hreflink" target="_blank"
+                                                                                    href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{childinew.Title}</a>
+                                                                                <a className="hreflink"
                                                                                 >
-                                                                                    <a className="hreflink" target="_blank"
-                                                                                        href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}&amp;Site={{item.siteType}}">{childinew.Title}</a>
-                                                                                    <a className="hreflink"
-                                                                                    >
-                                                                                        <img src="/_layouts/images/delete.gif"></img>
-                                                                                    </a>
-                                                                                </div>
-                                                                            )}
-                                                                     
+                                                                                    <img src="/_layouts/images/delete.gif"></img>
+                                                                                </a>
+                                                                            </div>
+                                                                        )}
+
                                                                     </div>
                                                                 </div>
 
@@ -781,7 +836,7 @@ function EditInstitution(item: any) {
                                                                 <label className="form-label">Synonyms <a className="hreflink" target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
                                                                 <input type="text" className="form-control"
                                                                     defaultValue={item.SynonymsTitle} onChange={(e) => item.SynonymsTitle = e.target.value} />
-                                                                <span className="input-group-text" onClick={(e) => createSynonyms(item)}> <img  src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span> 
+                                                                <span className="input-group-text" onClick={(e) => createSynonyms(item)}> <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span>
                                                                 {item["Synonyms"] != undefined && item["Synonyms"].length > 0 && map(item["Synonyms"], (obj, index) => {
                                                                     return (
                                                                         <>
@@ -790,7 +845,7 @@ function EditInstitution(item: any) {
                                                                                     obj.Title
                                                                                 }
                                                                                 <a className="input-group-text" onClick={(e) => deleteItem(item)}>
-                                                                                  <img src="/_layouts/images/delete.gif"></img>
+                                                                                    <img src="/_layouts/images/delete.gif"></img>
                                                                                 </a>
                                                                             </div>
                                                                         </>
@@ -919,15 +974,41 @@ function EditInstitution(item: any) {
                                                             </div>
                                                         </div>
                                                         <div className="col position-relative mt-10">
-                                                            <label className="form-label">Categories <a className="hreflink" href={item.Facebook != null ? item.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
+                                                            <label className="form-label">Categories </label>
                                                             <input type="text" className="form-control"
                                                                 defaultValue={item.Facebook != null ? item.Facebook.Description : ""} />
                                                             <span className="input-group-text"  >
 
-                                                                <Picker />
-                                                                
+                                                                {/* <Picker /> */}
+                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                    onClick={(e) => EditComponentPicker(item, 'Categories')} />
+
                                                             </span>
+                                                            <div className="col-sm-11  inner-tabb">
+                                                                <div>
+
+                                                                    {item != undefined && item.smartCategories != undefined && item.smartCategories.map((childi: any) =>
+                                                                        // {childi.Title}
+                                                                        // return (
+                                                                        //     <>
+                                                                        < div className="block bgsiteColor"
+
+                                                                        >
+                                                                            <a className="hreflink" target="_blank"  >{childi.Title}</a>
+                                                                            <a className="hreflink"
+                                                                            >
+                                                                                <img src="/_layouts/images/delete.gif"></img>
+                                                                            </a>
+                                                                        </div>
+                                                                        //     </>
+                                                                        // )
+                                                                    )}
+
+
+                                                                </div>
+                                                            </div>
                                                         </div>
+
                                                     </div>
                                                     <div className="col-sm-4  mt-10">
                                                         <CommentCard siteUrl={item.siteUrl} userDisplayName={item.userDisplayName} listName={item.siteType} itemID={item.Id}></CommentCard>
@@ -1463,7 +1544,7 @@ function EditInstitution(item: any) {
                                         <div className="row">
                                             <div className="ItemInfo col-sm-6">
                                                 <div className="text-left">
-                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{item.Created != null ? moment(item.Created).format('DD/MM/YYYY MM:SS') : ""}</span> by 
+                                                    Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{item.Created != null ? moment(item.Created).format('DD/MM/YYYY MM:SS') : ""}</span> by
                                                     <span className="footerUsercolor">
                                                         {/* {{Item.Author.Title}} */}
                                                         {item.Author.Title != undefined ? item.Author.Title : ""}
@@ -1506,6 +1587,7 @@ function EditInstitution(item: any) {
                         </div>
 
                         {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
+                        {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
 
                     </div>
                 )}

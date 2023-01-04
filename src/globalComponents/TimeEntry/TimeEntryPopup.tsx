@@ -263,10 +263,11 @@ function TimeEntryPopup(item: any) {
                             value.AuthorTitle = val.Author.Title;
                             value.EditorTitle = val.Editor.Title;
                             value.show = true;
-                            if (val.Created != undefined)
-                                //  value.TaskTimeCreatedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Created, 'DD/MM/YYYY HH:mm');
-                                if (val.Modified != undefined)
+                            // if (val.Created != undefined)
+                            //     //  value.TaskTimeCreatedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Created, 'DD/MM/YYYY HH:mm');
+                            //     if (val.Modified != undefined)
                                     // value.TaskTimeModifiedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Modified, 'DD/MM/YYYY HH:mm');
+                                    if(!isItemExists(item.AdditionalTime,value.ID))
                                     item.AdditionalTime.push(value);
                         })
 

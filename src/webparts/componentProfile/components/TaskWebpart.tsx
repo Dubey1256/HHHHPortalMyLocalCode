@@ -1,13 +1,17 @@
 import * as React from 'react';
 import * as $ from 'jquery';
+import Modal from 'react-bootstrap/Modal';
 import * as Moment from 'moment';
 import '../../cssFolder/Style.scss'
-import '../../cssFolder/sitecolorservice.scss'
-import { Modal } from 'office-ui-fabric-react';
+import '../../cssFolder/site_color.scss'
+import Button from 'react-bootstrap/Button';
+// import { Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import Tooltip from './Tooltip';
+import Dropdown from 'react-bootstrap/Dropdown';
+import EditInstituton from '../../EditPopupFiles/EditComponent'
 import { create } from 'lodash';
 export default function ComponentTable({ props }: any) {
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
@@ -40,10 +44,13 @@ export default function ComponentTable({ props }: any) {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [SmartmodalIsOpen, setSmartModalIsOpen] = React.useState(false);
     const [CreatedmodalIsOpen, setCreatedmodalIsOpen] = React.useState(false);
+    const [AddActivityIsOpen, setAddActivityIsOpen] = React.useState(false);
     const [DuemodalIsOpen, setDuemodalIsOpen] = React.useState(false);
     const [TeamMembermodalIsOpen, setTeamMembermodalIsOpen] = React.useState(false);
     const [ItemRankmodalIsOpen, setItemRankmodalIsOpen] = React.useState(false);
     const [StatusmodalIsOpen, setStatusmodalIsOpen] = React.useState(false);
+    const [IsComponent, setIsComponent] = React.useState(false);
+    const [SharewebComponent, setSharewebComponent] = React.useState('');
     //    Array For Status
     const AllItems = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
     // Array of Rank
@@ -62,6 +69,15 @@ export default function ComponentTable({ props }: any) {
             if (pair[0] == variable) { return pair[1]; }
         }
         return (false);
+    }
+    const Call = React.useCallback((item1) => {
+        setIsComponent(false);
+    }, []);
+    const EditComponentPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     const editProfile = (itemData: any) => {
@@ -93,12 +109,22 @@ export default function ComponentTable({ props }: any) {
         setData(maidataBackup)
         // const { checked } = e.target;
     }
+
+    const setAddActivityIsOpenToTrue = () => {
+        setAddActivityIsOpen(true)
+    }
+    const setAddActivityIsOpenFalse = () => {
+        setAddActivityIsOpen(false)
+    }
+
+
     const setModalSmartIsOpenToTrue = () => {
         setSmartModalIsOpen(true)
     }
     const setModalSmartIsOpenToFalse = () => {
         setSmartModalIsOpen(false)
     }
+
     const setCreatedmodalIsOpenToTrue = () => {
         setCreatedmodalIsOpen(true)
     }
@@ -718,13 +744,13 @@ export default function ComponentTable({ props }: any) {
                 var keywordList = [];
                 keywordList = stringToArray1(OtherStructure);
                 var pattern = getRegexPattern(keywordList);
-                CompleteStructure = OtherStructure.replace(pattern, '<span class="siteColor bold">$2</span>');;
+                CompleteStructure = OtherStructure.replace(pattern, '<span className="siteColor bold">$2</span>');;
             }
             else {
                 var keywordList = [];
                 keywordList = stringToArray1(OtherStructure);
                 var pattern = getRegexPattern(keywordList);
-                CompleteStructure = OtherStructure.replace(pattern, '<span class="siteColor bold">$2</span>') + ' >' + CompleteStructure;
+                CompleteStructure = OtherStructure.replace(pattern, '<span className="siteColor bold">$2</span>') + ' >' + CompleteStructure;
             }
             // CompleteStructure = OtherStructure + ' >' + CompleteStructure;
         }
@@ -1633,10 +1659,87 @@ export default function ComponentTable({ props }: any) {
     //     setPassData({data:selected2)
     //   );
     // },[])
+    var myarray: any = [];
+    var myarray1: any = [];
+    var myarray2: any = [];
+  
+
+
+        
+        if (props.Sitestagging != null) {
+            myarray.push(JSON.parse(props.Sitestagging));
+        }
+        if (myarray.length != 0) {
+            myarray[0].map((items: any) => {
+
+
+                if (items.SiteImages != undefined && items.SiteImages != '') {
+                    items.SiteImages = items.SiteImages.replace('https://www.hochhuth-consulting.de', 'https://hhhhteams.sharepoint.com/sites/HHHH')
+                    myarray1.push(items)
+
+
+                }
+                // console.log(myarray1);
+
+                // if (items.ClienTimeDescription != undefined) {
+                //     items.ClienTimeDescription = parseFloat(item.ClienTimeDescription);
+                //     myarray1.push(items)
+
+                // }
+
+
+            })
+        
+
+        if (props.ClientCategory.results.length != 0) {
+            props.ClientCategory.results.map((terms: any) => {
+                //     if(myarray2.length!=0 && myarray2[0].title==terms.title){
+                //                ""
+                //     }else{
+                //    myarray2.push(terms);
+                // }
+                myarray2.push(terms);
+            })
+
+        }
+        //    const letters = new Set([myarray2]);
+
+        // console.log(myarray2)
+
+
+        // myarray.push();
+}
+
+const [lgShow, setLgShow] = React.useState(props.isopen);
+    const handleClose = () => setLgShow(false);
     return (
-        <div className="app component">
+        <div className="app component serviepannelgreena">
+
+            {/* Add activity task */}
+
+          
+                <Modal
+                size="xl"
+                show={lgShow}
+                onHide={() => setLgShow(false)}
+                aria-labelledby="example-modal-sizes-title-lg">
+                <Modal.Header>
+                    {/* <span className='modal-title' id="example-modal-sizes-title-lg">
+                        <span><strong>EditEmployeeInfo</strong></span>
+                    </span> */}
+                    <button type="button" className='Close-button' onClick={handleClose}>×</button>
+                </Modal.Header>
+                <Modal.Body className='p-2'>
+                    <div>
+                    <p>ANubhav</p>
+                    </div >
+                </Modal.Body >
+                ANubhav 2
+            </Modal>
+    
+             {/* End of Add activity task */}
             {/* Smart Time Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={SmartmodalIsOpen}
                 onDismiss={setModalSmartIsOpenToFalse}
                 isBlocking={true}
@@ -1675,10 +1778,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </span>
-            </Modal>
+            </Modal> */}
             {/* Smart Time popup end here */}
             {/* Created Date Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={CreatedmodalIsOpen}
                 onDismiss={setModalSmartIsOpenToFalse}
                 isBlocking={false}
@@ -1723,10 +1826,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </Modal> */}
             {/* Created Date popup end here */}
             {/* Due Date Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={DuemodalIsOpen}
                 onDismiss={setDuemodalIsOpenToFalse}
                 isBlocking={false}
@@ -1772,10 +1875,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </Modal> */}
             {/* Due Date popup end here */}
             {/* Team Member Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={TeamMembermodalIsOpen}
                 onDismiss={setTeamMembermodalIsOpenToFalse}
                 isBlocking={false}
@@ -1903,10 +2006,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </span>
-            </Modal>
+            </Modal> */}
             {/* Team Member popup end here */}
             {/* Item Rank Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={ItemRankmodalIsOpen}
                 onDismiss={setItemRankmodalIsOpenToFalse}
                 isBlocking={false}
@@ -1950,10 +2053,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </span>
-            </Modal>
+            </Modal> */}
             {/* Item Rank popup end here */}
             {/* Status Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={StatusmodalIsOpen}
                 onDismiss={setStatusmodalIsOpenToFalse}
                 isBlocking={false}
@@ -2003,40 +2106,43 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </span>
-            </Modal>
+            </Modal> */}
             {/* Status popup end here */}
-            <section className="TableContentSection">
+
+<section className="TableContentSection">
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container pad0">
                             <div className="Alltable mt-10">
-                                <div className="tbl-headings">
-                                    <span className="leftsec w65">
-                                        <label>
-                                            <span>
-                                                <img style={{ height: "24px", width: "24px", marginTop: "-2px" }}
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                            <div className="table-Header  bg-e9 d-flex justify-content-between align-items-center px-2 py-2">
+                                    <div className='d-flex  align-items-center '>
+                                    <span className='headign'>
+                                                {props.Portfolio_x0020_Type == 'Component' &&
+                                                    <>
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{props.Title}</a>
+                                                    </>
+                                                }
+                                                {props.Portfolio_x0020_Type == 'Service' &&
+                                                    <>
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{props.Title}</a>
+                                                    </>}
+
                                             </span>
-                                            <span>
-                                                {/* {data.map(item => <a>{item.Title}</a>)} */}
-                                                {/* <a>Contact Database</a> */}
-                                                <a>{props}</a>
-                                            </span>
-                                        </label>
-                                        <span className="g-search">
+                                         
+                                        <span className="align-items-center d-flex position-relative">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
-                                            <span className="gsearch-btn" ><i><FaSearch /></i></span>
+                                            <span className="gsearch-Btn bg-fxdark p-2" ><i><FaSearch /></i></span>
                                         </span>
-                                    </span>
-                                    <span className="toolbox mx-auto">
+                                    </div>
+                                    <div className="toolsbox">
                                         <button type="button" className="btn btn-primary"
                                                         onClick={addModal} title=" Add Structure">
                                             Add Structure
                                         </button>
                                         <button type="button"
-                                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
                                            
-                                            disabled={true}>
+                                            className="btn btn-primary"
+                                            onClick={setAddActivityIsOpenToTrue}>
                                             <MdAdd />
                                             Add Activity-Task
                                         </button>
@@ -2054,10 +2160,8 @@ export default function ComponentTable({ props }: any) {
                                         <a>
                                             <Tooltip />
                                         </a>
-                                        {/* <span>
-                                        <ExpandTable/>
-                                        </span> */}
-                                    </span>
+                                     
+                                    </div>
                                 </div>
                                 <div className="col-sm-12 pad0 smart">
                                     <div className="section-event">
@@ -2066,18 +2170,16 @@ export default function ComponentTable({ props }: any) {
                                                 <thead>
                                                     <tr>
                                                         <th style={{ width: "2%" }}>
-                                                            <div></div>
+                                                            <div style={{ width: "2%" }} className='smart-relative'></div>
                                                         </th>
-                                                        <th style={{ width: "3%" }}>
-                                                            <div></div>
+                                                       
+                                                        <th  style={{ width: "6%" }}>
+                                                            <div className="smart-relative"  style={{ width: "6%" }}></div>
                                                         </th>
-                                                        <th style={{ width: "3%" }}>
-                                                            <div></div>
-                                                        </th>
-                                                        {/* <th style={{ width: "2%" }}></th> */}
+                                                       
                                                         <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "7%" }} className="smart-relative">
-                                                                <input type="search" placeholder="TaskId" className="full_width searchbox_height"
+                                                            <div style={{ width: "7%" }}  className="smart-relative">
+                                                                <input type="search" placeholder="TaskId" className="form-control"
                                                                 // onChange={(e)=>SearchVale(e,"TaskId")} 
                                                                 />
                                                                 <span className="sorticon">
@@ -2086,9 +2188,9 @@ export default function ComponentTable({ props }: any) {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "30%" }}>
-                                                            <div style={{ width: "30%" }} className="smart-relative">
-                                                                <input type="search" placeholder="Title" className="full_width searchbox_height"
+                                                        <th style={{ width: "25%" }}>
+                                                            <div style={{ width: "25%" }} className="smart-relative">
+                                                                <input type="search" placeholder="Title" className="form-control"
                                                                 //  onChange={(e)=>SearchAll(e)}
                                                                 />
                                                                 <span className="sorticon">
@@ -2098,9 +2200,9 @@ export default function ComponentTable({ props }: any) {
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "7%" }} className="smart-relative">
+                                                            <div style={{ width: "7%" }}  className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Client Category"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Client Category" className="form-control"
                                                                     onChange={(e) => handleChange(e, "ClientCategory")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2111,96 +2213,151 @@ export default function ComponentTable({ props }: any) {
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="%"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Client Category" className="form-control"
                                                                     onChange={(e) => handleChange(e, "ClientCategory")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-                                                                <span className="dropdown filer-icons">
+                                                                <Dropdown className='dropdown-fliter'>
+      <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
+   <FaFilter/>
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+                                                                {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
-                                                                        //  href="#myDropdown1"
+                                                                    
                                                                         onClick={setStatusmodalIsOpenToTrue}
                                                                  
                                                                     >
                                                                         <i ><FaFilter onClick={setStatusmodalIsOpenToTrue} /></i>
                                                                        
-                                                                    </span></span>
+                                                                    </span></span> */}
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "6%" }} className="smart-relative">
+                                                            <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="ItemRank"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Client Category" className="form-control"
                                                                     onChange={(e) => handleChange(e, "ClientCategory")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-                                                                <span className="dropdown filer-icons">
+                                                                <Dropdown className='dropdown-fliter'>
+      <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
+   <FaFilter/>
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+                                                                {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
-                                                                        //  href="#myDropdown1"
+                                                                    
                                                                         onClick={setItemRankmodalIsOpenToTrue}
                                                                     
                                                                     >
                                                                         <i ><FaFilter onClick={setItemRankmodalIsOpenToTrue} /></i>
                                                                       
                                                                     </span>
-                                                                </span>
+                                                                </span> */}
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "10%" }}>
-                                                            <div style={{ width: "9%" }} className="smart-relative">
+                                                            <div style={{ width: "10%" }}  className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Client Category" className="form-control"
                                                                     onChange={(e) => handleChange(e, "Team")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-                                                                <span className="dropdown filer-icons">
+                                                                <Dropdown className='dropdown-fliter'>
+      <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
+   <FaFilter/>
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+                                                                {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
-                                                                        //  href="#myDropdown1"
+                                                                 
                                                                         onClick={setTeamMembermodalIsOpenToTrue}
                                                                    
                                                                     >
                                                                         <i ><FaFilter onClick={setTeamMembermodalIsOpenToTrue} /></i>
                                                                
                                                                     </span>
-                                                                </span>
+                                                                </span> */}
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "9%" }}>
-                                                            <div style={{ width: "8%" }} className="smart-relative">
+                                                            <div style={{ width: "9%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Due Date"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Client Category" className="form-control"
                                                                     onChange={(e) => handleChange(e, "Status")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-                                                                <span className="dropdown filer-icons">
+                                                                <Dropdown className='dropdown-fliter'>
+      <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
+   <FaFilter/>
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+                                                                {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
-                                                                        //  href="#myDropdown1"
+                                                                       
                                                                         onClick={setDuemodalIsOpenToTrue}
                                                                
                                                                     >
                                                                         <i ><FaFilter onClick={setDuemodalIsOpenToTrue} /></i>
                                                                     
                                                                     </span>
-                                                                </span>
+                                                                </span> */}
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "9%" }}>
-                                                            <div style={{ width: "8%" }} className="smart-relative">
+                                                            <div style={{ width: "9%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Client Category" className="form-control"
                                                                     onChange={(e) => handleChange(e, "ItemRank")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-                                                                <span className="dropdown filer-icons">
+                                                                <Dropdown className='dropdown-fliter'>
+      <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
+   <FaFilter/>
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+                                                                {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
                                                                         onClick={setCreatedmodalIsOpenToTrue}
@@ -2208,19 +2365,30 @@ export default function ComponentTable({ props }: any) {
                                                                     >
                                                                         <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue} /></i>
                                                                     </span>
-                                                                </span>
+                                                                </span> */}
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "6%" }} className="smart-relative">
+                                                            <div style={{ width: "7%" }}  className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Smart Time"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Client Category" className="form-control"
                                                                     onChange={(e) => handleChange(e, "Due")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-                                                                <span className="dropdown filer-icons">
+                                                                <Dropdown className='dropdown-fliter'>
+      <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
+   <FaFilter/>
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+                                                                {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
                                                                         onClick={setModalSmartIsOpenToTrue}
@@ -2229,12 +2397,18 @@ export default function ComponentTable({ props }: any) {
                                                                         <i ><FaFilter onClick={setModalSmartIsOpenToTrue} /></i>
                                                                    
                                                                     </span>
-                                                                </span>
+                                                                </span> */}
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "2%" }}></th>
-                                                        <th style={{ width: "2%" }}></th>
-                                                        <th style={{ width: "2%" }}></th>
+                                                        <th style={{ width:     "2%" }}>
+                                                            <div style={{ width: "2%" }} className="smart-relative"></div>
+                                                        </th>
+                                                        <th style={{ width: "2%" }}>
+                                                            <div style={{ width: "2%" }} className="smart-relative"></div>
+                                                        </th>
+                                                        <th style={{ width: "2%" }}>
+                                                            <div style={{ width: "2%" }} className="smart-relative"></div>
+                                                        </th>
                                                         {/* <th style={{ width: "2%" }}></th>
                                                         <th style={{ width: "2%" }}></th>
                                                         <th style={{ width: "2%" }}></th> */}
@@ -2250,25 +2424,30 @@ export default function ComponentTable({ props }: any) {
                                                             return (
                                                                 <>
                                                                     <tr >
-                                                                        <td className="pad0" colSpan={12}>
+                                                                        <td className="pad0" colSpan={14}>
                                                                             <table className="table" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
+                                                                            
                                                                                     <td style={{ width: "2%" }}>
+                                                                                      {item.childs != undefined && item.childs.length > 0 &&
                                                                                         <div className="accordian-header" >
-                                                                                            {item.childs != undefined && item.childs.length > 0 &&
+                                                                                            
                                                                                                 <a className='hreflink'
                                                                                                     title="Tap to expand the childs">
                                                                                                     <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
                                                                                                         : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
                                                                                                     </div>
                                                                                                 </a>
-                                                                                            }
+                                                        
                                                                                         </div>
+                                                                                         }
                                                                                     </td>
-                                                                                    <td style={{ width: "3%" }}><input type="checkbox" /></td>
+                                                                             
                                                                                                              
-                                                                                    <td style={{ width: "3%" }}>
-                                                                                        <div className="">
+                                                                                    <td style={{ width: "6%" }}>
+                                                                                   
+                                                                                        <div className="d-flex">
+                                                                                        <span className='pe-2'><input type="checkbox" /></span>
                                                                                             <span>
                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
@@ -2277,7 +2456,7 @@ export default function ComponentTable({ props }: any) {
                                                                                         </div>
                                                                                     </td>
                                                                                     <td style={{ width: "7%" }}><span className="ml-2">{item.Shareweb_x0020_ID}</span></td>
-                                                                                    <td style={{ width: "30%" }}>
+                                                                                    <td style={{ width: "25%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
                                                                                         >{item.Title}
@@ -2301,9 +2480,12 @@ export default function ComponentTable({ props }: any) {
                                                                                             </span>
                                                                                         }
                                                                                     </td>
+                                                                                    
                                                                                     <td style={{ width: "7%" }}>
-                                                                                        <div>
-                                                                                            {(item.ClientCategory.length > 0 && item.ClientCategory != undefined)
+                                                                                    
+                                                                                                 <div>
+                                                                                            
+                                                                                                 {(item.ClientCategory.length > 0 && item.ClientCategory != undefined)
                                                                                                 &&
                                                                                                 item.ClientCategory.map(function (client: any) {
                                                                                                     return (
@@ -2311,11 +2493,16 @@ export default function ComponentTable({ props }: any) {
                                                                                                             title={client.Title}>
                                                                                                             <a>{client.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                         </span>
-                                                                                                    )
-                                                                                                })}</div>
+                                                                                                            )
+                                                                                                        })}
+                                                                                                   
+                                                                                               </div>
+                                                                                            
                                                                                     </td>
+                                                                               
                                                                                     <td style={{ width: "7%" }}>
-                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1: any) {
+                                                                                        <div>
+                                                                                            {item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1: any) {
                                                                                             return (
                                                                                                 <span
                                                                                                     title={client1.Title}>
@@ -2323,7 +2510,9 @@ export default function ComponentTable({ props }: any) {
                                                                                                     <img className="ClientCategory-Usericon" src={client1.ItemCover.Url} />
                                                                                                 </span>
                                                                                             )
-                                                                                        })}</div></td>
+                                                                                        })}
+                                                                                        </div>
+                                                                                        </td>
                                                                                     <td style={{ width: "7%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
@@ -2337,7 +2526,11 @@ export default function ComponentTable({ props }: any) {
                                                                                             )
                                                                                         }) : ""}
                                                                                     </td>
-                                                                                    <td style={{ width: "7%" }}></td>
+                                                                                    <td style={{ width: "7%" }}>
+                                                                                    {item.childs != undefined && item.childs.length > 0 &&
+                                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+                                                                                    }
+                                                                                    </td>
                                                                                     {/* <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td> */}
                                                                                     <td style={{ width: "2%" }}></td>
                                                                                     <td style={{ width: "2%" }}></td>
@@ -2380,7 +2573,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                 <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
                                                                                                             </div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "20%" }}>
+                                                                                                            <td style={{ width: "25%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                 >{childitem.Title}
@@ -2470,7 +2663,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                         <span className="ml-2">{childinew.Shareweb_x0020_ID}</span>
                                                                                                                                     </div>
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "20%" }}>
+                                                                                                                                    <td style={{ width: "25%" }}>
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
                                                                                                                                         >{childinew.Title}
@@ -2560,7 +2753,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                             <span className="ml-2">{subchilditem.Shareweb_x0020_ID}</span>
                                                                                                                                                         </div>
                                                                                                                                                         </td>
-                                                                                                                                                        <td style={{ width: "20%" }}>
+                                                                                                                                                        <td style={{ width: "25%" }}>
                                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                                                             >{subchilditem.Title}
@@ -2644,6 +2837,7 @@ export default function ComponentTable({ props }: any) {
                             </div>
                         </div></section>
                 </div></section>
+                {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
             {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
         </div>
     );
