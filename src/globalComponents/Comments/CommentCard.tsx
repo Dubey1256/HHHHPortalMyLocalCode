@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-import '../../webparts/cssFolder/foundation.scss'
-import '../../webparts/cssFolder/foundationmin.scss';
-import './CommentStyle.scss'
+// import '../../webparts/cssFolder/foundation.scss'
+// import '../../webparts/cssFolder/foundationmin.scss';
+// import './CommentStyle.scss'
 import '../../webparts/cssFolder/Style.scss'
+import '../../webparts/cssFolder/site_color.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";

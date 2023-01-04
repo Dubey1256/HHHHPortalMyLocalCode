@@ -219,8 +219,8 @@ float: left;
   background-color: #e7e7e7;
 }
 .accordionbox  .accordion-button{
-  background-color: #e7e7e7 !important;
-  color: #000 !important;
+  background-color: #e7e7e7 ;
+  color: #000 ;
 }
 
 /*-----------------------
@@ -233,7 +233,7 @@ tab menu popup
 }
 
 .modal-fixed {
-position: fixed !important;
+position: fixed ;
 top: 5%;
 right: 0;
 bottom: 0;
@@ -278,15 +278,9 @@ background-color: #fff;
 }
 
 .tabmenu .nav-link {
-
 display: block;
-
 padding: 0.5rem 1rem;
-
-color: #0d6efd;
-
 text-decoration: none;
-
 transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
 
 }
@@ -334,12 +328,12 @@ border-bottom-right-radius: 4px;
 padding: 0px 2px;
 }
 .dropdown-fliter {
-position: absolute !important;
+position: absolute ;
 top: 16px;
 right: -7px;
 }
 .dropdown-fliter > .dropdown-menu {
-top: 0px!important;
+top: 0px;
 }
 .dropdown-fliter > button {
 background-color: transparent ;
@@ -350,12 +344,12 @@ font-size: 26px;
 color: #ccc ;
 }
 .dropdown-fliter button svg{
-color: #ccc !important;
+color: #ccc ;
 font-size: 16px;
 }
 .dropdown-fliter button svg:hover, .active{
-color: #228b22 !important ;
-background-color: transparent !important;
+color: #228b22  ;
+background-color: transparent ;
 
 }
 .dropdown-fliter button::after{
@@ -397,27 +391,27 @@ input, button, select, textarea {outline: none;border: 1px solid #ccc;}
   color: #228b22;
  } 
 .Alltable{width: 100%;float: left;position: relative;border: 1px solid #ccc;}
-.Alltable .smart .section-event {padding-top: 45px !important;border: 0px !important;position: relative;}
+.Alltable .smart .section-event {padding-top: 45px ;border: 0px ;position: relative;}
 .Alltable .section-event th .smart-relative {position: absolute;background: transparent;color: #fff;padding: 5px 10px;top: 0;line-height: normal;}
-.Alltable .smart-relative .searchbox_height {height: 35px !important;color: #444;}
-.Alltable .section-event .table>thead .smart-relative .searchclear {right: 32px;bottom: auto;top: 7px !important;background: #fff;padding: 0px 1px;position: absolute;line-height: 30px;height: 30px;}
-.Alltable .smart-relative .sorticon {float: left;position: absolute;top: 6px;background: #e9e9e9;padding: 0 2px;color: #b1acac;right: 11px;}
+.Alltable .smart-relative .searchbox_height {height: 35px ;color: #444;}
+.Alltable .section-event .table>thead .smart-relative .searchclear {right: 32px;bottom: auto;top: 7px ;background: #fff;padding: 0px 1px;position: absolute;line-height: 30px;height: 30px;}
+.Alltable .smart-relative .sorticon {float: left;position: absolute;top: 6px;background: #e9e9e9;padding: 0 2px;color: #b1acac;right: 11px; border-top-right-radius: 4px; border-bottom-right-radius: 4px;
 .Alltable .smart-relative .sorticon span:last-child {border-bottom: none;}
 .Alltable .smart-relative .sorticon span {display: grid;text-align: center;border-bottom: 1px solid #a09c9c;}
 // .Alltable .smart-relative .sorticon .fa-angle-up {padding-bottom: 1px;}
 // .Alltable .smart-relative .sorticon .fa-angle-down {margin-top: -1px;}
-// .Alltable .smart-relative .sorticon .fa-angle-down, .Alltable .smart-relative .sorticon .fa-angle-up { font-size: 16px !important;font-weight: 800 !important;}
+// .Alltable .smart-relative .sorticon .fa-angle-down, .Alltable .smart-relative .sorticon .fa-angle-up { font-size: 16px ;font-weight: 800 ;}
 .Alltable .smart-relative .filer-icons {position: absolute;top: 12px;color: #ccc;right: -7px;font-size: 20px;line-height: 18px;}
 .Alltable .table>tbody>tr>th, .Alltable .table>tfoot>tr>th, .Alltable .table>thead>tr>th {padding: 0px;line-height: 1.42857143; vertical-align: middle;border-bottom: 1px solid #ddd;}
 .Alltable .table>tbody>tr>td, .Alltable .table>tfoot>tr>td, .Alltable .table>thead>tr>td {vertical-align: middle;padding: 5px 10px;border-top: 1px solid #ccc;}
-.quickheader {border-bottom: 1px solid #ccc;font-weight: 700 !important;padding: 4px 10px 4px 10px !important; margin:0px 0px 8px 0px;}
+.quickheader {border-bottom: 1px solid #ccc;font-weight: 700 ;padding: 4px 10px 4px 10px ; margin:0px 0px 8px 0px;}
 .pagescroll{width: 100%;float: left;height: 130px;overflow-y: scroll;overflow-x: hidden;}
-.Alltable .smart .modal-footer {padding: 15px !important;display: flow-root;border-top: 0px;}
+.Alltable .smart .modal-footer {padding: 15px ;display: flow-root;border-top: 0px;}
 .dropdown-content h4 .fa-times-circle {font-size: 20px;font-weight: 300;margin-top: 3px;position: absolute;right:2px;top:-3px;}
 .Alltable .smart-relative .alignmen {position:absolute; padding: 0px; top: 12px; display: inline-flex;}
 
 .border-top{
-border-top: 1px solid #ccc !important;
+border-top: 1px solid #ccc ;
 }
 /***********************End New Table(tr,th.td)css *************************/
 
@@ -428,7 +422,7 @@ border-top: 1px solid #ccc !important;
   height: 30px;
 }
 .ml-auto, .mx-auto {
-  margin-left: auto!important;
+  margin-left: auto;
 }
 
 .btn {
@@ -467,13 +461,8 @@ border-radius: 50%;
 
 /*------comman class --------------
 ---------------------------------*/
-a:active, a:hover, a:link, a:visited{
-color: #000069;
-text-decoration: none;
-}
-svg {
-color: #000069; 
-}
+
+
 .bg-light{
 background-color: #f4f4f4;
 }
@@ -505,10 +494,6 @@ background-color: #eee;
 
 /*------comman class end --------------
 ---------------------------------*/
-.headign a{
-color: #000069;
-}
-
 .input-group-text {
 
 padding: 3px;
@@ -519,7 +504,7 @@ padding: 3px;
 
 vertical-align: middle;
 
-font-size: 5px !important;
+font-size: 5px ;
 
 width: 20px;
 
@@ -537,9 +522,9 @@ font-weight: normal;
 
 .assign-User {
 
-display: -ms-inline-flexbox!important;
+display: -ms-inline-flexbox;
 
-display: inline-flex!important;
+display: inline-flex;
 
 }
 
@@ -552,7 +537,7 @@ margin-right: 10px;
 }
 .t_e_8474018e {
 
-max-width: 1125px !important;
+max-width: 1125px ;
 
 }
 
@@ -560,8 +545,8 @@ max-width: 1125px !important;
 
 .root-120{
 
-position: initial !important;
+position: initial ;
 
 margin-top: 60px;
 
-}
+}}

@@ -1,7 +1,7 @@
 /*------comman class --------------
 ---------------------------------*/
-a:active, a:hover, a:link, a:visited, body a{
-    color: #000069;
+a:active, a:hover, a:link, a:visited{
+    color: #000069 !important;
     text-decoration: none;
 }
 .bg-light{
@@ -39,7 +39,7 @@ background-color: #f4f4f4;
 /*------comman class end --------------
 ---------------------------------*/
 .headign a{
-    color: #000069 !important;
+    color: #000069 ;
 }
 .fw-medium, .panel-title, .headign a, .spfxbreadcrumb li a,  svg {
     color: #000069;
@@ -66,8 +66,8 @@ background-color: #f4f4f4;
     font-size: 23px;
 }
 .btn-primary {
-    background-color: #000069 !important;
-    border-color: #000069 !important;
+    background-color: #000069 ;
+    border-color: #000069 ;
 }
 .Sitecomposition .btn-secondary:hover{
     color: #fff;
@@ -78,84 +78,77 @@ background-color: #f4f4f4;
 /*------services pnel class --------------
 ---------------------------------*/
 
-  
-.serviepannelgreena a:active, a:hover, a:link, a:visited, body a{
-    color: #228b22 !important;
-    text-decoration: none !important;
-}
-.serviepannelgreena .bg-light{
-    background-color: #f4f4f4;
-}
-.bg-fxdark{
-    background-color: #e7e7e7;
-}
-.root-61 {
-    background-color: #f5f5f5;
-    color: rgb(50, 49, 48);
-}
-.bg-wihite{
-    background-color: #fff;
-    color: #000;
+.serviepannelgreena a:active, .serviepannelgreena a:hover, .serviepannelgreena a:link, .serviepannelgreena a:visited{
+    color: #228b22 !important ;
+    text-decoration: none ;
 }
 
-.serviepannelgreena .bg-69{
+.serviepannelgreena table td{
+    color: #228b22;
+    font-weight: normal;
+}
+
+.serviepannelgreena .bg-69, .serviepannelgreena .spfxbreadcrumb li a:hover .active, .serviepannelgreena .Sitecomposition .btn-secondary:hover{
     background-color: #228b22;
     color: #fff;
-}
-.bg-f4{
-background-color: #f4f4f4;
-}
-.bg-ee{
-    background-color: #eee;
-}
-.bg-th{
-    background-color: #eee;
+
 }
 
 /*------comman class end --------------
+
 ---------------------------------*/
+
 .serviepannelgreena .headign a{
-    color: #228b22 !important;
+    color: #228b22 ;
     font-size: 25px;
-
-}
-.serviepannelgreena .Sitecomposition .btn-secondary:hover{
-    color: #fff;
-    background: #228b22;
-
 }
 
-.serviepannelgreena  .fw-medium, .panel-title, .headign a, .spfxbreadcrumb li a,  svg {
+.serviepannelgreena .Alltable .smart-relative .sorticon svg{
+    color: #228b22 ;
+}
+.serviepannelgreena .team_member a{
+    color: #228b22 !important; 
+}
+
+
+.serviepannelgreena  .btn-primary {
+    background-color: #228b22 ;
+    border-color: #228b22;
+}
+
+.serviepannelgreena .btn-primary:hover{
+        background-color: #228b22 ;
+}
+
+
+.serviepannelgreena .fw-medium, .serviepannelgreena .panel-title, .serviepannelgreena .headign a, .serviepannelgreena .spfxbreadcrumb li a, .serviepannelgreena svg {
     color: #228b22 !important;
 }
+
 /*------breadcrumb class --------------
+
 ---------------------------------*/
 
-.serviepannelgreena .spfxbreadcrumb li a:hover .active {
-    background-color: #228b22;
-    color: #fff;
-  }
   .serviepannelgreena .spfxbreadcrumb li a:hover:before {
     border-color: #228b22;
     border-left-color: transparent;
   }
+
   .serviepannelgreena .spfxbreadcrumb li a:hover:after {
     border-left-color: #228b22;
   }
+
   .serviepannelgreena .spfxbreadcrumb li a:last-child:active {
     background-color: #228b22;
     color: #fff;
   }
+
   .serviepannelgreena .spfxbreadcrumb svg {
+
     font-size: 23px;
+
 }
 
-  .serviepannelgreena  .btn-primary {
-    background-color: #228b22 !important;
-    border-color: #228b22 !important;
-}
-.serviepannelgreena  .btn-primary:hover{
-        background-color: #228b22 !important;
-}
+
 
 

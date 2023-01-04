@@ -1,9 +1,11 @@
 import * as React from 'react';
 import * as $ from 'jquery';
+import Modal from 'react-bootstrap/Modal';
 import * as Moment from 'moment';
 import '../../cssFolder/Style.scss'
 import '../../cssFolder/site_color.scss'
-import { Modal } from 'office-ui-fabric-react';
+import Button from 'react-bootstrap/Button';
+// import { Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
@@ -1708,80 +1710,36 @@ export default function ComponentTable({ props }: any) {
         // myarray.push();
 }
 
+const [lgShow, setLgShow] = React.useState(props.isopen);
+    const handleClose = () => setLgShow(false);
     return (
-        <div className="app component">
+        <div className="app component serviepannelgreena">
 
             {/* Add activity task */}
 
-  <Modal
-                isOpen={AddActivityIsOpen}
-                onDismiss={setAddActivityIsOpenFalse}
-                isBlocking={true}
-                isModeless={true}
-            >
-                 <div className="modal-dialog">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <h3 className="modal-title">
-                        Select Client Category
-                        <span className="pull-right mt-5">
-                            {/* <page-settings-info webpartid="'sharewebSelectedItemsPopup'"></page-settings-info> */}
-                        </span>
-                        <span className="pull-right" style={{marginRight: "30px"}}>
-                            <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png"
-                                 ng-click="openSmartTaxonomy('Client Category', Item.SharewebCategories,'');"/>
-                                 </span>
-                    </h3>
-                    <button type="button" className="close ml-0" data-dismiss="modal"
-                    ng-click="cancelClietCategoryPopup()" onClick={setAddActivityIsOpenFalse} style={{minWidth: "10px"}}>
-                    &times;
-                </button>                                                           
-                </div>
-                <div className="modal-body bg-f5f5 clearfix">
-                    <div className="col-sm-12 padL-0 PadR0">
-                        <div className="col-sm-12 padL-0 PadR0 tab-content bdrbox">
-                            <div className="divPanelBody mt-10 mb-10 fortablee  col-sm-12">
-                                <div id="portfolio" className="section-event pt-0">
-                                    <ul className="table">
-                                        <li className="for-lis">
-                                            <span className="bold">
-                                                Please select any one Client Category. 
-                                            </span>
-                                        </li>
-                                        {myarray2.map((item:any)=>{
-                                            return(
-                                               
-                                        <li 
-                                        // id={{client.Id}}
-                                        id={item.Id}
-                                         className="for-lis tdrows" ng-repeat="client in tagClientCategory track by $index">
-                                            <div ng-click="saveClientCategories(client)" style={{width:"45%"}} className="padLR">
-                                                <span className="hreflink">
-                                                    {/* {{client.Title}} */}
-                                                    {item.Title}
-                                                </span>
-                                            </div>
-                                        </li>
-                                        )})}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="modal-footer">
-                    <button  type="button" className="btn btn-primary mt-10"
-                        ng-click="openAddActivityByClient()">OK</button>
-                    <button type="button" className="mt-10" 
-                        ng-click="cancelClietCategoryPopup()">Cancel</button>
-                </div>
-            </div>
-        </div>
-    
+          
+                <Modal
+                size="xl"
+                show={lgShow}
+                onHide={() => setLgShow(false)}
+                aria-labelledby="example-modal-sizes-title-lg">
+                <Modal.Header>
+                    {/* <span className='modal-title' id="example-modal-sizes-title-lg">
+                        <span><strong>EditEmployeeInfo</strong></span>
+                    </span> */}
+                    <button type="button" className='Close-button' onClick={handleClose}>×</button>
+                </Modal.Header>
+                <Modal.Body className='p-2'>
+                    <div>
+                    <p>ANubhav</p>
+                    </div >
+                </Modal.Body >
+                ANubhav 2
             </Modal>
+    
              {/* End of Add activity task */}
             {/* Smart Time Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={SmartmodalIsOpen}
                 onDismiss={setModalSmartIsOpenToFalse}
                 isBlocking={true}
@@ -1820,10 +1778,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </span>
-            </Modal>
+            </Modal> */}
             {/* Smart Time popup end here */}
             {/* Created Date Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={CreatedmodalIsOpen}
                 onDismiss={setModalSmartIsOpenToFalse}
                 isBlocking={false}
@@ -1868,10 +1826,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </Modal> */}
             {/* Created Date popup end here */}
             {/* Due Date Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={DuemodalIsOpen}
                 onDismiss={setDuemodalIsOpenToFalse}
                 isBlocking={false}
@@ -1917,10 +1875,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </Modal> */}
             {/* Due Date popup end here */}
             {/* Team Member Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={TeamMembermodalIsOpen}
                 onDismiss={setTeamMembermodalIsOpenToFalse}
                 isBlocking={false}
@@ -2048,10 +2006,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </span>
-            </Modal>
+            </Modal> */}
             {/* Team Member popup end here */}
             {/* Item Rank Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={ItemRankmodalIsOpen}
                 onDismiss={setItemRankmodalIsOpenToFalse}
                 isBlocking={false}
@@ -2095,10 +2053,10 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </span>
-            </Modal>
+            </Modal> */}
             {/* Item Rank popup end here */}
             {/* Status Popup */}
-            <Modal
+            {/* <Modal
                 isOpen={StatusmodalIsOpen}
                 onDismiss={setStatusmodalIsOpenToFalse}
                 isBlocking={false}
@@ -2148,7 +2106,7 @@ export default function ComponentTable({ props }: any) {
                         </div>
                     </div>
                 </span>
-            </Modal>
+            </Modal> */}
             {/* Status popup end here */}
 
 <section className="TableContentSection">
