@@ -17,6 +17,7 @@ import EditInstituton from '../../EditPopupFiles/EditComponent';
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
 import { any, number } from 'prop-types';
 import CheckboxTree from 'react-checkbox-tree';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 
 
 
@@ -49,6 +50,8 @@ function ComponentTable() {
     const [AllMetadata, setMetadata] = React.useState([])
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [IsTask, setIsTask] = React.useState(false);
+    const [SharewebTask, setSharewebTask] = React.useState('');
     const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([])
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
@@ -325,6 +328,7 @@ function ComponentTable() {
                     },
                     success: function (data) {
                         Counter++;
+                        console.log(data.d.results.length);
                         $.each(data.d.results, function (index: any, item: any) {
                             item.isDrafted = false;
                             item.flag = true;
@@ -632,7 +636,7 @@ function ComponentTable() {
                                 //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
                                 // });
                             })
-                            TasksItem = TasksItem.concat(AllTasks);
+                            TasksItem = (AllTasks);
                             console.log(Response);
                             $.each(TasksItem, function (index: any, task: any) {
                                 if (!isItemExistsNew(CopyTaskData, task)) {
@@ -677,7 +681,7 @@ function ComponentTable() {
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
 
-    }; 
+    };
     const handleEditPopup = (item: any) => {
 
         //    item.Isclick = item.Isclick = item.Isclick == true ? false : true;
@@ -687,7 +691,7 @@ function ComponentTable() {
         //setData(data => ([...data]));
 
     };
-   
+
     // const handleTimeOpen = (item: any) => {
 
     //     item.show = item.show = item.show == true ? false : true;
@@ -931,7 +935,6 @@ function ComponentTable() {
                 },
                 success: function (data) {
                     MetaData = MetaData.concat(data.d.results);
-                    setMetadata(MetaData);
                     setMetadata(MetaData);
                     $.each(MetaData, function (item: any, newtest) {
                         if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
@@ -1386,7 +1389,7 @@ function ComponentTable() {
     }
     const getTeamLeadersName = function (Items: any, Item: any) {
         if (Items != undefined) {
-           map(Items.results,  (index: any, user: any) => {
+            map(Items.results, (index: any, user: any) => {
                 $.each(AllUsers, function (index: any, item: any) {
                     $.each(AllUsers, function (index: any, item: any) {
                         if (user.Id == item.AssingedToUserId) {
@@ -1395,7 +1398,7 @@ function ComponentTable() {
                     });
                 })
             })
-    }
+        }
     }
     var AllTasks: any = [];
     var CopyTaskData: any = [];
@@ -1518,6 +1521,10 @@ function ComponentTable() {
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 FeatureData.push(result);
             }
+            if (result.Title == 'Others') {
+                //result['childs'] = result['childs'] != undefined ? result['childs'] : [];
+                ComponentsData.push(result);
+            }
         });
 
         $.each(SubComponentsData, function (index: any, subcomp: any) {
@@ -1557,10 +1564,22 @@ function ComponentTable() {
                     findTaggedComponents(task);
                 }
                 else if (task['Component'] != undefined && task['Component']['results'].length == 0 && task['Events'] != undefined && task['Events']['results'].length == 0) {
-                    ComponetsData['allUntaggedTasks'].push(task);
+                    if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                        ComponetsData['allUntaggedTasks'].push(task);
                 }
+
             }
         })
+        var temp: any = {};
+        temp.Title = 'Others';
+        temp.childs = [];
+        temp.flag = true;
+        // ComponetsData['allComponets'][i]['childs']
+        map(ComponetsData['allUntaggedTasks'], (task: any) => {
+            if (task.Title != undefined)
+                temp.childs.push(task);
+        })
+        ComponetsData['allComponets'].push(temp);
         bindData();
     }
     const filterDataBasedOnList = function () {
@@ -1705,6 +1724,7 @@ function ComponentTable() {
     };
     const Call = React.useCallback((item1) => {
         setIsComponent(false);
+        setIsTask(false);
     }, []);
 
     const TimeEntryCallBack = React.useCallback((item1) => {
@@ -1714,6 +1734,12 @@ function ComponentTable() {
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
         setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+    const EditItemTaskPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsTask(true);
+        setSharewebTask(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     function AddItem() {
@@ -2263,22 +2289,23 @@ function ComponentTable() {
                                                                                     <td style={{ width: "7%" }}>
                                                                                         <div className="">
                                                                                             <span>
-                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                {item.SiteIcon != undefined && <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                                     {/* <img className="icon-sites-img"
                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" /> */}
                                                                                                 </a>
+                                                                                                }
                                                                                             </span>
                                                                                             <span className="ml-2">{item.Shareweb_x0020_ID}</span>
                                                                                         </div>
                                                                                     </td>
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
                                                                                     <td style={{ width: "20%" }}>
-                                                                                        {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                        {item.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
-                                                                                        {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                        {item.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
@@ -2300,7 +2327,7 @@ function ComponentTable() {
                                                                                     </td>
                                                                                     <td style={{ width: "18%" }}>
                                                                                         <div>
-                                                                                            {item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                            {item.ClientCategory != undefined && item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
                                                                                                 return (
                                                                                                     <span className="ClientCategory-Usericon"
                                                                                                         title={client.Title}>
@@ -2310,7 +2337,7 @@ function ComponentTable() {
                                                                                             })}</div>
                                                                                     </td>
                                                                                     <td style={{ width: "20%" }}>
-                                                                                        <div>{item.TeamLeaderUser.length > 0 && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.length > 0 && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                             return (
                                                                                                 <span className="ClientCategory-Usericon"
                                                                                                     title={client1.Title}>
@@ -2325,7 +2352,8 @@ function ComponentTable() {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "3%" }}> <a><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a></td>
+                                                                                    <td style={{ width: "3%" }}>{item.siteType == "Master Tasks" && <a><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
+                                                                                        {item.siteType != "Master Tasks" && <a><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
@@ -2373,11 +2401,11 @@ function ComponentTable() {
                                                                                                             </td>
 
                                                                                                             <td style={{ width: "20%" }}>
-                                                                                                                {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                {childitem.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
-                                                                                                                {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                {childitem.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
@@ -2423,7 +2451,8 @@ function ComponentTable() {
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                            <td style={{ width: "3%" }}><a><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} /></a></td>
+                                                                                                            <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
+                                                                                                                {childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                                         </tr>
                                                                                                     </table>
                                                                                                 </td>
@@ -2470,12 +2499,12 @@ function ComponentTable() {
 
                                                                                                                                     <td style={{ width: "20%" }}>
 
-                                                                                                                                        {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                                        {childinew.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
 
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
-                                                                                                                                        {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                                        {childinew.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
@@ -2566,11 +2595,11 @@ function ComponentTable() {
                                                                                                                                                         </td>
 
                                                                                                                                                         <td style={{ width: "20%" }}>
-                                                                                                                                                            {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                                                            {subchilditem.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
-                                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
@@ -2602,7 +2631,7 @@ function ComponentTable() {
                                                                                                                                                                 })}</div>
                                                                                                                                                         </td>
                                                                                                                                                         <td style={{ width: "20%" }}>
-                                                                                                                                                            <div>{subchilditem.TeamLeaderUser && subchilditem.TeamLeaderUser.length > 0 && subchilditem.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                                                                            <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.length > 0 && subchilditem.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                                                                 return (
                                                                                                                                                                     <div className="ClientCategory-Usericon"
                                                                                                                                                                         title={client1.Title}>
@@ -2657,7 +2686,7 @@ function ComponentTable() {
                                 </div>
                             </div>
                         </div></section>
-                </div></section>
+                </div></section>{IsTask && <EditTaskPopup props={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
         </div >

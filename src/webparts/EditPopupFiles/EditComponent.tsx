@@ -70,12 +70,13 @@ function EditInstitution(item: any) {
         if (item1 != undefined && item1.Categories != "") {
             var title: any = {};
             title.Title = item1.categories;
-            item.props.smartCategories.push(title);
+            item.props.smartCategories = item1.smartCategories;
+            //  item.props.smartCategories.push(title);
 
         }
         setIsComponentPicker(false);
         setIsComponent(false);
-       // setComponent(CompoenetItem => ([...CompoenetItem]));
+        // setComponent(CompoenetItem => ([...CompoenetItem]));
     }, []);
     // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
     //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
@@ -661,7 +662,18 @@ function EditInstitution(item: any) {
         setSharewebCategory(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-
+    const onEditorStateChange = (e: any, item: any) => {
+      //  item.Description = e.target.value;
+        setComponent(CompoenetItem => ([...CompoenetItem]));
+        // const { components } = this.state;
+        // const x = { components };
+        // for (const i in x){
+        //     if(x[i].id ==== id){
+        //         x[i].contentValue.editorState = e;
+        //     }
+        // }
+        // this.setState({components: x})
+    }
 
     return (
         <>
@@ -1072,11 +1084,13 @@ function EditInstitution(item: any) {
                                                                                     <span>Verified</span>
                                                                                 </span>
                                                                                 <Editor
+                                                                                    editorState={item.Description}
                                                                                     toolbarClassName="toolbarClassName"
                                                                                     wrapperClassName="wrapperClassName"
                                                                                     editorClassName="editorClassName"
                                                                                     // defaultValue={item.Short_x0020_Description_x0020_On}
                                                                                     wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                                    onEditorStateChange={(e) => onEditorStateChange(e, item)}
                                                                                 />
 
                                                                                 {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Short_x0020_Description_x0020_On }}>

@@ -28,11 +28,12 @@ var FolderID: any = '';
 var CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
 
 var IsShowFullViewImage = false;
+
 const EditTaskPopup = (Items: any) => {
 
     const [CompoenetItem, setComponent] = React.useState([]);
     const [images, setImages] = React.useState([]);
-    const [status, setstatus] = React.useState<any>();
+    const [status, setstatus] = React.useState<any>('');
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
@@ -40,7 +41,7 @@ const EditTaskPopup = (Items: any) => {
     const maxNumber = 69;
     const [data, setTaskData] = React.useState([]);
     const [ImageSection, setImageSection] = React.useState([]);
-    const [saveData, setSaveData] = React.useState<any>({ Title: '', Created: Number, PercentComplete: Number,Rank:Number})
+    const [saveData, setSaveData] = React.useState<any>({ Title: '', Created: Number, PercentComplete: '',Rank:Number})
     const [Description, setDescription] = React.useState([]);
     const [EditData, setEditData] = React.useState<any>({});
     const [SharewebComponent, setSharewebComponent] = React.useState('');
@@ -51,6 +52,8 @@ const EditTaskPopup = (Items: any) => {
     const [ComentBox, setComentBox] = React.useState(false);
     const [PercentComplete, setPercentComplete] = React.useState('')
     const [PercentCompletecheck, setPercentCompletecheck] = React.useState(false)
+    const [itemRank, setitemRank] = React.useState()
+    const [Prriority, setPrriority] = React.useState()
 
     const setModalIsOpenToTrue = () => {
         setModalIsOpen(true)
@@ -60,8 +63,8 @@ const EditTaskPopup = (Items: any) => {
             Items.Items.smartComponent = item1.smartComponent;
 
         }
-        if (item1 != undefined && item1.Categories != "") {
-            Items.Items.Categories = item1.categories;
+        if (item1 != undefined && item1.categories != "" && item1.categories != undefined) {
+            Items.Items.Categories = item1.categories; 
 
         }
         if (item1 != undefined && item1.linkedComponent != "" && item1.linkedComponent != undefined) {
@@ -99,113 +102,12 @@ const EditTaskPopup = (Items: any) => {
         GetEditdata();
         // Descriptions();
     }, [])
-    const setPriority = function (item: any, val: number) {
-        item.Priority_x0020_Rank = val;
+    const setPriority = function (val: any) {
+        setPrriority(val)
 
-        setComponent(CompoenetItem => ([...item]));
+        
     }
-    // React.useEffect(() => {
-    //     var folderId:any="";
-    //     var url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${Items.Items.ID}&$top=4999`;
-    //     var response: any = []; 
-    //     var responsen:any=[]; // this variable is used for storing list items
-    //     function GetListItems() {
-    //         $.ajax({
-    //             url: url,
-    //             method: "GET",
-    //             headers: {
-    //                 "Accept": "application/json; odata=verbose"
-    //             },
-    //             success: function (data) {
-    //                 response = response.concat(data.d.results);
-    //                 response.map((item:any)=>{
-    //                     if(item.FolderID != undefined){
-    //                         folderId= item.FolderID;
-
-    //                         var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
-    //                         $.ajax({
-    //                             url: urln,
-    //                             method: "GET",
-    //                             headers: {
-    //                                 "Accept": "application/json; odata=verbose"
-    //                             },
-    //                             success: function (data) {
-    //                                 responsen = responsen.concat(data.d.results);
-    //                                 if (data.d.__next) {
-    //                                     urln = data.d.__next;
-
-    //                                 } else SetFolderData(responsen);
-    //                                 console.log(responsen);
-    //                             },
-    //                             error: function (error) {
-    //                                 console.log(error);
-    //                                 // error handler code goes here
-    //                             }
-    //                         });
-    //                     }
-    //                     console.log(folderId)
-    //                 })
-
-    //                 if (data.d.__next) {
-    //                     url = data.d.__next;
-    //                     GetListItems();
-    //                 } else setTaskData(response);
-    //                 console.log(response);
-    //             },
-    //             error: function (error) {
-    //                 console.log(error);
-
-    //             }
-    //         });
-    //     }
-
-
-    //     var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
-    //     var responsen:any=[];// this variable is used for storing list items
-
-
-
-
-
-
-    //     GetListItems();
-    //     open();
-    //     data.map(item => {
-    //         if (item.Sitestagging != null) {
-    //             myarray.push(JSON.parse(item.Sitestagging));
-    //         }
-    //         if (myarray.length != 0) {
-    //             myarray[0].map((items: any) => {
-
-
-    //                 if (items.SiteImages != undefined && items.SiteImages != '') {
-    //                     items.SiteImages = items.SiteImages.replace('https://www.hochhuth-consulting.de', 'https://hhhhteams.sharepoint.com/sites/HHHH')
-    //                     myarray1.push(items)
-
-
-    //                 }
-    //                 console.log(myarray1);
-
-
-    //             })
-    //         }
-
-    //         if (item.ClientCategory.results.length != 0) {
-    //             item.ClientCategory.results.map((terms: any) => {
-    //                 myarray2.push(terms);
-    //             })
-
-    //         }
-
-    //         console.log(myarray2)
-
-
-
-    //     })
-
-
-    // },
-    //     []);
+   
 
     const onChange = (
         imageList: ImageListType,
@@ -274,19 +176,29 @@ const EditTaskPopup = (Items: any) => {
         let smartmeta = await web.lists
             .getById(Items.Items.listId)
             .items
-            .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,EstimatedTime,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+            .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,EstimatedTime,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
             .top(5000)
             .filter(`Id eq ${Items.Items.ID}`)
             .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
             .get();
         smartmeta.map((item: any) => {
             item.saveImage = []
-            item.PercentComplete = (item.PercentComplete * 100).toFixed(0);
+            if (item.PercentComplete != undefined) {
+                item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+            }
+           
             if (item.Body != undefined) {
                 item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
             }
             if (item.BasicImageInfo != undefined) {
                 item.saveImage.push(JSON.parse(item.BasicImageInfo))
+            }
+            if(item.Priority_x0020_Rank != undefined){
+                currentUsers.map((rank:any)=>{
+                 if(rank.rank == item.Priority_x0020_Rank){
+                    item.Priority_x0020_Rank=rank.rankTitle;
+                 }
+                })
             }
             setEditData(item)
         })
@@ -298,57 +210,27 @@ const EditTaskPopup = (Items: any) => {
                 if (val.ID == index) {
                     setPercentCompletecheck(true)
 
+                    if (val.status != undefined) {
+                        val.status = parseInt((val.status).toFixed(0));
+                    }
+                    EditData.PercentComplete=val.status 
+                    setPercentComplete(val.Title);
+
                 }
             })
         }
-         var stat = status /10
-        setstatus(stat)
-        setPercentComplete(PercentComplete);
+       
+        
+    }
+    const setTime = function (item: any, val: any) {
+        item.Mileage = val;
+        //setEditData((EditData: any) => ([...EditData]));
     }
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false)
     }
     let currentUsers = [
-        {
-            "Id": 0,
-            "ItemRank": 'Select Item Rank',
-        },
-        {
-            "Id": 1,
-            "ItemRank": 1,
-        },
-        {
-            "Id": 2,
-            "ItemRank": 2,
-        },
-        {
-            "Id": 3,
-            "ItemRank": 3,
-        },
-        {
-            "Id": 4,
-            "ItemRank": 4,
-        },
-        {
-            "Id": 5,
-            "ItemRank": 5,
-        },
-        {
-            "Id": 5,
-            "ItemRank": 5,
-        },
-        {
-            "Id": 6,
-            "ItemRank": 6,
-        },
-        {
-            "Id": 7,
-            "ItemRank": 7,
-        },
-        {
-            "Id": 8,
-            "ItemRank": 8,
-        },
+        { rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }
     ]
     
     var component = ''
@@ -380,7 +262,7 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
         })
-        if(EditData.Component != undefined && EditData.Component.length>0){
+        if(EditData.Component == undefined && EditData.Component.length>0){
             EditData.Component.map((com: any) => {
     
                 if (EditData.Component.smartComponent != undefined && EditData.Component.length >= 0) {
@@ -411,7 +293,8 @@ const EditTaskPopup = (Items: any) => {
                     }
                 })
             }
-   
+            
+   //let Rank = parseInt(saveData.Rank)
 let PercentComplete= saveData.PercentComplete/10
       //var CreatedDate = Moment(saveData.Created, Moment.defaultFormatUtc)
 
@@ -419,14 +302,15 @@ let PercentComplete= saveData.PercentComplete/10
 
         await web.lists.getById(Items.Items.listId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(Items.Items.ID).update({
             IsTodaysTask:saveData.IsTodaysTask == "" ? EditData.IsTodaysTask : saveData.IsTodaysTask,
-            Priority_x0020_Rank:saveData.Rank == "" ? EditData.Priority_x0020_Rank : saveData.Rank,
+            Priority_x0020_Rank:itemRank == undefined ? EditData.Priority_x0020_Rank : itemRank,
             Title: saveData.Title == "" ? EditData.Title : saveData.Title,
+            Priority:Prriority == "" ? EditData.Priority : Prriority,
             //StartDate: saveData.Created == undefined ? new Date(EditData.StartDate).toDateString(): new Date(saveData.Created).toDateString(),
-            PercentComplete: PercentComplete == undefined ? EditData.PercentComplete :PercentComplete,
-            ComponentId: { "results": smartComponentsIds },
+            PercentComplete: status == undefined ? EditData.PercentComplete :status,
+            ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length>0)?smartComponentsIds:''},
             Categories:Items.Items.Categories==""?EditData.Categories:Items.Items.Categories,
-           RelevantPortfolioId: { "results": RelevantPortfolioIds },
-            //DueDate:saveData.DueDate == undefined ?  Moment(EditData.DueDate).format('DD/MM/YYYY') : Moment(saveData.DueDate).format('DD/MM/YYYY')
+           RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length>0)?RelevantPortfolioIds:'' },
+            //DueDate:saveData.DueDate == undefined ? new Date(EditData.DueDate).toDateString() : new Date(saveData.DueDate).toDateString()
             // BasicImageInfo: JSON.stringify(UploadImage)
         }).then((res: any) => {
 
@@ -437,66 +321,74 @@ let PercentComplete= saveData.PercentComplete/10
         })
 
     }
+    const saveItemrank=(e:any)=>{
+        var Rank =e.target.value;
+        currentUsers.map((item:any)=>{
+            if(item.rankTitle==Rank){
+                setitemRank(item.rank)
+            }
+        })
+    }
     let TaskStatus = [
         {
             "Title": "01% For Approval",
             "ID": 0,
-            "status": "01",
+            "status": 1,
         },
         {
             "Title": "  02% Follow up",
             "ID": 1,
-            "status": "02",
+            status: 2,
         },
         {
             "Title": "03% Approved",
             "ID": 2,
-            "status": "04",
+            "status": 4,
         },
         {
             "Title": "05% Acknowledged",
             "ID": 3,
-            "status": "05",
+            "status": 5,
         },
         {
             "Title": "10% working on it",
             "ID": 4,
-            "status": "10",
+            "status": 10,
         },
         {
             "Title": " 70% Re-Open",
             "ID": 5,
-            "status": "70",
+            "status": 70,
         },
         {
             "Title": "80% In QA Review",
             "ID": 6,
-            "status": "70",
+            "status": 70,
         },
         {
             "Title": "90% Task completed",
             "ID": 7,
-            "status": "90",
+            "status": 90,
         },
         {
             "Title": "93% For Review",
             "ID": 8,
-            "status": "93",
+            "status": 93,
         },
         {
             "Title": " 96% Follow-up later",
             "ID": 9,
-            "status": "96",
+            "status": 96,
         },
         {
             "Title": "99% Completed",
             "ID": 10,
-            "status": "99",
+            "status": 99,
         },
         {
             "Title": "100% Closed",
             "ID": 11,
-            "status": "100",
+            "status": 100,
         }
     ]
     return (
@@ -641,11 +533,11 @@ let PercentComplete= saveData.PercentComplete/10
                                                     </div>
                                                     <div className="col pe-0">
                                                         <label className="form-label"></label>
-                                                        <select className="full_width searchbox_height" defaultValue={EditData.Priority_x0020_Rank} onChange={(e)=>setSaveData({...saveData,Rank:e.target.value})}>
-                                                            
+                                                        <select className="full_width searchbox_height"  style={{marginTop:"24px"}} defaultValue={EditData.Priority_x0020_Rank} onClick={(e)=>saveItemrank(e)}>
+                                                            <option>{EditData.Priority_x0020_Rank==undefined?'select Item Rank':EditData.Priority_x0020_Rank}</option>
                                                             {currentUsers.map(function (h: any, i: any) {
                                                                 return (
-                                                                    <option key={i} defaultValue={EditData.Priority_x0020_Rank == h.ItemRank ? EditData.Priority_x0020_Rank : h.ItemRank} >{EditData.Priority_x0020_Rank == h.ItemRank ? EditData.Priority_x0020_Rank : h.ItemRank}</option>
+                                                                    <option key={i} defaultValue={EditData.Priority_x0020_Rank} >{EditData.Priority_x0020_Rank == h.rankTitle ? EditData.Priority_x0020_Rank : h.rankTitle}</option>
                                                                 )
                                                             })}
                                                         </select>
@@ -689,7 +581,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                                         <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                             onClick={(e) => EditComponent(EditData, 'Componet')} />
                                                                     </span>
-                                                            {(Items.Items.smartComponent != undefined) ?
+                                                            {(Items !=undefined && Items.Items !=undefined && Items.Items.smartComponent != undefined) ?
                                                                 <>
                                                                     {Items.Items.smartComponent.map((com: any) => {
                                                                         return (
@@ -792,7 +684,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                                     </span>
 
                                                                 </div>
-                                                                {Items.Items.Categories != "" ?
+                                                                {Items !=undefined && Items.Items !=undefined && Items.Items.Categories != "" ?
                                                                  <>   
                                                                 <div className="block">
                                                                 <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=123`}>{Items.Items.Categories}</a>
@@ -807,7 +699,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                             </div>
                                                             </>:
                                                              ''}
-                                                         {Items.Items.Categories != "" ?
+                                                         {Items?.Items?.Categories != "" ?
                                                                  <>   
                                                                 <div className="block">
                                                                 <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=123`}>{Items.Items.Categories}</a>
@@ -815,25 +707,23 @@ let PercentComplete= saveData.PercentComplete/10
                                                                  <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
                                                                 <span className="input-group-text">
 
-                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                    onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
+                                                               
 
                                                             </span>
                                                             </div>
                                                             </>:
                                                              <>   
-                                                             
+                                                             {(EditData.Categories != undefined) &&  
                                                              <div className="block">
                                                                 <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=123`}>{EditData.Categories}</a>
                                                                    <a className="hreflink" ng-click="removeSmartComponent(item.Id)"></a>
                                                                  <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
                                                                 <span className="input-group-text">
 
-                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                    onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
-
+                                                              
                                                             </span>
                                                             </div>
+                                                            }
                                                             
                                                          
                                                          </>}
@@ -878,30 +768,29 @@ let PercentComplete= saveData.PercentComplete/10
                                                         <div className="col-12 mb-10">
                                                             <label ng-bind-html="GetColumnDetails('priority') | trustedHTML"></label>
                                                             <input type="text" className="form-control"
-                                                                placeholder="Priority" defaultValue={EditData.Priority_x0020_Rank
-                                                                }
+                                                                placeholder="Priority" 
                                                             />
                                                             <ul>
                                                                 <li className="form-check">
 
                                                                     <input className="form-check-input"
                                                                         name="radioPriority" type="radio"
-                                                                        value="(1) High" defaultChecked={EditData.Priority === "(1) High"}
-                                                                        onChange={(e) => setPriority(EditData, 8)} />High
+                                                                        value="(1) High" defaultChecked={EditData.Priority === "(1) High"?true:''}
+                                                                        onChange={(e:any) => setPriority("(1) High")} />High
 
                                                                 </li>
                                                                 <li className="form-check">
 
                                                                     <input className="form-check-input" name="radioPriority"
-                                                                        type="radio" value="(2) Normal" onChange={(e) => setPriority(EditData, 4)}
-                                                                        defaultChecked={EditData.Priority === "(2) Normal"}></input>Normal
+                                                                        type="radio" value="(2) Normal" onChange={(e) => setPriority("(4) Normal")}
+                                                                        defaultChecked={EditData.Priority === "(4) Normal"?true:''}/>Normal
 
                                                                 </li>
                                                                 <li className="form-check">
 
                                                                     <input className="form-check-input" name="radioPriority"
-                                                                        type="radio" value="(3) Low" onChange={(e) => setPriority(EditData, 1)}
-                                                                        defaultChecked={EditData.Priority === "(3) Low"}></input>Low
+                                                                        type="radio" value="(3) Low" onChange={(e) => setPriority("(1) Low")}
+                                                                        defaultChecked={EditData.Priority === "(1) Low"?true:''}></input>Low
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -926,30 +815,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                                 </span>
                                                             </div>
                                                             <div>
-                                                            {((EditData.RelevantPortfolio != undefined) && (EditData.RelevantPortfolio.length>0)) ?
-                                                                <>
-                                                                    {EditData.RelevantPortfolio.map((com: any) => {
-                                                                        return (
-                                                                            <>
-
-                                                                                <div className="block ng-scope">
-                                                                                    <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                                                    <a className="hreflink" ng-click="removeSmartComponent(item.Id)"></a>
-                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
-                                                                                    <span className="input-group-text"
-                                                                                        ng-hide="(ServicesmartComponent.length>0 || smartComponent.length>0)">
-
-                                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                                            onClick={(e) => EditLinkedServies(EditData, 'Componet')} />
-
-                                                                                    </span>
-
-                                                                                </div>
-                                                                            </>
-                                                                        )
-                                                                    })}
-                                                                </> :
-                                                                ''}
+                                                             
                                                                 {((Items.Items.linkedComponent != undefined) && (Items.Items.linkedComponent.length>0)) ?
                                                                 <>
                                                                     {Items.Items.linkedComponent.map((com: any) => {
@@ -974,6 +840,34 @@ let PercentComplete= saveData.PercentComplete/10
                                                                     })}
                                                                 </> :
                                                                 ''}
+                                                                {((Items?.Items?.linkedComponent != undefined) && (Items?.Items?.linkedComponent.length>0)) ?
+                                                                <>
+                                                                {((EditData.RelevantPortfolio != undefined) && (EditData.RelevantPortfolio.length>0)) &&
+                                                                <>
+                                                                 {EditData.RelevantPortfolio.map((com: any) => {
+                                                                    return (
+                                                                        <>
+
+                                                                            <div className="block ng-scope">
+                                                                                <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                                <a className="hreflink" ng-click="removeSmartComponent(item.Id)"></a>
+                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
+                                                                                <span className="input-group-text"
+                                                                                    ng-hide="(ServicesmartComponent.length>0 || smartComponent.length>0)">
+
+                                                                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                                        onClick={(e) => EditLinkedServies(EditData, 'Componet')} />
+
+                                                                                </span>
+
+                                                                            </div>
+                                                                        </>
+                                                                    )
+                                                                })}
+                                                                </>
+                                                            }
+                                                            </>
+                                                              :""}
                                                             </div>
                                                         </div>
                                                         {/* <div className="col-12"
@@ -1153,16 +1047,24 @@ let PercentComplete= saveData.PercentComplete/10
                                                 <div className="col mb-10">
                                                     <div className="input-group">
                                                         <label className="form-label">status</label>
-                                                        <input type="text" className="form-control" placeholder="% Complete" defaultValue={PercentComplete == null ? status : EditData.PercentComplete} onChange={(e) => setSaveData({ ...saveData, PercentComplete: e.target.value })} />
+                                                        <input type="text" className="form-control" placeholder="% Complete" defaultValue={EditData.PercentComplete != undefined ?EditData.PercentComplete  : status} onChange={(e) => setSaveData({ ...saveData, PercentComplete: e.target.value })} />
                                                         <span className="input-group-text">
                                                             <a onClick={() => openTaskStatusUpdatePoup()}>   <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
                                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
                                                             </svg></a></span>
 
                                                     </div>
-                                                    {/* <input className="form-check-input mt-4" name="radioCompleted"
+                                                    {/* {(EditData.PercentComplete != undefined) ?
+                                                    <>
+                                                    <input className="form-check-input mt-4" name="radioCompleted"
                                                         type="radio" value="For Follow-up later"
-                                                        defaultChecked={true} />{PercentComplete} */}
+                                                        defaultChecked={true} />{EditData.PercentComplete}
+                                                        </>:
+                                                        <>
+                                                        <input className="form-check-input mt-4" name="radioCompleted"
+                                                        type="radio" value="For Follow-up later"
+                                                        defaultChecked={true}/> {PercentComplete}</>} */}
+                                                        
 
 
 
@@ -1173,13 +1075,13 @@ let PercentComplete= saveData.PercentComplete/10
                                                         <div>
                                                             <label className="form-label" ng-bind-html="GetColumnDetails('time') | trustedHTML">Time</label>
                                                             <input type="text" className="form-control  mb-2" placeholder="Time"
-                                                                ng-model="Item.Mileage" />
+                                                                defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} />
 
                                                             <ul>
                                                                 <li className="form-check">
                                                                     <input name="radioTime" className="form-check-input"
                                                                         ng-checked="Item.Mileage==='15'" type="radio"
-                                                                        ng-click="SelectTime('15')" />Very
+                                                                        ng-click="SelectTime('15')" onChange={(e) => setTime(EditData, '05')} defaultChecked={EditData.Mileage == "05" ? true : false}/>Very
                                                                     Quick
 
                                                                 </li>
@@ -1187,21 +1089,21 @@ let PercentComplete= saveData.PercentComplete/10
 
                                                                     <input name="radioTime" className="form-check-input"
                                                                         ng-checked="Item.Mileage==='60'" type="radio"
-                                                                        ng-click="SelectTime('60')" />Quick
+                                                                        onChange={(e) => setTime(EditData, '15')} defaultChecked={EditData.Mileage == "15"}/>Quick
 
                                                                 </li>
                                                                 <li className="form-check">
 
                                                                     <input name="radioTime" className="form-check-input"
                                                                         ng-checked="Item.Mileage==='240'" type="radio"
-                                                                        ng-click="SelectTime('240')" />Medium
+                                                                        onChange={(e) => setTime(EditData, '60')} defaultChecked={EditData.Mileage == "60"} />Medium
 
                                                                 </li>
                                                                 <li className="form-check">
 
                                                                     <input name="radioTime" className="form-check-input"
                                                                         ng-checked="Item.Mileage==='480'" type="radio"
-                                                                        ng-click="SelectTime('480')" />Long
+                                                                        ng-click="SelectTime('480')" onChange={(e) => setTime(EditData, "240")} defaultChecked={EditData.Mileage == "240"}/>Long
 
                                                                 </li>
                                                             </ul>
@@ -1224,34 +1126,7 @@ let PercentComplete= saveData.PercentComplete/10
                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Santosh%20Kumar.png" />
                                                                 </a>
 
-                                                                {/* <div className="responsibility_tile">
-                                                                            <a ng-if="image.userImage === undefined && image.Item_x0020_Cover!=undefined &&image.Item_x0020_Cover.Url!=undefined"
-                                                                                ng-repeat="image in AssignedToUsers"
-                                                                                target="_blank"
-                                                                                ng-href="{{pageContext}}/SitePages/TeamLeader-Dashboard.aspx?UserId={{image.AssingedToUserId}}&Name={{image.Title}} ">
-                                                                                <img ui-draggable="true"
-                                                                                    on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                                    data-toggle="popover" data-trigger="hover"
-                                                                                    className="ProirityAssignedUserPhoto"
-                                                                                    title="{{image.Title}}"
-                                                                                    ng-src="{{image.Item_x0020_Cover.Url}}" />
-                                                                            </a>
-                                                                        </div>
-                                                                        <div className="responsibility_tile">
-                                                                            <a ng-if="(image.userImage===undefined) &&(image.Item_x0020_Cover===undefined || image.Item_x0020_Cover.Url===undefined)"
-                                                                                ng-repeat="image in AssignedToUsers"
-                                                                                target="_blank"
-                                                                                ng-href="{{pageContext}}/SitePages/TeamLeader-Dashboard.aspx?UserId={{image.AssingedToUserId}}&Name={{image.Title}} ">
-                                                                                <div ui-draggable="true"
-                                                                                    on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                                    data-toggle="popover" data-trigger="hover"
-                                                                                    className="text-center create title2  ng-binding ProirityAssignedUserPhoto ng-scope"
-                                                                                    title="{{image.Title}}"
-                                                                                    ng-src="{{image.Item_x0020_Cover.Url}}">
-                                                                                    image.Suffix
-                                                                                </div>
-                                                                            </a>
-                                                                        </div> */}
+                                                                
                                                             </div>
 
                                                         </div>
@@ -1417,12 +1292,12 @@ let PercentComplete= saveData.PercentComplete/10
                                 <div className="col-sm-12 p-0">
                                     <div className="col-md-4 text-left ps-0">
                                         <div className="d-flex   align-content-center">
-                                            Created <span>{Items.Items.Created}</span> by <span
-                                                className="siteColor">{Items.Items.Author.Title}</span>
+                                            Created <span>{Items?.Items?.Created}</span> by <span
+                                                className="siteColor">{Items?.Items?.Author.Title}</span>
                                         </div>
                                         <div>
-                                            Last modified <span>{Items.Items.Modified}</span> by <span
-                                                className="siteColor">{Items.Items.Editor.Title}</span>
+                                            Last modified <span>{Items?.Items?.Modified}</span> by <span
+                                                className="siteColor">{Items?.Items?.Editor.Title}</span>
                                         </div>
                                         <div>
                                             <a ng-if="isOwner===true" className="hreflink">
@@ -1449,7 +1324,7 @@ let PercentComplete= saveData.PercentComplete/10
                                         <div>
                                             <span>
                                                 <a className="ForAll hreflink" target="_blank" ng-if="Item.siteType!='Master Tasks'"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${Items.Items.Id}&Site=${Items.Items.siteType}`}>
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${Items?.Items.Id}&Site=${Items.Items.siteType}`}>
                                                     Go
                                                     to
                                                     profile

@@ -1,10 +1,15 @@
 import { Modal } from 'office-ui-fabric-react';
 import * as React from 'react';
+import * as jQuery from 'jquery';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
 import * as moment from 'moment';
 import { post } from 'jquery';
+import pnp, { PermissionKind } from "sp-pnp-js";
+import { CurrentUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
 var AllTimeSpentDetails: any = [];
+var CurntUserId = ''
+var TaskUser: any = []
 
 function TimeEntryPopup(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
@@ -26,14 +31,20 @@ function TimeEntryPopup(item: any) {
     const [month, setMonth] = React.useState(1)
     const [saveEditTaskTime, setsaveEditTaskTime] = React.useState([])
     const [postData, setPostData] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
+    const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '',TaskTime:'' })
     const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState([])
     const [AllUser, setAllUser] = React.useState([])
     const [checkCategories, setcheckCategories] = React.useState()
+
     // const [AllTimeSpentDetail, setAllTimeSpentDetails] = React.useState()
     //const [postData, setpostData] = React.useState()
 
     const [year, setYear] = React.useState(1)
     const [TimeInHours, setTimeInHours] = React.useState(0)
+    var CurntUserId = ''
+
+    var smartTermName = "Task" + item.props.siteType;
+   
 
     const GetTaskUsers = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -44,10 +55,16 @@ function TimeEntryPopup(item: any) {
             .top(4999)
             .get();
         AllUsers = taskUsers;
+        TaskUser = taskUsers;
         EditData(item.props);
         //console.log(this.taskUsers);
 
     }
+    pnp.sp.web.currentUser.get().then(result => {
+        CurntUserId = result.Id;
+        console.log(CurntUserId)
+
+    });
     const changeDate = (item: any) => {
 
 
@@ -214,6 +231,7 @@ function TimeEntryPopup(item: any) {
         });
         return isExists;
     }
+
     const checkCategory = function (item: any, category: any) {
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
             if (categoryTitle.Id === category) {
@@ -420,6 +438,7 @@ function TimeEntryPopup(item: any) {
             categoryTitle.TimesheetTitle = [];
 
         });
+
         getStructurefTimesheetCategories();
         setEditItem(item.Title);
         var filteres = "Task" + item.siteType + "/Id eq " + item.Id;
@@ -582,7 +601,7 @@ function TimeEntryPopup(item: any) {
                 })
             }
         })
-      //  setTimeSheet(AllTimeSheetDataNew)
+        //  setTimeSheet(AllTimeSheetDataNew)
 
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
@@ -595,8 +614,8 @@ function TimeEntryPopup(item: any) {
 
             console.log(res);
             setAddTaskTimepopup(false)
-           
-          
+
+
 
         })
 
@@ -609,9 +628,9 @@ function TimeEntryPopup(item: any) {
                 if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
                     //updateitem.AuthorId = _spPageContextInfo.userId;
                     updateitem.Id = child.ID;
-                    updateitem.TaskTime = postData.TaskTime;
-                    updateitem.TaskDate = postData.TaskDate;
-                    updateitem.Description = postData.Description
+                    updateitem.TaskTime = postData.TaskTime != undefined?postData.TaskTime:child.TaskTime;
+                    updateitem.TaskDate = postData.TaskDate != undefined?postData.TaskDate:child.TaskDate;
+                    updateitem.Description = postData.Description != undefined?postData.Description:child.Description;
                     // if  ((update.AdditionalTime.sitebasedcomposition != undefined && update.AdditionalTime.sitebasedcomposition.length > 0) {
                     //     $.each((update.AdditionalTime.sitebasedcomposition, function (val:any) {
                     //         val.releventTime = ( $scope.AdditionalTimeSpentInHours / 100) * val.ClienTimeDescription;
@@ -652,7 +671,7 @@ function TimeEntryPopup(item: any) {
         });
 
         var timeSpentId = AdditionalTime[AdditionalTime.length - 1];
-        //timeSpentDetails['ID'] = timeSpentId.ID + 1;
+       // timeSpentDetails['ID'] = timeSpentId.ID + 1;
 
 
         $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
@@ -693,7 +712,118 @@ function TimeEntryPopup(item: any) {
         })
 
     }
+   
+    const saveTimeSpent = async () => {
+        var smartTermId = "Task" + item.props.siteType +"Id";
+       
+       
+        var AddedData: any = []
 
+        if (checkCategories == undefined && checkCategories == undefined) {
+            alert("please select category or Title");
+            return false;
+        }
+        var UpdatedData: any = {}
+        $.each(TaskUser, function (index: any, taskUser: any) {
+            if (taskUser.AssingedToUserId == CurntUserId) {
+                UpdatedData['AuthorName'] = taskUser.Title;
+                UpdatedData['Company'] = taskUser.Company;
+                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+            }
+
+        });
+         
+        var TimeInHours: any = changeTime / 60;
+        TimeInHours = TimeInHours.toFixed(2);
+        
+     
+        if (AllTimeSpentDetails == undefined) {
+            var AllTimeSpentDetails: any = []
+        }
+        var TimeListName = 'TaskTimeSheetListNew'
+        var postData = {
+            "Title": checkCategories,
+            "TaskDate": changeDates,
+            'Path': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/" + TimeListName + '/' + UpdatedData.Company + '',
+            [smartTermName]: item.props.Id,
+        };
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+
+        let ParentId = await web.lists
+            .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
+            .items
+            .filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus")
+            .add({
+                Title: checkCategories,
+                //"TaskDate": changeDates,
+                [smartTermId]: item.props.Id,
+            })
+        console.log(ParentId)
+
+        let getParentId = await web.lists
+            .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
+            .items
+            .select("ID,Title")
+            .orderBy("ID", false)
+            .top(1)
+            .get();
+        console.log(getParentId);
+        //  AddedData.map((item:any)=>{
+        //     item['MainParentId']=getParentId[0].Id;
+        //  }) 
+           $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
+         
+            $.each(items.Childs, function (index: any, subItem: any) {
+                
+                    var timeSpentDetails: any = {};
+                    timeSpentDetails['MainParentId'] = getParentId[0].Id
+                    timeSpentDetails['AuthorId'] = CurntUserId
+                    timeSpentDetails['ParentID'] = AdditionalTime[0].ParentID;
+                    timeSpentDetails['TaskDate'] = changeDates;
+                    timeSpentDetails['AuthorImage'] = UpdatedData.UserImage != undefined ? UpdatedData.UserImage : '';
+                    timeSpentDetails['AuthorName'] = UpdatedData.AuthorName;
+                    timeSpentDetails['TaskTime'] = newData.TaskTime;
+                    timeSpentDetails['Description'] = newData.Description;
+
+                    //timeSpentDetails['showDetailsReport'] = $scope.showDetailsReport;
+                    timeSpentDetails['showTimesheetDescription'] = newData.Description;
+                    if (AllTimeSpentDetails == '' || AllTimeSpentDetails == undefined) {
+                        timeSpentDetails['ID'] = 0;
+                    }
+
+                     else {
+                        var timeSpentId = AllTimeSpentDetails[AllTimeSpentDetails.length - 1];
+                        timeSpentDetails['ID'] = timeSpentId.ID + 1;
+                    }
+                    subItem.AdditionalTime.push(timeSpentDetails)
+                    AddedData = subItem.AdditionalTime
+
+                
+                
+            })
+       
+    })
+
+
+        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(getParentId[0].Id).update({
+
+            AdditionalTimeEntry: JSON.stringify(AddedData),
+
+        }).then((res: any) => {
+
+            console.log(res);
+            closeTaskStatusUpdatePoup();
+
+        })
+
+
+
+
+
+
+
+
+    }
 
 
     return (
@@ -1001,7 +1131,7 @@ function TimeEntryPopup(item: any) {
                                         <input type="text" autoComplete="off"
                                             className="form-control"
                                             name="CategoriesTitle"
-                                            value={checkCategories}
+                                            defaultValue={checkCategories}
                                         />
                                     </div>
 
@@ -1009,7 +1139,8 @@ function TimeEntryPopup(item: any) {
                                         <label>Title</label>
                                         <input type="text" autoComplete="off"
                                             className="form-control" name="TimeTitle"
-                                            value={checkCategories} />
+                                            defaultValue={checkCategories}
+                                            onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
                                     </div>
                                     <div className="col-sm-12 pad0 form-group">
                                         <div className="col-sm-6 padL-0">
@@ -1051,7 +1182,8 @@ function TimeEntryPopup(item: any) {
                                                     ng-required="true"
                                                     placeholder="DD/MM/YYYY"
                                                     ng-model="AdditionalnewDate"
-                                                    value={changeDates} />
+                                                    defaultValue={changeDates}
+                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
 
                                             </div>
                                         </div>
@@ -1122,7 +1254,8 @@ function TimeEntryPopup(item: any) {
                                                     ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                     name="timeSpent"
                                                     ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                    value={changeTime} />
+                                                    defaultValue={item.Title}
+                                                    onChange={(e) => setNewData({ ...newData, TimeSpentInMinute: e.target.value })} />
 
                                             </div>
                                             <div
@@ -1162,7 +1295,8 @@ function TimeEntryPopup(item: any) {
                                         <div className="col-sm-12 pad0 form-group">
                                             <div className="col-sm-6 padL-0">
                                                 <label>Time Spent (in hours)</label>
-                                                <input className="form-control" type="text" value={TimeInHours} />
+                                                <input className="form-control" type="text"defaultValue={item.TaskTime}
+                                                                            onChange={(e) => setNewData({ ...newData, TaskTime: e.target.value })} />
                                             </div>
                                         </div>
 
@@ -1171,6 +1305,8 @@ function TimeEntryPopup(item: any) {
                                             <textarea
                                                 id="AdditionalshortDescription"
                                                 cols={15} rows={4}
+                                                defaultValue={item.Description}
+                                                onChange={(e) => setNewData({ ...newData, Description: e.target.value })}
                                             ></textarea>
                                         </div>
 
@@ -1210,7 +1346,7 @@ function TimeEntryPopup(item: any) {
 
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" ng-click="saveTaskStatusUpdatePoup()">
+                                <button type="button" className="btn btn-primary" onClick={saveTimeSpent}>
                                     Submit
                                 </button>
 
@@ -2004,5 +2140,5 @@ function TimeEntryPopup(item: any) {
 function useForceUpdate() {
     const [value, setValue] = React.useState(0);
     return () => setValue((value) => value + 1);
-  }
+}
 export default TimeEntryPopup;
