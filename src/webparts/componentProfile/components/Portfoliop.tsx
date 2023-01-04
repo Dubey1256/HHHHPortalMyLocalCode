@@ -215,11 +215,11 @@ function Portfolio({ ID }: any) {
     const handleClose = () => setLgShow(false);
 
     return (
-        <div>
+        <div className='serviepannelgreena'>
 
             {/* breadcrumb & title */}
             <section>
-                <div className='container'>
+                <div className='container '>
 
                     <div className='row'>
                         <div className='d-flex justify-content-between p-0' >
@@ -744,7 +744,7 @@ function Portfolio({ ID }: any) {
                                 <Groupby Id={item.Id} level={item.PortfolioLevel}/>
                                 ))} */}
                                 {data.map(item => (
-                                <ComponentTable props={item} />
+                                <ComponentTable props={item} NextProp={myarray2}/>
                                 ))}
                             </div>
 

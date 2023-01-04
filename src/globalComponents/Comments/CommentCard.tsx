@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-import '../../webparts/cssFolder/foundation.scss'
-import '../../webparts/cssFolder/foundationmin.scss';
-import './CommentStyle.scss'
+// import '../../webparts/cssFolder/foundation.scss'
+// import '../../webparts/cssFolder/foundationmin.scss';
+// import './CommentStyle.scss'
 import '../../webparts/cssFolder/Style.scss'
+import '../../webparts/cssFolder/site_color.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -135,6 +136,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
  
   private async GetTaskUsers(){
     let web = new Web(this.props.siteUrl);
+    let currentUser = await web.currentUser.get();
+    //.then((r: any) => {  
+     // console.log("Cuurent User Name - " + r['Title']);  
+    //}); 
     let taskUsers = [];    
     taskUsers = await web.lists
       .getByTitle('Task Users')
@@ -161,6 +166,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
           })
         }
+
+        if (this.taskUsers[index].AssingedToUser !=null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'] )
+          this.currentUser= this.taskUsers[index];          
       }       
       console.log(this.topCommenters);
       console.log(this.mentionUsers);
@@ -176,7 +184,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
       let temp = {
-        AuthorImage: this.currentUser['userImage'] != null ? this.currentUser['userImage'] : '', 
+        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '', 
         AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '', 
         Created: (new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',',''),
         Description:txtComment,
@@ -438,15 +446,61 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
                                         </div>
                                         <div>
-                                            <textarea placeholder="Enter your comments here" className='form-control' ></textarea>
+                                            <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e)=>this.handleInputChange(e)}  placeholder="Enter your comments here" className='form-control' ></textarea>
                                             {/* <p className="ng-hide">
                                             <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
                                             Comment shouldn't be empty
                                         </p> */}
-                                            <button title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
+                                            <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
                                                 Post
                                             </button>
                                         </div>
+
+                                        <div className="clearfix"></div>
+
+                                        <div className="commentMedia">
+            {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 &&
+              <div className="card">
+                <ul className="list-unstyled">
+                {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 && this.state.Result["Comments"].slice(0,3).map( (cmtData:any,i:any)=> {
+                  return <li className="media ng-scope">
+                    <span className="round pt-2">
+                      <img className="align-self-start mr-3" title={cmtData.AuthorName}
+                          src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ? 
+                          cmtData.AuthorImage  :
+                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                            />
+                    </span>
+                    <div className="media-bodyy">
+                      <div className="col-sm-12 pad0 d-flex">
+                        <span className="comment-date pt-2 ng-binding">{cmtData.Created}</span>
+                          <div className="ml-auto media-icons pt-2">
+                            <a className="mr-5" onClick={()=>this.openEditModal(i)}>
+                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
+                            </a>
+                            <a title="Delete" onClick={()=>this.clearComment(i)}>
+                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
+                            </a>
+                          </div>
+                      </div>
+                      <div className="col-sm-12 pad0 d-flex">
+                        { cmtData.Header !='' && <h6 className="userid pt-2"><a className="ng-binding">{cmtData.Header}</a></h6>}
+                      </div>
+                      <p className="media-text ng-binding">{cmtData.Description}</p>
+                    </div>
+                  </li>
+                })}
+                </ul>
+                {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>3 &&
+                  <div className="MoreComments ng-hide">
+                        <a className="MoreComments ng-binding ng-hide" title="Click to Reply" onClick={()=>this.openAllCommentModal()}>
+                            All Comments({this.state.Result["Comments"].length})
+                        </a>
+                  </div>
+                }
+              </div>
+              }
+            </div>
 
                                     </div>
                                 </div>
@@ -495,7 +549,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         </div>
                         <div className="col-sm-1 padL-0">
                           <div className="icon_post">
-                            <img onClick={()=>this.PostComment('txtCommentModal')} title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/>
+                            <a onClick={()=>this.PostComment('txtCommentModal')} ><img title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/></a>
                           </div>
                         </div>
                       </div>
@@ -631,8 +685,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <tr>
                   <td></td>
                 </tr>                
-                {this.state.Result["SharewebTaskType"] !=null && this.state.Result["SharewebTaskType"] !='' && 
-                    this.state.Result["SharewebTaskType"] == 'Task' && this.state.Result["FeedBack"] != null && 
+                {this.state.Result["SharewebTaskType"] !=null && (this.state.Result["SharewebTaskType"] !='' || 
+                    this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
