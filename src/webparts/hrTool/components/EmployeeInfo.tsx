@@ -8,7 +8,7 @@ import Row from 'react-bootstrap/Row';
 import Information from './TaxInformation';
 import SalarySlipPopup from './SalarySlipPopup';
 import { Web } from "sp-pnp-js";
-import { useEffect, useState } from 'react';
+import { useEffect, useState ,useCallback} from 'react';
 import * as moment from 'moment';
 import EditEmployeeInfo from './EditEmployeeInfo';
 import SalaryConfirmationPopup from './SalaryConfirmation';
@@ -22,6 +22,7 @@ const EmployeeInfo = () => {
     const searchParams = new URLSearchParams(window.location.search);
     const employeeId = searchParams.get("employeeId");
     const [salaryData, setEmployees] = useState([]);
+    const [isopen, setIsOpen] = useState(false);
     const [HrData, setHrData] = useState(null);
     const [ContractData, setContractData] = useState([]);
 
@@ -31,7 +32,13 @@ const EmployeeInfo = () => {
         LoadHrData();
         LoadContract();
     }, []);
-
+ const callback=useCallback(()=>{
+    setIsOpen(false);
+    fetchAPIData();
+    loadSmartTaxonomyItems();
+    LoadHrData();
+    LoadContract();
+ },[])
 
     const fetchAPIData = async () => {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
@@ -120,6 +127,10 @@ const EmployeeInfo = () => {
             });
     }
 
+    const openPopup=()=>{
+        setIsOpen(true);
+    }
+
 
     // Contract ALl Information List Data Start......
 
@@ -152,9 +163,9 @@ const EmployeeInfo = () => {
                             </div>
                             <div className="mx-auto">
                                 <span>
-                                    {/* <span style={{ padding: 3 }} className="btn btn-outline btn-primary">
-                                        <img />Edit HR Details</span> */}
-                                    <EditEmployeeInfo props={employeeId}/>
+                                    <span  style={{ padding: 3 }} className="btn btn-outline btn-primary" onClick={openPopup}>
+                                        <img />Edit HR Details</span>
+                                     {isopen?<EditEmployeeInfo props={employeeId} isopen={isopen}callback={callback} />:null}   
                                 </span>
                             </div>
                         </div>

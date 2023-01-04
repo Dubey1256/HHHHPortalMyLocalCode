@@ -19,7 +19,7 @@ const EditEmployeeInfo = ((props: any) => {
         City: '', Street: '', maritalStatus: '', Nationality: '', placeOfBirth: '', dateOfBirth: '', contributionStatus: '', NRPSubToTax: '',
         NRPNotSubToTax: '', FirstName: '', WorkPhone: '', CellPhone: '', HomePhone: '', IM: '', Email: '', WorkAddress: '', WorkCity: '', WorkZip: '',
     })
-    const [lgShow, setLgShow] = useState(false);
+    const [lgShow, setLgShow] = useState(props.isopen);
     const handleClose = () => setLgShow(false);
     let AllSmartcountry: any[] = [];
     let AllSmartState: any[] = [];
@@ -170,8 +170,9 @@ const EditEmployeeInfo = ((props: any) => {
             WorkCity: formData.WorkCity,
             WorkZip: formData.WorkZip
         }).then((e: any) => {
-            alert("Data post Successfully")
-            handleClose();
+            // alert("Data post Successfully")
+            // handleClose();
+            props.callback();
 
         })
             .catch((err: { message: any; }) => {
@@ -224,9 +225,9 @@ const EditEmployeeInfo = ((props: any) => {
                 onHide={() => setLgShow(false)}
                 aria-labelledby="example-modal-sizes-title-lg">
                 <Modal.Header>
-                    <span className='modal-title' id="example-modal-sizes-title-lg">
+                    {/* <span className='modal-title' id="example-modal-sizes-title-lg">
                         <span><strong>EditEmployeeInfo</strong></span>
-                    </span>
+                    </span> */}
                     <button type="button" className='Close-button' onClick={handleClose}>×</button>
                 </Modal.Header>
                 <Modal.Body className='p-2'>
