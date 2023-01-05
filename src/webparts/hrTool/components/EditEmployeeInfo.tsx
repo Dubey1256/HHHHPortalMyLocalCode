@@ -28,6 +28,9 @@ const EditEmployeeInfo = ((props: any) => {
     const [ShowAllInstituion, setShow] = useState(false);
     const OrganisationPopupClose = () => setShow(false);
     const AllInstituionShow = () => setShow(true);
+    const [institutionTitle, setInstitutionTitle]=useState("");
+ 
+    const [changeInstitution, setchangeInstitution]=useState([]);
     const [AllContactInstituion, setAllContactInstituion] = useState([]);
 
     useEffect(() => {
@@ -108,76 +111,135 @@ const EditEmployeeInfo = ((props: any) => {
                 //     setImage(true);
                 // }
                 data[0]['LanguagesTextVal'] = getSmartlanguageTitle(data[0], AllSmartLanguage);
+                setInstitutionTitle(data[0].Institution.Title);
                 setEmployeeData(data[0]);
                 setFormData(data[0])
             }).catch((err) => {
                 console.log(err.message);
             });
     }
+ 
 
+       const postData=async(TagInstitutionId:any)=>{
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+       await web.lists.getById('a7b80424-e5e1-47c6-80a1-0ee44a70f92c').items.getById(props.props).update({
+           additionalContributionToHI: formData.additionalContributionToHI,
+           levy2ContributionRate: formData.levy2ContributionRate,
+           levy1ReimbursementRate: formData.levy1ReimbursementRate,
+           levy1RateOfContribution: formData.levy1RateOfContribution,
+           levy1Type: formData.levy1Type,
+           healthInsuranceCompany: formData.healthInsuranceCompany,
+           healthInsuranceType: formData.healthInsuranceType,
+           PersonGroupKey: formData.PersonGroupKey,
+           Country: formData.Country,
+           Fedral_State: formData.Fedral_State,
+           BIC: formData.BIC,
+           IBAN: formData.IBAN,
+           InstitutionId:TagInstitutionId!=null?TagInstitutionId:null,
+           // SmartInstitutionId:changeInstitution[0].Id,
+           contributionGroupNCI: formData.contributionGroupNCI,
+           contributionGroupUI: formData.contributionGroupUI,
+           contributionGroupRI: formData.contributionGroupRI,
+           contributionGroupHi: formData.contributionGroupHi,
+           Parenthood: formData.Parenthood,
+           insuranceNo: formData.insuranceNo,
+           childAllowance: formData.childAllowance,
+           monthlyTaxAllowance: formData.monthlyTaxAllowance,
+           solidaritySurcharge: formData.solidaritySurcharge != '' ? formData.solidaritySurcharge : null,
+           taxClass: formData.taxClass,
+           churchTax: formData.churchTax,
+           taxNo: formData.taxNo,
+           incomeTax: formData.incomeTax != '' ? formData.incomeTax : null,
+           taxFreePayments: formData.taxFreePayments != '' ? formData.taxFreePayments : 0,
+           otherQualifications: formData.otherQualifications,
+           highestVocationalEducation: formData.highestVocationalEducation,
+           highestSchoolDiploma: formData.highestSchoolDiploma,
+           ZIP_x0020_Code: formData.ZIP_x0020_Code,
+           No_x002e_: formData.No_x002e_,
+           City: formData.City,
+           Street: formData.Street,
+           maritalStatus: formData.maritalStatus,
+           Nationality: formData.Nationality,
+           placeOfBirth: formData.placeOfBirth,
+           dateOfBirth: formData.dateOfBirth,
+           contributionStatus: formData.contributionStatus,
+           NRPSubToTax: formData.NRPSubToTax,
+           NRPNotSubToTax: formData.NRPNotSubToTax,
+           FirstName: formData.FirstName,
+           Title: formData.Title,
+           WorkPhone: formData.WorkPhone,
+           CellPhone: formData.CellPhone,
+           HomePhone: formData.HomePhone,
+           IM: formData.IM,
+           Email: formData.Email,
+           WorkAddress: formData.WorkAddress,
+           WorkCity: formData.WorkCity,
+           WorkZip: formData.WorkZip
+       }).then((e: any) => {
+           // alert("Data post Successfully")
+           // handleClose();
+           props.callback();
+
+       })
+           .catch((err: { message: any; }) => {
+               console.log(err.message);
+           });
+       }
 
     const UpdateDetails = async () => {
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
-        await web.lists.getById('a7b80424-e5e1-47c6-80a1-0ee44a70f92c').items.getById(props.props).update({
-            additionalContributionToHI: formData.additionalContributionToHI,
-            levy2ContributionRate: formData.levy2ContributionRate,
-            levy1ReimbursementRate: formData.levy1ReimbursementRate,
-            levy1RateOfContribution: formData.levy1RateOfContribution,
-            levy1Type: formData.levy1Type,
-            healthInsuranceCompany: formData.healthInsuranceCompany,
-            healthInsuranceType: formData.healthInsuranceType,
-            PersonGroupKey: formData.PersonGroupKey,
-            Country: formData.Country,
-            Fedral_State: formData.Fedral_State,
-            BIC: formData.BIC,
-            IBAN: formData.IBAN,
-            contributionGroupNCI: formData.contributionGroupNCI,
-            contributionGroupUI: formData.contributionGroupUI,
-            contributionGroupRI: formData.contributionGroupRI,
-            contributionGroupHi: formData.contributionGroupHi,
-            Parenthood: formData.Parenthood,
-            insuranceNo: formData.insuranceNo,
-            childAllowance: formData.childAllowance,
-            monthlyTaxAllowance: formData.monthlyTaxAllowance,
-            solidaritySurcharge: formData.solidaritySurcharge != '' ? formData.solidaritySurcharge : null,
-            taxClass: formData.taxClass,
-            churchTax: formData.churchTax,
-            taxNo: formData.taxNo,
-            incomeTax: formData.incomeTax != '' ? formData.incomeTax : null,
-            taxFreePayments: formData.taxFreePayments != '' ? formData.taxFreePayments : 0,
-            otherQualifications: formData.otherQualifications,
-            highestVocationalEducation: formData.highestVocationalEducation,
-            highestSchoolDiploma: formData.highestSchoolDiploma,
-            ZIP_x0020_Code: formData.ZIP_x0020_Code,
-            No_x002e_: formData.No_x002e_,
-            City: formData.City,
-            Street: formData.Street,
-            maritalStatus: formData.maritalStatus,
-            Nationality: formData.Nationality,
-            placeOfBirth: formData.placeOfBirth,
-            dateOfBirth: formData.dateOfBirth,
-            contributionStatus: formData.contributionStatus,
-            NRPSubToTax: formData.NRPSubToTax,
-            NRPNotSubToTax: formData.NRPNotSubToTax,
-            FirstName: formData.FirstName,
-            Title: formData.Title,
-            WorkPhone: formData.WorkPhone,
-            CellPhone: formData.CellPhone,
-            HomePhone: formData.HomePhone,
-            IM: formData.IM,
-            Email: formData.Email,
-            WorkAddress: formData.WorkAddress,
-            WorkCity: formData.WorkCity,
-            WorkZip: formData.WorkZip
-        }).then((e: any) => {
-            // alert("Data post Successfully")
-            // handleClose();
-            props.callback();
-
+        var TagInstitutionId:any;
+        var institutionTag=false;
+       const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+        await web.lists.getById('a7b80424-e5e1-47c6-80a1-0ee44a70f92c').items.select("Id,SmartInstitutionId,ItemType").filter("ItemType eq 'Institution	'").get()
+        .then((Data:any)=>{
+            console.log(Data);
+            
+          Data.map((item:any,index:any)=>{
+            if(item.SmartInstitutionId==changeInstitution[0].Id){
+                institutionTag=true;
+                TagInstitutionId=item.Id;
+            }
+            })
+    
+    
         })
-            .catch((err: { message: any; }) => {
+        .catch((err) => {
+            console.log(err.message);
+        });
+        if(institutionTag==false){
+            const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+            await web.lists.getById('a7b80424-e5e1-47c6-80a1-0ee44a70f92c').items.add({
+                SmartInstitutionId:changeInstitution[0].Id,
+                ItemType:changeInstitution[0].ItemType,
+                FullName:changeInstitution[0].Title,
+                WorkCity:changeInstitution[0].WorkCity,
+                WorkCountry:changeInstitution[0].WorkCountry
+    
+            })
+            .then(async(Data:any)=>{
+                console.log(Data);
+                TagInstitutionId=Data.Id;
+                const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH');
+                await web.lists.getById('9F13FD36-456A-42BC-A5E0-CD954D97FC5F').items.getById(changeInstitution[0].Id).update({
+                    SharewebSites:{
+                        results:["HR"] 
+                    }
+                })
+                .then((Data:any)=>{
+                console.log(Data);
+                })
+                .catch((err) => {
+                    console.log(err.message);
+                });
+    
+    
+            })
+            .catch((err) => {
                 console.log(err.message);
             });
+        }
+     
+        await postData(TagInstitutionId);
     }
 
     const handleChange = (e: any, name: any) => {
@@ -186,12 +248,7 @@ const EditEmployeeInfo = ((props: any) => {
             [name]: e.target.value
         })
     }
-
-
-
-
-
-    const LoadAllInstituion = async () => {
+      const LoadAllInstituion = async () => {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH');
         await web.lists.getById('9f13fd36-456a-42bc-a5e0-cd954d97fc5f').items.select("Id,Title,WorkCity,WorkCountry,ItemType").top(4999).get()
             .then((data) => {
@@ -200,25 +257,31 @@ const EditEmployeeInfo = ((props: any) => {
             }).catch((err) => {
                 console.log(err.message);
             });
-    }
-
-
-
-
-
-
+       }
+       const institutionselect=(e:any,item:any)=>{
+        var key = e.target.value;
+        console.log(key);
+        console.log(item);
+        setInstitutionTitle(key);
+        setchangeInstitution([item]);
+      }     
+     const saveInstitution=(itemsTitle:any,item:any)=>{
+      console.log(itemsTitle);
+      console.log(item);
+      setShow(false);
+ }
 
 
 
     return (
         <div>
             {/* <img onClick={() => setLgShow(true)} ng-src="/_layouts/images/edititem.gif" data-themekey="#" src="/_layouts/images/edititem.gif" /> */}
-            <div className="mx-auto">
+            {/* <div className="mx-auto">
                 <span>
                     <span onClick={() => setLgShow(true)} style={{ padding: 3 }} className="btn btn-outline btn-primary">
                         <img src="/_layouts/images/edititem.gif" />Edit HR Details</span>
                 </span>
-            </div>
+            </div> */}
             <Modal
                 size="xl"
                 show={lgShow}
@@ -286,18 +349,18 @@ const EditEmployeeInfo = ((props: any) => {
                                                             <div className="position-relative" ng-show="selectedInstituion.length==0">
 
                                                                 <label>Organisation</label>
-                                                                {!EmployeeData.Institution.Title && <><input type="text" className="form-control ui-autocomplete-input" defaultValue={EmployeeData.Institution.Title}
+                                                              <input type="text" className="form-control ui-autocomplete-input" value={institutionTitle!=""?institutionTitle:EmployeeData.Institution.Title} 
                                                                     id="txtInstitutioncart" autoComplete="off" /><span role="status" aria-live="polite"
-                                                                        className="ui-helper-hidden-accessible"></span></>}
+                                                                        className="ui-helper-hidden-accessible"></span>
                                                                 <span className="edit-icons position-absolute">
                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Logos/EMMCopyTerm.png"
                                                                         onClick={AllInstituionShow} />
                                                                 </span>
                                                             </div>
 
-                                                            {EmployeeData.Institution.Title && <div className="position-relative">
-                                                                <div className="block mb-20" title={EmployeeData.Institution.Title}>
-                                                                    <a className="hreflink" target="_blank" href={EmployeeData.Institution.Title}>{EmployeeData.Institution.Title}</a>
+                                                            {institutionTitle && <div className="position-relative">
+                                                                <div className="block mb-20" title={institutionTitle}>
+                                                                    <a className="hreflink" target="_blank" href={institutionTitle!=""?institutionTitle:EmployeeData.Institution.Title}>{EmployeeData.Institution.Title}</a>
                                                                     <a className="hreflink">
                                                                         <img src="/_layouts/images/delete.gif" />
                                                                     </a>
@@ -962,16 +1025,11 @@ const EditEmployeeInfo = ((props: any) => {
                                                                         </thead>
                                                                         <tbody>
 
-
-
-
-
-
-                                                                            {AllContactInstituion.map((item: any, index: any) => {
+                                                                        {AllContactInstituion.map((item: any, index: any) => {
                                                                                 return (
                                                                                     <><tr key={index} className="tabletdRow">
                                                                                         <td>
-                                                                                            <input checked={item.Title === EmployeeData?.Institution?.Title} className="no-padding" type="radio" name="chkCompareContact" />
+                                                                                            <input defaultChecked={item.Title === institutionTitle}  className="no-padding"value={item.Title} type="radio" name="chkCompareContact"  onChange={(e)=>institutionselect(e,item)}/>
                                                                                         </td>
                                                                                         <td>
                                                                                             <a className="hreflink" href="">
@@ -1004,7 +1062,7 @@ const EditEmployeeInfo = ((props: any) => {
                         </div>
                     </div>
                     <Modal.Footer>
-                        <button type="button" className="btn btn-primary" >
+                        <button type="button" className="btn btn-primary" onClick={()=>saveInstitution(institutionTitle,changeInstitution)} >
                             Save
                         </button>
                         <button type="button" className="btn btn-default" onClick={OrganisationPopupClose}>Cancel</button>
