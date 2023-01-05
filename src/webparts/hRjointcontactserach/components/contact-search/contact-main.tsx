@@ -12,7 +12,7 @@ import { VscClearAll } from 'react-icons/Vsc';
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import { AiFillPrinter } from 'react-icons/ai';
 import { MdOpenInFull } from 'react-icons/Md';
-
+ 
 
 const ContactMainPage = (props: any) => {
     const [EmployeeData, setEmployeeData] = useState([]);
