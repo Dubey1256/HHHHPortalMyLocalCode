@@ -9,8 +9,8 @@ const addToLocalDBComponent = (props: any) => {
         userDetails();
     }, [])
     const taggedSiteFunction = async (item: any) => {
+        let siteArray = props.data[0].Site ? props.data[0].Site : [];
         if (selectedSite == 'HR') {
-            let siteArray = props.data[0].Site ? props.data[0].Site : [];
             let str = siteArray.toString();
             if (str.search("HR") >= 0) {
                 alert("This Contact already exists on HR site")
@@ -31,7 +31,6 @@ const addToLocalDBComponent = (props: any) => {
                         ).then(() => {
                             let dataArray = props.data;
                             dataArray?.map((items: any, index: any) => {
-                                console.log("data formate in map ====", dataArray);
                                 let staffIdData: any;
                                 let staffIdString: any;
                                 if (items.isSelect == true) {
@@ -97,17 +96,63 @@ const addToLocalDBComponent = (props: any) => {
                         })
                     })
             }
+            props.callBack()
         }
-
         if (selectedSite == 'GMBH') {
-            console.log("gmbh selected data ====", props.data)
+            let str = siteArray.toString();
+            if (str.search("GMBH") >= 0) {
+                alert("This Contact already exists on GMBH site")
+            } else {
+                siteArray.push('GMBH')
+                let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/");
+                await web.lists.getById('edc879b9-50d2-4144-8950-5110cacc267a').items.getById(props.data[0].Id).update(
+                    {
+                        Site: {
+                            results: siteArray
+                        }
+                    }).then(() => {
+                        let dataArray = props.data;
+                        dataArray?.map((items: any) => {
+                            if (items.isSelect == true) {
+                                const taggedSite = async (Item: any, taggedSite: any) => {
+                                    if (taggedSite == 'GMBH') {
+                                        try {
+                                            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
+                                            await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.add({
+                                                Title: (Item.Title ? Item.Title : ''),
+                                                FirstName: (Item.FirstName ? Item.FirstName : ''),
+                                                FullName: (Item.FullName ? Item.FullName : ''),
+                                                Suffix: (Item.Suffix ? Item.Suffix : ''),
+                                                JobTitle: (Item.JobTitle ? Item.JobTitle : ''),
+                                                Email: (Item.Email ? Item.Email : ''),
+                                                WorkPhone: (Item.WorkPhone ? Item.WorkPhone : ''),
+                                                CellPhone: (Item.CellPhone ? Item.CellPhone : ''),
+                                                HomePhone: (Item.HomePhone ? Item.HomePhone : ''),
+                                                WorkCity: (Item.WorkCity ? Item.WorkCity : ''),
+                                                WorkAddress: (Item.WorkAddress ? Item.WorkAddress : ''),
+                                                WorkZip: (Item.WorkZip ? Item.WorkZip : ''),
+                                                IM: (Item.IM ? Item.IM : ''),
+                                            }).then((e) => {
+                                                console.log("request success", e);
+                                            })
+                                        } catch (error) {
+                                            console.log("Error:", error.message);
+                                        }
+                                    }
+
+                                }
+                                taggedSite(items, "GMBH");
+                            }
+                        })
+                    })
+            }
+            props.callBack()
         }
         if (selectedSite == 'SMALSUS') {
-            let siteArray = props.data[0].Site;
-            let str = siteArray.toString();
-            if (str.search("SMALSUS") >= 0) {
-                alert("This Contact already exists on SMALSUS site")
-            } else {
+            // let str = siteArray.toString();
+            // if (str.search("SMALSUS") >= 0) {
+            //     alert("This Contact already exists on SMALSUS site")
+            // } else {
                 siteArray.push('SMALSUS')
                 let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
                 await web.lists.getById('edc879b9-50d2-4144-8950-5110cacc267a').items.getById(props.data[0].Id).update(
@@ -118,7 +163,6 @@ const addToLocalDBComponent = (props: any) => {
                     }).then((e: any) => {
                         let dataArray = props.data;
                         dataArray?.map((items: any, index: any) => {
-                            console.log("data formate in map ====", dataArray);
                             let staffIdData: any;
                             let staffIdString: any;
                             if (items.isSelect == true) {
@@ -169,10 +213,11 @@ const addToLocalDBComponent = (props: any) => {
                                                 IM: (Item.IM ? Item.IM : ''),
                                                 staffID0: staffIdData,
                                                 StaffID: staffIdString,
-                                                SmartContactId: Item.Id
+                                                SmartContactId: Item.Id,
+                                                ItemType: 'Contact',
+                                                InstitutionId:262
                                             }).then((e) => {
                                                 console.log("request success", e);
-
                                             })
                                         } catch (error) {
                                             console.log("Error:", error.message);
@@ -184,11 +229,10 @@ const addToLocalDBComponent = (props: any) => {
                             }
                         })
                     })
-            }
+            // }
         }
         props.callBack()
     }
-
     const userDetails = () => {
         let userArray = props.data;
         userArray.map((Item: any, index: any) => {
@@ -215,25 +259,29 @@ const addToLocalDBComponent = (props: any) => {
                     <div className="card">
                         <div className="card-header d-flex justify-content-between">
                             <div><h3>Tag Contact</h3></div>
-                            <button className="btn-close" onClick={() => props.callBack()}></button>
+                            <button className="header-btn" onClick={() => props.callBack()}>
+                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/delete.gif" />
+                            </button>
                         </div>
-                        <div className="card-body py-4">
-                            <span onClick={() => setSelectedSite('HR')}>
-                                <input type='radio' className="mx-1" name="HR" />
-                                <label className="mx-2">HR</label>
-                            </span>
-                            <span>
-                                <input type='radio' onChange={() => setSelectedSite('GMBH')} className="mx-1" name="GMBH" />
-                                <label className="mx-">GMBH</label>
-                            </span>
-                            <span>
-                                <input type='radio' onChange={() => setSelectedSite('SMALSUS')} className="mx-1" name="GMBH" />
-                                <label className="mx-">SMALSUS</label>
-                            </span>
+                        <div className="card-body">
+                            <div className="tag-section">
+                                <span onClick={() => setSelectedSite('HR')}>
+                                    <input type='radio' className="mx-1" name="HR" />
+                                    <label className="mx-2">HR</label>
+                                </span>
+                                <span>
+                                    <input type='radio' onChange={() => setSelectedSite('GMBH')} className="mx-1" name="GMBH" />
+                                    <label className="mx-">GMBH</label>
+                                </span>
+                                <span>
+                                    <input type='radio' onChange={() => setSelectedSite('SMALSUS')} className="mx-1" name="GMBH" />
+                                    <label className="mx-">SMALSUS</label>
+                                </span>
+                            </div>
                         </div>
-                        <div className="card-footer justify-content-end">
-                            <button className="btn btn-primary mx-1" onClick={taggedSiteFunction}>Save</button>
-                            <button onClick={() => props.callBack()} className="btn btn-danger mx-1">Cancel</button>
+                        <div className="card-footer d-flex flex-row-reverse">
+                            <button onClick={() => props.callBack()} className="cancel-btn mx-1">Cancel</button>
+                            <button className="save-btn" onClick={taggedSiteFunction}>Save</button>
                         </div>
                     </div>
                 </div>

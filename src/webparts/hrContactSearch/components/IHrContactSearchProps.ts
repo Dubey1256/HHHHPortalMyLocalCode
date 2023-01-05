@@ -1,4 +1,4 @@
-export interface IContactSearchProps {
+export interface IHrContactSearchProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;

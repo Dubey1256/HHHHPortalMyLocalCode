@@ -144,9 +144,7 @@ export default function ContractProfileTable() {
   return (
     <>
       <EditContractPopup
-        props={state}
-        props2={state2}
-        call={ContractDatabaseData}
+        props={state.Id}
       />
       <div className="row d-flex">
           <div className="col">
