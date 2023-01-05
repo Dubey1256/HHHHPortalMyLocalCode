@@ -5,10 +5,17 @@ import '../../webparts/cssFolder/foundationmin.scss';
 import './CommentStyle.scss'
 import '../../webparts/cssFolder/Style.scss'
 import { Modal } from 'office-ui-fabric-react';
+
+import 'setimmediate'; 
 import { Editor } from "react-draft-wysiwyg";
+//import { EditorState, ContentState, convertFromHTML, convertToRaw } from 'draft-js'
+import { EditorState, convertToRaw,Modifier, ContentState, convertFromHTML } from 'draft-js';  
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from 'draftjs-to-html'; 
+
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
+
 
 import { sp } from "@pnp/sp";
 import "@pnp/sp/sputilities";
@@ -19,6 +26,7 @@ export interface ICommentCardProps {
   listName? : string;
   itemID? : number;
   Context?:any;
+  
 }
 
 export interface ICommentCardState {  
@@ -30,6 +38,9 @@ export interface ICommentCardState {
   isModalOpen: boolean;
   AllCommentModal: boolean;
   mentionValue: string;
+  editorState : EditorState;
+  htmlContent : any;
+  updateCommentPost : any;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -52,14 +63,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       updateComment: false,
       isModalOpen: false,
       AllCommentModal: false,
-      mentionValue:''
+      mentionValue:'',
+      /*editorState:EditorState.createWithContent(
+        ContentState.createFromBlockArray(
+          convertFromHTML('').contentBlocks
+        )
+      ),*/
+      editorState:EditorState.createEmpty(),
+      htmlContent : '',
+      updateCommentPost : null
     }
     this.GetResult();    
     console.log(this.props.Context);
     sp.setup({
       spfxContext: this.props.Context
-    }); 
-    
+    });     
   }
 
   private async GetResult() {
@@ -177,9 +195,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.setState({CommenttoPost: e.target.value}); 
    }
 
-  private async PostComment(txtCommentControlId:any){
-    
-
+  private async PostComment(txtCommentControlId:any){   
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
       let temp = {
@@ -199,8 +215,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       }
       else{
         this.state.Result["Comments"] = [temp];
-      }
-      
+      }      
       this.state.Result["Comments"].sort(function(a:any, b:any) {
         let keyA = a.ID,
           keyB = b.ID;
@@ -210,18 +225,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         return 0;
       });
       
-      console.log(this.state.Result);
-      
-      (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
-      
-      let web = new Web(this.props.siteUrl);
-      
+      console.log(this.state.Result);      
+      (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';      
+      let web = new Web(this.props.siteUrl);      
       const i = await web.lists.getByTitle(this.state.listName)
               .items
               .getById(this.state.itemID).update({
                 Comments: JSON.stringify(this.state.Result["Comments"])
-              });
-      
+              });      
       this.setState({ 
           updateComment: true
       },()=>this.GetEmailObjects());      
@@ -230,15 +241,75 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         updateComment: true,
         CommenttoPost: '',
         mentionValue:''
-      });  
-      
-      
-
+      });       
     }else{
       alert('Please input some text.')
-    }  
-    
+    }
   } 
+
+  private async updateComment(){
+    let updateCommentPost = this.state.updateCommentPost;
+    let txtComment = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
+    
+    if (txtComment != ''){
+      let temp = {
+        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '', 
+        AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '', 
+        Created: (new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',',''),
+        Description:txtComment,
+        Header: updateCommentPost.Header,
+        ID: updateCommentPost.ID,
+        Title: txtComment,
+        editable: false
+      };
+      //Add object in feedback
+
+      //delete the value before add new value
+      let elementPosition = 0;
+      for (let index = 0; index < this.state.Result["Comments"].length; index++) {
+        let elementId = this.state.Result["Comments"][index].ID;
+        if (elementId == temp.ID){
+          elementPosition = index;        
+          break;
+        }          
+      }
+      //delete this.state.Result["Comments"][elementPosition];
+      this.state.Result["Comments"].splice(elementPosition, 1);
+      //Add new value in 
+      
+      if (this.state.Result["Comments"] != undefined){
+        this.state.Result["Comments"].push(temp);
+      }
+      else{
+        this.state.Result["Comments"] = [temp];
+      }      
+      this.state.Result["Comments"].sort(function(a:any, b:any) {
+        let keyA = a.ID,
+          keyB = b.ID;
+        // Compare the 2 dates
+        if (keyA < keyB) return 1;
+        if (keyA > keyB) return -1;
+        return 0;
+      });
+      
+      console.log(this.state.Result);      
+           
+      let web = new Web(this.props.siteUrl);      
+      const i = await web.lists.getByTitle(this.state.listName)
+              .items
+              .getById(this.state.itemID).update({
+                Comments: JSON.stringify(this.state.Result["Comments"])
+              });      
+      this.setState({ 
+          updateComment: true,
+          updateCommentPost: null,
+          isModalOpen: false
+      });       
+    }else{
+      alert('Please input some text.')
+    }
+
+  }
 
   private GetMentionValues(){
     let mention_str='';
@@ -258,10 +329,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private GetUserObjectArr(username:any){
     let userDeatails = [];
     let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
-      if (user.AssingedToUser != undefined ){
-        
-        return user.AssingedToUser['Title'] == username.Title || user.AssingedToUser['Title'] == "SPFx Developer1"
-      
+      if (user.AssingedToUser != undefined ){        
+        return user.AssingedToUser['Title'] == username.Title //|| user.AssingedToUser['Title'] == "SPFx Developer1"
+      }
+      else{
+        return user.Title == username.Title
       }
       });
       if (senderObject.length > 0){
@@ -311,9 +383,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
     }     
   }
-  private openEditModal(indexOfDeleteElement:any){
+  private openEditModal(cmdData:any , indexOfDeleteElement:any){
     this.setState({
-      isModalOpen : true
+      isModalOpen : true,
+      editorState : EditorState.createWithContent(
+        ContentState.createFromBlockArray(
+          convertFromHTML('<p>'+cmdData.Description+'</p>').contentBlocks
+        )
+      ),
+      updateCommentPost : cmdData
     })
   }
 
@@ -334,7 +412,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private CloseModal(e:any) {
     e.preventDefault();
     this.setState({ 
-      isModalOpen:false
+      isModalOpen:false,
+      /*editorState : EditorState.createWithContent(
+        ContentState.createFromBlockArray(
+          convertFromHTML('').contentBlocks
+        )
+      )*/
+      editorState: EditorState.createEmpty()
     });
   }
 
@@ -414,7 +498,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       });
   }
 
+  private onEditorStateChange = (editorState:EditorState):void => { 
+    console.log('set as HTML:', draftToHtml(convertToRaw(editorState.getCurrentContent()))); 
+    this.setState({  
+      editorState,  
+    });  
+  }
+
   public render(): React.ReactElement<ICommentCardProps> {
+    const { editorState } = this.state;
     return (
       <div>
          <div className='mb-3 card commentsection'>
@@ -474,7 +566,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       <div className="col-sm-12 pad0 d-flex">
                         <span className="comment-date pt-2 ng-binding">{cmtData.Created}</span>
                           <div className="ml-auto media-icons pt-2">
-                            <a className="mr-5" onClick={()=>this.openEditModal(i)}>
+                            <a className="mr-5" onClick={()=>this.openEditModal(cmtData,i)}>
                               <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
                             </a>
                             <a title="Delete" onClick={()=>this.clearComment(i)}>
@@ -485,7 +577,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       <div className="col-sm-12 pad0 d-flex">
                         { cmtData.Header !='' && <h6 className="userid pt-2"><a className="ng-binding">{cmtData.Header}</a></h6>}
                       </div>
-                      <p className="media-text ng-binding">{cmtData.Description}</p>
+                      <p className="media-text ng-binding"><span dangerouslySetInnerHTML={{ __html: cmtData.Description}}></span></p>
                     </div>
                   </li>
                 })}
@@ -514,6 +606,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   </div>
                   <div className='modal-body'>
                   <Editor
+                      editorState={editorState}
+                      onEditorStateChange={this.onEditorStateChange}                     
                       toolbarClassName="toolbarClassName"
                       wrapperClassName="wrapperClassName"
                       editorClassName="editorClassName"
@@ -521,7 +615,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   />
                   </div>
                   <div className="modal-footer">
-                    <button type="button" className="btn btn-primary" >Save</button>
+                    <button type="button" className="btn btn-primary" onClick={(e) =>this.updateComment() } >Save</button>
                     <button type="button" className="btn btn-default" onClick={(e) =>this.CloseModal(e) }>Cancel</button>
                   </div>
                 </div>
@@ -565,7 +659,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           <div className="col-sm-11 padL-0 PadR0">
                             <div className="" style={{color:'#069'}}>                              
                               <span className="footerUsercolor ng-binding" style={{fontSize: 'smaller'}}>{cmtData.Created}</span>
-                              <a className="hreflink" onClick={()=>this.openEditModal(i)}>
+                              <a className="hreflink" onClick={()=>this.openEditModal(cmtData,i)}>
                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
                               </a>
                               <a className="hreflink" title="Delete" onClick={()=>this.clearComment(i)}>
@@ -576,7 +670,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
                           <div className="col-sm-1"></div>
                           <div className="col-sm-11 padL-0">
-                            <span id="pageContent" className="ng-binding">{cmtData.Description}</span>
+                            <span id="pageContent" className="ng-binding"><span dangerouslySetInnerHTML={{ __html: cmtData.Description}}></span></span>
                           </div>
                         </div>
                       </div>
@@ -587,7 +681,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-primary" >Save</button>
+                  
                   <button type="button" className="btn btn-default" onClick={(e) =>this.closeAllCommentModal(e) }>Cancel</button>
                 </div>
             </div>
