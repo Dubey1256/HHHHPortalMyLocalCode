@@ -70,7 +70,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Title")
+      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title")
       .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component")
       .get()
       
@@ -111,10 +111,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
   
   private async GetTaskUsers(){
-    let web = new Web(this.props.siteUrl);
-    web.currentUser.get().then((r: any) => {  
-      console.log("Cuurent User Name - " + r['Title']);  
-    });  
+    let web = new Web(this.props.siteUrl);     
     let taskUsers = [];    
     taskUsers = await web.lists
     .getByTitle('Task Users')
@@ -319,6 +316,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               </h2>
         </section>
 <section>
+  <div className='row'>
   <div className="col-md-9 bg-white">
   <div className="team_member row  py-2">
             <div className='col-md-4 p-0'>
@@ -422,7 +420,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 <dd className='bg-light full-width'>
                 {this.state.Result["Component"] != null && this.state.Result["Component"].length>0 && this.state.Result["Component"].map( (componentdt:any,i:any)=> {
                     return (
-                                <a className="hreflink ng-binding" target="_blank" href="">{componentdt.Title}</a>
+                                <a className="hreflink ng-binding" target="_blank" href={("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId="+ componentdt.Id)}>{componentdt.Title}</a>
                                    
                                 )})} 
 
@@ -472,7 +470,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           </div>
           <section>
           <div className="row">
-                <div className="Taskaddcomment ps-0">
+                <div className="Taskaddcomment ps-0 row">
                 {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
                   <div className="col-sm-4 bg-white col-sm-4 pt-3 ps-0">
                   {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].map( (imgData:any,i:any)=> {
@@ -541,7 +539,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   <div className="col-md-3">
   <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
   </div>
-  
+  </div>
 </section>
 
       <div style={{display : this.state.showPopup}}>
