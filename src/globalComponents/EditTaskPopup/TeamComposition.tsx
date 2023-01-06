@@ -15,6 +15,8 @@ import TimeEntryPopup from './TimeEntryComponent';
 const BaseUrl = "SP"
 
 const TeamComposition = (props: any) => {
+
+    
     const dragItem: any = React.useRef();
     const dragOverItem = React.useRef();
     const [Task, setTask] = React.useState([])
@@ -233,22 +235,17 @@ const changeTimesDec=(items:any)=>{
                             getChildsWithoutRoleBased(item, data.d.results);
                         taskUsers.push(item);
                     }
-
                 })
                 $.each(institute, function (index: any, item: any) {
 
-                    if (props.props.Items.AssignedTo.results.length > 0) {
-                        ResponsibleTeam = getUsersWithImage(props.props.Items.AssignedTo.results
+                    if (props.Items.AssignedTo?.results.length > 0) {
+                        ResponsibleTeam = getUsersWithImage(props.Items.AssignedTo.results
                         );
-
-
                     }
-                    if (props.props.Items != undefined) {
+                    if (props.Items != undefined) {
                         showComposition();
                     }
-
                 })
-
                 // setTeamMemberUser(TeamMemberUser)
                 // $.each(institute, function (index:any,item:any) {
 
@@ -258,12 +255,7 @@ const changeTimesDec=(items:any)=>{
                 //     if (props.props.Items != undefined) {
                 //         showComposition();
                 //     }
-
                 // })
-
-
-
-
                 setTask(taskUsers)
 
             },

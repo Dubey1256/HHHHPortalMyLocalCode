@@ -2646,7 +2646,7 @@ function ComponentTable() {
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                         <td style={{ width: "3%" }}><td>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td></td>
                                                                                                                                                         <td style={{ width: "3%" }}></td>
-                                                                                                                                                    </tr>
+                                                s                                                                                                    </tr>
                                                                                                                                                 </table>
                                                                                                                                             </td>
                                                                                                                                         </tr>
@@ -2686,7 +2686,7 @@ function ComponentTable() {
                                 </div>
                             </div>
                         </div></section>
-                </div></section>{IsTask && <EditTaskPopup props={SharewebTask} Call={Call}></EditTaskPopup>}
+                </div></section>{IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
         </div >
