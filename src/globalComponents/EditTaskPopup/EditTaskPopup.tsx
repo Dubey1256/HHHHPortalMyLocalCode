@@ -28,9 +28,8 @@ var FolderID: any = '';
 var CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
 
 var IsShowFullViewImage = false;
-
 const EditTaskPopup = (Items: any) => {
-    console.log("fgvbsvjsafdv ====", Items);
+    
     const [CompoenetItem, setComponent] = React.useState([]);
     const [images, setImages] = React.useState([]);
     const [status, setstatus] = React.useState<any>('');
