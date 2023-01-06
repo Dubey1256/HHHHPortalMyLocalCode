@@ -29,7 +29,7 @@ var CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
 
 var IsShowFullViewImage = false;
 const EditTaskPopup = (Items: any) => {
-    
+
     const [CompoenetItem, setComponent] = React.useState([]);
     const [images, setImages] = React.useState([]);
     const [status, setstatus] = React.useState<any>('');
@@ -386,8 +386,8 @@ const EditTaskPopup = (Items: any) => {
     ]
     return (
         <>
-          { console.log("edit data in div ======", EditData)}
-          {/* { console.log("items items data in div ======", )} */}
+            {console.log("edit data in div ======", EditData)}
+            {/* { console.log("items items data in div ======", )} */}
             <Modal
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
@@ -486,10 +486,19 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col ps-0">
 
                                                         <label className="form-label" >Start Date</label>
-                                                        <input type="text" autoComplete="off" id="start
+                                                        {/* <input type="date" autoComplete="off" id="start
                                                                  Datepicker"
-                                                            placeholder="DD/MM/YYYY" className="form-control" onChange={(e) => setSaveData({ ...saveData, Created: e.target.value })} defaultValue={EditData.Created != null ? Moment(EditData.Created).format('DD/MM/YYYY') : ""} />
-
+                                                            className="form-control"
+                                                            onChange={(e) => setSaveData({ ...saveData, Created: e.target.value })}
+                                                            defaultValue={EditData.Created != null ?
+                                                                Moment(EditData.Created).format('YYYY/MM/DD') : ""}
+                                                        /> */}
+                                                        <input type="date" className="input-field"
+                                                            defaultValue={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ''}
+                                                            onChange={(e) => setSaveData({
+                                                                ...saveData, Created: Moment(e.target.value).format("YYYY-MM-DD")
+                                                            })}
+                                                        />
                                                     </div>
                                                     <div className="col">
 
@@ -499,19 +508,24 @@ const EditTaskPopup = (Items: any) => {
                                                                 ng-model="dueDatePopUp"
                                                                 ng-click="OpenDueDatePopup()" />
                                                         </span>
-                                                        <input type="text" autoComplete="off" id="dueDatePicker"
-                                                            placeholder="DD/MM/YYYY" className="form-control"
-                                                            defaultValue={EditData.DueDate != null ? Moment(EditData.DueDate).format('DD/MM/YYYY') : ""} onChange={(e) => setSaveData({ ...saveData, DueDate: e.target.value })} />
-
+                                                        {/* <input type="date" autoComplete="off" id="dueDatePicker"
+                                                            className="form-control"
+                                                            defaultValue={EditData.DueDate != null ? Moment(EditData.DueDate).format('YYYY/MM/DD') : ""}
+                                                            onChange={(e) => setSaveData({ ...saveData, DueDate: e.target.value })}
+                                                        /> */}
+                                                        <input type="date" className="input-field"
+                                                            defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
+                                                            onChange={(e) => setSaveData({
+                                                                ...saveData, DueDate: Moment(e.target.value).format("YYYY-MM-DD")
+                                                            })}
+                                                        />
                                                     </div>
                                                     <div className="col">
-
                                                         <label className="form-label"
                                                         >CompletedDate</label>
                                                         <input type="text" autoComplete="off"
                                                             id="CompletedDatePicker" placeholder="DD/MM/YYYY"
-                                                            className="form-control" />
-
+                                                        />
                                                     </div>
                                                     <div className="col pe-0">
                                                         <label className="form-label"></label>
@@ -525,15 +539,11 @@ const EditTaskPopup = (Items: any) => {
                                                             })}
                                                         </select>
                                                     </div>
-
                                                 </div>
-
                                                 <div className="mx-0 row  mb-10">
                                                     <div className="col ps-0">
-
                                                         <div className="input-group mb-10">
                                                             <label ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
-
                                                                 <span className="form-check form-check-inline mb-0">
                                                                     <input type="radio" id="Components"
                                                                         name="Portfolios" defaultChecked={true}
@@ -552,8 +562,6 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="form-check-input" />
                                                                     <label className="form-check-label mb-0">Services</label>
                                                                 </span>
-
-
                                                             </label>
                                                             <input type="text" ng-model="SearchService"
                                                                 ng-hide="ServicesmartComponent.length>0 || smartComponent.length>0"
@@ -587,13 +595,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         )
                                                                     })}
                                                                 </> :
-
-
                                                                 <>
                                                                     {EditData.Component ? EditData.Component.map((com: any) => {
                                                                         return (
                                                                             <>
-
                                                                                 <div className="block ng-scope">
                                                                                     <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                     <a className="hreflink" ng-click="removeSmartComponent(item.Id)"></a>
@@ -603,19 +608,14 @@ const EditTaskPopup = (Items: any) => {
 
                                                                                         <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                                             onClick={(e) => EditComponent(EditData, 'Componet')} />
-
                                                                                     </span>
-
                                                                                 </div>
                                                                             </>
                                                                         )
                                                                     }) : ''}
                                                                 </>
                                                             }
-
-
                                                         </div>
-
                                                         <div className="input-group mb-10">
                                                             <label className="form-label" ng-hide="item==='TimesheetCategories'"
                                                                 ng-repeat="item in filterGroups">
@@ -625,10 +625,8 @@ const EditTaskPopup = (Items: any) => {
                                                                 id="txtCategories" />
 
                                                             <span className="input-group-text">
-
                                                                 <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                     onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
-
                                                             </span>
                                                         </div>
                                                         <div className="col">
@@ -636,16 +634,13 @@ const EditTaskPopup = (Items: any) => {
                                                                 <div ng-show="item.Title!='Approval'&&item.Title!='Email Notification'"
                                                                     className="form-check">
                                                                     <input className="form-check-input" ng-checked="isMainTermSelected(item)"
-
                                                                         type="checkbox"
                                                                         ng-click="selectRootLevelTerm(item,type)" />
                                                                     <label className="form-check-label">Phone</label>
                                                                 </div>
-
                                                                 <div ng-show="item.Title==='Email Notification'"
                                                                     className="form-check">
                                                                     <input className="form-check-input" ng-checked="isMainTermSelected(item)"
-
                                                                         type="checkbox"
                                                                         ng-click="selectRootLevelTerm(item)" />
                                                                     <label>Email Notification</label>
@@ -654,7 +649,6 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="fa fa-pencil ml-10"
                                                                         aria-hidden="true"></i>
                                                                     </span>
-
                                                                 </div>
                                                                 <div ng-show="item.Title==='Email Notification'"
                                                                     className="form-check">
