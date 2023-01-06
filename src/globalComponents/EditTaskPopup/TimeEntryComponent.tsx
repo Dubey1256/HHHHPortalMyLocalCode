@@ -19,6 +19,7 @@ function TimeEntryPopup(item: any) {
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
     // const [AllMetadata, setMetadata] = React.useState([]);
     const [EditTaskItemitle, setEditItem] = React.useState('');
+    const [render, setRender] = React.useState([]);
     const [collapseItem, setcollapseItem] = React.useState(true);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(false);
@@ -358,16 +359,10 @@ function TimeEntryPopup(item: any) {
         });
 
         setAdditionalTime(AdditionalTimes)
-
-        setTimeSheet(TaskTimeSheetCategoriesGrouping);
-        // setTimeSheet([...TaskTimeSheetCategoriesGrouping])
-        closeTaskStatusUpdatePoup();
-
-
-
-
-
         setModalIsTimeOpenToTrue();
+        closeTaskStatusUpdatePoup();
+        setTimeSheet(TaskTimeSheetCategoriesGrouping);
+     
     }
 
     const setModalIsTimeOpenToTrue = () => {
@@ -813,7 +808,7 @@ const saveTimeSpent = async () => {
 
     await EditData(item.props);
 
-
+    setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
 }
 
@@ -1199,11 +1194,11 @@ return (
                         </div>
                         <div className="modal-body bg-f5f5 clearfix">
 
-
+<div className='row'>
                             <div className="col-sm-9"
                                 style={{ borderRight: "1px solid #dfdfdf" }}>
 
-                                <div className="col-sm-12 p-0 form-group">
+                                <div className="row form-group">
                                     <label>Selected Category</label>
                                     <input type="text" autoComplete="off"
                                         className="form-control"
@@ -1212,14 +1207,14 @@ return (
                                     />
                                 </div>
 
-                                <div className="col-sm-12 p-0 form-group">
+                                <div className="row form-group">
                                     <label>Title</label>
                                     <input type="text" autoComplete="off"
                                         className="form-control" name="TimeTitle"
                                         defaultValue={checkCategories}
                                         onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
                                 </div>
-                                <div className="col-sm-12 p-0 form-group">
+                                <div className="row form-group">
                                     <div className="col-sm-6 ps-0">
                                         <div className="date-div">
                                             <div className="Date-Div-BAR">
@@ -1320,7 +1315,7 @@ return (
 
                                     </div>
 
-                                    <div className="col-sm-12 p-0 form-group">
+                                    <div className="col-sm-12  form-group">
                                         <div className="col-sm-6 ps-0">
                                             <label
                                                 ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
@@ -1420,6 +1415,7 @@ return (
 
                                 </div>
                             </div>
+                            </div>
 
                         </div>
                         <div className="modal-footer">
@@ -1463,7 +1459,7 @@ return (
 
 
 
-                                        <div className="col-sm-12"
+                                        <div className="row"
                                             style={{ borderRight: "1px solid #dfdfdf" }}>
 
                                             <div className="col-sm-12 mt-5 p-0 form-group">
@@ -1478,7 +1474,7 @@ return (
                                                 return (
                                                     <>
 
-                                                        <div className="col-sm-12 p-0 form-group">
+                                                        <div className="row p-0 form-group">
                                                             <div className="col-sm-6 ps-0">
                                                                 <div className="date-div">
                                                                     <div className="Date-Div-BAR">
@@ -1579,7 +1575,7 @@ return (
 
                                                             </div>
 
-                                                            <div className="col-sm-12 p-0 form-group">
+                                                            <div className="row p-0 form-group">
                                                                 <div className="col-sm-6 ps-0">
                                                                     <label
                                                                         ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
@@ -1627,7 +1623,7 @@ return (
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-sm-12 p-0 form-group">
+                                                            <div className="row p-0 form-group">
                                                                 <div className="col-sm-6 ps-0">
                                                                     <label>Time Spent (in hours)</label>
                                                                     <input className="form-control" type="text" defaultValue={child.TaskTime}
@@ -1647,6 +1643,7 @@ return (
 
                                                         </div>
                                                         <div className="modal-footer">
+                                                            <div className='row'>
                                                             <div className="col-sm-6 p-0">
                                                                 <div className="text-left">
                                                                     Created
@@ -1678,6 +1675,7 @@ return (
                                                                     onClick={(e) => UpdateAdditionaltime(child)}>
                                                                     Save
                                                                 </button>
+                                                            </div>
                                                             </div>
                                                         </div>
                                                     </>
@@ -2195,8 +2193,5 @@ return (
     </div>
 )
 }
-function useForceUpdate() {
-    const [value, setValue] = React.useState(0);
-    return () => setValue((value) => value + 1);
-}
+
 export default TimeEntryPopup;
