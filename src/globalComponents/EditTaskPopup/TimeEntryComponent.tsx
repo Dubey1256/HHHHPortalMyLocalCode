@@ -6,10 +6,14 @@ import * as moment from 'moment';
 import { post } from 'jquery';
 import { CurrentUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
 import pnp, { PermissionKind } from "sp-pnp-js";
-var AllTimeSpentDetails: any = []; 
-var CurntUserId=''
-var changeTime=0;
+import Task from '../../webparts/taskUserManagement/components/TaskUser';
+var AllTimeSpentDetails: any = [];
+var CurntUserId = ''
+var changeTime = 0;
 var childs: any = []
+var ParentId: any = ''
+var Category: any = '';
+var NewCategoryId: any = ''
 function TimeEntryPopup(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
@@ -28,8 +32,8 @@ function TimeEntryPopup(item: any) {
     const [count, setCount] = React.useState(1)
     const [month, setMonth] = React.useState(1)
     const [saveEditTaskTime, setsaveEditTaskTime] = React.useState([])
-    const [postData, setPostData] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime:'' })
-    const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '',TaskTime:'' })
+    const [postData, setPostData] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
+    const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
     const [add, setAdd] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
     const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState([])
     const [AllUser, setAllUser] = React.useState([])
@@ -54,10 +58,10 @@ function TimeEntryPopup(item: any) {
     }
     pnp.sp.web.currentUser.get().then(result => {
         CurntUserId = result.Id;
-       console.log(CurntUserId)
-       
-     });
-   
+        console.log(CurntUserId)
+
+    });
+
     const changeDate = (val: any) => {
 
 
@@ -96,8 +100,8 @@ function TimeEntryPopup(item: any) {
 
     const changeTimes = (val: any) => {
         if (val === '15') {
-           // setchangeTime(changeTime + 15)
-          changeTime= changeTime + 15
+            // setchangeTime(changeTime + 15)
+            changeTime = changeTime + 15
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -107,7 +111,7 @@ function TimeEntryPopup(item: any) {
         }
         if (val === '60') {
             //setchangeTime(changeTime + 60)
-            changeTime= changeTime + 60
+            changeTime = changeTime + 60
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -122,7 +126,10 @@ function TimeEntryPopup(item: any) {
     const openCopyTaskpopup = () => {
         setCopyTaskpopup(true)
     }
-    const openAddTasktimepopup = () => {
+
+    const openAddTasktimepopup = (val: any) => {
+        ParentId = val.Id;
+        var CategoryTitle = val.Title;
         setAddTaskTimepopup(true)
     }
     const openTaskStatusUpdatePoup2 = (childitem: any, childinew: any) => {
@@ -139,7 +146,7 @@ function TimeEntryPopup(item: any) {
     const closeTaskStatusUpdatePoup = () => {
         setTaskStatuspopup(false)
         setTimeInHours(0)
-        changeTime=0;
+        changeTime = 0;
         setCount(0)
     }
     const closeCopyTaskpopup = () => {
@@ -147,8 +154,8 @@ function TimeEntryPopup(item: any) {
     }
     const closeAddTaskTimepopup = () => {
         setAddTaskTimepopup(false)
-       setTimeInHours(0)
-        changeTime=0;
+        setTimeInHours(0)
+        changeTime = 0;
         setCount(0)
     }
     const closeTaskStatusUpdatePoup2 = () => {
@@ -157,7 +164,7 @@ function TimeEntryPopup(item: any) {
     const changeTimesDec = (items: any) => {
         if (items === '15') {
             //setchangeTime(changeTime - 15)
-            changeTime= changeTime - 15
+            changeTime = changeTime - 15
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -166,7 +173,7 @@ function TimeEntryPopup(item: any) {
         }
         if (items === '60') {
             //setchangeTime(changeTime - 60)
-            changeTime= changeTime - 60
+            changeTime = changeTime - 60
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -250,36 +257,43 @@ function TimeEntryPopup(item: any) {
 
     const getStructureData = function () {
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
-            if (items.TimesheetTitle.Id === undefined) {
-                items.Expanded = true;
-                items.isAvailableToDelete = false;
-                $.each(AllTimeSpentDetails, function (index: any, val: any) {
-                    if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === items.Id) {
-                        val.isShifted = true;
-                        val.show = true;
-                        $.each(val.AdditionalTime, function (index: any, value: any) {
-                            value.ParentID = val.Id;
-                            value.siteListName = val.__metadata.type;
-                            value.MainParentId = item.Id;
-                            value.AuthorTitle = val.Author.Title;
-                            value.EditorTitle = val.Editor.Title;
-                            value.show = true;
-                           // if (val.Created != undefined)
-                                //  value.TaskTimeCreatedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Created, 'DD/MM/YYYY HH:mm');
-                               // if (val.Modified != undefined)
-                                    // value.TaskTimeModifiedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Modified, 'DD/MM/YYYY HH:mm');
-                                   // 
-                                   if(!isItemExists(items.AdditionalTime,value.ID))
-                                   items.AdditionalTime.push(value);
-                                   
-                        })
-                       // setAdditionalTime(item.AdditionalTime)
-                        
+            // if (items.TimesheetTitle.Id === undefined) {
+            items.Expanded = true;
+            items.isAvailableToDelete = false;
+            $.each(AllTimeSpentDetails, function (index: any, val: any) {
+                if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === items.Id) {
+                    val.isShifted = true;
+                    val.show = true;
+                    $.each(val.AdditionalTime, function (index: any, value: any) {
+                        value.ParentID = val.Id;
+                        value.siteListName = val.__metadata.type;
+                        value.MainParentId = item.Id;
+                        value.AuthorTitle = val.Author.Title;
+                        value.EditorTitle = val.Editor.Title;
+                        value.show = true;
+                        // if (val.Created != undefined)
+                        //  value.TaskTimeCreatedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Created, 'DD/MM/YYYY HH:mm');
+                        // if (val.Modified != undefined)
+                        // value.TaskTimeModifiedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Modified, 'DD/MM/YYYY HH:mm');
+                        // 
+                        if (!isItemExists(items.AdditionalTime, value.ID))
+                            items.AdditionalTime.push(value);
 
-                    }
-                })
-            }
+
+                    })
+                    $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
+                        if (items.Id == NewCategoryId) {
+                            items.Childs.push(val);
+                        }
+                    });
+                    //  setAdditionalTime(item.AdditionalTime)
+
+
+                }
+            })
+            // }
         })
+
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { return type.isShifted === false });
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.AdditionalTime.length === 0) {
@@ -314,32 +328,45 @@ function TimeEntryPopup(item: any) {
                 IsTimeSheetAvailable = true;
             }
         });
+
         var AdditionalTimes: any = []
-        
+
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
-           
+
             if (items.Childs != undefined && items.Childs.length > 0) {
                 $.each(items.Childs, function (index: any, child: any) {
-                    childs.push(child)
-                    if(child.AdditionalTime != undefined && child.AdditionalTime.length>0){
-                    $.each(child.AdditionalTime, function (index: any, Subchild: any) {
-                        if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
+                    if (child.AdditionalTimeEntry != undefined) {
+                        child.AdditionalTime = JSON.parse(child.AdditionalTimeEntry);
+                    }
+                    if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
+                        $.each(child.AdditionalTime, function (index: any, Subchild: any) {
+                            if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
 
-                            AdditionalTimes.push(Subchild)
-                           
-                        }
-                        
-                       
-                    })
-                   
-                  }
-               
+                                AdditionalTimes.push(Subchild)
+
+                            }
+
+
+                        })
+
+                    }
+
                 })
             }
 
+
         });
+
         setAdditionalTime(AdditionalTimes)
+
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
+        // setTimeSheet([...TaskTimeSheetCategoriesGrouping])
+        closeTaskStatusUpdatePoup();
+
+
+
+
+
         setModalIsTimeOpenToTrue();
     }
 
@@ -425,11 +452,14 @@ function TimeEntryPopup(item: any) {
         return Items;
     }
 
-    const EditData = (item: any) => {
+    const EditData = async (item: any) => {
+       
         TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
         TaskTimeSheetCategoriesGrouping = TaskTimeSheetCategoriesGrouping.concat(TaskTimeSheetCategories);
         TaskTimeSheetCategoriesGrouping.push({ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 319, "Title": "Others", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": null, "TaxType": "TimesheetCategories", "Selectable": true, "ParentID": "ParentID", "SmartSuggestions": false, "ID": 319 });
+
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
+
             categoryTitle.Childs = [];
             categoryTitle.Expanded = true;
             categoryTitle.flag = true;
@@ -447,6 +477,7 @@ function TimeEntryPopup(item: any) {
             categoryTitle.TimesheetTitle = [];
 
         });
+
         getStructurefTimesheetCategories();
         setEditItem(item.Title);
         var filteres = "Task" + item.siteType + "/Id eq " + item.Id;
@@ -454,8 +485,8 @@ function TimeEntryPopup(item: any) {
         var count = 0;
         var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
         { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }]
-        $.each(allurls, function (index: any, item: any) {
-            $.ajax({
+        $.each(allurls, async function (index: any, item: any) {
+            await $.ajax({
 
                 url: item.Url,
 
@@ -472,8 +503,8 @@ function TimeEntryPopup(item: any) {
                     if (data.d.results != undefined && data.d.results.length > 0) {
 
                         AllTimeSpentDetails = AllTimeSpentDetails.concat(data.d.results);
+
                     }
-                    // setAllTimeSpentDetails(AllTimeSpentDetails)
                     if (allurls.length === count) {
                         //  var AllTimeSpentDetails = data.d.results;
                         let TotalPercentage = 0
@@ -481,7 +512,12 @@ function TimeEntryPopup(item: any) {
                         let totletimeparentcount = 0;
                         //  let totletimeparentcount = 0;
                         let AllAvailableTitle = [];
-                        $.each(AllTimeSpentDetails, function (index: any, item: any) {
+                        // TaskTimeSheetCategoriesGrouping.map((val:any)=>{
+                        //     (!isItemExists(TaskTimeSheetCategoriesGrouping, val.Id))
+            
+                        // })
+            
+                        $.each(AllTimeSpentDetails, async function (index: any, item: any) {
                             item.IsVisible = false;
                             item.Item_x005F_x0020_Cover = undefined;
                             item.Parent = {};
@@ -495,6 +531,35 @@ function TimeEntryPopup(item: any) {
                             item.listId = null;
                             item.siteName = null
                             item.siteUrl = null;
+                            if (NewParentId == item.Id) {
+                                item.TimesheetTitle.Title = NewParentTitle;
+                                item.TimesheetTitle.Id = NewParentId;
+                                item.AdditionalTime = []
+                                var update: any = {};
+                                update['AuthorName'] = item.Author.Title;
+                                // update['AuthorImage'] = item.AuthorImage;
+                                update['ID'] = 0;
+                                //update['MainParentId'] = item.props.Id;
+                                update['ParentID'] = NewParentId;
+                                update['TaskTime'] = TimeInHours;
+                                update['TaskDate'] = moment(item.Created).format("MMMM Do YYYY");
+                                update['Description'] = newData.Description
+                                item.AdditionalTime.push(update)
+                                let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+            
+                                await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(NewParentId).update({
+            
+            
+                                    AdditionalTimeEntry: JSON.stringify(item.AdditionalTime),
+            
+                                }).then((res: any) => {
+            
+                                    console.log(res);
+            
+            
+                                })
+            
+                            }
                             if (item.TimesheetTitle.Id != undefined) {
                                 if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
                                     try {
@@ -508,13 +573,13 @@ function TimeEntryPopup(item: any) {
                                                 }
                                             });
                                         }
-                                        //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
+            
                                     } catch (e) {
                                         console.log(e)
                                     }
                                 }
                                 setAllUser(AllUsers)
-
+            
                                 $.each(AllUsers, function (index: any, taskUser: any) {
                                     if (taskUser.AssingedToUserId === item.AuthorId) {
                                         item.AuthorName = taskUser.Title;
@@ -529,74 +594,85 @@ function TimeEntryPopup(item: any) {
                             } else {
                                 AllAvailableTitle.push(item);
                             }
-
+            
                             if (item.AdditionalTime === undefined) {
                                 item.AdditionalTime = [];
                             }
                             // item.ServerTaskDate = angular.copy(item.TaskDate);
                             // item.TaskDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.TaskDate, 'DD/MM/YYYY');
                             item.isShifted = false;
-
+            
                         })
+            
+            
                         getStructureData();
+            
                     }
-
-                },
-                error: function (error) {
-                    count++;
-                    if (allurls.length === count)
-                        getStructureData();
+            
                 }
             })
         })
-    }
-    const setModalTimmeIsOpenToFalse = () => {
-        TimeCallBack(false);
-        setTimeModalIsOpen(false)
-    }
-    const openexpendTime = () => {
-        setcollapseItem(true)
-    }
-    const collapseTime = () => {
-        setcollapseItem(false)
-    }
-    let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
-        setSearch(e.target.value.toLowerCase());
-        var Title = titleName;
+        // setAllTimeSpentDetails(AllTimeSpentDetails)
+       
     };
-    const handleTimeOpen = (item: any) => {
+    // error: function (error) {
+    //     count++;
+    //     if (allurls.length === count)
+    //         getStructureData();
+    // }
 
-        item.show = item.show = item.show === true ? false : true;
-        setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
-        // setData(data => ([...data]));
 
-    };
-    const sortBy = () => {
 
-        // const copy = data
 
-        // copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
+const setModalTimmeIsOpenToFalse = () => {
+    TimeCallBack(false);
+    setTimeModalIsOpen(false)
+}
+const openexpendTime = () => {
+    setcollapseItem(true)
+}
+const collapseTime = () => {
+    setcollapseItem(false)
+}
+let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
+    setSearch(e.target.value.toLowerCase());
+    var Title = titleName;
+};
+const handleTimeOpen = (item: any) => {
 
-        // setTable(copy)
+    item.show = item.show = item.show === true ? false : true;
+    setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+    // setData(data => ([...data]));
 
-    }
-    const sortByDng = () => {
+};
+const sortBy = () => {
 
-        // const copy = data
+    // const copy = data
 
-        // copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
+    // copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
 
-        // setTable(copy)
+    // setTable(copy)
 
-    }
-   
-  
-    const deleteTaskTime = async (childinew: any) => {
-        var UpdatedData: any = []
-        confirm("Are you sure, you want to delete this?")
-        $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
-            if (items.Childs.length > 0 && items.Childs != undefined) {
-                $.each(items.Childs, function (index: any, subItem: any) {
+}
+const sortByDng = () => {
+
+    // const copy = data
+
+    // copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
+
+    // setTable(copy)
+
+}
+
+
+const deleteTaskTime = async (childinew: any) => {
+    var UpdatedData: any = []
+    confirm("Are you sure, you want to delete this?")
+    $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
+
+        if (items.Childs.length > 0 && items.Childs != undefined) {
+            $.each(items.Childs, function (index: any, subItem: any) {
+                if (childinew.ParentID == subItem.Id) {
                     if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
                         $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
                             if (NewsubItem != undefined) {
@@ -606,192 +682,163 @@ function TimeEntryPopup(item: any) {
                         })
                         UpdatedData = subItem.AdditionalTime
                     }
-                })
-            }
-        })
-        setAdditionalTime({...AdditionalTime})
-      //  setTimeSheet(AllTimeSheetDataNew)
-
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-
-        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(AdditionalTime[0].ParentID).update({
-
-
-            AdditionalTimeEntry: JSON.stringify(UpdatedData),
-
-        }).then((res: any) => {
-
-            console.log(res);
-            
-        
-        })
-
-    }
-
-    const UpdateAdditionaltime = async (child: any) => {
-        var UpdatedData: any = []
-        $.each(saveEditTaskTime, function (index: any, update: any) {
-            $.each(update.AdditionalTime, function (index: any, updateitem: any) {
-                if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
-                    //updateitem.AuthorId = _spPageContextInfo.userId;
-                    updateitem.Id = child.ID;
-                    updateitem.TaskTime = postData.TaskTime != undefined?postData.TaskTime:child.TaskTime;
-                    updateitem.TaskDate = postData.TaskDate != undefined?postData.TaskDate:child.TaskDate;
-                    updateitem.Description = postData.Description != undefined?postData.Description:child.Description;
-                    // if  ((update.AdditionalTime.sitebasedcomposition != undefined && update.AdditionalTime.sitebasedcomposition.length > 0) {
-                    //     $.each((update.AdditionalTime.sitebasedcomposition, function (val:any) {
-                    //         val.releventTime = ( $scope.AdditionalTimeSpentInHours / 100) * val.ClienTimeDescription;
-                    //     });
-                    // }
-
                 }
-                UpdatedData.push(updateitem)
             })
-        });
+        }
+    })
+    setAdditionalTime({ ...AdditionalTime })
+    //  setTimeSheet(AllTimeSheetDataNew)
 
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
-        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(child.ParentID).update({
+    await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(AdditionalTime[0].ParentID).update({
 
 
-            // TaskDate:postData.TaskDate,
-            AdditionalTimeEntry: JSON.stringify(UpdatedData),
+        AdditionalTimeEntry: JSON.stringify(UpdatedData),
 
-        }).then((res: any) => {
+    }).then((res: any) => {
 
-            console.log(res);
-            closeTaskStatusUpdatePoup();
+        console.log(res);
 
+
+    })
+
+}
+
+const UpdateAdditionaltime = async (child: any) => {
+    var UpdatedData: any = []
+    $.each(saveEditTaskTime, function (index: any, update: any) {
+        $.each(update.AdditionalTime, function (index: any, updateitem: any) {
+            if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
+                //updateitem.AuthorId = _spPageContextInfo.userId;
+                updateitem.Id = child.ID;
+                updateitem.TaskTime = postData.TaskTime != undefined ? postData.TaskTime : child.TaskTime;
+                updateitem.TaskDate = postData.TaskDate != undefined ? postData.TaskDate : child.TaskDate;
+                updateitem.Description = postData.Description != undefined ? postData.Description : child.Description;
+                // if  ((update.AdditionalTime.sitebasedcomposition != undefined && update.AdditionalTime.sitebasedcomposition.length > 0) {
+                //     $.each((update.AdditionalTime.sitebasedcomposition, function (val:any) {
+                //         val.releventTime = ( $scope.AdditionalTimeSpentInHours / 100) * val.ClienTimeDescription;
+                //     });
+                // }
+
+            }
+            UpdatedData.push(updateitem)
         })
+    });
 
+    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+
+    await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(child.ParentID).update({
+
+
+        // TaskDate:postData.TaskDate,
+        AdditionalTimeEntry: JSON.stringify(UpdatedData),
+
+    }).then((res: any) => {
+
+        console.log(res);
+        closeTaskStatusUpdatePoup();
+
+    })
+
+}
+var NewParentId: any = ''
+var NewParentTitle: any = ''
+const saveTimeSpent = async () => {
+    var UpdatedData: any = {}
+    var smartTermId = "Task" + item.props.siteType + "Id";
+
+
+    var AddedData: any = []
+
+    if (checkCategories == undefined && checkCategories == undefined) {
+        alert("please select category or Title");
+        return false;
     }
-    const saveTimeSpent = async () => {
-        var UpdatedData: any = {}
-        var smartTermId = "Task" + item.props.siteType +"Id";
-       
-       
-        var AddedData: any = []
 
-        if (checkCategories == undefined && checkCategories == undefined) {
-            alert("please select category or Title");
-            return false;
-        }
-       
-        $.each(AllUser, function (index: any, taskUser: any) {
-            if (taskUser.AssingedToUserId == CurntUserId) {
-                UpdatedData['AuthorName'] = taskUser.Title;
-                UpdatedData['Company'] = taskUser.Company;
-                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
-            }
-
-        });
-        $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
-         
-         $.each(items.Childs, function (index: any, subItem: any) {
-        var timeSpentDetails: any = {};
-       // timeSpentDetails['ParentID'] = getParentId[0].Id
-        timeSpentDetails['AuthorId'] = CurntUserId
-        timeSpentDetails['MainParentId'] = item.props.Id;
-        timeSpentDetails['TaskDate'] = changeDates;
-        timeSpentDetails['AuthorImage'] = UpdatedData.UserImage != undefined ? UpdatedData.UserImage : '';
-        timeSpentDetails['AuthorName'] = UpdatedData.AuthorName;
-        timeSpentDetails['TaskTime'] = newData.TaskTime;
-        timeSpentDetails['Description'] = newData.Description;
-
-        //timeSpentDetails['showDetailsReport'] = $scope.showDetailsReport;
-        timeSpentDetails['showTimesheetDescription'] = newData.Description;
-        if (AllTimeSpentDetails == '' || AllTimeSpentDetails == undefined) {
-            timeSpentDetails['ID'] = 0;
+    $.each(AllUser, function (index: any, taskUser: any) {
+        if (taskUser.AssingedToUserId == CurntUserId) {
+            UpdatedData['AuthorName'] = taskUser.Title;
+            UpdatedData['Company'] = taskUser.Company;
+            UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
         }
 
-         else {
-            var timeSpentId = AllTimeSpentDetails[AllTimeSpentDetails.length - 1];
-            timeSpentDetails['ID'] = timeSpentId.ID + 1;
-        }
-        subItem.AdditionalTime.push(timeSpentDetails)
-         AddedData = subItem.AdditionalTime
-       // AddedData.push(timeSpentDetails)
-         })
-       
-   })
-         
-        var TimeInHours: any = changeTime / 60;
-        TimeInHours = TimeInHours.toFixed(2);
-        
-        
-     
-        if (AllTimeSpentDetails == undefined) {
-            var AllTimeSpentDetails: any = []
-        }
-        var TimeListName = 'TaskTimeSheetListNew'
-        var Company = 'Smalsus'
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-
-        let ParentId = await web.lists
-            .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
-            .items
-            .filter(`FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar`)
-            .add({
-                Title: checkCategories,
-                [smartTermId]: item.props.Id,
-            })
-        console.log(ParentId)
-
-        let getParentId = await web.lists
-            .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
-            .items
-            .select("ID,Title")
-            .orderBy("ID", false)
-            .top(1)
-            .get();
-        console.log(getParentId);
-        AddedData.map((val:any)=>{
-            val['ParentID']=getParentId[0].Id
-        })
-        var Category = '';
-        TimeSheet.map((items:any)=>{
-            if(items.Title==getParentId[0].Title){
-                Category = items.Id
-            }
-        })
+    });
 
 
-        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter(`FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar`).getById(getParentId[0].Id).update({
-
-            AdditionalTimeEntry: JSON.stringify(AddedData),
-            CategoryId:Category
-
-        }).then((res: any) => {
-
-            console.log(res);
-            //setTimeSheet({...AllTimeSheetDataNew})
-            closeTaskStatusUpdatePoup();
-
-        })
+    var TimeInHours: any = changeTime / 60;
+    TimeInHours = TimeInHours.toFixed(2);
 
 
+
+    if (AllTimeSpentDetails == undefined) {
+        var AllTimeSpentDetails: any = []
     }
-    const AddTaskTime = async () => {
-        var UpdatedData: any = []
-        var TimeInMinute:any = changeTime / 60
-        $.each(AllUser, function (index: any, taskUser: any) {
-            if (taskUser.AssingedToUserId === item.props.EditorId
-            ) {
-                item.AuthorName = taskUser.Title;
-                item.AuthorImage = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
-            }
+    var TimeListName = 'TaskTimeSheetListNew'
+    var Company = 'Smalsus'
+    TimeSheet.map((items: any) => {
+        if (items.Title == checkCategories) {
+            Category = items.Id
+        }
+    })
+    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
 
-        });
+    let ParentId = await web.lists
+        .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
+        .items
+        .filter(`FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar`)
+        .add({
+            Title: checkCategories,
+            [smartTermId]: item.props.Id,
+            CategoryId: Category
+        })
+    console.log(ParentId)
 
-       
-            // timeSpentId['ID'] = timeSpentId.ID + 1;
+    let getParentId = await web.lists
+        .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
+        .items
+        .select("ID,Title,Category/Title,Category/Id")
+        .expand("Category")
+        .orderBy("ID", false)
+        .top(1)
+        .get();
+    console.log(getParentId);
+
+    NewParentId = getParentId[0].Id;
+    NewParentTitle = getParentId[0].Title;
+    NewCategoryId = getParentId[0].Category.Id;
+
+   
+    //await GetSmartMetadata();
+
+    await EditData(item.props);
 
 
-        $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
-            if (items.Childs.length > 0 && items.Childs != undefined) {
-                $.each(items.Childs, function (index: any, subItem: any) {
+
+}
+
+const AddTaskTime = async () => {
+    var UpdatedData: any = []
+    var TimeInMinute: any = changeTime / 60
+    $.each(AllUser, function (index: any, taskUser: any) {
+        if (taskUser.AssingedToUserId === item.props.EditorId
+        ) {
+            item.AuthorName = taskUser.Title;
+            item.AuthorImage = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+        }
+
+    });
+
+
+    // timeSpentId['ID'] = timeSpentId.ID + 1;
+
+
+    $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
+        if (items.Childs.length > 0 && items.Childs != undefined) {
+            $.each(items.Childs, function (index: any, subItem: any) {
+                if (subItem.Id == ParentId) {
                     if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
-                        var timeSpentId = subItem.AdditionalTime[subItem.AdditionalTime.length - 1]; 
+                        var timeSpentId = subItem.AdditionalTime[subItem.AdditionalTime.length - 1];
                         $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
                         })
                         var update: any = {};
@@ -799,1344 +846,1357 @@ function TimeEntryPopup(item: any) {
                         update['AuthorImage'] = item.AuthorImage;
                         update['ID'] = timeSpentId.ID + 1;
                         update['MainParentId'] = item.props.Id;
-                        update['ParentID'] = subItem.AdditionalTime[0].ParentID;
+                        update['ParentID'] = ParentId;
                         update['TaskTime'] = TimeInMinute;
-                        update['TaskDate'] = postData.TaskDate!= undefined?postData.TaskDate:changeDates;
+                        update['TaskDate'] = postData.TaskDate != undefined ? postData.TaskDate : changeDates;
                         update['Description'] = postData.Description
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
                     }
-                    else{
+                    else {
                         var update: any = {};
                         update['AuthorName'] = item.AuthorName;
                         update['AuthorImage'] = item.AuthorImage;
                         update['ID'] = 0;
                         update['MainParentId'] = item.props.Id;
-                        update['ParentID'] = childs[0].ID;
+                        update['ParentID'] = ParentId;
                         update['TaskTime'] = TimeInMinute;
-                        update['TaskDate'] = postData.TaskDate!= undefined?postData.TaskDate:changeDates;
+                        update['TaskDate'] = postData.TaskDate != undefined ? postData.TaskDate : changeDates;
                         update['Description'] = postData.Description
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
 
                     }
-                })
-            }
-        })
+                }
+            })
+        }
+    })
 
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
-        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(childs[0].ID).update({
+    await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(ParentId).update({
 
 
-            // TaskDate:postData.TaskDate,
-            AdditionalTimeEntry: JSON.stringify(UpdatedData),
+        // TaskDate:postData.TaskDate,
+        AdditionalTimeEntry: JSON.stringify(UpdatedData),
 
-        }).then((res: any) => {
+    }).then((res: any) => {
 
-            console.log(res);
-            closeAddTaskTimepopup();
+        console.log(res);
+        closeAddTaskTimepopup();
 
-        })
+    })
 
-    }
+}
 
-    
+const deleteCategory = (val: any) => {
+    $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
+        if (items.Childs.length > 0 && items.Childs != undefined) {
+            $.each(items.Childs, function (index: any, subItem: any) {
+                if (subItem.Id == val.Id) {
+                    items.Childs.splice(index, 1)
 
-    return (
-        <div>
-            <div className="container mt-0 pad0">
-                <div className="col-sm-12 pad0">
-                    <span ng-if="Item!=undefined">
+                }
+            })
+            //({...items.Childs})
+        }
+    })
+}
 
-                    </span>
-                    <div className="col-sm-12 pad0 mt-10" ng-form
-                        role="form">
-                        <div className="col-sm-12 padL-0 pr-5 TimeTabBox">
-                            <a className="hreflink pull-right mt-5 mr-0" onClick={openTaskStatusUpdatePoup}>
+return (
+    <div>
+        <div className="container mt-0 p-0">
+            <div className="col-sm-12 p-0">
+                <span ng-if="Item!=undefined">
 
-                                + Add Time in New Structure
-                            </a>
+                </span>
+                <div className="col-sm-12 p-0 mt-10" ng-form
+                    role="form">
+                    <div className="col-sm-12 ps-0 pr-5 TimeTabBox">
+                        <a className="hreflink pull-right mt-5 mr-0" onClick={openTaskStatusUpdatePoup}>
 
-                        </div>
+                            + Add Time in New Structure
+                        </a>
 
                     </div>
-                </div>
 
+                </div>
             </div>
 
-            {collapseItem && <div className="togglecontent clearfix">
-                <div id="forShowTask" className="pt-0" >
-                    <div className='Alltable'>
-                        <div className="col-sm-12 pad0 smart">
-                            <div className="section-event">
-                                <div className="wrapper">
-                                    <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: "2%" }}>
-                                                    <div></div>
-                                                </th>
-                                                <th style={{ width: "20%" }}>
-                                                    <div style={{ width: "19%" }} className="smart-relative">
-                                                        <input type="search" placeholder="AuthorName" className="full_width searchbox_height" />
+        </div>
 
-                                                        <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                        </span>
+        {collapseItem && <div className="togglecontent clearfix">
+            <div id="forShowTask" className="pt-0" >
+                <div className='Alltable'>
+                    <div className="col-sm-12 p-0 smart">
+                        <div className="section-event">
+                            <div className="wrapper">
+                                <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: "2%" }}>
+                                                <div></div>
+                                            </th>
+                                            <th style={{ width: "20%" }}>
+                                                <div style={{ width: "19%" }} className="smart-relative">
+                                                    <input type="search" placeholder="AuthorName" className="full_width searchbox_height" />
+
+                                                    <span className="sorticon">
+                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                    </span>
 
 
-                                                    </div>
-                                                </th>
-                                                <th style={{ width: "15%" }}>
-                                                    <div style={{ width: "16%" }} className="smart-relative">
-                                                        <input id="searchClientCategory" type="search" placeholder="Date"
-                                                            title="Client Category" className="full_width searchbox_height"
-                                                            onChange={event => handleChange(event, 'Date')} />
-                                                        <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                        </span>
-                                                    </div>
-                                                </th>
-                                                <th style={{ width: "15%" }}>
-                                                    <div style={{ width: "14%" }} className="smart-relative">
-                                                        <input id="searchClientCategory" type="search" placeholder="Time"
-                                                            title="Client Category" className="full_width searchbox_height"
-                                                            onChange={event => handleChange(event, 'Time')} />
-                                                        <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                        </span>
+                                                </div>
+                                            </th>
+                                            <th style={{ width: "15%" }}>
+                                                <div style={{ width: "16%" }} className="smart-relative">
+                                                    <input id="searchClientCategory" type="search" placeholder="Date"
+                                                        title="Client Category" className="full_width searchbox_height"
+                                                        onChange={event => handleChange(event, 'Date')} />
+                                                    <span className="sorticon">
+                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                    </span>
+                                                </div>
+                                            </th>
+                                            <th style={{ width: "15%" }}>
+                                                <div style={{ width: "14%" }} className="smart-relative">
+                                                    <input id="searchClientCategory" type="search" placeholder="Time"
+                                                        title="Client Category" className="full_width searchbox_height"
+                                                        onChange={event => handleChange(event, 'Time')} />
+                                                    <span className="sorticon">
+                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                    </span>
 
-                                                    </div>
-                                                </th>
-                                                <th style={{ width: "48%" }}>
-                                                    <div style={{ width: "43%" }} className="smart-relative">
-                                                        <input id="searchClientCategory" type="search" placeholder="Description"
-                                                            title="Client Category" className="full_width searchbox_height"
-                                                            onChange={event => handleChange(event, 'Description')} />
-                                                        <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                        </span>
+                                                </div>
+                                            </th>
+                                            <th style={{ width: "48%" }}>
+                                                <div style={{ width: "43%" }} className="smart-relative">
+                                                    <input id="searchClientCategory" type="search" placeholder="Description"
+                                                        title="Client Category" className="full_width searchbox_height"
+                                                        onChange={event => handleChange(event, 'Description')} />
+                                                    <span className="sorticon">
+                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                    </span>
 
-                                                    </div>
-                                                </th>
-                                                <th style={{ width: "2%" }}></th>
-                                                <th style={{ width: "2%" }}></th>
-                                                <th style={{ width: "2%" }}></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {AllTimeSheetDataNew != undefined && AllTimeSheetDataNew.length > 0 && AllTimeSheetDataNew.map(function (item, index) {
-                                                if (item.Childs != undefined && item.Childs.length > 0) {
-                                                    return (
-                                                        <>
+                                                </div>
+                                            </th>
+                                            <th style={{ width: "2%" }}></th>
+                                            <th style={{ width: "2%" }}></th>
+                                            <th style={{ width: "2%" }}></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {AllTimeSheetDataNew != undefined && AllTimeSheetDataNew.length > 0 && AllTimeSheetDataNew.map(function (item, index) {
+                                            if (item.Childs != undefined && item.Childs.length > 0) {
+                                                return (
+                                                    <>
 
-                                                            {item.Childs != undefined && item.Childs.length > 0 && (
-                                                                <>
-                                                                    {item.Childs.map(function (childitem: any) {
+                                                        {item.Childs != undefined && item.Childs.length > 0 && (
+                                                            <>
+                                                                {item.Childs.map(function (childitem: any) {
 
-                                                                        return (
+                                                                    return (
 
-                                                                            <>
-                                                                                <tr >
-                                                                                    <td className="pad0" colSpan={9}>
-                                                                                        <table className="table" style={{ width: "100%" }}>
-                                                                                            <tr className="for-c02">
-                                                                                                <td style={{ width: "2%" }}>
+                                                                        <>
+                                                                            <tr >
+                                                                                <td className="p-0" colSpan={9}>
+                                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                                        <tr className="for-c02">
+                                                                                            <td style={{ width: "2%" }}>
 
-                                                                                                    <div className="sign" onClick={() => handleTimeOpen(childitem)}>{childitem.AdditionalTime.length > 0 && childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-                                                                                                    </div>
-                                                                                                </td>
+                                                                                                <div className="sign" onClick={() => handleTimeOpen(childitem)}>{childitem.AdditionalTime.length > 0 && childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                    : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
+                                                                                                </div>
+                                                                                            </td>
 
-                                                                                                <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                    <span>{item.Title} - {childitem.Title}</span>
+                                                                                            <td colSpan={6} style={{ width: "90%" }}>
+                                                                                                <span>{item.Title} - {childitem.Title}</span>
 
-                                                                                                    <span className="ml5">
-                                                                                                        <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif' className="button-icon hreflink" title="Edit">
-                                                                                                        </img>
-                                                                                                    </span>
-                                                                                                    <span className="ml5">
-                                                                                                        <a
-                                                                                                            className="hreflink" title="Delete">
-                                                                                                            <img
-                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete.gif"></img>
-                                                                                                        </a>
-                                                                                                    </span>
-                                                                                                </td>
-                                                                                                <td style={{ width: "8%" }}>
-                                                                                                    <button type="button"
-                                                                                                        className="btn btn-primary pull-right mt-5 mr-0"
+                                                                                                <span className="ml5">
+                                                                                                    <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif' className="button-icon hreflink" title="Edit">
+                                                                                                    </img>
+                                                                                                </span>
+                                                                                                <span className="ml5">
+                                                                                                    <a
+                                                                                                        className="hreflink" title="Delete" onClick={() => deleteCategory(childitem)}>
+                                                                                                        <img
+                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete.gif"></img>
+                                                                                                    </a>
+                                                                                                </span>
+                                                                                            </td>
+                                                                                            <td style={{ width: "8%" }}>
+                                                                                                <button type="button"
+                                                                                                    className="btn btn-primary pull-right mt-5 mr-0"
 
-                                                                                                        onClick={openAddTasktimepopup} >
-                                                                                                        Add Time
-                                                                                                        <img className="button-icon hreflink" style={{ width: "24px" }}
-                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/CreateComponentIcon.png" ></img>
-                                                                                                    </button>
-                                                                                                </td>
+                                                                                                    onClick={() => openAddTasktimepopup(childitem)} >
+                                                                                                    Add Time
+                                                                                                    <img className="button-icon hreflink" style={{ width: "24px" }}
+                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/CreateComponentIcon.png" ></img>
+                                                                                                </button>
+                                                                                            </td>
 
-                                                                                            </tr>
-                                                                                        </table>
-                                                                                    </td>
-                                                                                </tr>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
 
-                                                                                {childitem.AdditionalTime != undefined && childitem.show && childitem.AdditionalTime.length > 0 && (
-                                                                                    <>
-                                                                                        {childitem.AdditionalTime.map(function (childinew: any) {
-                                                                                            return (
-                                                                                                <>
-                                                                                                    <tr >
-                                                                                                        <td className="pad0" colSpan={10}>
-                                                                                                            <table className="table" style={{ width: "100%" }}>
-                                                                                                                <tr className="tdrow">
+                                                                            {childitem.AdditionalTime != undefined && childitem.show && childitem.AdditionalTime.length > 0 && (
+                                                                                <>
+                                                                                    {childitem.AdditionalTime.map(function (childinew: any) {
+                                                                                        return (
+                                                                                            <>
+                                                                                                <tr >
+                                                                                                    <td className="p-0" colSpan={10}>
+                                                                                                        <table className="table" style={{ width: "100%" }}>
+                                                                                                            <tr className="tdrow">
 
-                                                                                                                    <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                        <img className="AssignUserPhoto1 wid29 bdrbox"
-                                                                                                                            title="{subchild.AuthorName}"
-                                                                                                                            data-toggle="popover"
-                                                                                                                            data-trigger="hover"
-                                                                                                                            src={childinew.AuthorImage}></img>
-                                                                                                                        <span className="ml5"> {childinew.AuthorName}</span>
-                                                                                                                    </td>
+                                                                                                                <td colSpan={2} style={{ width: "22%" }}>
+                                                                                                                    <img className="AssignUserPhoto1 wid29 bdrbox"
+                                                                                                                        title="{subchild.AuthorName}"
+                                                                                                                        data-toggle="popover"
+                                                                                                                        data-trigger="hover"
+                                                                                                                        src={childinew.AuthorImage}></img>
+                                                                                                                    <span className="ml5"> {childinew.AuthorName}</span>
+                                                                                                                </td>
 
-                                                                                                                    <td style={{ width: "15%" }}>
+                                                                                                                <td style={{ width: "15%" }}>
 
-                                                                                                                        {childinew.TaskDate}
-                                                                                                                    </td>
-                                                                                                                    <td style={{ width: "15%" }}>
-                                                                                                                        {childinew.TaskTime}
-                                                                                                                    </td>
-                                                                                                                    <td style={{ width: "42%" }}>
-                                                                                                                        {childinew.Description}
-                                                                                                                    </td>
-                                                                                                                    <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png" onClick={openCopyTaskpopup}></img>
-                                                                                                                    </a></td>
+                                                                                                                    {childinew.TaskDate}
+                                                                                                                </td>
+                                                                                                                <td style={{ width: "15%" }}>
+                                                                                                                    {childinew.TaskTime}
+                                                                                                                </td>
+                                                                                                                <td style={{ width: "42%" }}>
+                                                                                                                    {childinew.Description}
+                                                                                                                </td>
+                                                                                                                <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
+                                                                                                                    <img
+                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png" onClick={openCopyTaskpopup}></img>
+                                                                                                                </a></td>
 
-                                                                                                                    <td style={{ width: "2%" }}>  <a className="hreflink"
-                                                                                                                    >
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif" onClick={() => openTaskStatusUpdatePoup2(childitem, childinew)}></img>
-                                                                                                                    </a></td>
-                                                                                                                    <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
-                                                                                                                        <img style={{ width: "19px" }}
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete_m.svg" onClick={() => deleteTaskTime(childinew)}></img>
-                                                                                                                    </a></td>
-                                                                                                                </tr>
-                                                                                                            </table>
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                    {childinew.AdditionalTime != undefined && childinew.AdditionalTime.length > 0 && (
-                                                                                                        <>
-                                                                                                            {childinew.AdditionalTime.map(function (subchilditem: any) {
+                                                                                                                <td style={{ width: "2%" }}>  <a className="hreflink"
+                                                                                                                >
+                                                                                                                    <img
+                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif" onClick={() => openTaskStatusUpdatePoup2(childitem, childinew)}></img>
+                                                                                                                </a></td>
+                                                                                                                <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
+                                                                                                                    <img style={{ width: "19px" }}
+                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete_m.svg" onClick={() => deleteTaskTime(childinew)}></img>
+                                                                                                                </a></td>
+                                                                                                            </tr>
+                                                                                                        </table>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                {childinew.AdditionalTime != undefined && childinew.AdditionalTime.length > 0 && (
+                                                                                                    <>
+                                                                                                        {childinew.AdditionalTime.map(function (subchilditem: any) {
 
-                                                                                                                return (
+                                                                                                            return (
 
-                                                                                                                    <>
-                                                                                                                        <tr >
-                                                                                                                            <td className="pad0" colSpan={9}>
-                                                                                                                                <table className="table" style={{ width: "100%" }}>
-                                                                                                                                    <tr className="for-c02">
+                                                                                                                <>
+                                                                                                                    <tr >
+                                                                                                                        <td className="p-0" colSpan={9}>
+                                                                                                                            <table className="table" style={{ width: "100%" }}>
+                                                                                                                                <tr className="for-c02">
 
-                                                                                                                                        <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                                            <img className="AssignUserPhoto1  bdrbox"
-                                                                                                                                                title="{subchilds.AuthorName}"
-                                                                                                                                                data-toggle="popover"
-                                                                                                                                                data-trigger="hover"
-                                                                                                                                                src={subchilditem.AuthorImage}></img>
-                                                                                                                                            <span
-                                                                                                                                                className="ml5">{subchilditem.AuthorName}</span>
-                                                                                                                                        </td>
+                                                                                                                                    <td colSpan={2} style={{ width: "22%" }}>
+                                                                                                                                        <img className="AssignUserPhoto1  bdrbox"
+                                                                                                                                            title="{subchilds.AuthorName}"
+                                                                                                                                            data-toggle="popover"
+                                                                                                                                            data-trigger="hover"
+                                                                                                                                            src={subchilditem.AuthorImage}></img>
+                                                                                                                                        <span
+                                                                                                                                            className="ml5">{subchilditem.AuthorName}</span>
+                                                                                                                                    </td>
 
-                                                                                                                                        <td style={{ width: "15%" }}>
-                                                                                                                                            {subchilditem.TaskDate}
-                                                                                                                                        </td>
-                                                                                                                                        <td style={{ width: "15%" }}>
-                                                                                                                                            {subchilditem.TaskTime}
-                                                                                                                                        </td>
-                                                                                                                                        <td style={{ width: "42%" }}>
-                                                                                                                                            {subchilditem.Description}</td>
-                                                                                                                                        <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
+                                                                                                                                    <td style={{ width: "15%" }}>
+                                                                                                                                        {subchilditem.TaskDate}
+                                                                                                                                    </td>
+                                                                                                                                    <td style={{ width: "15%" }}>
+                                                                                                                                        {subchilditem.TaskTime}
+                                                                                                                                    </td>
+                                                                                                                                    <td style={{ width: "42%" }}>
+                                                                                                                                        {subchilditem.Description}</td>
+                                                                                                                                    <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
+                                                                                                                                    >
+                                                                                                                                        <img
+                                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"></img>
+                                                                                                                                    </a></td>
+
+
+                                                                                                                                    <td style={{ width: "2%" }}>
+                                                                                                                                        <a className="hreflink"
                                                                                                                                         >
                                                                                                                                             <img
-                                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"></img>
+                                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif"></img>
                                                                                                                                         </a></td>
+                                                                                                                                    <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
+                                                                                                                                    >
+                                                                                                                                        <img style={{ width: "19px" }}
+                                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete_m.svg"></img>
+                                                                                                                                    </a></td>
+                                                                                                                                </tr>
+                                                                                                                            </table>
+                                                                                                                        </td>
+                                                                                                                    </tr>
+                                                                                                                </>
+                                                                                                            )
+                                                                                                        })}
+                                                                                                    </>
+                                                                                                )}
 
 
-                                                                                                                                        <td style={{ width: "2%" }}>
-                                                                                                                                            <a className="hreflink"
-                                                                                                                                            >
-                                                                                                                                                <img
-                                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif"></img>
-                                                                                                                                            </a></td>
-                                                                                                                                        <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
-                                                                                                                                        >
-                                                                                                                                            <img style={{ width: "19px" }}
-                                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete_m.svg"></img>
-                                                                                                                                        </a></td>
-                                                                                                                                    </tr>
-                                                                                                                                </table>
-                                                                                                                            </td>
-                                                                                                                        </tr>
-                                                                                                                    </>
-                                                                                                                )
-                                                                                                            })}
-                                                                                                        </>
-                                                                                                    )}
+                                                                                            </>
+                                                                                        )
+                                                                                    })}</>
+                                                                            )}</>
+                                                                    )
+                                                                })}
+                                                            </>
+                                                        )}
+                                                    </>
 
 
-                                                                                                </>
-                                                                                            )
-                                                                                        })}</>
-                                                                                )}</>
-                                                                        )
-                                                                    })}
-                                                                </>
-                                                            )}
-                                                        </>
-
-
-                                                    )
-                                                }
-                                            })}
-                                        </tbody>
-                                    </table>
-                                    {AllTimeSheetDataNew.length === 0 && <div className="right-col pt-0 MtPb"
-                                    >
-                                        No Timesheet Available
-                                    </div>}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>}
-
-            <Modal
-                isOpen={TaskStatuspopup}
-                onDismiss={closeTaskStatusUpdatePoup}
-                isBlocking={false}
-
-            >
-
-                <div id="EditGrueneContactSearch">
-
-                    <div className="modal-dialog modal-lg">
-                        <div className="modal-content" ng-cloak>
-                            <div className="modal-heade">
-                                <h3 className="modal-title">
-                                    Add Task Time
-                                </h3>
-                                <button type="button" style={{ minWidth: "10px" }} className="close" data-dismiss="modal"
-                                    onClick={closeTaskStatusUpdatePoup}>
-                                    &times;
-                                </button>
-                            </div>
-                            <div className="modal-body bg-f5f5 clearfix">
-
-
-                                <div className="col-sm-9"
-                                    style={{ borderRight: "1px solid #dfdfdf" }}>
-
-                                    <div className="col-sm-12 pad0 form-group">
-                                        <label>Selected Category</label>
-                                        <input type="text" autoComplete="off"
-                                            className="form-control"
-                                            name="CategoriesTitle"
-                                            value={checkCategories}
-                                        />
-                                    </div>
-
-                                    <div className="col-sm-12 pad0 form-group">
-                                        <label>Title</label>
-                                        <input type="text" autoComplete="off"
-                                            className="form-control" name="TimeTitle"
-                                            defaultValue={checkCategories}
-                                            onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
-                                    </div>
-                                    <div className="col-sm-12 pad0 form-group">
-                                        <div className="col-sm-6 padL-0">
-                                            <div className="date-div">
-                                                <div className="Date-Div-BAR">
-                                                    <span className="href"
-
-                                                        id="selectedYear"
-
-                                                        ng-click="changeDatetodayQuickly('firstOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">1st</span>
-                                                    | <span className="href"
-
-                                                        id="selectedYear"
-
-                                                        ng-click="changeDatetodayQuickly('fifteenthOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">15th</span>
-                                                    | <span className="href"
-
-                                                        id="selectedYear"
-
-                                                        ng-click="changeDatetodayQuickly('year','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">
-                                                        1
-                                                        Jan
-                                                    </span>
-                                                    |
-                                                    <span className="href"
-
-                                                        id="selectedToday"
-
-                                                        ng-click="changeDatetodayQuickly('today','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">Today</span>
-                                                </div>
-                                                <label className="full_width">
-                                                    Date
-
-                                                </label>
-                                                <input type="text"
-                                                    autoComplete="off"
-                                                    id="AdditionalNewDatePicker"
-                                                    className="form-control"
-                                                    ng-required="true"
-                                                    placeholder="DD/MM/YYYY"
-                                                    ng-model="AdditionalnewDate"
-                                                    defaultValue={changeDates}
-                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
-
-                                            </div>
-                                        </div>
-
-                                        <div
-                                            className="col-sm-6 pad0 session-control-buttons">
-                                            <div
-                                                className="col-sm-4 padL-0 form-container">
-                                                <button id="DayPlus"
-                                                    className="top-container plus-button plus-minus"
-                                                    onClick={() => changeDate('Date')}>
-                                                    <i className="fa fa-plus"
-                                                        aria-hidden="true">+</i>
-                                                </button>
-                                                <span className="min-input">Day</span>
-                                                <button id="DayMinus"
-                                                    className="top-container minus-button plus-minus"
-                                                    onClick={() => changeDateDec('Date')}>
-                                                    <i className="fa fa-minus"
-                                                        aria-hidden="true">-</i>
-                                                </button>
-                                            </div>
-
-                                            <div
-                                                className="col-sm-4 padL-0 form-container">
-                                                <button id="MonthPlus"
-                                                    className="top-container plus-button plus-minus"
-                                                    onClick={() => changeDate('month')}>
-                                                    <i className="fa fa-plus"
-                                                        aria-hidden="true">+</i>
-                                                </button>
-                                                <span className="min-input">Month</span>
-                                                <button id="MonthMinus"
-                                                    className="top-container minus-button plus-minus"
-                                                    onClick={() => changeDateDec('month')}>
-                                                    <i className="fa fa-minus"
-                                                        aria-hidden="true">-</i>
-                                                </button>
-                                            </div>
-
-                                            <div
-                                                className="col-sm-4 padL-0 form-container">
-                                                <button id="YearPlus"
-                                                    className="top-container plus-button plus-minus"
-                                                    onClick={() => changeDate('Year')}>
-                                                    <i className="fa fa-plus"
-                                                        aria-hidden="true">+</i>
-                                                </button>
-                                                <span className="min-input">Year</span>
-                                                <button id="YearMinus"
-                                                    className="top-container minus-button plus-minus"
-                                                    onClick={() => changeDateDec('year')}>
-                                                    <i className="fa fa-minus"
-                                                        aria-hidden="true">-</i>
-                                                </button>
-                                            </div>
-
-                                        </div>
-
-                                        <div className="col-sm-12 pad0 form-group">
-                                            <div className="col-sm-6 padL-0">
-                                                <label
-                                                    ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
-                                                <input type="text"
-                                                    autoComplete="off"
-                                                    className="form-control"
-                                                    ng-required="true"
-                                                    ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
-                                                    name="timeSpent"
-                                                    ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                    defaultValue={item.Title}
-                                                    onChange={(e) => setNewData({ ...newData, TimeSpentInMinute: e.target.value })} />
-
-                                            </div>
-                                            <div
-                                                className="col-sm-6 pad0 Time-control-buttons">
-                                                <div className="padR-0 Quaterly-Time">
-                                                    <label
-                                                        className="full_width"></label>
-                                                    <button className="btn btn-primary"
-                                                        title="Decrease by 15 Min"
-                                                        onClick={() => changeTimesDec('15')}>-
-
-                                                    </button>
-                                                    <span> 15min </span>
-                                                    <button className="btn btn-primary"
-                                                        title="Increase by 15 Min"
-                                                        onClick={() => changeTimes('15')}>+
-
-                                                    </button>
-                                                </div>
-                                                <div className="padR-0 Full-Time">
-                                                    <label
-                                                        className="full_width"></label>
-                                                    <button className="btn btn-primary"
-                                                        title="Decrease by 60 Min"
-                                                        onClick={() => changeTimesDec('60')}>-
-
-                                                    </button>
-                                                    <span> 60min </span>
-                                                    <button className="btn btn-primary"
-                                                        title="Increase by 60 Min"
-                                                        onClick={() => changeTimes('60')}>+
-
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 pad0 form-group">
-                                            <div className="col-sm-6 padL-0">
-                                                <label>Time Spent (in hours)</label>
-                                                <input className="form-control" type="text" value={TimeInHours}
-                                                                            />
-                                            </div>
-                                        </div>
-
-                                        <div className="col-sm-12 pad0">
-                                            <label>Short Description</label>
-                                            <textarea
-                                                id="AdditionalshortDescription"
-                                                cols={15} rows={4}
-                                                defaultValue={item.Description}
-                                                onChange={(e) => setNewData({ ...newData, Description: e.target.value })}
-                                            ></textarea>
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <div className="col-sm-3 pad0">
-
-                                    <div className="col-sm-12">
-
-                                        <a target="_blank" className="mb-5"
-                                            ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
-                                            Manage
-                                            Categories
-                                        </a>
-                                        {TimeSheet.map((Items: any) => {
-                                            return (
-                                                <>
-                                                    <span className="col-sm-12"
-                                                        id="subcategorytasksPriority{{item.Id}}">
-                                                        <input
-                                                            id="subcategorytasksPriority{{item.Id}}"
-                                                            ng-click="TasksCategories(item)"
-                                                            type="radio" className="mt-0"
-                                                            value={Items.Title}
-                                                            checked={selectCategories === Items.Title}
-                                                            onChange={selectCategories}
-
-                                                            name="taskcategory" />
-                                                        <label>{Items.Title}</label>
-                                                    </span>
-                                                </>
-                                            )
+                                                )
+                                            }
                                         })}
-
-                                    </div>
-                                </div>
-
+                                    </tbody>
+                                </table>
+                                {AllTimeSheetDataNew.length === 0 && <div className="right-col pt-0 MtPb"
+                                >
+                                    No Timesheet Available
+                                </div>}
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={saveTimeSpent}>
-                                    Submit
-                                </button>
-
-                            </div>
-
-
-
-
                         </div>
                     </div>
                 </div>
-            </Modal>
-            <Modal
-                isOpen={TaskStatuspopup2}
-                onDismiss={closeTaskStatusUpdatePoup2}
-                isBlocking={false}
+            </div>
+        </div>}
 
-            >
-                {saveEditTaskTime.map((item: any) => {
-                    return (
-                        <>
+        <Modal
+            isOpen={TaskStatuspopup}
+            onDismiss={closeTaskStatusUpdatePoup}
+            isBlocking={false}
 
-                            <div id="EditGrueneContactSearch">
+        >
 
-                                <div className="modal-dialog">
-                                    <div className="modal-content" ng-cloak>
-                                        <div className="modal-heade">
-                                            <h3 className="modal-title">
-                                                Edit Task Time
-                                            </h3>
-                                            <button type="button" style={{ minWidth: "10px", marginTop: "-21px;", opacity: "1" }} className="close" data-dismiss="modal"
-                                                onClick={closeTaskStatusUpdatePoup2}>
-                                                &times;
-                                            </button>
-                                        </div>
-                                        <div className="modal-body bg-f5f5 clearfix">
+            <div id="EditGrueneContactSearch">
 
+                <div className="modal-dialog modal-lg">
+                    <div className="modal-content" ng-cloak>
+                        <div className="modal-heade">
+                            <h3 className="modal-title">
+                                Add Task Time
+                            </h3>
+                            <button type="button" style={{ minWidth: "10px" }} className="close" data-dismiss="modal"
+                                onClick={closeTaskStatusUpdatePoup}>
+                                &times;
+                            </button>
+                        </div>
+                        <div className="modal-body bg-f5f5 clearfix">
 
 
-                                            <div className="col-sm-12"
-                                                style={{ borderRight: "1px solid #dfdfdf" }}>
+                            <div className="col-sm-9"
+                                style={{ borderRight: "1px solid #dfdfdf" }}>
 
-                                                <div className="col-sm-12 mt-5 pad0 form-group">
-                                                    <label>Title</label>
-                                                    <input type="text" autoComplete="off"
-                                                        className="form-control" name="TimeTitle"
-                                                        defaultValue={item.Title}
-                                                        onChange={(e) => setPostData({ ...postData, Title: e.target.value })} />
-
-                                                </div>
-                                                {saveEditTaskTimeChild.map((child: any, index: any) => {
-                                                    return (
-                                                        <>
-
-                                                            <div className="col-sm-12 pad0 form-group">
-                                                                <div className="col-sm-6 padL-0">
-                                                                    <div className="date-div">
-                                                                        <div className="Date-Div-BAR">
-                                                                            <span className="href"
-
-                                                                                id="selectedYear"
-
-                                                                                ng-click="changeDatetodayQuickly('firstOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">1st</span>
-                                                                            | <span className="href"
-
-                                                                                id="selectedYear"
-
-                                                                                ng-click="changeDatetodayQuickly('fifteenthOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">15th</span>
-                                                                            | <span className="href"
-
-                                                                                id="selectedYear"
-
-                                                                                ng-click="changeDatetodayQuickly('year','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">
-                                                                                1
-                                                                                Jan
-                                                                            </span>
-                                                                            |
-                                                                            <span className="href"
-
-                                                                                id="selectedToday"
-
-                                                                                ng-click="changeDatetodayQuickly('today','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">Today</span>
-                                                                        </div>
-                                                                        <label className="full_width">
-                                                                            Date
-
-                                                                        </label>
-                                                                        <input type="text"
-                                                                            autoComplete="off"
-                                                                            id="AdditionalNewDatePicker"
-                                                                            className="form-control"
-                                                                            ng-required="true"
-                                                                            placeholder="DD/MM/YYYY"
-                                                                            ng-model="AdditionalnewDate"
-                                                                            defaultValue={child.TaskDate}
-                                                                            onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
-
-                                                                    </div>
-                                                                </div>
-
-                                                                <div
-                                                                    className="col-sm-6 pad0 session-control-buttons">
-                                                                    <div
-                                                                        className="col-sm-4 padL-0 form-container">
-                                                                        <button id="DayPlus"
-                                                                            className="top-container plus-button plus-minus"
-                                                                            onClick={() => changeDate('Date')}>
-                                                                            <i className="fa fa-plus"
-                                                                                aria-hidden="true">+</i>
-                                                                        </button>
-                                                                        <span className="min-input">Day</span>
-                                                                        <button id="DayMinus"
-                                                                            className="top-container minus-button plus-minus"
-                                                                            onClick={() => changeDateDec('Date')}>
-                                                                            <i className="fa fa-minus"
-                                                                                aria-hidden="true">-</i>
-                                                                        </button>
-                                                                    </div>
-
-                                                                    <div
-                                                                        className="col-sm-4 padL-0 form-container">
-                                                                        <button id="MonthPlus"
-                                                                            className="top-container plus-button plus-minus"
-                                                                            onClick={() => changeDate('month')}>
-                                                                            <i className="fa fa-plus"
-                                                                                aria-hidden="true">+</i>
-                                                                        </button>
-                                                                        <span className="min-input">Month</span>
-                                                                        <button id="MonthMinus"
-                                                                            className="top-container minus-button plus-minus"
-                                                                            onClick={() => changeDateDec('month')}>
-                                                                            <i className="fa fa-minus"
-                                                                                aria-hidden="true">-</i>
-                                                                        </button>
-                                                                    </div>
-
-                                                                    <div
-                                                                        className="col-sm-4 padL-0 form-container">
-                                                                        <button id="YearPlus"
-                                                                            className="top-container plus-button plus-minus"
-                                                                            onClick={() => changeDate('Year')}>
-                                                                            <i className="fa fa-plus"
-                                                                                aria-hidden="true">+</i>
-                                                                        </button>
-                                                                        <span className="min-input">Year</span>
-                                                                        <button id="YearMinus"
-                                                                            className="top-container minus-button plus-minus"
-                                                                            onClick={() => changeDateDec('year')}>
-                                                                            <i className="fa fa-minus"
-                                                                                aria-hidden="true">-</i>
-                                                                        </button>
-                                                                    </div>
-
-                                                                </div>
-
-                                                                <div className="col-sm-12 pad0 form-group">
-                                                                    <div className="col-sm-6 padL-0">
-                                                                        <label
-                                                                            ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
-                                                                        <input type="text"
-                                                                            autoComplete="off"
-                                                                            className="form-control"
-                                                                            ng-required="true"
-                                                                            ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
-                                                                            name="timeSpent"
-                                                                            ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                                            defaultValue={changeTime} />
-
-                                                                    </div>
-                                                                    <div
-                                                                        className="col-sm-6 pad0 Time-control-buttons">
-                                                                        <div className="padR-0 Quaterly-Time">
-                                                                            <label
-                                                                                className="full_width"></label>
-                                                                            <button className="btn btn-primary"
-                                                                                title="Decrease by 15 Min"
-                                                                                onClick={() => changeTimesDec('15')}>-
-
-                                                                            </button>
-                                                                            <span> 15min </span>
-                                                                            <button className="btn btn-primary"
-                                                                                title="Increase by 15 Min"
-                                                                                onClick={() => changeTimes('15')}>+
-
-                                                                            </button>
-                                                                        </div>
-                                                                        <div className="padR-0 Full-Time">
-                                                                            <label
-                                                                                className="full_width"></label>
-                                                                            <button className="btn btn-primary"
-                                                                                title="Decrease by 60 Min"
-                                                                                onClick={() => changeTimesDec('60')}>-
-
-                                                                            </button>
-                                                                            <span> 60min </span>
-                                                                            <button className="btn btn-primary"
-                                                                                title="Increase by 60 Min"
-                                                                                onClick={() => changeTimes('60')}>+
-
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-12 pad0 form-group">
-                                                                    <div className="col-sm-6 padL-0">
-                                                                        <label>Time Spent (in hours)</label>
-                                                                        <input className="form-control" type="text" defaultValue={child.TaskTime}
-                                                                            onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="col-sm-12 pad0">
-                                                                    <label>Short Description</label>
-                                                                    <textarea
-                                                                        id="AdditionalshortDescription"
-                                                                        cols={15} rows={4} defaultValue={child.Description
-                                                                        }
-                                                                        onChange={(e) => setPostData({ ...postData, Description: e.target.value })}
-                                                                    ></textarea>
-                                                                </div>
-
-                                                            </div>
-                                                            <div className="modal-footer">
-                                                                <div className="col-sm-6 pad0">
-                                                                    <div className="text-left">
-                                                                        Created
-                                                                        <span>{child.TaskTimeCreatedDate}</span>
-                                                                        by <span
-                                                                            className="siteColor">{child.AuthorTitle}</span>
-                                                                    </div>
-                                                                    <div className="text-left">
-                                                                        Last modified
-                                                                        <span>{child.TaskTimeModifiedDate}</span>
-                                                                        by <span
-                                                                            className="siteColor">{child.EditorTitle}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6 padR0">
-                                                                    {/* <a target="_blank"
-                                                                            ng-if="AdditionalTaskTime.siteListName != 'SP.Data.TasksTimesheet2ListItem'"
-                                                                            ng-href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID={{AdditionalTaskTime.ParentID}}">
-                                                                            Open out-of-the-box
-                                                                            form
-                                                                        </a> */}
-                                                                    <a target="_blank"
-                                                                        ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
-                                                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
-                                                                        Open out-of-the-box
-                                                                        form
-                                                                    </a>
-                                                                    <button type="button" className="btn btn-primary"
-                                                                        onClick={(e) => UpdateAdditionaltime(child)}>
-                                                                        Save
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    )
-                                                })}
-                                            </div>
-
-
-
-                                        </div>
-
-
-
-
-
-                                    </div>
+                                <div className="col-sm-12 p-0 form-group">
+                                    <label>Selected Category</label>
+                                    <input type="text" autoComplete="off"
+                                        className="form-control"
+                                        name="CategoriesTitle"
+                                        value={checkCategories}
+                                    />
                                 </div>
-                            </div>
-                        </>
-                    )
-                })}
-            </Modal>
-            <Modal
-                isOpen={CopyTaskpopup}
-                onDismiss={closeCopyTaskpopup}
-                isBlocking={false}
 
-            >
-                {saveEditTaskTime.map((item: any) => {
-                    return (
-                        <>
-
-                            <div id="EditGrueneContactSearch">
-
-                                <div className="modal-dialog">
-                                    <div className="modal-content" ng-cloak>
-                                        <div className="modal-heade">
-                                            <h3 className="modal-title">
-                                                Copy Task Time
-                                            </h3>
-                                            <button type="button" style={{ minWidth: "10px", marginTop: "-21px;", opacity: "1" }} className="close" data-dismiss="modal"
-                                                onClick={closeCopyTaskpopup}>
-                                                &times;
-                                            </button>
-                                        </div>
-                                        <div className="modal-body bg-f5f5 clearfix">
-
-
-
-                                            <div className="col-sm-12"
-                                                style={{ borderRight: "1px solid #dfdfdf" }}>
-
-                                                <div className="col-sm-12 mt-5 pad0 form-group">
-                                                    <label>Title</label>
-                                                    <input type="text" autoComplete="off"
-                                                        className="form-control" name="TimeTitle"
-                                                        defaultValue={item.Title}
-                                                        onChange={(e) => setPostData({ ...postData, Title: e.target.value })} />
-
-                                                </div>
-                                                {saveEditTaskTimeChild.map((child: any, index: any) => {
-                                                    return (
-                                                        <>
-
-                                                            <div className="col-sm-12 pad0 form-group">
-                                                                <div className="col-sm-6 padL-0">
-                                                                    <div className="date-div">
-                                                                        <div className="Date-Div-BAR">
-                                                                            <span className="href"
-
-                                                                                id="selectedYear"
-
-                                                                                ng-click="changeDatetodayQuickly('firstOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">1st</span>
-                                                                            | <span className="href"
-
-                                                                                id="selectedYear"
-
-                                                                                ng-click="changeDatetodayQuickly('fifteenthOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">15th</span>
-                                                                            | <span className="href"
-
-                                                                                id="selectedYear"
-
-                                                                                ng-click="changeDatetodayQuickly('year','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">
-                                                                                1
-                                                                                Jan
-                                                                            </span>
-                                                                            |
-                                                                            <span className="href"
-
-                                                                                id="selectedToday"
-
-                                                                                ng-click="changeDatetodayQuickly('today','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">Today</span>
-                                                                        </div>
-                                                                        <label className="full_width">
-                                                                            Date
-
-                                                                        </label>
-                                                                        <input type="text"
-                                                                            autoComplete="off"
-                                                                            id="AdditionalNewDatePicker"
-                                                                            className="form-control"
-                                                                           
-                                                                            placeholder="DD/MM/YYYY"
-                                                                           
-                                                                            defaultValue={child.TaskDate}
-                                                                            onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
-
-                                                                    </div>
-                                                                </div>
-
-                                                                <div
-                                                                    className="col-sm-6 pad0 session-control-buttons">
-                                                                    <div
-                                                                        className="col-sm-4 padL-0 form-container">
-                                                                        <button id="DayPlus"
-                                                                            className="top-container plus-button plus-minus"
-                                                                            onClick={() => changeDate('Date')}>
-                                                                            <i className="fa fa-plus"
-                                                                                aria-hidden="true">+</i>
-                                                                        </button>
-                                                                        <span className="min-input">Day</span>
-                                                                        <button id="DayMinus"
-                                                                            className="top-container minus-button plus-minus"
-                                                                            onClick={() => changeDateDec('Date')}>
-                                                                            <i className="fa fa-minus"
-                                                                                aria-hidden="true">-</i>
-                                                                        </button>
-                                                                    </div>
-
-                                                                    <div
-                                                                        className="col-sm-4 padL-0 form-container">
-                                                                        <button id="MonthPlus"
-                                                                            className="top-container plus-button plus-minus"
-                                                                            onClick={() => changeDate('month')}>
-                                                                            <i className="fa fa-plus"
-                                                                                aria-hidden="true">+</i>
-                                                                        </button>
-                                                                        <span className="min-input">Month</span>
-                                                                        <button id="MonthMinus"
-                                                                            className="top-container minus-button plus-minus"
-                                                                            onClick={() => changeDateDec('month')}>
-                                                                            <i className="fa fa-minus"
-                                                                                aria-hidden="true">-</i>
-                                                                        </button>
-                                                                    </div>
-
-                                                                    <div
-                                                                        className="col-sm-4 padL-0 form-container">
-                                                                        <button id="YearPlus"
-                                                                            className="top-container plus-button plus-minus"
-                                                                            onClick={() => changeDate('Year')}>
-                                                                            <i className="fa fa-plus"
-                                                                                aria-hidden="true">+</i>
-                                                                        </button>
-                                                                        <span className="min-input">Year</span>
-                                                                        <button id="YearMinus"
-                                                                            className="top-container minus-button plus-minus"
-                                                                            onClick={() => changeDateDec('year')}>
-                                                                            <i className="fa fa-minus"
-                                                                                aria-hidden="true">-</i>
-                                                                        </button>
-                                                                    </div>
-
-                                                                </div>
-
-                                                                <div className="col-sm-12 pad0 form-group">
-                                                                    <div className="col-sm-6 padL-0">
-                                                                        <label
-                                                                            ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
-                                                                        <input type="text"
-                                                                            autoComplete="off"
-                                                                            className="form-control"
-                                                                            defaultValue={changeTime} />
-
-                                                                    </div>
-                                                                    <div
-                                                                        className="col-sm-6 pad0 Time-control-buttons">
-                                                                        <div className="padR-0 Quaterly-Time">
-                                                                            <label
-                                                                                className="full_width"></label>
-                                                                            <button className="btn btn-primary"
-                                                                                title="Decrease by 15 Min"
-                                                                                onClick={() => changeTimesDec('15')}>-
-
-                                                                            </button>
-                                                                            <span> 15min </span>
-                                                                            <button className="btn btn-primary"
-                                                                                title="Increase by 15 Min"
-                                                                                onClick={() => changeTimes('15')}>+
-
-                                                                            </button>
-                                                                        </div>
-                                                                        <div className="padR-0 Full-Time">
-                                                                            <label
-                                                                                className="full_width"></label>
-                                                                            <button className="btn btn-primary"
-                                                                                title="Decrease by 60 Min"
-                                                                                onClick={() => changeTimesDec('60')}>-
-
-                                                                            </button>
-                                                                            <span> 60min </span>
-                                                                            <button className="btn btn-primary"
-                                                                                title="Increase by 60 Min"
-                                                                                onClick={() => changeTimes('60')}>+
-
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-12 pad0 form-group">
-                                                                    <div className="col-sm-6 padL-0">
-                                                                        <label>Time Spent (in hours)</label>
-                                                                        <input className="form-control" type="text" defaultValue={child.TaskTime}
-                                                                            onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="col-sm-12 pad0">
-                                                                    <label>Short Description</label>
-                                                                    <textarea
-                                                                        id="AdditionalshortDescription"
-                                                                        cols={15} rows={4} defaultValue={child.Description
-                                                                        }
-                                                                        onChange={(e) => setPostData({ ...postData, Description: e.target.value })}
-                                                                    ></textarea>
-                                                                </div>
-
-                                                            </div>
-                                                            <div className="modal-footer">
-                                                                <div className="col-sm-6 pad0">
-                                                                    <div className="text-left">
-                                                                        Created
-                                                                        <span>{child.TaskTimeCreatedDate}</span>
-                                                                        by <span
-                                                                            className="siteColor">{child.AuthorTitle}</span>
-                                                                    </div>
-                                                                    <div className="text-left">
-                                                                        Last modified
-                                                                        <span>{child.TaskTimeModifiedDate}</span>
-                                                                        by <span
-                                                                            className="siteColor">{child.EditorTitle}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6 padR0">
-                                                                    {/* <a target="_blank"
-                                                                            ng-if="AdditionalTaskTime.siteListName != 'SP.Data.TasksTimesheet2ListItem'"
-                                                                            ng-href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID={{AdditionalTaskTime.ParentID}}">
-                                                                            Open out-of-the-box
-                                                                            form
-                                                                        </a> */}
-                                                                    <a target="_blank"
-                                                                        ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
-                                                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
-                                                                        Open out-of-the-box
-                                                                        form
-                                                                    </a>
-                                                                    <button type="button" className="btn btn-primary"
-                                                                        onClick={(e) => UpdateAdditionaltime(child)}>
-                                                                        Save
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    )
-                                                })}
-                                            </div>
-
-
-
-                                        </div>
-
-
-
-
-
-                                    </div>
+                                <div className="col-sm-12 p-0 form-group">
+                                    <label>Title</label>
+                                    <input type="text" autoComplete="off"
+                                        className="form-control" name="TimeTitle"
+                                        defaultValue={checkCategories}
+                                        onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
                                 </div>
-                            </div>
-                        </>
-                    )
-                })}
-            </Modal>
-            <Modal
-                isOpen={AddTaskTimepopup}
-                onDismiss={closeAddTaskTimepopup}
-                isBlocking={false}
+                                <div className="col-sm-12 p-0 form-group">
+                                    <div className="col-sm-6 ps-0">
+                                        <div className="date-div">
+                                            <div className="Date-Div-BAR">
+                                                <span className="href"
 
-            >
+                                                    id="selectedYear"
 
+                                                    ng-click="changeDatetodayQuickly('firstOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">1st</span>
+                                                | <span className="href"
 
-                <div id="EditGrueneContactSearch">
+                                                    id="selectedYear"
 
-                    <div className="modal-dialog">
-                        <div className="modal-content" ng-cloak>
-                            <div className="modal-heade">
-                                <h3 className="modal-title">
-                                    Add Additional Time
-                                </h3>
-                                <button type="button" style={{ minWidth: "10px", marginTop: "-21px;", opacity: "1" }} className="close" data-dismiss="modal"
-                                    onClick={closeAddTaskTimepopup}>
-                                    &times;
-                                </button>
-                            </div>
-                            <div className="modal-body bg-f5f5 clearfix">
+                                                    ng-click="changeDatetodayQuickly('fifteenthOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">15th</span>
+                                                | <span className="href"
 
+                                                    id="selectedYear"
 
+                                                    ng-click="changeDatetodayQuickly('year','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">
+                                                    1
+                                                    Jan
+                                                </span>
+                                                |
+                                                <span className="href"
 
-                                <div className="col-sm-12"
-                                    style={{ borderRight: "1px solid #dfdfdf" }}>
+                                                    id="selectedToday"
 
-
-                                    <div className="col-sm-12 pad0 form-group">
-                                        <div className="col-sm-6 padL-0">
-                                            <div className="date-div">
-                                                <div className="Date-Div-BAR">
-                                                    <span className="href"
-
-                                                        id="selectedYear"
-
-                                                        ng-click="changeDatetodayQuickly('firstOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">1st</span>
-                                                    | <span className="href"
-
-                                                        id="selectedYear"
-
-                                                        ng-click="changeDatetodayQuickly('fifteenthOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">15th</span>
-                                                    | <span className="href"
-
-                                                        id="selectedYear"
-
-                                                        ng-click="changeDatetodayQuickly('year','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">
-                                                        1
-                                                        Jan
-                                                    </span>
-                                                    |
-                                                    <span className="href"
-
-                                                        id="selectedToday"
-
-                                                        ng-click="changeDatetodayQuickly('today','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">Today</span>
-                                                </div>
-                                                <label className="full_width">
-                                                    Date
-
-                                                </label>
-                                                <input type="text"
-                                                    autoComplete="off"
-                                                    id="AdditionalNewDatePicker"
-                                                    className="form-control"
-                                                    ng-required="true"
-                                                    placeholder="DD/MM/YYYY"
-                                                    ng-model="AdditionalnewDate"
-                                                    defaultValue={changeDates}
-                                                    onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
-
+                                                    ng-click="changeDatetodayQuickly('today','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">Today</span>
                                             </div>
+                                            <label className="full_width">
+                                                Date
+
+                                            </label>
+                                            <input type="text"
+                                                autoComplete="off"
+                                                id="AdditionalNewDatePicker"
+                                                className="form-control"
+                                                ng-required="true"
+                                                placeholder="DD/MM/YYYY"
+                                                ng-model="AdditionalnewDate"
+                                                defaultValue={changeDates}
+                                                onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
+
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        className="col-sm-6 p-0 session-control-buttons">
+                                        <div
+                                            className="col-sm-4 ps-0 form-container">
+                                            <button id="DayPlus"
+                                                className="top-container plus-button plus-minus"
+                                                onClick={() => changeDate('Date')}>
+                                                <i className="fa fa-plus"
+                                                    aria-hidden="true">+</i>
+                                            </button>
+                                            <span className="min-input">Day</span>
+                                            <button id="DayMinus"
+                                                className="top-container minus-button plus-minus"
+                                                onClick={() => changeDateDec('Date')}>
+                                                <i className="fa fa-minus"
+                                                    aria-hidden="true">-</i>
+                                            </button>
                                         </div>
 
                                         <div
-                                            className="col-sm-6 pad0 session-control-buttons">
-                                            <div
-                                                className="col-sm-4 padL-0 form-container">
-                                                <button id="DayPlus"
-                                                    className="top-container plus-button plus-minus"
-                                                    onClick={() => changeDate('Date')}>
-                                                    <i className="fa fa-plus"
-                                                        aria-hidden="true">+</i>
-                                                </button>
-                                                <span className="min-input">Day</span>
-                                                <button id="DayMinus"
-                                                    className="top-container minus-button plus-minus"
-                                                    onClick={() => changeDateDec('Date')}>
-                                                    <i className="fa fa-minus"
-                                                        aria-hidden="true">-</i>
-                                                </button>
-                                            </div>
-
-                                            <div
-                                                className="col-sm-4 padL-0 form-container">
-                                                <button id="MonthPlus"
-                                                    className="top-container plus-button plus-minus"
-                                                    onClick={() => changeDate('month')}>
-                                                    <i className="fa fa-plus"
-                                                        aria-hidden="true">+</i>
-                                                </button>
-                                                <span className="min-input">Month</span>
-                                                <button id="MonthMinus"
-                                                    className="top-container minus-button plus-minus"
-                                                    onClick={() => changeDateDec('month')}>
-                                                    <i className="fa fa-minus"
-                                                        aria-hidden="true">-</i>
-                                                </button>
-                                            </div>
-
-                                            <div
-                                                className="col-sm-4 padL-0 form-container">
-                                                <button id="YearPlus"
-                                                    className="top-container plus-button plus-minus"
-                                                    onClick={() => changeDate('Year')}>
-                                                    <i className="fa fa-plus"
-                                                        aria-hidden="true">+</i>
-                                                </button>
-                                                <span className="min-input">Year</span>
-                                                <button id="YearMinus"
-                                                    className="top-container minus-button plus-minus"
-                                                    onClick={() => changeDateDec('year')}>
-                                                    <i className="fa fa-minus"
-                                                        aria-hidden="true">-</i>
-                                                </button>
-                                            </div>
-
+                                            className="col-sm-4 ps-0 form-container">
+                                            <button id="MonthPlus"
+                                                className="top-container plus-button plus-minus"
+                                                onClick={() => changeDate('month')}>
+                                                <i className="fa fa-plus"
+                                                    aria-hidden="true">+</i>
+                                            </button>
+                                            <span className="min-input">Month</span>
+                                            <button id="MonthMinus"
+                                                className="top-container minus-button plus-minus"
+                                                onClick={() => changeDateDec('month')}>
+                                                <i className="fa fa-minus"
+                                                    aria-hidden="true">-</i>
+                                            </button>
                                         </div>
 
-                                        <div className="col-sm-12 pad0 form-group">
-                                            <div className="col-sm-6 padL-0">
-                                                <label
-                                                    ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
-                                                <input type="text"
-                                                    autoComplete="off"
-                                                    className="form-control"
-                                                    defaultValue={changeTime}  onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })}/>
-
-                                            </div>
-                                            <div
-                                                className="col-sm-6 pad0 Time-control-buttons">
-                                                <div className="padR-0 Quaterly-Time">
-                                                    <label
-                                                        className="full_width"></label>
-                                                    <button className="btn btn-primary"
-                                                        title="Decrease by 15 Min"
-                                                        onClick={() => changeTimesDec('15')}>-
-
-                                                    </button>
-                                                    <span> 15min </span>
-                                                    <button className="btn btn-primary"
-                                                        title="Increase by 15 Min"
-                                                        onClick={() => changeTimes('15')}>+
-
-                                                    </button>
-                                                </div>
-                                                <div className="padR-0 Full-Time">
-                                                    <label
-                                                        className="full_width"></label>
-                                                    <button className="btn btn-primary"
-                                                        title="Decrease by 60 Min"
-                                                        onClick={() => changeTimesDec('60')}>-
-
-                                                    </button>
-                                                    <span> 60min </span>
-                                                    <button className="btn btn-primary"
-                                                        title="Increase by 60 Min"
-                                                        onClick={() => changeTimes('60')}>+
-
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 pad0 form-group">
-                                            <div className="col-sm-6 padL-0">
-                                                <label>Time Spent (in hours)</label>
-                                                <input className="form-control" type="text" 
-                                                   value={TimeInHours} />
-                                            </div>
-                                        </div>
-
-                                        <div className="col-sm-12 pad0">
-                                            <label>Short Description</label>
-                                            <textarea
-                                                id="AdditionalshortDescription"
-                                                cols={15} rows={4}
-
-                                                onChange={(e) => setPostData({ ...postData, Description: e.target.value })}
-                                            ></textarea>
+                                        <div
+                                            className="col-sm-4 ps-0 form-container">
+                                            <button id="YearPlus"
+                                                className="top-container plus-button plus-minus"
+                                                onClick={() => changeDate('Year')}>
+                                                <i className="fa fa-plus"
+                                                    aria-hidden="true">+</i>
+                                            </button>
+                                            <span className="min-input">Year</span>
+                                            <button id="YearMinus"
+                                                className="top-container minus-button plus-minus"
+                                                onClick={() => changeDateDec('year')}>
+                                                <i className="fa fa-minus"
+                                                    aria-hidden="true">-</i>
+                                            </button>
                                         </div>
 
                                     </div>
-                                    <div className="modal-footer">
-                                        <div className="col-sm-6 pad0">
-                                            <div className="text-left">
-                                                Created
-                                                <span></span>
-                                                by <span
-                                                    className="siteColor"></span>
+
+                                    <div className="col-sm-12 p-0 form-group">
+                                        <div className="col-sm-6 ps-0">
+                                            <label
+                                                ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                                            <input type="text"
+                                                autoComplete="off"
+                                                className="form-control"
+                                                ng-required="true"
+                                                ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                                                name="timeSpent"
+                                                ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
+                                                defaultValue={item.Title}
+                                                onChange={(e) => setNewData({ ...newData, TimeSpentInMinute: e.target.value })} />
+
+                                        </div>
+                                        <div
+                                            className="col-sm-6 p-0 Time-control-buttons">
+                                            <div className="pe-0 Quaterly-Time">
+                                                <label
+                                                    className="full_width"></label>
+                                                <button className="btn btn-primary"
+                                                    title="Decrease by 15 Min"
+                                                    onClick={() => changeTimesDec('15')}>-
+
+                                                </button>
+                                                <span> 15min </span>
+                                                <button className="btn btn-primary"
+                                                    title="Increase by 15 Min"
+                                                    onClick={() => changeTimes('15')}>+
+
+                                                </button>
                                             </div>
-                                            <div className="text-left">
-                                                Last modified
-                                                <span></span>
-                                                by <span
-                                                    className="siteColor"></span>
+                                            <div className="pe-0 Full-Time">
+                                                <label
+                                                    className="full_width"></label>
+                                                <button className="btn btn-primary"
+                                                    title="Decrease by 60 Min"
+                                                    onClick={() => changeTimesDec('60')}>-
+
+                                                </button>
+                                                <span> 60min </span>
+                                                <button className="btn btn-primary"
+                                                    title="Increase by 60 Min"
+                                                    onClick={() => changeTimes('60')}>+
+
+                                                </button>
                                             </div>
                                         </div>
-                                        <div className="col-sm-6 padR0">
-                                         
-                                            <button type="button" className="btn btn-primary"
-                                                onClick={AddTaskTime}>
-                                                Save
-                                            </button>
+                                    </div>
+                                    <div className="col-sm-12 p-0 form-group">
+                                        <div className="col-sm-6 ps-0">
+                                            <label>Time Spent (in hours)</label>
+                                            <input className="form-control" type="text" value={TimeInHours}
+                                            />
                                         </div>
+                                    </div>
+
+                                    <div className="col-sm-12 p-0">
+                                        <label>Short Description</label>
+                                        <textarea
+                                            id="AdditionalshortDescription"
+                                            cols={15} rows={4}
+                                            defaultValue={item.Description}
+                                            onChange={(e) => setNewData({ ...newData, Description: e.target.value })}
+                                        ></textarea>
                                     </div>
 
                                 </div>
+                            </div>
+                            <div className="col-sm-3 p-0">
+
+                                <div className="col-sm-12">
+
+                                    <a target="_blank" className="mb-5"
+                                        ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                        Manage
+                                        Categories
+                                    </a>
+                                    {TimeSheet.map((Items: any) => {
+                                        return (
+                                            <>
+                                                <span className="col-sm-12"
+                                                    id="subcategorytasksPriority{{item.Id}}">
+                                                    <input
+                                                        id="subcategorytasksPriority{{item.Id}}"
+                                                        ng-click="TasksCategories(item)"
+                                                        type="radio" className="mt-0"
+                                                        value={Items.Title}
+                                                        checked={selectCategories === Items.Title}
+                                                        onChange={selectCategories}
+
+                                                        name="taskcategory" />
+                                                    <label>{Items.Title}</label>
+                                                </span>
+                                            </>
+                                        )
+                                    })}
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-primary" onClick={saveTimeSpent}>
+                                Submit
+                            </button>
+
+                        </div>
 
 
+
+
+                    </div>
+                </div>
+            </div>
+        </Modal>
+        <Modal
+            isOpen={TaskStatuspopup2}
+            onDismiss={closeTaskStatusUpdatePoup2}
+            isBlocking={false}
+
+        >
+            {saveEditTaskTime.map((item: any) => {
+                return (
+                    <>
+
+                        <div id="EditGrueneContactSearch">
+
+                            <div className="modal-dialog">
+                                <div className="modal-content" ng-cloak>
+                                    <div className="modal-heade">
+                                        <h3 className="modal-title">
+                                            Edit Task Time
+                                        </h3>
+                                        <button type="button" style={{ minWidth: "10px", marginTop: "-21px;", opacity: "1" }} className="close" data-dismiss="modal"
+                                            onClick={closeTaskStatusUpdatePoup2}>
+                                            &times;
+                                        </button>
+                                    </div>
+                                    <div className="modal-body bg-f5f5 clearfix">
+
+
+
+                                        <div className="col-sm-12"
+                                            style={{ borderRight: "1px solid #dfdfdf" }}>
+
+                                            <div className="col-sm-12 mt-5 p-0 form-group">
+                                                <label>Title</label>
+                                                <input type="text" autoComplete="off"
+                                                    className="form-control" name="TimeTitle"
+                                                    defaultValue={item.Title}
+                                                    onChange={(e) => setPostData({ ...postData, Title: e.target.value })} />
+
+                                            </div>
+                                            {saveEditTaskTimeChild.map((child: any, index: any) => {
+                                                return (
+                                                    <>
+
+                                                        <div className="col-sm-12 p-0 form-group">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <div className="date-div">
+                                                                    <div className="Date-Div-BAR">
+                                                                        <span className="href"
+
+                                                                            id="selectedYear"
+
+                                                                            ng-click="changeDatetodayQuickly('firstOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">1st</span>
+                                                                        | <span className="href"
+
+                                                                            id="selectedYear"
+
+                                                                            ng-click="changeDatetodayQuickly('fifteenthOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">15th</span>
+                                                                        | <span className="href"
+
+                                                                            id="selectedYear"
+
+                                                                            ng-click="changeDatetodayQuickly('year','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">
+                                                                            1
+                                                                            Jan
+                                                                        </span>
+                                                                        |
+                                                                        <span className="href"
+
+                                                                            id="selectedToday"
+
+                                                                            ng-click="changeDatetodayQuickly('today','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">Today</span>
+                                                                    </div>
+                                                                    <label className="full_width">
+                                                                        Date
+
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        autoComplete="off"
+                                                                        id="AdditionalNewDatePicker"
+                                                                        className="form-control"
+                                                                        ng-required="true"
+                                                                        placeholder="DD/MM/YYYY"
+                                                                        ng-model="AdditionalnewDate"
+                                                                        defaultValue={child.TaskDate}
+                                                                        onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
+
+                                                                </div>
+                                                            </div>
+
+                                                            <div
+                                                                className="col-sm-6 p-0 session-control-buttons">
+                                                                <div
+                                                                    className="col-sm-4 ps-0 form-container">
+                                                                    <button id="DayPlus"
+                                                                        className="top-container plus-button plus-minus"
+                                                                        onClick={() => changeDate('Date')}>
+                                                                        <i className="fa fa-plus"
+                                                                            aria-hidden="true">+</i>
+                                                                    </button>
+                                                                    <span className="min-input">Day</span>
+                                                                    <button id="DayMinus"
+                                                                        className="top-container minus-button plus-minus"
+                                                                        onClick={() => changeDateDec('Date')}>
+                                                                        <i className="fa fa-minus"
+                                                                            aria-hidden="true">-</i>
+                                                                    </button>
+                                                                </div>
+
+                                                                <div
+                                                                    className="col-sm-4 ps-0 form-container">
+                                                                    <button id="MonthPlus"
+                                                                        className="top-container plus-button plus-minus"
+                                                                        onClick={() => changeDate('month')}>
+                                                                        <i className="fa fa-plus"
+                                                                            aria-hidden="true">+</i>
+                                                                    </button>
+                                                                    <span className="min-input">Month</span>
+                                                                    <button id="MonthMinus"
+                                                                        className="top-container minus-button plus-minus"
+                                                                        onClick={() => changeDateDec('month')}>
+                                                                        <i className="fa fa-minus"
+                                                                            aria-hidden="true">-</i>
+                                                                    </button>
+                                                                </div>
+
+                                                                <div
+                                                                    className="col-sm-4 ps-0 form-container">
+                                                                    <button id="YearPlus"
+                                                                        className="top-container plus-button plus-minus"
+                                                                        onClick={() => changeDate('Year')}>
+                                                                        <i className="fa fa-plus"
+                                                                            aria-hidden="true">+</i>
+                                                                    </button>
+                                                                    <span className="min-input">Year</span>
+                                                                    <button id="YearMinus"
+                                                                        className="top-container minus-button plus-minus"
+                                                                        onClick={() => changeDateDec('year')}>
+                                                                        <i className="fa fa-minus"
+                                                                            aria-hidden="true">-</i>
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div className="col-sm-12 p-0 form-group">
+                                                                <div className="col-sm-6 ps-0">
+                                                                    <label
+                                                                        ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                                                                    <input type="text"
+                                                                        autoComplete="off"
+                                                                        className="form-control"
+                                                                        ng-required="true"
+                                                                        ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                                                                        name="timeSpent"
+                                                                        ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
+                                                                        defaultValue={changeTime} />
+
+                                                                </div>
+                                                                <div
+                                                                    className="col-sm-6 p-0 Time-control-buttons">
+                                                                    <div className="pe-0 Quaterly-Time">
+                                                                        <label
+                                                                            className="full_width"></label>
+                                                                        <button className="btn btn-primary"
+                                                                            title="Decrease by 15 Min"
+                                                                            onClick={() => changeTimesDec('15')}>-
+
+                                                                        </button>
+                                                                        <span> 15min </span>
+                                                                        <button className="btn btn-primary"
+                                                                            title="Increase by 15 Min"
+                                                                            onClick={() => changeTimes('15')}>+
+
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="pe-0 Full-Time">
+                                                                        <label
+                                                                            className="full_width"></label>
+                                                                        <button className="btn btn-primary"
+                                                                            title="Decrease by 60 Min"
+                                                                            onClick={() => changeTimesDec('60')}>-
+
+                                                                        </button>
+                                                                        <span> 60min </span>
+                                                                        <button className="btn btn-primary"
+                                                                            title="Increase by 60 Min"
+                                                                            onClick={() => changeTimes('60')}>+
+
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-sm-12 p-0 form-group">
+                                                                <div className="col-sm-6 ps-0">
+                                                                    <label>Time Spent (in hours)</label>
+                                                                    <input className="form-control" type="text" defaultValue={child.TaskTime}
+                                                                        onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="col-sm-12 p-0">
+                                                                <label>Short Description</label>
+                                                                <textarea
+                                                                    id="AdditionalshortDescription"
+                                                                    cols={15} rows={4} defaultValue={child.Description
+                                                                    }
+                                                                    onChange={(e) => setPostData({ ...postData, Description: e.target.value })}
+                                                                ></textarea>
+                                                            </div>
+
+                                                        </div>
+                                                        <div className="modal-footer">
+                                                            <div className="col-sm-6 p-0">
+                                                                <div className="text-left">
+                                                                    Created
+                                                                    <span>{child.TaskTimeCreatedDate}</span>
+                                                                    by <span
+                                                                        className="siteColor">{child.AuthorTitle}</span>
+                                                                </div>
+                                                                <div className="text-left">
+                                                                    Last modified
+                                                                    <span>{child.TaskTimeModifiedDate}</span>
+                                                                    by <span
+                                                                        className="siteColor">{child.EditorTitle}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-sm-6 padR0">
+                                                                {/* <a target="_blank"
+                                                                            ng-if="AdditionalTaskTime.siteListName != 'SP.Data.TasksTimesheet2ListItem'"
+                                                                            ng-href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID={{AdditionalTaskTime.ParentID}}">
+                                                                            Open out-of-the-box
+                                                                            form
+                                                                        </a> */}
+                                                                <a target="_blank"
+                                                                    ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
+                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
+                                                                    Open out-of-the-box
+                                                                    form
+                                                                </a>
+                                                                <button type="button" className="btn btn-primary"
+                                                                    onClick={(e) => UpdateAdditionaltime(child)}>
+                                                                    Save
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </>
+                                                )
+                                            })}
+                                        </div>
+
+
+
+                                    </div>
+
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )
+            })}
+        </Modal>
+        <Modal
+            isOpen={CopyTaskpopup}
+            onDismiss={closeCopyTaskpopup}
+            isBlocking={false}
+
+        >
+            {saveEditTaskTime.map((item: any) => {
+                return (
+                    <>
+
+                        <div id="EditGrueneContactSearch">
+
+                            <div className="modal-dialog">
+                                <div className="modal-content" ng-cloak>
+                                    <div className="modal-heade">
+                                        <h3 className="modal-title">
+                                            Copy Task Time
+                                        </h3>
+                                        <button type="button" style={{ minWidth: "10px", marginTop: "-21px;", opacity: "1" }} className="close" data-dismiss="modal"
+                                            onClick={closeCopyTaskpopup}>
+                                            &times;
+                                        </button>
+                                    </div>
+                                    <div className="modal-body bg-f5f5 clearfix">
+
+
+
+                                        <div className="col-sm-12"
+                                            style={{ borderRight: "1px solid #dfdfdf" }}>
+
+                                            <div className="col-sm-12 mt-5 p-0 form-group">
+                                                <label>Title</label>
+                                                <input type="text" autoComplete="off"
+                                                    className="form-control" name="TimeTitle"
+                                                    defaultValue={item.Title}
+                                                    onChange={(e) => setPostData({ ...postData, Title: e.target.value })} />
+
+                                            </div>
+                                            {saveEditTaskTimeChild.map((child: any, index: any) => {
+                                                return (
+                                                    <>
+
+                                                        <div className="col-sm-12 p-0 form-group">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <div className="date-div">
+                                                                    <div className="Date-Div-BAR">
+                                                                        <span className="href"
+
+                                                                            id="selectedYear"
+
+                                                                            ng-click="changeDatetodayQuickly('firstOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">1st</span>
+                                                                        | <span className="href"
+
+                                                                            id="selectedYear"
+
+                                                                            ng-click="changeDatetodayQuickly('fifteenthOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">15th</span>
+                                                                        | <span className="href"
+
+                                                                            id="selectedYear"
+
+                                                                            ng-click="changeDatetodayQuickly('year','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">
+                                                                            1
+                                                                            Jan
+                                                                        </span>
+                                                                        |
+                                                                        <span className="href"
+
+                                                                            id="selectedToday"
+
+                                                                            ng-click="changeDatetodayQuickly('today','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">Today</span>
+                                                                    </div>
+                                                                    <label className="full_width">
+                                                                        Date
+
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        autoComplete="off"
+                                                                        id="AdditionalNewDatePicker"
+                                                                        className="form-control"
+
+                                                                        placeholder="DD/MM/YYYY"
+
+                                                                        defaultValue={child.TaskDate}
+                                                                        onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
+
+                                                                </div>
+                                                            </div>
+
+                                                            <div
+                                                                className="col-sm-6 p-0 session-control-buttons">
+                                                                <div
+                                                                    className="col-sm-4 ps-0 form-container">
+                                                                    <button id="DayPlus"
+                                                                        className="top-container plus-button plus-minus"
+                                                                        onClick={() => changeDate('Date')}>
+                                                                        <i className="fa fa-plus"
+                                                                            aria-hidden="true">+</i>
+                                                                    </button>
+                                                                    <span className="min-input">Day</span>
+                                                                    <button id="DayMinus"
+                                                                        className="top-container minus-button plus-minus"
+                                                                        onClick={() => changeDateDec('Date')}>
+                                                                        <i className="fa fa-minus"
+                                                                            aria-hidden="true">-</i>
+                                                                    </button>
+                                                                </div>
+
+                                                                <div
+                                                                    className="col-sm-4 ps-0 form-container">
+                                                                    <button id="MonthPlus"
+                                                                        className="top-container plus-button plus-minus"
+                                                                        onClick={() => changeDate('month')}>
+                                                                        <i className="fa fa-plus"
+                                                                            aria-hidden="true">+</i>
+                                                                    </button>
+                                                                    <span className="min-input">Month</span>
+                                                                    <button id="MonthMinus"
+                                                                        className="top-container minus-button plus-minus"
+                                                                        onClick={() => changeDateDec('month')}>
+                                                                        <i className="fa fa-minus"
+                                                                            aria-hidden="true">-</i>
+                                                                    </button>
+                                                                </div>
+
+                                                                <div
+                                                                    className="col-sm-4 ps-0 form-container">
+                                                                    <button id="YearPlus"
+                                                                        className="top-container plus-button plus-minus"
+                                                                        onClick={() => changeDate('Year')}>
+                                                                        <i className="fa fa-plus"
+                                                                            aria-hidden="true">+</i>
+                                                                    </button>
+                                                                    <span className="min-input">Year</span>
+                                                                    <button id="YearMinus"
+                                                                        className="top-container minus-button plus-minus"
+                                                                        onClick={() => changeDateDec('year')}>
+                                                                        <i className="fa fa-minus"
+                                                                            aria-hidden="true">-</i>
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div className="col-sm-12 p-0 form-group">
+                                                                <div className="col-sm-6 ps-0">
+                                                                    <label
+                                                                        ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                                                                    <input type="text"
+                                                                        autoComplete="off"
+                                                                        className="form-control"
+                                                                        defaultValue={changeTime} />
+
+                                                                </div>
+                                                                <div
+                                                                    className="col-sm-6 p-0 Time-control-buttons">
+                                                                    <div className="pe-0 Quaterly-Time">
+                                                                        <label
+                                                                            className="full_width"></label>
+                                                                        <button className="btn btn-primary"
+                                                                            title="Decrease by 15 Min"
+                                                                            onClick={() => changeTimesDec('15')}>-
+
+                                                                        </button>
+                                                                        <span> 15min </span>
+                                                                        <button className="btn btn-primary"
+                                                                            title="Increase by 15 Min"
+                                                                            onClick={() => changeTimes('15')}>+
+
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="pe-0 Full-Time">
+                                                                        <label
+                                                                            className="full_width"></label>
+                                                                        <button className="btn btn-primary"
+                                                                            title="Decrease by 60 Min"
+                                                                            onClick={() => changeTimesDec('60')}>-
+
+                                                                        </button>
+                                                                        <span> 60min </span>
+                                                                        <button className="btn btn-primary"
+                                                                            title="Increase by 60 Min"
+                                                                            onClick={() => changeTimes('60')}>+
+
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-sm-12 p-0 form-group">
+                                                                <div className="col-sm-6 ps-0">
+                                                                    <label>Time Spent (in hours)</label>
+                                                                    <input className="form-control" type="text" defaultValue={child.TaskTime}
+                                                                        onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="col-sm-12 p-0">
+                                                                <label>Short Description</label>
+                                                                <textarea
+                                                                    id="AdditionalshortDescription"
+                                                                    cols={15} rows={4} defaultValue={child.Description
+                                                                    }
+                                                                    onChange={(e) => setPostData({ ...postData, Description: e.target.value })}
+                                                                ></textarea>
+                                                            </div>
+
+                                                        </div>
+                                                        <div className="modal-footer">
+                                                            <div className="col-sm-6 p-0">
+                                                                <div className="text-left">
+                                                                    Created
+                                                                    <span>{child.TaskTimeCreatedDate}</span>
+                                                                    by <span
+                                                                        className="siteColor">{child.AuthorTitle}</span>
+                                                                </div>
+                                                                <div className="text-left">
+                                                                    Last modified
+                                                                    <span>{child.TaskTimeModifiedDate}</span>
+                                                                    by <span
+                                                                        className="siteColor">{child.EditorTitle}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-sm-6 padR0">
+                                                                {/* <a target="_blank"
+                                                                            ng-if="AdditionalTaskTime.siteListName != 'SP.Data.TasksTimesheet2ListItem'"
+                                                                            ng-href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID={{AdditionalTaskTime.ParentID}}">
+                                                                            Open out-of-the-box
+                                                                            form
+                                                                        </a> */}
+                                                                <a target="_blank"
+                                                                    ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
+                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${child.ParentID}`}>
+                                                                    Open out-of-the-box
+                                                                    form
+                                                                </a>
+                                                                <button type="button" className="btn btn-primary"
+                                                                    onClick={(e) => UpdateAdditionaltime(child)}>
+                                                                    Save
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </>
+                                                )
+                                            })}
+                                        </div>
+
+
+
+                                    </div>
+
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )
+            })}
+        </Modal>
+        <Modal
+            isOpen={AddTaskTimepopup}
+            onDismiss={closeAddTaskTimepopup}
+            isBlocking={false}
+
+        >
+
+
+            <div id="EditGrueneContactSearch">
+
+                <div className="modal-dialog">
+                    <div className="modal-content" ng-cloak>
+                        <div className="modal-heade">
+                            <h3 className="modal-title">
+                                Add Additional Time
+                            </h3>
+                            <button type="button" style={{ minWidth: "10px", marginTop: "-21px;", opacity: "1" }} className="close" data-dismiss="modal"
+                                onClick={closeAddTaskTimepopup}>
+                                &times;
+                            </button>
+                        </div>
+                        <div className="modal-body bg-f5f5 clearfix">
+
+
+
+                            <div className="col-sm-12"
+                                style={{ borderRight: "1px solid #dfdfdf" }}>
+
+
+                                <div className="col-sm-12 p-0 form-group">
+                                    <div className="col-sm-6 ps-0">
+                                        <div className="date-div">
+                                            <div className="Date-Div-BAR">
+                                                <span className="href"
+
+                                                    id="selectedYear"
+
+                                                    ng-click="changeDatetodayQuickly('firstOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">1st</span>
+                                                | <span className="href"
+
+                                                    id="selectedYear"
+
+                                                    ng-click="changeDatetodayQuickly('fifteenthOfMonth','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">15th</span>
+                                                | <span className="href"
+
+                                                    id="selectedYear"
+
+                                                    ng-click="changeDatetodayQuickly('year','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">
+                                                    1
+                                                    Jan
+                                                </span>
+                                                |
+                                                <span className="href"
+
+                                                    id="selectedToday"
+
+                                                    ng-click="changeDatetodayQuickly('today','AdditionalnewDate','AdditionalNewDatePicker','','NewEntry')">Today</span>
+                                            </div>
+                                            <label className="full_width">
+                                                Date
+
+                                            </label>
+                                            <input type="text"
+                                                autoComplete="off"
+                                                id="AdditionalNewDatePicker"
+                                                className="form-control"
+                                                ng-required="true"
+                                                placeholder="DD/MM/YYYY"
+                                                ng-model="AdditionalnewDate"
+                                                defaultValue={changeDates}
+                                                onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
+
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        className="col-sm-6 p-0 session-control-buttons">
+                                        <div
+                                            className="col-sm-4 ps-0 form-container">
+                                            <button id="DayPlus"
+                                                className="top-container plus-button plus-minus"
+                                                onClick={() => changeDate('Date')}>
+                                                <i className="fa fa-plus"
+                                                    aria-hidden="true">+</i>
+                                            </button>
+                                            <span className="min-input">Day</span>
+                                            <button id="DayMinus"
+                                                className="top-container minus-button plus-minus"
+                                                onClick={() => changeDateDec('Date')}>
+                                                <i className="fa fa-minus"
+                                                    aria-hidden="true">-</i>
+                                            </button>
+                                        </div>
+
+                                        <div
+                                            className="col-sm-4 ps-0 form-container">
+                                            <button id="MonthPlus"
+                                                className="top-container plus-button plus-minus"
+                                                onClick={() => changeDate('month')}>
+                                                <i className="fa fa-plus"
+                                                    aria-hidden="true">+</i>
+                                            </button>
+                                            <span className="min-input">Month</span>
+                                            <button id="MonthMinus"
+                                                className="top-container minus-button plus-minus"
+                                                onClick={() => changeDateDec('month')}>
+                                                <i className="fa fa-minus"
+                                                    aria-hidden="true">-</i>
+                                            </button>
+                                        </div>
+
+                                        <div
+                                            className="col-sm-4 ps-0 form-container">
+                                            <button id="YearPlus"
+                                                className="top-container plus-button plus-minus"
+                                                onClick={() => changeDate('Year')}>
+                                                <i className="fa fa-plus"
+                                                    aria-hidden="true">+</i>
+                                            </button>
+                                            <span className="min-input">Year</span>
+                                            <button id="YearMinus"
+                                                className="top-container minus-button plus-minus"
+                                                onClick={() => changeDateDec('year')}>
+                                                <i className="fa fa-minus"
+                                                    aria-hidden="true">-</i>
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                    <div className="col-sm-12 p-0 form-group">
+                                        <div className="col-sm-6 ps-0">
+                                            <label
+                                                ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                                            <input type="text"
+                                                autoComplete="off"
+                                                className="form-control"
+                                                defaultValue={changeTime} onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
+
+                                        </div>
+                                        <div
+                                            className="col-sm-6 p-0 Time-control-buttons">
+                                            <div className="pe-0 Quaterly-Time">
+                                                <label
+                                                    className="full_width"></label>
+                                                <button className="btn btn-primary"
+                                                    title="Decrease by 15 Min"
+                                                    onClick={() => changeTimesDec('15')}>-
+
+                                                </button>
+                                                <span> 15min </span>
+                                                <button className="btn btn-primary"
+                                                    title="Increase by 15 Min"
+                                                    onClick={() => changeTimes('15')}>+
+
+                                                </button>
+                                            </div>
+                                            <div className="pe-0 Full-Time">
+                                                <label
+                                                    className="full_width"></label>
+                                                <button className="btn btn-primary"
+                                                    title="Decrease by 60 Min"
+                                                    onClick={() => changeTimesDec('60')}>-
+
+                                                </button>
+                                                <span> 60min </span>
+                                                <button className="btn btn-primary"
+                                                    title="Increase by 60 Min"
+                                                    onClick={() => changeTimes('60')}>+
+
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-12 p-0 form-group">
+                                        <div className="col-sm-6 ps-0">
+                                            <label>Time Spent (in hours)</label>
+                                            <input className="form-control" type="text"
+                                                value={TimeInHours} />
+                                        </div>
+                                    </div>
+
+                                    <div className="col-sm-12 p-0">
+                                        <label>Short Description</label>
+                                        <textarea
+                                            id="AdditionalshortDescription"
+                                            cols={15} rows={4}
+
+                                            onChange={(e) => setPostData({ ...postData, Description: e.target.value })}
+                                        ></textarea>
+                                    </div>
+
+                                </div>
+                                <div className="modal-footer">
+                                    <div className="col-sm-6 p-0">
+                                        <div className="text-left">
+                                            Created
+                                            <span></span>
+                                            by <span
+                                                className="siteColor"></span>
+                                        </div>
+                                        <div className="text-left">
+                                            Last modified
+                                            <span></span>
+                                            by <span
+                                                className="siteColor"></span>
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-6 padR0">
+
+                                        <button type="button" className="btn btn-primary"
+                                            onClick={AddTaskTime}>
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
 
                             </div>
 
 
 
-
-
                         </div>
+
+
+
+
+
                     </div>
                 </div>
+            </div>
 
-            </Modal>
-        </div>
-    )
+        </Modal>
+    </div>
+)
 }
 function useForceUpdate() {
     const [value, setValue] = React.useState(0);
     return () => setValue((value) => value + 1);
-  }
+}
 export default TimeEntryPopup;
