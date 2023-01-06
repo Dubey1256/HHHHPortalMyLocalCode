@@ -516,10 +516,11 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col pe-0">
                                                         <label className="form-label"></label>
                                                         <select className="full_width searchbox_height" style={{ marginTop: "24px" }} defaultValue={EditData.Priority_x0020_Rank} onClick={(e) => saveItemrank(e)}>
-                                                            <option>{EditData.Priority_x0020_Rank == undefined ? 'select Item Rank' : EditData.Priority_x0020_Rank}</option>
+                                                            {/* <option>{EditData.Priority_x0020_Rank == undefined ? 'select Item Rank' : EditData.Priority_x0020_Rank}</option> */}
                                                             {currentUsers.map(function (h: any, i: any) {
                                                                 return (
-                                                                    <option key={i} defaultValue={EditData.Priority_x0020_Rank} >{EditData.Priority_x0020_Rank == h.rankTitle ? EditData.Priority_x0020_Rank : h.rankTitle}</option>
+                                                                    // <option key={i} selected={EditData.Priority_x0020_Rank == h.rankTitle} >{EditData.Priority_x0020_Rank == h.rankTitle ? EditData.Priority_x0020_Rank : h.rankTitle}</option>
+                                                                    <option key={i} selected={EditData.Priority_x0020_Rank == h.rankTitle} >{h.rankTitle}</option>
                                                                 )
                                                             })}
                                                         </select>
