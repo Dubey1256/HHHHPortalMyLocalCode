@@ -14,7 +14,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import EditInstituton from '../../EditPopupFiles/EditComponent'
 import { create } from 'lodash';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryPopup';
+// import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryPopup';
+import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
 export default function ComponentTable({ props }: any) {
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -1733,6 +1734,16 @@ export default function ComponentTable({ props }: any) {
 
 const [lgShow, setLgShow] = React.useState(false);
     const handleClose = () => setLgShow(false);
+
+    const [lgNextShow, setLgNextShow] = React.useState(false);
+    const handleCloseNext = () => setLgNextShow(false);
+
+
+
+
+// Add activity popup array
+var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 15, "Title": "MileStone", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": [] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 15 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "etag": "\"4\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 105, "Title": "Development", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" }, "SmartFilters": null, "SortOrder": 3, "TaxType": "Category", "Selectable": true, "ParentID": 0, "SmartSuggestions": null, "ID": 105 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 282, "Title": "Implementation", "siteName": null, "siteUrl": null, "listId": null, "Description1": "This should be tagged if a task is for applying an already developed component/subcomponent/feature.", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "/SiteCollectionImages/ICONS/Shareweb/Implementation.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" }, "SmartFilters": null, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 282 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 11, "Title": "Bug", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 11 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "etag": "\"5\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 96, "Title": "Feedback", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" }, "SmartFilters": null, "SortOrder": 2, "TaxType": null, "Selectable": true, "ParentID": 0, "SmartSuggestions": false, "ID": 96 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "etag": "\"3\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 191, "Title": "Improvement", "siteName": null, "siteUrl": null, "listId": null, "Description1": "Use this task category for any improvements of EXISTING features", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" }, "SmartFilters": null, "SortOrder": 12, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 191 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 12, "Title": "Design", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 165, "SmartSuggestions": null, "ID": 12 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 100, "Title": "Activity", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 100 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists;(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 281, "Title": "Task", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 281 }] as unknown as { siteName: any, siteUrl: any, listId:any,Description1:any,results:any[],SmartSuggestions:any,SmartFilters:any}[];
+
     return (
         <div  className={props.Portfolio_x0020_Type=='Service'?'serviepannelgreena':""}>
 
@@ -1762,16 +1773,59 @@ const [lgShow, setLgShow] = React.useState(false);
 
                 </Modal.Body >
                 <Modal.Footer>
+                <Button variant="primary" onClick={()=>setLgNextShow(true)}>
+            Ok
+          </Button>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Cancel
           </Button>
-          <Button variant="primary" >
-            Save Changes
-          </Button>
+          
         </Modal.Footer>
             </Modal>
     
              {/* End of Add activity task */}
+            
+
+    {/* After Add activity task */}
+
+    <Modal
+                show={lgNextShow}
+                aria-labelledby="example-modal-sizes-title-lg">
+                <Modal.Header>
+                    <Modal.Title>
+                    <h6>Create Task</h6>
+                    </Modal.Title>
+                    <button type="button" className='Close-button' onClick={handleCloseNext}>×</button>
+                </Modal.Header>
+                <Modal.Body className='p-2'>
+                <span className="bold">
+                Clear Selection
+                        </span>
+                        <div>
+                        {SomeMetaData1.map((item:any)=>{
+                             return(
+                            <div>  
+                                {/* <img src={item.Item_x005F_x0020_Cover.Url}/> */}
+                                <p>{item.Title}</p>
+                                </div>
+
+                        )})}
+                        </div>
+
+                </Modal.Body >
+                <Modal.Footer>
+                <Button variant="primary" >
+            Ok
+          </Button>
+          <Button variant="secondary" onClick={handleCloseNext}>
+            Cancel
+          </Button>
+          
+        </Modal.Footer>
+            </Modal>
+
+    {/* After Add activity task End */}
+
             {/* Smart Time Popup */}
             {/* <Modal
                 isOpen={SmartmodalIsOpen}
@@ -2247,7 +2301,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="%"
-                                                                    title="Client Category" className="form-control"
+                                                                    title="Percentage Complete" className="form-control"
                                                                     onChange={(e) => handleChange(e, "ClientCategory")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2278,7 +2332,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "7%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="ItemRank"
-                                                                    title="Client Category" className="form-control"
+                                                                    title="Item Rank" className="form-control"
                                                                     onChange={(e) => handleChange(e, "ClientCategory")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2310,7 +2364,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                         <th style={{ width: "10%" }}>
                                                             <div style={{ width: "10%" }}  className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
-                                                                    title="Client Category" className="form-control"
+                                                                    title="Team" className="form-control"
                                                                     onChange={(e) => handleChange(e, "Team")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2342,7 +2396,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                         <th style={{ width: "9%" }}>
                                                             <div style={{ width: "9%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Due Date"
-                                                                    title="Client Category" className="form-control"
+                                                                    title="Due Date" className="form-control"
                                                                     onChange={(e) => handleChange(e, "Status")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2374,7 +2428,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                         <th style={{ width: "9%" }}>
                                                             <div style={{ width: "9%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
-                                                                    title="Client Category" className="form-control"
+                                                                    title="Created Date" className="form-control"
                                                                     onChange={(e) => handleChange(e, "ItemRank")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2405,7 +2459,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "7%" }}  className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Smart Time"
-                                                                    title="Client Category" className="form-control"
+                                                                    title="Smart Time" className="form-control"
                                                                     onChange={(e) => handleChange(e, "Due")} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2523,7 +2577,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                    &&
                                                                                    item.ClientCategory.map(function (client: any) {
                                                                                        return (
-                                                                                           <span className="ClientCategory-Usericon"
+                                                                                           <span className="AssignUserPhoto"
                                                                                                title={client.Title}>
                                                                                                <a>{client.Title.slice(0, 2).toUpperCase()}</a>
                                                                                            </span>
@@ -2543,7 +2597,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                                 <span
                                                                                                     title={client1.Title}>
                                                                                                     {/* <a>{client1.Title.slice(0, 2).toUpperCase()}</a> */}
-                                                                                                    <img className="ClientCategory-Usericon" src={client1.ItemCover.Url} />
+                                                                                                    <img className="AssignUserPhoto" src={client1.ItemCover.Url} />
                                                                                                 </span>
                                                                                             )
                                                                                         })}
@@ -2557,7 +2611,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                             return (
                                                                                                 <span>
                                                                                                     {Creates.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                                                    <img className='ClientCategory-Usericon' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                 </span>
                                                                                             )
                                                                                         }) : ""}
@@ -2637,7 +2691,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                                                 <div>
                                                                                                                     {childitem.ClientCategory != undefined && childitem.ClientCategory.length > 0 && childitem.ClientCategory.map(function (client: { Title: string; }) {
                                                                                                                         return (
-                                                                                                                            <span className="ClientCategory-Usericon"
+                                                                                                                            <span className="AssignUserPhoto"
                                                                                                                                 title={client.Title}>
                                                                                                                                 <a>{client.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                             </span>
@@ -2647,7 +2701,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                                             <td style={{ width: "20%" }}>
                                                                                                                 <div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                     return (
-                                                                                                                        <div className="ClientCategory-Usericon"
+                                                                                                                        <div className="AssignUserPhoto"
                                                                                                                             title={client1.Title}>
                                                                                                                             <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                         </div>
@@ -2727,7 +2781,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                                                                         {/* <div>
                                                                                                                                             {childinew.ClientCategory != undefined  && childinew.ClientCategory.map(function (client: any) {
                                                                                                                                                 return (
-                                                                                                                                                    <span className="ClientCategory-Usericon"
+                                                                                                                                                    <span className="AssignUserPhoto"
                                                                                                                                                         title={client.Title}>
                                                                                                                                                         <a>{client.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                                                     </span>
@@ -2737,7 +2791,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                                                                     <td style={{ width: "20%" }}>
                                                                                                                                         <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                                             return (
-                                                                                                                                                <span className="ClientCategory-Usericon"
+                                                                                                                                                <span className="AssignUserPhoto"
                                                                                                                                                     title={client1.Title}>
                                                                                                                                                     <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                                                 </span>
@@ -2817,7 +2871,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                                                                                             {/* <div>
                                                                                                                                                                 {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: any) {
                                                                                                                                                                     return (
-                                                                                                                                                                        <span className="ClientCategory-Usericon"
+                                                                                                                                                                        <span className="AssignUserPhoto"
                                                                                                                                                                             title={client.Title}>
                                                                                                                                                                             <a>{client.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                                                                         </span>
@@ -2827,7 +2881,7 @@ const [lgShow, setLgShow] = React.useState(false);
                                                                                                                                                         <td style={{ width: "20%" }}>
                                                                                                                                                             <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.map(function (client1: any) {
                                                                                                                                                                 return (
-                                                                                                                                                                    <div className="ClientCategory-Usericon"
+                                                                                                                                                                    <div className="AssignUserPhoto"
                                                                                                                                                                         title={client1.Title}>
                                                                                                                                                                         <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                                                                     </div>

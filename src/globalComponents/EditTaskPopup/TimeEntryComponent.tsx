@@ -6,6 +6,8 @@ import * as moment from 'moment';
 import { post } from 'jquery';
 import { CurrentUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
 import pnp, { PermissionKind } from "sp-pnp-js";
+import "bootstrap/dist/css/bootstrap.min.css";
+import '../../webparts/cssFolder/Style.scss';
 var AllTimeSpentDetails: any = []; 
 var CurntUserId=''
 var changeTime=0;
@@ -995,7 +997,7 @@ function TimeEntryPopup(item: any) {
                                                                                                                 <tr className="tdrow">
 
                                                                                                                     <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                        <img className="AssignUserPhoto1 wid29 bdrbox"
+                                                                                                                        <img className="AssignUserPhoto1"
                                                                                                                             title="{subchild.AuthorName}"
                                                                                                                             data-toggle="popover"
                                                                                                                             data-trigger="hover"

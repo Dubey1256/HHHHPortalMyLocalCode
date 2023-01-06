@@ -21,10 +21,9 @@ a:active, a:hover, a:link, a:visited{
     background-color: #fff;
     color: #000;
 }
-
-.bg-69{
+.bg-69, .block, .block a{
     background-color: #000069;
-    color: #fff;
+    color: #fff !important; 
 }
 .bg-f4{
 background-color: #f4f4f4;
@@ -35,6 +34,7 @@ background-color: #f4f4f4;
 .bg-th{
     background-color: #eee;
 }
+
 
 /*------comman class end --------------
 ---------------------------------*/
@@ -77,7 +77,10 @@ background-color: #f4f4f4;
 
 /*------services pnel class --------------
 ---------------------------------*/
-
+.serviepannelgreena .dropdown-fliter button svg:hover, .serviepannelgreena .active{
+    color: #228b22;
+   } 
+ 
 .serviepannelgreena a:active, .serviepannelgreena a:hover, .serviepannelgreena a:link, .serviepannelgreena a:visited{
     color: #228b22 !important ;
     text-decoration: none ;
