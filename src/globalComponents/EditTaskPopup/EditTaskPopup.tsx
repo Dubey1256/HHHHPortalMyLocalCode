@@ -623,7 +623,6 @@ const EditTaskPopup = (Items: any) => {
                                                             </label>
                                                             <input type="text" className="form-control"
                                                                 id="txtCategories" />
-
                                                             <span className="input-group-text">
                                                                 <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                     onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
@@ -653,7 +652,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <div ng-show="item.Title==='Email Notification'"
                                                                     className="form-check">
                                                                     <input className="form-check-input" ng-checked="isMainTermSelected(item)" type="checkbox" ng-click="selectRootLevelTerm(item)" />
-                                                                    <label>Immmediate</label>
+                                                                    <label>Immediate</label>
                                                                     <span><i ng-show="showEmailSubCategory && CurrentSubSiteName !='ksl'"
                                                                         ng-click="openCategoryUpdatePoup(item.Title)"
                                                                         className="fa fa-pencil ml-10"
