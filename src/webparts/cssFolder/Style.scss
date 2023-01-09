@@ -10,6 +10,15 @@
 background-color: #f5f5f5;
 color: #323130;
 }
+.btn-primary {
+padding: 5px !important;
+border-radius: inherit;
+}
+.modal-title {
+font-size: 18px;
+line-height: 24px;
+width: 100%;
+}
 
 #sharewebprogressbar-image{
 width: 100px;
@@ -99,7 +108,7 @@ width: 100%;
 }
 
 .fw-medium, .panel-title, .headign a, .spfxbreadcrumb li a{
-  font-size: 14px;
+font-size: 14px;
 
 }
 
@@ -239,8 +248,8 @@ float: left;
   background-color: #e7e7e7;
 }
 .accordionbox  .accordion-button{
-  background-color: #e7e7e7 !important;
-  color: #000 !important;
+background-color: #e7e7e7 !important;
+color: #000 !important;
 }
 
 /*-----------------------
@@ -289,7 +298,6 @@ border-color: #dee2e6 #dee2e6 #fff;
 .Tabmenu .nav-link {
 display: block;
 padding: 0.5rem 1rem;
-color: #0d6efd;
 text-decoration: none;
 transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
 }
@@ -298,15 +306,9 @@ background-color: #fff;
 }
 
 .tabmenu .nav-link {
-
 display: block;
-
 padding: 0.5rem 1rem;
-
-color: #0d6efd;
-
 text-decoration: none;
-
 transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
 
 }
@@ -379,7 +381,12 @@ width:10px;
 .dropdown-fliter button:hover{
 background-color: transparent;
 }
-
+// .Alltable svg{  width: 20px; height: 20px;}
+.btn-primary svg{
+width: 22px;
+height: 22px;
+}
+.Alltable table {margin: 5px 0px;}
 .Alltable{width: 100%;float: left;position: relative;border: 1px solid #ccc;}
 .Alltable .smart .section-event {padding-top: 45px ;border: 0px ;position: relative;}
 .Alltable .section-event th .smart-relative {position: absolute;background: transparent;color: #fff;padding: 5px 10px;top: 0;line-height: normal;}
@@ -400,6 +407,7 @@ background-color: transparent;
 .dropdown-content h4 .fa-times-circle {font-size: 20px;font-weight: 300;margin-top: 3px;position: absolute;right:2px;top:-3px;}
 .Alltable .smart-relative .alignmen {position:absolute; padding: 0px; top: 12px; display: inline-flex;}
 
+
 .border-top{
 border-top: 1px solid #ccc ;
 }
@@ -419,7 +427,7 @@ height: 35px;
   height: 30px;
 }
 .ml-auto, .mx-auto {
-  margin-left: auto!important;
+margin-left: auto!important;
 }
 
 .btn {
@@ -515,7 +523,7 @@ margin-left: 2px;
 margin-bottom: 5px;
 }
 .AssignUserPhoto1{
-  display: inline-block;
+display: inline-block;
 width: 40px ;
 border-radius: 50%;
 height: 40px;
@@ -539,8 +547,6 @@ margin-right: 10px;
 }
 .team label.BdrBtm {
 background: none;
-border-bottom: 2px solid #0000BC;
-color: #0000BC;
 padding-left: 0px;
 margin-bottom: 7px;
 width: 100%;
@@ -564,4 +570,58 @@ border-right: 1px solid #0000BC;
 border-bottom: 1px solid #0000BC;
 box-shadow: 0 5px 6px 0 #d7d7d7;
 transition: all 0.3s ease 0s;
+}
+
+/**------add task time---------
+------------------------------*/
+.date-div .Date-Div-BAR {
+justify-content: space-evenly;
+font-size: 13px;
+padding: 2px 0px;
+font-weight: 400;
+}
+.date-div .Date-Div-BAR > span {
+cursor: pointer;
+padding: 0 10px;
+}
+.session-control-buttons {
+
+justify-content: space-between;
+align-items: center;
+}
+.session-control-buttons button {
+min-width: 100% ;
+
+border: none;
+padding: 5px 0;
+
+}
+.session-control-buttons span.min-input {
+width: 100%;
+float: left;
+text-align: center;
+
+}
+.session-control-buttons button.plus-minus {
+font-size: 18px;
+}
+.Time-control-buttons {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.Full-Time button.btn, .Quaterly-Time button.btn {
+min-width: 10px;
+padding: 5px;
+}
+.Full-Time span, .Quaterly-Time span {
+background-color: #efefef;
+padding: 7px 6px;
+height: 27px;
+text-align: center;
+font-size: 14px;
+font-weight: 500;
+line-height: 17px;
+position: relative;
+top: 2px;
 }
