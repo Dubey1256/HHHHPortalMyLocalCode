@@ -39,7 +39,7 @@ function TimeEntryPopup(item: any) {
     const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState([])
     const [AllUser, setAllUser] = React.useState([])
     const [checkCategories, setcheckCategories] = React.useState()
-
+    const [updatedata,setupdateData] = React.useState(null);
     const [year, setYear] = React.useState(1)
     const [TimeInHours, setTimeInHours] = React.useState(0)
     var smartTermName = "Task" + item.props.siteType;
@@ -210,7 +210,7 @@ function TimeEntryPopup(item: any) {
     React.useEffect(() => {
         GetTimeSheet();
         GetSmartMetadata();
-    }, [])
+    }, [updatedata])
     var AllMetadata: [] = [];
     const GetSmartMetadata = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -362,7 +362,9 @@ function TimeEntryPopup(item: any) {
         setModalIsTimeOpenToTrue();
         closeTaskStatusUpdatePoup();
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
-     
+        if(TaskStatuspopup == true){
+        setupdateData(1);
+    }
     }
 
     const setModalIsTimeOpenToTrue = () => {
@@ -743,7 +745,7 @@ const saveTimeSpent = async () => {
     var UpdatedData: any = {}
     var smartTermId = "Task" + item.props.siteType + "Id";
 
-
+    
     var AddedData: any = []
 
     if (checkCategories == undefined && checkCategories == undefined) {
@@ -808,7 +810,7 @@ const saveTimeSpent = async () => {
 
     await EditData(item.props);
 
-    setTimeSheet(TaskTimeSheetCategoriesGrouping);
+  
 
 }
 

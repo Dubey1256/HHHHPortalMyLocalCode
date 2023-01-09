@@ -58,6 +58,9 @@ export default function ComponentTable({ props }: any) {
     const [IsTask, setIsTask] = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([])
+    const[isOpenEditPopup,setisOpenEditPopup] = React.useState(false)
+    const [passdata, setpassdata] = React.useState('');
+   
     //    Array For Status
     const AllItems = [{ 'Title': 0, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 5, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 10, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 50, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 70, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 80, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 90, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 93, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 96, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 99, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }, { 'Title': 100, 'Group': 'PercentComplete', 'TaxType': 'PercentComplete', "Selected": false }];
     // Array of Rank
@@ -84,6 +87,14 @@ export default function ComponentTable({ props }: any) {
         setSharewebComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
+
+    const EditPopup=React.useCallback((item:any)=>{
+        setisOpenEditPopup(true)
+        setpassdata(item)
+    },[])
+    const CallBack =React.useCallback(()=>{
+        setisOpenEditPopup(false)
+    },[])
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     const editProfile = (itemData: any) => {
         console.log('test')
@@ -1737,12 +1748,15 @@ const [lgShow, setLgShow] = React.useState(false);
 
     const [lgNextShow, setLgNextShow] = React.useState(false);
     const handleCloseNext = () => setLgNextShow(false);
-
+    
+    const [CreateacShow, setCreateacShow] = React.useState(false);
+    const handleCreateac = () => setCreateacShow(false);
 
 
 
 // Add activity popup array
 var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 15, "Title": "MileStone", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": [] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 15 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "etag": "\"4\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 105, "Title": "Development", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" }, "SmartFilters": null, "SortOrder": 3, "TaxType": "Category", "Selectable": true, "ParentID": 0, "SmartSuggestions": null, "ID": 105 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 282, "Title": "Implementation", "siteName": null, "siteUrl": null, "listId": null, "Description1": "This should be tagged if a task is for applying an already developed component/subcomponent/feature.", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "/SiteCollectionImages/ICONS/Shareweb/Implementation.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" }, "SmartFilters": null, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 282 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 11, "Title": "Bug", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 11 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "etag": "\"5\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 96, "Title": "Feedback", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" }, "SmartFilters": null, "SortOrder": 2, "TaxType": null, "Selectable": true, "ParentID": 0, "SmartSuggestions": false, "ID": 96 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "etag": "\"3\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 191, "Title": "Improvement", "siteName": null, "siteUrl": null, "listId": null, "Description1": "Use this task category for any improvements of EXISTING features", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" }, "SmartFilters": null, "SortOrder": 12, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 191 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 12, "Title": "Design", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 165, "SmartSuggestions": null, "ID": 12 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 100, "Title": "Activity", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 100 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists;(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 281, "Title": "Task", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 281 }] as unknown as { siteName: any, siteUrl: any, listId:any,Description1:any,results:any[],SmartSuggestions:any,SmartFilters:any}[];
+
 
     return (
         <div  className={props.Portfolio_x0020_Type=='Service'?'serviepannelgreena':""}>
@@ -1804,19 +1818,19 @@ var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-
                         <div>
                         {SomeMetaData1.map((item:any)=>{
                              return(
-                            <div>  
-                                {/* <img src={item.Item_x005F_x0020_Cover.Url}/> */}
-                                <p>{item.Title}</p>
-                                </div>
+                            <span>  
+                                {item.Item_x005F_x0020_Cover!=null &&
+                                 <img src={item.Item_x005F_x0020_Cover.Url}/> 
+                            }
+                                <p onClick={()=>setCreateacShow(true)}>{item.Title}</p>
+                                </span>
 
                         )})}
                         </div>
 
                 </Modal.Body >
                 <Modal.Footer>
-                <Button variant="primary" >
-            Ok
-          </Button>
+               
           <Button variant="secondary" onClick={handleCloseNext}>
             Cancel
           </Button>
@@ -1825,6 +1839,49 @@ var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-
             </Modal>
 
     {/* After Add activity task End */}
+
+
+
+{/* Create task activity popup  */}
+<Modal
+                show={CreateacShow}
+                aria-labelledby="example-modal-sizes-title-lg">
+                <Modal.Header>
+                    <Modal.Title>
+                    <h6>Create Task</h6>
+                    </Modal.Title>
+                    <button type="button" className='Close-button' onClick={handleCreateac}>×</button>
+                </Modal.Header>
+                <Modal.Body className='p-2'>
+                <span className="bold">
+                Clear Selection
+                        </span>
+                        <div>
+                        {SomeMetaData1.map((item:any)=>{
+                             return(
+                            <span>  
+                                {item.Item_x005F_x0020_Cover!=null &&
+                                 <img src={item.Item_x005F_x0020_Cover.Url}/> 
+                            }
+                                <p>{item.Title}</p>
+                                </span>
+
+                        )})}
+                        </div>
+
+                </Modal.Body >
+                <Modal.Footer>
+                <Button variant="primary"  >
+            Ok
+          </Button>
+          <Button variant="secondary" onClick={handleCreateac}>
+            Cancel
+          </Button>
+          
+        </Modal.Footer>
+            </Modal>
+
+{/* End Create task activity popup  */}
 
             {/* Smart Time Popup */}
             {/* <Modal
@@ -2197,10 +2254,7 @@ var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-
             </Modal> */}
             {/* Status popup end here */}
 
-<section className="TableContentSection">
-                <div className="container-fluid">
-                    <section className="TableSection">
-                        <div className="container pad0">
+                    
                             <div className="Alltable mt-10">
                             <div className="table-Header  bg-e9 d-flex justify-content-between align-items-center px-2 py-2">
                                     <div className='d-flex  align-items-center '>
@@ -2624,7 +2678,7 @@ var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-
                                                                                     {/* <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td> */}
                                                                                     <td style={{ width: "3%" }}>{item.siteType != "Master Tasks" && <a onClick={(e) => EditDataopen(e, item)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                             <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />}
-                                                                                                                {item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
+                                                                                                                {item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditPopup(item)} />}</a></td>
                                                                                 </tr>
                                                                             </table>
                                                                         </td>
@@ -2713,7 +2767,7 @@ var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-
                                                                                                            <td>{childitem.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</td>
                                                                                                            <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditDataopen(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                             <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
-                                                                                                                {childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
+                                                                                                                {childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditPopup(childitem)} />}</a></td>
                                                                                 
                                                                                                             
                                                                                                         </tr>
@@ -2925,9 +2979,8 @@ var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-
                                     </div>
                                 </div>
                             </div>
-                        </div></section>
-                </div></section>
-                {IsTask && <EditTaskPopup props={SharewebTask} Call={Call}></EditTaskPopup>}
+                        
+                {isOpenEditPopup ? <EditTaskPopup Items={passdata} Call={CallBack}  />:''}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
