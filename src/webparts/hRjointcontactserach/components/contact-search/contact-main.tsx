@@ -11,7 +11,7 @@ import { BsSearch } from 'react-icons/Bs';
 import { VscClearAll } from 'react-icons/Vsc';
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import { AiFillPrinter } from 'react-icons/ai';
-import { MdOpenInFull } from 'react-icons/md';
+// import { MdOpenInFull } from 'react-icons/md';
 
 
 const ContactMainPage = (props: any) => {
@@ -407,7 +407,7 @@ const ContactMainPage = (props: any) => {
                                 <button className='btn-light btn-sm mx-1' onClick={clearFilter}><VscClearAll /></button>
                                 <button className='btn-light btn-sm mx-1' onClick={() => downloadExcel(EmployeeData, "Employee-Data")}><RiFileExcel2Fill /></button>
                                 <button className='btn-light btn-sm mx-1' onClick={printFunction}><AiFillPrinter /></button>
-                                <button className='btn-light btn-sm mx-1' onClick={fullScreen}><MdOpenInFull /></button>
+                                <button className='btn-light btn-sm mx-1' onClick={fullScreen}>a</button>
                             </div>
                         </div>
                         <div className='section-event'>

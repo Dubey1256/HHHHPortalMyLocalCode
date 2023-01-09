@@ -240,6 +240,10 @@ const TaskDashboard = (props: any) => {
             "UserGroup": "Senior Developer Team",
         },
         {
+            "Title": "Sameer  Gupta",
+            "UserGroup": "Senior Developer Team",
+        },
+        {
             "Title": "Pravesh Kumar",
             "UserGroup": "Senior Developer Team",
         },
