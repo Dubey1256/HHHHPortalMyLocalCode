@@ -3,49 +3,51 @@ import * as React from 'react'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Web } from 'sp-pnp-js';
+import { useEffect, useState } from 'react';
 // import { Container, Row } from 'react-bootstrap';
 
 
-function EditContractPopup(item: any) {
-  let callBack :any = item.call;
+const EditContractPopup= (props:any)=> {
+  console.log("contravtId========",props)
   const [show, setShow] = React.useState(false);
+  const [ContractData, setContractData] = useState(null);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [formData, setFormData] = useState({  Title:'',  startDate:'',  endDate:'',  ContractSigned:'',
+   ContractChanged:'',   GrossSalary:'',   HolidayEntitlement:'',   ContractId:'',   typeOfContract:''
+})
+  // let callBack :any = item.call;
+  const LoadContract = async () => {
+    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+    await web.lists.getById('986680CE-5D69-47B4-947C-3998DDC3776C').items.select("Id,Title,WorkingHours,Author/Id,Author/Title,ContractChanged,ContractSigned,endDate,ContractId,PersonnelNumber,HHHHStaff/Title,HHHHStaff/Id,contractNumber,typeOfContract,HolidayEntitlement,GrossSalary,startDate,Attachments,Title,Created,Modified,Editor/Name,Editor/Title,EmployeeID/Id").expand("HHHHStaff,Author,Editor,EmployeeID").filter("Id eq " + props.props).get()
+        .then((data:any) => {
+            console.log(data);
+            setContractData(data[0]);
+            setFormData(data[0])
+        })
+        .catch((err) => {
+            console.log(err.message);
+        });
+}
 
-  // const [editState, setEditState] = React.useState({
-
-  // })
-
-  const [Title, setTitle] = React.useState(item.props.Title)
-  const [startDate, setStartDate] = React.useState(item.props.newDate)
-  const [endDate, setEndDate] = React.useState(item.props.endDate)
-  const [ContractSigned, setContractSigned] = React.useState(item.props.ContractSigned)
-  const [ContractChanged, setContractChanged] = React.useState(item.props.ContractChanged)
-  const [GrossSalary, setGrossSalary] = React.useState(item.props.GrossSalary)
-  const [HolidayEntitlement, setHolidayEntitlement] = React.useState(item.props.HolidayEntitlement)
-  const ContractId = item.props.ContractId;
-  const typeOfContract = item.props.typeOfContract
-
-   item.StartDate = moment(item.props.startDate).format("YYYY-MM-DD")
-   item.EndDate = moment(item.props.endDate).format("YYYY-MM-DD")
-   item.ContractChanged = moment(item.props.ContractChanged).format("YYYY-MM-DD")
-   item.ContractSigned = moment(item.props.ContractSigned).format("YYYY-MM-DD")
-
+useEffect(() => {
+  LoadContract();
+}, []);
 
   const UpdateData = async () => {
     
     const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/HR");
     await web.lists.getById('986680ce-5d69-47b4-947c-3998ddc3776c').items
-    .getById(item.props.ID).update({
-        ContractId: ContractId,
-        Title: Title,
-        startDate: startDate,
-        endDate: endDate,
-        ContractSigned: ContractSigned,
-        ContractChanged: ContractChanged,
-        GrossSalary: GrossSalary,
-        typeOfContract: typeOfContract,
-        HolidayEntitlement: HolidayEntitlement,
+    .getById(props.props).update({
+        ContractId:formData.ContractId,
+        Title:formData.Title,
+        startDate:formData.startDate,
+        endDate:formData.endDate,
+        ContractSigned:formData.ContractSigned,
+        ContractChanged:formData.ContractChanged,
+        GrossSalary:formData.GrossSalary,
+        typeOfContract:formData.typeOfContract,
+        HolidayEntitlement:formData.HolidayEntitlement,
       })
       .then((Data:any)=>{
         Data;
@@ -53,14 +55,19 @@ function EditContractPopup(item: any) {
       .catch((err)=>{
         console.log(err.message);
       })
-      callBack();
       handleClose();
     }
+
+    const handleChange=(e: any, name: any) => {
+      setFormData({
+          ...formData,
+          [name]: e.target.value
+      })
+  }
 
   return (
     <>
     <div style={{display:'flex'}}>
-      <h2 style={{color:'blue'}}>Contract Management {item.props.contractNumber} - {item.props.Title}</h2>
       <div role={'button'} onClick={handleShow}>
       <img src='https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif'/>
       </div>
@@ -68,58 +75,57 @@ function EditContractPopup(item: any) {
     <Modal size='xl' show={show} onHide={handleClose}>
       <Modal.Header>
         
-        <Modal.Title>Edit Contract - {item.props.Title}</Modal.Title>
+       {ContractData&& <Modal.Title>Edit Contract - {ContractData.Title}</Modal.Title>}
         <div role={'button'} onClick={handleClose}>X</div>
       </Modal.Header>
       <Modal.Body>
-        <div className="row d-flex">
-          <div className='col form-group'>
-            <label className='form-label'>Contract ID:</label><br/>
-             <input className='form-control' type={'text'} defaultValue={item.props.ContractId} readOnly/>
-          </div>
-          <div className='col form-group'>
-            <label className='form-label'>Contract Title:</label><br/>
-            <input className='form-control' type={'text'} defaultValue={item.props.Title} onChange={(e)=>setTitle(e.target.value)} value={Title}/>
-          </div>
-          <div className='col form-group'>
-            <label className='form-label'>Start Date:</label>
-            <input className='form-control' type={'date'} defaultValue={item.StartDate} onChange={(e)=>setStartDate(e.target.value)} value={startDate}/>
-          </div> 
-          <div className='col form-group'>
-            <label className='form-label'>End Date:</label>
-            <input className='form-control' type={'date'} defaultValue={item.EndDate} onChange={(e)=>setEndDate(e.target.value)} value={endDate}/>
-          </div>
-          <div className='col form-group'>
-            <label className='form-label'>Employee Name:</label> 
-            <input className='form-control' type={'text'} defaultValue={item.props2.FullName} readOnly/>
-          </div>
-        </div>
-        <div className='row'>
+     {ContractData&&<><div className="row d-flex">
             <div className='col form-group'>
-              <label className='form-label'>Contract Signed:</label>
-              <input className='form-control' type={'date'} defaultValue={item.ContractSigned} onChange={(e)=>setContractSigned(e.target.value)} value={ContractSigned}/>
+              <label className='form-label'>Contract ID:</label><br />
+              <input className='form-control' type={'text'} defaultValue={ContractData.ContractId} readOnly />
             </div>
             <div className='col form-group'>
-              <label className='form-label'>Contract Changed:</label>
-              <input className='form-control' type={'date'} defaultValue={item.ContractChanged} onChange={(e)=>setContractChanged(e.target.value)} value={ContractChanged}/>
+              <label className='form-label'>Contract Title:</label><br />
+              <input className='form-control' type={'text'} defaultValue={ContractData.Title} onChange={(e) => handleChange(e, 'Title')} />
             </div>
             <div className='col form-group'>
-              <label className='form-label'>Gross Salary:</label>
-              <input className='form-control' type={'text'} defaultValue={item.props.GrossSalary} onChange={(e)=>setGrossSalary(e.target.value)} value={GrossSalary}/>
-            </div>
-           <div className='col form-group'>
-            <label className='form-label'>Contract Type:</label>
-            <input className='form-control' type={'text'} defaultValue={item.props.typeOfContract} readOnly/>
-            </div>
-            <div className='col col-md-3 form-group'>
-              <label className='form-label'>Weekly Working Hours:</label>
-              <input className='form-control' type={'text'} defaultValue={item.props.WorkingHours}/>
+              <label className='form-label'>Start Date:</label>
+              <input className='form-control' type={'date'} defaultValue={ContractData.startDate} onChange={(e) => handleChange(e, 'startDate')} />
             </div>
             <div className='col form-group'>
-              <label className='form-label'>Holiday Entitlement:</label>
-              <input  className='form-control' type={'number'} defaultValue={item.props.HolidayEntitlement} onChange={(e)=>setHolidayEntitlement(parseInt(e.target.value))} value={HolidayEntitlement}/>
+              <label className='form-label'>End Date:</label>
+              <input className='form-control' type={'date'} defaultValue={ContractData.endDate} onChange={(e) => handleChange(e, 'endDate')} />
             </div>
-        </div>
+            <div className='col form-group'>
+              <label className='form-label'>Employee Name:</label>
+              <input className='form-control' type={'text'} defaultValue={ContractData.FullName} readOnly />
+            </div>
+          </div><div className='row'>
+              <div className='col form-group'>
+                <label className='form-label'>Contract Signed:</label>
+                <input className='form-control' type={'date'} defaultValue={ContractData.ContractSigned} onChange={(e) => handleChange(e, 'ContractSigned')} />
+              </div>
+              <div className='col form-group'>
+                <label className='form-label'>Contract Changed:</label>
+                <input className='form-control' type={'date'} defaultValue={ContractData.ContractChanged} onChange={(e) => handleChange(e, 'ContractChanged')} />
+              </div>
+              <div className='col form-group'>
+                <label className='form-label'>Gross Salary:</label>
+                <input className='form-control' type={'text'} defaultValue={ContractData.GrossSalary} onChange={(e) => handleChange(e, 'GrossSalary')} />
+              </div>
+              <div className='col form-group'>
+                <label className='form-label'>Contract Type:</label>
+                <input className='form-control' type={'text'} defaultValue={ContractData.typeOfContract} readOnly />
+              </div>
+              <div className='col col-md-3 form-group'>
+                <label className='form-label'>Weekly Working Hours:</label>
+                <input className='form-control' type={'text'} defaultValue={ContractData.WorkingHours} onChange={(e) => handleChange(e, 'WorkingHours')} />
+              </div>
+              <div className='col form-group'>
+                <label className='form-label'>Holiday Entitlement:</label>
+                <input className='form-control' type={'number'} defaultValue={ContractData.HolidayEntitlement} onChange={(e) => handleChange(e, 'HolidayEntitlement')} />
+              </div>
+            </div></>}
       </Modal.Body>
       
       <Modal.Footer>

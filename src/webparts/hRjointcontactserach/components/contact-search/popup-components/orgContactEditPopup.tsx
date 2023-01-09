@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import {Web} from 'sp-pnp-js';
+import { Web } from 'sp-pnp-js';
 import { VscClearAll } from 'react-icons/Vsc';
 
 const orgContactEditPopup = (props: any) => {
@@ -9,11 +9,11 @@ const orgContactEditPopup = (props: any) => {
     const [searchKeys, setSearchKeys] = useState({
         FullName: '', City: '', Country: ''
     })
-    const [selectedOrg, setSelectedOrg] =useState();
-    const [Index, setIndex] =useState();
-    useEffect(()=>{
+    const [selectedOrg, setSelectedOrg] = useState();
+    const [Index, setIndex] = useState();
+    useEffect(() => {
         InstitutionDetails();
-    },[])
+    }, [])
     const InstitutionDetails = async () => {
         try {
             let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
@@ -28,57 +28,57 @@ const orgContactEditPopup = (props: any) => {
             console.log("Error user response:", error.message);
         }
     }
-    const searchFunction=(e: any, item: any)=>{
-        let Key: any = e.target.value.toLowerCase();  
+    const searchFunction = (e: any, item: any) => {
+        let Key: any = e.target.value.toLowerCase();
         if (item == 'FullName') {
             setSearchKeys({ ...searchKeys, FullName: Key });
             const data: any = {
-                nodes: institutionData?.filter((items:any) =>
+                nodes: institutionData?.filter((items: any) =>
                     items.FullName?.toLowerCase().includes(Key)
                 ),
             };
             setSearchedData(data.nodes);
-            if(Key.length == 0){
+            if (Key.length == 0) {
                 setSearchedData(institutionData);
             }
         }
         if (item == 'City') {
             setSearchKeys({ ...searchKeys, City: Key });
             const data: any = {
-                nodes: institutionData?.filter((items:any) =>
+                nodes: institutionData?.filter((items: any) =>
                     items.WorkCity?.toLowerCase().includes(Key)
                 ),
             };
             setSearchedData(data.nodes);
-            if(Key.length == 0){
+            if (Key.length == 0) {
                 setSearchedData(institutionData);
             }
         }
         if (item == 'Country') {
             setSearchKeys({ ...searchKeys, Country: Key });
             const data: any = {
-                nodes: institutionData?.filter((items:any) =>
+                nodes: institutionData?.filter((items: any) =>
                     items.WorkCountry?.toLowerCase().includes(Key)
                 ),
             };
             setSearchedData(data.nodes);
-            if(Key.length == 0){
+            if (Key.length == 0) {
                 setSearchedData(institutionData);
             }
         }
     }
-    const selectOrgStatus =(item:any, index:any)=>{
+    const selectOrgStatus = (item: any, index: any) => {
         props.selectedStatus(item);
         setSelectedOrg(item);
         setIndex(index);
     }
-    const ClearFilter =()=>{
+    const ClearFilter = () => {
         setSearchedData(institutionData);
         setSearchKeys({
             FullName: '', City: '', Country: ''
         })
     }
-    const saveChange = ()=>{
+    const saveChange = () => {
         props.orgChange(selectedOrg);
         props.callBack();
     }
@@ -89,17 +89,19 @@ const orgContactEditPopup = (props: any) => {
                     <div className="popup-content">
                         <div className="card">
                             <div className="card-header d-flex justify-content-between">
-                                <div><h3>Select Organisation</h3></div>
-                                <button className="btn-close" onClick={() => props.callBack()}></button>
+                                <div><h3>Select Organization</h3></div>
+                                <button className="header-btn" onClick={() => props.callBack()}>
+                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/delete.gif" />
+                                </button>
                             </div>
                             <div className="card-body">
-                                <table className="table">
+                                <table className="table table-hover">
                                     <thead>
                                         <tr>
                                             <th></th>
                                             <th style={{ width: "400px" }}><input type='text' onChange={(e) => searchFunction(e, 'FullName')} placeholder="Title" value={searchKeys.FullName} /><button>=</button></th>
-                                            <th><input type='text' onChange={(e) => searchFunction(e, 'City')} placeholder="City" value={searchKeys.City}/><button>=</button></th>
-                                            <th><input type='text' onChange={(e) => searchFunction(e, 'Country')} placeholder="Country" value={searchKeys.Country}/><button>=</button></th>
+                                            <th><input type='text' onChange={(e) => searchFunction(e, 'City')} placeholder="City" value={searchKeys.City} /><button>=</button></th>
+                                            <th><input type='text' onChange={(e) => searchFunction(e, 'Country')} placeholder="Country" value={searchKeys.Country} /><button>=</button></th>
                                             <th><button onClick={ClearFilter}><VscClearAll /></button></th>
                                         </tr>
                                     </thead>
@@ -107,7 +109,7 @@ const orgContactEditPopup = (props: any) => {
                                         {searchedData.map((items: any, index: any) => {
                                             return (
                                                 <tr key={index}>
-                                                    <td><input type="radio" onClick={()=>selectOrgStatus(items, index)} checked={index == Index || props.institutionName == items.FullName} /></td>
+                                                    <td><input type="radio" onClick={() => selectOrgStatus(items, index)} checked={index == Index || props.institutionName == items.FullName} /></td>
                                                     <td>{items.FullName ? items.FullName : "NA"}</td>
                                                     <td>{items.WorkCity ? items.WorkCity : "NA"}</td>
                                                     <td>{items.WorkCountry ? items.WorkCountry : "NA"}</td>
@@ -117,8 +119,9 @@ const orgContactEditPopup = (props: any) => {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="card-footer text-muted justify-content-end">
-                                <button className="btn btn-primary mx-2" onClick={saveChange}>Save</button><button onClick={() => props.callBack()} className="btn btn-danger mx-2">Cancel</button>
+                            <div className="card-footer d-flex flex-row-reverse">
+                                <button onClick={() => props.callBack()} className="cancel-btn">Cancel</button>
+                                <button className="save-btn" onClick={saveChange}>Save</button>
                             </div>
                         </div>
                     </div>

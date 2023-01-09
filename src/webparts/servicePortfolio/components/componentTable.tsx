@@ -334,7 +334,7 @@ function ComponentTable() {
                             item.flag = true;
                             item.siteType = config.Title;
                             item.childs = [];
-                            item.listId= config.listId;
+                            item.listId =config.listId;
                             if (item.SharewebCategories.results != undefined) {
                                 if (item.SharewebCategories.results.length > 0) {
                                     $.each(item.SharewebCategories.results, function (ind: any, value: any) {
@@ -404,7 +404,7 @@ function ComponentTable() {
                                 if (result['Shareweb_x0020_ID'] == undefined) {
                                     result['Shareweb_x0020_ID'] = "";
                                 }
-                                result['Item_x0020_Type'] = 'Task';
+                                result['Item_x0020_Type'] = 'Task';      
                                 TasksItem.push(result);
                                 // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
 

@@ -11,13 +11,13 @@ import { BsSearch } from 'react-icons/Bs';
 import { VscClearAll } from 'react-icons/Vsc';
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import { AiFillPrinter } from 'react-icons/ai';
-import { MdOpenInFull } from 'react-icons/Md';
- 
+// import { MdOpenInFull } from 'react-icons/md';
+
 
 const ContactMainPage = (props: any) => {
     const [EmployeeData, setEmployeeData] = useState([]);
     const [institutionData, setInstitutionsData] = useState([]);
-    const [inputField, setInputField] = useState({ FullName: '', EmailAddress: '', Organization: '', Department: '', Position: '', Sites: '', SearchInstitution: '', City: '', Country: '', InstituteSites: '', mainSearch: '' });
+    const [inputField, setInputField] = useState({ FullName: '', EmailAddress: '', Organization: '', Department: '', Position: '', Sites: '', SearchInstitution: '', City: '', Country: '', InstituteSites: '', mainSearch: '', InstituteMainSearch: '' });
     const [EditContactStatus, setEditContactStatus] = useState(false);
     const [EditContactData, setEditContactData] = useState([]);
     const [count, setCount] = useState(0);
@@ -61,7 +61,6 @@ const ContactMainPage = (props: any) => {
                     }
                 }
             })
-
             setEmployeeData(data);
             setSearchedData(data);
         } catch (error) {
@@ -111,46 +110,20 @@ const ContactMainPage = (props: any) => {
         let Key: any = e.target.value.toLowerCase();
         if (item == "Main-Search") {
             setInputField({ ...inputField, mainSearch: Key });
-            // EmployeeData.map((item: any) => {
-            //     if (item.FullName != undefined) {
-            //         if (item.FullName.toLowerCase().includes(Key)) {
-            //             setMainSearch(item);
-            //         }
-            //     }
-            //     else if (item.Email != undefined) {
-            //         if (item.Email.toLowerCase().includes(Key)) {
-            //             setMainSearch(item);
-            //         }
-            //     }
-            //     else if (item.Institution != undefined) {
-            //         if (item.Institution.FullName.toLowerCase().includes(Key)) {
-            //             setMainSearch(item);
-            //         }
-            //     }
+            let filteredAllAdminData;
+            if (Key) {
+                filteredAllAdminData = EmployeeData.filter((item) => {
+                    if (
+                        item.FullName?.toLowerCase().includes(Key) || item.Email?.toLowerCase().includes(Key) ||
+                        item.Institution?.FullName?.toLowerCase().includes(Key) || item.JobTitle?.toLowerCase().includes(Key) || item.Department?.toLowerCase().includes(Key) || item.SitesTagged?.toLowerCase().includes(Key)
+                    ) {
+                        return true;
+                    }
+                    return false;
+                });
+                setSearchedData(filteredAllAdminData)
 
-            //     else if (item.JobTitle != undefined) {
-            //         if (item.JobTitle.toLowerCase().includes(Key)) {
-            //             setMainSearch(item);
-            //         }
-            //     }
-            //     else if (item.Department != undefined) {
-            //         if (item.Department.toLowerCase().includes(Key)) {
-            //             setMainSearch(item);
-            //         }
-            //     }
-            //     else if (item.SitesTagged != undefined) {
-            //         if (item.SitesTagged.toLowerCase().includes(Key)) {
-            //             setMainSearch(item);
-            //         }
-            //     }
-            // })
-            const data: any = {
-                nodes: EmployeeData.filter((items: any) => {
-                    (items.FullName != null ? items.FullName : '').toLowerCase().includes(Key)
-                })
-            }
-            setSearchedData(data.nodes);
-            if (Key.length == 0) {
+            } if (Key.length == 0) {
                 setSearchedData(EmployeeData);
             }
         }
@@ -235,6 +208,27 @@ const ContactMainPage = (props: any) => {
                 setSearchedData(EmployeeData);
             }
         }
+
+        if (item == "Institute-Main-Search") {
+            setInputField({ ...inputField, mainSearch: Key });
+            let filteredAllAdminData;
+            if (Key) {
+                filteredAllAdminData = institutionData.filter((item) => {
+                    if (
+                        item.FullName?.toLowerCase().includes(Key) || item.WorkCity?.toLowerCase().includes(Key) ||
+                        item.WorkCountry?.toLowerCase().includes(Key) || item.SitesTagged?.toLowerCase().includes(Key)
+                    ) {
+                        return true;
+                    }
+                    return false;
+                });
+                setSearchedData(filteredAllAdminData)
+
+            } if (Key.length == 0) {
+                setSearchedData(institutionData);
+            }
+        }
+
         if (item == 'Search-Institution') {
             setInputField({ ...inputField, SearchInstitution: Key });
             const data: any = {
@@ -354,7 +348,7 @@ const ContactMainPage = (props: any) => {
     const clearFilter = () => {
         setSearchedData(EmployeeData);
         setSearchedInstituteData(institutionData);
-        setInputField({ FullName: '', EmailAddress: '', Organization: '', Department: '', Position: '', Sites: '', SearchInstitution: '', City: '', Country: '', InstituteSites: '', mainSearch: '' });
+        setInputField({ FullName: '', EmailAddress: '', Organization: '', Department: '', Position: '', Sites: '', SearchInstitution: '', City: '', Country: '', InstituteSites: '', mainSearch: '',InstituteMainSearch:'' });
     }
     const printFunction = () => {
         window.print();
@@ -403,7 +397,7 @@ const ContactMainPage = (props: any) => {
                     {tableStatus ? <div>
                         <div className="card-header d-flex justify-content-between" >
                             <div><span className='mx-2'>Showing <b>{searchedData.length}</b> of <b>{EmployeeData.length} </b>Contacts</span>
-                                <input type='text' onChange={(e) => SearchData(e, 'Main-Search')} className="main-search" />
+                                <input type='text' onChange={(e) => SearchData(e, 'Main-Search')} className="main-search" value={inputField.mainSearch} />
                                 <button className='search-button'><BsSearch /></button>
                             </div>
                             <div className='table-buttons'>
@@ -413,12 +407,12 @@ const ContactMainPage = (props: any) => {
                                 <button className='btn-light btn-sm mx-1' onClick={clearFilter}><VscClearAll /></button>
                                 <button className='btn-light btn-sm mx-1' onClick={() => downloadExcel(EmployeeData, "Employee-Data")}><RiFileExcel2Fill /></button>
                                 <button className='btn-light btn-sm mx-1' onClick={printFunction}><AiFillPrinter /></button>
-                                <button className='btn-light btn-sm mx-1' onClick={fullScreen}><MdOpenInFull /></button>
+                                <button className='btn-light btn-sm mx-1' onClick={fullScreen}>a</button>
                             </div>
                         </div>
                         <div className='section-event'>
                             <div className='table-container'>
-                                <table className="table">
+                                <table className="table table-hover">
                                     <thead className='table-head'>
                                         <tr>
                                             <th>
@@ -448,7 +442,7 @@ const ContactMainPage = (props: any) => {
                                     <tbody className='contact-table'>
                                         {searchedData?.map((items, index) => {
                                             return (
-                                                <tr key={index} style={{fontSize:"13px"}}>
+                                                <tr key={index} style={{ fontSize: "13px" }}>
                                                     <td scope="row" style={{ width: "4%" }}>
                                                         <input type="checkbox" checked={items.isSelect} onChange={(e) => checkedData(e, items, index)} />
                                                     </td>
@@ -479,7 +473,7 @@ const ContactMainPage = (props: any) => {
                         <div className='table-buttons'>
                             <div className="card-header d-flex justify-content-between">
                                 <div><span className='mx-2'>Showing <b>{searchedInstituteData.length}</b> of <b>{institutionData.length}</b> Institutes</span>
-                                    <input type='text' className="main-search" onChange={(e) => SearchData(e, 'Main-Search')} />
+                                    <input type='text' className="main-search" onChange={(e) => SearchData(e, 'Institute-Main-Search')} defaultValue={inputField.InstituteMainSearch} />
                                     <button className='search-button'><BsSearch /></button>
                                 </div>
                                 <div>
@@ -491,7 +485,7 @@ const ContactMainPage = (props: any) => {
                                 </div>
                             </div>
                             <div>
-                                <table className="table">
+                                <table className="table table-hover">
                                     <thead>
                                         <tr>
                                             <th><input type='checkbox' onChange={(e) => allChecked(e)} />All</th>
@@ -505,7 +499,7 @@ const ContactMainPage = (props: any) => {
                                     <tbody className='institute-table'>
                                         {searchedInstituteData?.map((items, index) => {
                                             return (
-                                                <tr key={index} style={{fontSize:"13px"}}>
+                                                <tr key={index} style={{ fontSize: "13px" }}>
                                                     <th scope="row"><input type="checkbox" onChange={(e) => checkedData(e, items, index)} /></th>
                                                     <td className='full-name'>{items.FullName}</td>
                                                     <td>{items.WorkCity ? items.WorkCity : "NA"}</td>

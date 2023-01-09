@@ -215,7 +215,7 @@ function Portfolio({ ID }: any) {
     const handleClose = () => setLgShow(false);
 
     return (
-        <div className='serviepannelgreena'>
+        <div className={TypeSite=='Service'?'serviepannelgreena':""}>
 
             {/* breadcrumb & title */}
             <section>

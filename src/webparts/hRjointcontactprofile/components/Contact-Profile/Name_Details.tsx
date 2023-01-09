@@ -1,6 +1,19 @@
 import * as React from "react";
+import {useState, useCallback} from 'react'
+import HHHHEditComponent from "../../../hRjointcontactserach/components/contact-search/popup-components/HHHHEditcontact";
 
 const Name_Details = (props: any) => {
+  console.log("props data ====", props)
+  const [editPopupStatus, setEditPopupStatus] = useState(false);
+  const [contactData, setContactData]= useState();
+  const editProfilePopupFunction=(e:any)=>{
+    setEditPopupStatus(true)
+    console.log("edit popup=====", props.data);
+    setContactData(props.data.Id);
+  }
+  const closePopup = useCallback(()=>{
+    setEditPopupStatus(false);
+  },[])
   return (
     <div>
       <section className="mt-2">
@@ -18,7 +31,7 @@ const Name_Details = (props: any) => {
           >
             <div className="d-flex w-100 mb-2 p-1 justify-content-between">
               <h5>{props.data.FullName}</h5>
-              <button type="button" className="btn btn-secondary">Edit</button>
+              <button type="button" className="btn btn-secondary" onClick={(e)=>editProfilePopupFunction(e)}><img src='https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif' /> Edit</button>
             </div>
 
             <div className="d-flex w-100">
@@ -60,6 +73,7 @@ const Name_Details = (props: any) => {
         </div>
         <hr className="w-100" />
       </section>
+      {editPopupStatus? <HHHHEditComponent props={contactData} callBack={closePopup}/> : null}
     </div>
   );
 };
