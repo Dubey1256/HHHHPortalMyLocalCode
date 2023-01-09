@@ -450,6 +450,7 @@ function TimeEntryPopup(item: any) {
     }
 
     const EditData = async (item: any) => {
+        AllTimeSpentDetails =[];
        
         TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
         TaskTimeSheetCategoriesGrouping = TaskTimeSheetCategoriesGrouping.concat(TaskTimeSheetCategories);

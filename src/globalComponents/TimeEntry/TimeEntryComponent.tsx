@@ -4,7 +4,7 @@ import { Modal } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
-import TimeEntryPopup from './TimeEntryPopup';
+import TimeEntryPopup from '../../globalComponents/EditTaskPopup/TimeEntryComponent';
 
 function DisplayTimeEntry(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
