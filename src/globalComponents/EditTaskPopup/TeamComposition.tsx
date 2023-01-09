@@ -17,6 +17,8 @@ import { FaSolarPanel } from 'react-icons/fa';
 const BaseUrl = "SP"
 
 const TeamComposition = (props: any) => {
+
+    
     const dragItem: any = React.useRef();
     const dragOverItem = React.useRef();
     const [Task, setTask] = React.useState([])
@@ -197,36 +199,22 @@ const changeTimesDec=(items:any)=>{
         InstitutionData();
     }, []);
     function InstitutionData() {
-
         var AllUsers: any = []
         var taskUsers: any = []
-
-
         var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$select=Id,IsActive,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,TaskStatusNotification,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType&$expand=AssingedToUser&$filter=IsActive eq 1&$orderby=SortOrder asc,Title asc"
-
-
         $.ajax({
-
             url: url,
-
             method: "GET",
-
             headers: {
-
                 "Accept": "application/json; odata=verbose"
-
             },
-
             success: function (data) {
-
                 institute = data.d.results;
                 $.each(institute, function (item: any, items: any) {
                     if (items.ItemType != 'Group') {
                         AllUsers.push(items);
                     }
-
                 })
-
                 $.each(data.d.results, function (index: any, item: any) {
                     if (item.UserGroupId == undefined) {
                         if (BaseUrl.toLowerCase() == 'sp' || window.location.href.toLowerCase().indexOf('gmbh/sitepages/teamcalendar') > -1)
@@ -235,44 +223,28 @@ const changeTimesDec=(items:any)=>{
                             getChildsWithoutRoleBased(item, data.d.results);
                         taskUsers.push(item);
                     }
-
                 })
                 $.each(institute, function (index: any, item: any) {
-
-                    if (props.props.Items.AssignedTo.results.length > 0) {
+                    if (props.props.Items?.AssignedTo?.results.length > 0) {
                         ResponsibleTeam = getUsersWithImage(props.props.Items.AssignedTo.results
                         );
-
-
                     }
                     if (props.props.Items != undefined) {
                         showComposition();
                     }
-
                 })
-
                 // setTeamMemberUser(TeamMemberUser)
                 // $.each(institute, function (index:any,item:any) {
-
                 //     if (props.props.Items.Team_x0020_Members.results.length>0) {
                 //         TeamMemberUsers = getUsersWithImage(props.props.Items.Team_x0020_Members.results);
                 //     }
                 //     if (props.props.Items != undefined) {
                 //         showComposition();
                 //     }
-
                 // })
-
-
-
-
                 setTask(taskUsers)
-
             },
-
             error: function (error) {
-
-
             }
         });
     }
@@ -281,7 +253,7 @@ const changeTimesDec=(items:any)=>{
         item.childs = [];
         $.each(items, function (index: any, childItem: any) {
             if (props.props.Items != undefined) {
-                if (props.props.Items.Item_x0020_Type == undefined) {
+                if (props.props.Items.Item_x0020_Type === undefined) {
                     if (props.props.Items.Services == undefined || props.props.Items.Services.results == '') {
                         if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
                             //if (childItem.Role != undefined && childItem.Role.results != undefined && childItem.Role.results.length > 0) {
