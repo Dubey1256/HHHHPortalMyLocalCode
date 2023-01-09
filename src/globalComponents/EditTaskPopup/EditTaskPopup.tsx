@@ -158,9 +158,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             },
                 function (data) {
-
                 });
-
     }
 
 
@@ -169,13 +167,11 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const GetEditdata = async () => {
-
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-
         let smartmeta = await web.lists
             .getById(Items.Items.listId)
             .items
-            .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,EstimatedTime,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+            .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
             .top(5000)
             .filter(`Id eq ${Items.Items.ID}`)
             .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -185,7 +181,6 @@ const EditTaskPopup = (Items: any) => {
             if (item.PercentComplete != undefined) {
                 item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
             }
-
             if (item.Body != undefined) {
                 item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
             }
@@ -200,8 +195,8 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             setEditData(item)
-            setPrriority(item.Priority)
 
+            setPrriority(item.Priority)
         })
 
     }
@@ -280,7 +275,6 @@ const EditTaskPopup = (Items: any) => {
         }
         if (EditData.RelevantPortfolio != undefined && EditData.RelevantPortfolio.length > 0) {
             EditData.Component.map((com: any) => {
-
                 if (EditData.RelevantPortfolio.smartComponent != undefined && EditData.RelevantPortfolio.length >= 0) {
                     $.each(EditData.RelevantPortfolio, function (index: any, smart: any) {
                         RelevantPortfolioIds.push(smart.Id);
@@ -288,31 +282,27 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
-
         //let Rank = parseInt(saveData.Rank)
         let PercentComplete = saveData.PercentComplete / 10
         //var CreatedDate = Moment(saveData.Created, Moment.defaultFormatUtc)
-
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-
         await web.lists.getById(Items.Items.listId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(Items.Items.ID).update({
-            IsTodaysTask: saveData.IsTodaysTask == "" ? EditData.IsTodaysTask : saveData.IsTodaysTask,
-            Priority_x0020_Rank: itemRank == undefined ? EditData.Priority_x0020_Rank : itemRank,
-            Title: saveData.Title == "" ? EditData.Title : saveData.Title,
-            Priority: Prriority == "" ? EditData.Priority : Prriority,
-            //StartDate: saveData.Created == undefined ? new Date(EditData.StartDate).toDateString(): new Date(saveData.Created).toDateString(),
-            PercentComplete: status == undefined ? EditData.PercentComplete : status,
-            ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : '' },
-            Categories: Items.Items.Categories == "" ? EditData.Categories : Items.Items.Categories,
-            RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) ? RelevantPortfolioIds : '' },
-            //DueDate:saveData.DueDate == undefined ? new Date(EditData.DueDate).toDateString() : new Date(saveData.DueDate).toDateString()
+            // IsTodaysTask: saveData.IsTodaysTask == "" ? EditData.IsTodaysTask : saveData.IsTodaysTask,
+            // Priority_x0020_Rank: itemRank == undefined ? EditData.Priority_x0020_Rank : itemRank,
+            Title: saveData.Title != "" ? saveData.Title:EditData.Title,
+            // Priority: Prriority == "" ? EditData.Priority : Prriority,
+            StartDate: saveData.Created != '' ? saveData.Created : (EditData.Created ? Moment(EditData.Created).format("MM-DD-YYYY") : ''),
+            // PercentComplete: status == undefined ? EditData.PercentComplete : status,
+            // ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : '' },
+            // Categories: Items.Items.Categories == "" ? EditData.Categories : Items.Items.Categories,
+            // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) ? RelevantPortfolioIds : '' },
+               DueDate: saveData.DueDate != '' ? saveData.DueDate : (EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : ''),
+               CompletedDate: saveData.CompletedDate != '' ? saveData.CompletedDate : (EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : '')
             // BasicImageInfo: JSON.stringify(UploadImage)
         }).then((res: any) => {
-
             console.log(res);
             Items.Call();
         })
-
     }
     const saveItemrank = (e: any) => {
         var Rank = e.target.value;
@@ -336,7 +326,7 @@ const EditTaskPopup = (Items: any) => {
         {
             "Title": "03% Approved",
             "ID": 2,
-            "status": 4,
+            "status": 3,
         },
         {
             "Title": "05% Acknowledged",
@@ -356,7 +346,7 @@ const EditTaskPopup = (Items: any) => {
         {
             "Title": "80% In QA Review",
             "ID": 6,
-            "status": 70,
+            "status": 80,
         },
         {
             "Title": "90% Task completed",
@@ -386,8 +376,7 @@ const EditTaskPopup = (Items: any) => {
     ]
     return (
         <>
-            {console.log("edit data in div ======", EditData)}
-            {/* { console.log("items items data in div ======", )} */}
+            {console.log("edit data in div =====", EditData)}
             <Modal
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
@@ -415,8 +404,6 @@ const EditTaskPopup = (Items: any) => {
                                         </>
                                     )
                                 })}
-
-
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-primary" onClick={closeTaskStatusUpdatePoup}>
@@ -436,42 +423,29 @@ const EditTaskPopup = (Items: any) => {
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 isBlocking={false}>
-
                 <div id="EditGrueneContactSearch">
-
                     <div className="modal-dailog modal-lg">
                         <div className="modal-content" ng-cloak>
                             <div className="modal-header">
                                 <h5 className="modal-title">Edit Task Popup</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={Items.Call}></button>
-
-
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={Items.Call}>
+                                </button>
                             </div>
-
                             <div className="modal-body ">
-
                                 <ul className="nav nav-tabs" id="myTab" role="tablist">
-                                    <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">BASICINFORMATION</button>
-
+                                    <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
+                                        BASICINFORMATION
+                                    </button>
                                     <button className="nav-link" id="TIME-SHEET" data-bs-toggle="tab" data-bs-target="#TIMESHEET" type="button" role="tab" aria-controls="TIMESHEET" aria-selected="false">TIMESHEET</button>
-
-
-
                                 </ul>
                                 {/* {EditData.map((items: any) => {
                                     return (
                                         <> */}
-
                                 <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                                     <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
-
-
                                         <div className="row">
-
                                             <div className="col-md-5">
-
                                                 <div className="col-12 mb-10" title="Task Name">
-
                                                     <label className="d-flex justify-content-between align-items-center mb-0">Title
                                                         <span className="form-check">
                                                             <input className="form-check-input" type="checkbox" id="isChecked" defaultChecked={EditData.IsTodaysTask} onChange={(e) => setSaveData({ ...saveData, IsTodaysTask: e.target.value })} />
@@ -481,10 +455,8 @@ const EditTaskPopup = (Items: any) => {
                                                     <input type="text" className="form-control" placeholder="Task Name"
                                                         ng-required="true" defaultValue={EditData.Title} onChange={(e) => setSaveData({ ...saveData, Title: e.target.value })} />
                                                 </div>
-
                                                 <div className="mx-0 row  mb-10">
                                                     <div className="col ps-0">
-
                                                         <label className="form-label" >Start Date</label>
                                                         {/* <input type="date" autoComplete="off" id="start
                                                                  Datepicker"
@@ -496,7 +468,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <input type="date" className="input-field"
                                                             defaultValue={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ''}
                                                             onChange={(e) => setSaveData({
-                                                                ...saveData, Created: Moment(e.target.value).format("YYYY-MM-DD")
+                                                                ...saveData, Created: Moment(e.target.value).format("MM-DD-YYYY")
                                                             })}
                                                         />
                                                     </div>
@@ -516,15 +488,18 @@ const EditTaskPopup = (Items: any) => {
                                                         <input type="date" className="input-field"
                                                             defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                             onChange={(e) => setSaveData({
-                                                                ...saveData, DueDate: Moment(e.target.value).format("YYYY-MM-DD")
+                                                                ...saveData, DueDate: Moment(e.target.value).format("MM-DD-YYYY")
                                                             })}
                                                         />
                                                     </div>
                                                     <div className="col">
                                                         <label className="form-label"
-                                                        >CompletedDate</label>
-                                                        <input type="text" autoComplete="off"
-                                                            id="CompletedDatePicker" placeholder="DD/MM/YYYY"
+                                                        >Completed Date</label>
+                                                        <input type="date" className="input-field"
+                                                            defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
+                                                            onChange={(e) => setSaveData({
+                                                                ...saveData, CompletedDate: Moment(e.target.value).format("MM-DD-YYYY")
+                                                            })}
                                                         />
                                                     </div>
                                                     <div className="col pe-0">
@@ -703,7 +678,6 @@ const EditTaskPopup = (Items: any) => {
                                                                     </>
                                                                 }
                                                             </div>
-
                                                             <div
                                                                 className="form-check">
                                                                 <label>Approval</label>
@@ -731,13 +705,9 @@ const EditTaskPopup = (Items: any) => {
                                                                     <input ng-checked="isMainTermSelected(item)"
                                                                         type="radio"
                                                                         className="form-check-input" />
-                                                                </div>  </div>
-
-
-
-
+                                                                </div>
+                                                            </div>
                                                         </div>
-
                                                     </div>
                                                     <div className="col">
                                                         <div className="col-12 mb-10">
@@ -1094,7 +1064,6 @@ const EditTaskPopup = (Items: any) => {
                                                     <CommentCard siteUrl={Items.Items.siteUrl} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id}></CommentCard>
                                                 </div>
                                                 <div className="pull-right">
-
                                                 </div>
                                             </div>
                                             <div className="col-md-12">
@@ -1169,7 +1138,6 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <a style={{ margin: "3px" }} onClick={() => onImageRemove(index)}><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
                                                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                                                                     </svg></a>
-
                                                                                 </div>
                                                                             </div>
                                                                         ))}
@@ -1225,12 +1193,12 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="col-sm-12 p-0">
                                     <div className="col-md-4 text-left ps-0">
                                         <div className="d-flex   align-content-center">
-                                            Created <span>{(Items?.Items?.Created) ? (Items?.Items?.Created) : ""}</span> by <span
-                                                className="siteColor">{(Items?.Items?.Author?.Title) ? (Items?.Items?.Author?.Title) : ''}</span>
+                                            Created <span>{EditData.Created ? EditData.Created : ""}</span> by <span
+                                                className="siteColor">{EditData.Author?.Title?EditData.Author?.Title:''}</span>
                                         </div>
                                         <div>
-                                            Last modified <span>{(Items?.Items?.Modified) ? (Items?.Items?.Modified) : ''}</span> by <span
-                                                className="siteColor">{(Items?.Items?.Editor?.Title) ? (Items?.Items?.Editor?.Title) : ''}</span>
+                                            Last modified <span>{EditData.Modified? EditData.Modified :''}</span> by <span
+                                                className="siteColor">{EditData.Editor?.Title? EditData.Editor.Title: ''}</span>
                                         </div>
                                         <div>
                                             <a ng-if="isOwner===true" className="hreflink">
@@ -1292,7 +1260,7 @@ const EditTaskPopup = (Items: any) => {
                                                     ng-click="IsShowFullViewImage!=true? updateTaskRecords('UpdateTask',Item):CancelShowInFullView()" onClick={SaveData}>
                                                     Save
                                                 </button>
-                                                <button ng-show="IsShowFullViewImage" type="button" className="btn btn-default"
+                                                <button ng-show="IsShowFullViewImage" type="button" className="btn btn-default" onClick={Items.Call}
                                                     ng-click="IsShowFullViewImage!=true? updateTaskRecords('UpdateTask',Item):CancelShowInFullView()">
                                                     Close
                                                 </button>
