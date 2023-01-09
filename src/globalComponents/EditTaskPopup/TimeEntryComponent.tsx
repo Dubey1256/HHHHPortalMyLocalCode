@@ -464,7 +464,8 @@ function TimeEntryPopup(item: any) {
     }
 
     const EditData = async (item: any) => {
-        AllTimeSpentDetails=[]
+        AllTimeSpentDetails =[];
+       
         TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
         TaskTimeSheetCategoriesGrouping = TaskTimeSheetCategoriesGrouping.concat(TaskTimeSheetCategories);
         TaskTimeSheetCategoriesGrouping.push({ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 319, "Title": "Others", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": null, "TaxType": "TimesheetCategories", "Selectable": true, "ParentID": "ParentID", "SmartSuggestions": false, "ID": 319 });
@@ -1280,7 +1281,7 @@ return (
                                 />
                             </div>
                             </div>
-<div className='mb-3'>
+                            <div className='mb-3'>
                             <div className=" form-group">
                                 <label>Title</label>
                                 <input type="text" autoComplete="off"
@@ -1475,11 +1476,9 @@ return (
                                             <div className="form-check"
                                                 id="subcategorytasksPriority{{item.Id}}">
                                                 <input 
-                                                    id="subcategorytasksPriority{{item.Id}}"
-                                                    ng-click="TasksCategories(item)"
                                                     type="radio" className="form-check-input"
                                                     value={Items.Title}
-                                                    checked={selectCategories === Items.Title}
+                                                    checked={selectCategories === Items.Title?true:false}
                                                     onChange={selectCategories}
 
                                                     name="taskcategory" />
