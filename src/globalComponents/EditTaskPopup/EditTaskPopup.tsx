@@ -782,7 +782,7 @@ let PercentComplete= saveData.PercentComplete/10
 
                                                                     <input className="form-check-input"
                                                                         name="radioPriority" type="radio"
-                                                                        value="(1) High" defaultChecked={EditData.Priority === "(1) High"?true:''}
+                                                                        value="(1) High" defaultChecked={EditData.Priority === "(1) High"?true: false}
                                                                         onChange={(e:any) => setPriority("(1) High")} />High
 
                                                                 </li>
@@ -790,14 +790,14 @@ let PercentComplete= saveData.PercentComplete/10
 
                                                                     <input className="form-check-input" name="radioPriority"
                                                                         type="radio" value="(2) Normal" onChange={(e) => setPriority("(4) Normal")}
-                                                                        defaultChecked={EditData.Priority === "(4) Normal"?true:''}/>Normal
+                                                                        defaultChecked={EditData.Priority === "(4) Normal"?true:false}/>Normal
 
                                                                 </li>
                                                                 <li className="form-check">
 
                                                                     <input className="form-check-input" name="radioPriority"
                                                                         type="radio" value="(3) Low" onChange={(e) => setPriority("(1) Low")}
-                                                                        defaultChecked={EditData.Priority === "(1) Low"?true:''}></input>Low
+                                                                        defaultChecked={EditData.Priority === "(1) Low"?true:false}></input>Low
                                                                 </li>
                                                             </ul>
                                                         </div>
