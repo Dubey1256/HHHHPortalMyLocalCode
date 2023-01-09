@@ -15,7 +15,7 @@ const CreateContactComponent = (props: any) => {
         Title: '',
         FirstName: '',
     });
-    let updateCallBack =  props.userUpdateFunction;
+    let updateCallBack = props.userUpdateFunction;
     const searchedName = async (e: any) => {
         setListIsVisible(true);
         let Key: any = e.target.value.toLowerCase();
@@ -40,12 +40,12 @@ const CreateContactComponent = (props: any) => {
         try {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH');
             await web.lists.getById('edc879b9-50d2-4144-8950-5110cacc267a').items.add({
-                Title: (searchKey.FirstName[1]?searchKey.FirstName[1]:" "),
+                Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                 FirstName: searchKey.FirstName[0],
-                FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1]?searchKey.FirstName[1]:" ")
-            }).then((data)=>{
-                  setContactId(data.data.Id)
-                  console.log("request success");
+                FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " ")
+            }).then((data) => {
+                setContactId(data.data.Id)
+                console.log("request success");
             })
         } catch (error) {
             console.log("Error:", error.message);
@@ -71,10 +71,12 @@ const CreateContactComponent = (props: any) => {
             <div className="popup-section">
                 <div className="popup-container">
                     <div className="popup-content">
-                        <div className="card">
+                        <div className="card" >
                             <div className="card-header d-flex justify-content-between">
                                 <div><h3>Create Contact</h3></div>
-                                <button className="btn-close" onClick={() => props.callBack()}></button>
+                                <button className="header-btn" onClick={() => props.callBack()}>
+                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/delete.gif" />
+                                </button>
                             </div>
                             <div className="card-body my-5">
                                 <input type='text' placeholder="Enter Contact Name" onChange={(e) => searchedName(e)} className="form-control" />
@@ -89,9 +91,9 @@ const CreateContactComponent = (props: any) => {
                                 </div>
                                     : null}
                             </div>
-                            <div className="card-footer justify-content-end">
-                                <button className="btn btn-primary mx-1" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
-                                <button onClick={() => props.callBack()} className="btn btn-danger mx-1">Cancel</button>
+                            <div className="card-footer d-flex flex-row-reverse">
+                                <button onClick={() => props.callBack()} className="cancel-btn">Cancel</button>
+                                <button className="save-btn" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
                             </div>
                         </div>
                     </div>

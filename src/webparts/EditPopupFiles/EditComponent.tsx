@@ -785,8 +785,8 @@ function EditInstitution(item: any) {
                                                                             <option key={i} defaultValue={EditData.ItemRankTitle} >{EditData.ItemRankTitle == h.rankTitle ? EditData.ItemRankTitle : h.rankTitle}</option>
                                                                         )
                                                                     })}
-                                                                </select>
-                                                            </div>
+                                                                                </select>
+                                                                            </div>
                                                         </div>
                                                         <div className="row mb-10">
                                                             <div className="col-sm-6 ps-0">

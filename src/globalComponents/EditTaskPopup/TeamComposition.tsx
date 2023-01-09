@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
+import '../../webparts/cssFolder/Style.scss';
 import axios, { AxiosResponse } from 'axios';
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
 //import { BiTime, BiCalendar } from 'react-icons/Bi';
@@ -10,6 +11,7 @@ import { Web } from "sp-pnp-js"
 import { Moment } from 'moment';
 import * as moment from 'moment';
 import TimeEntryPopup from './TimeEntryComponent';
+import { FaSolarPanel } from 'react-icons/fa';
 
 
 const BaseUrl = "SP"
@@ -622,17 +624,17 @@ const changeTimesDec=(items:any)=>{
 
 
 
-                                    <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="assign-User" ng-repeat="user in taskUsers">
-                                        <fieldset ng-if="user.childs.length >0" className="team">
-                                            <legend className="ng-binding BdrBtm" style={{ marginBottom: "7px !important" }}>
+                                    <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign" ng-repeat="user in taskUsers">
+                                        <div ng-if="user.childs.length >0" className="team">
+                                            <label className="BdrBtm" >
                                                 {index.Title}
-                                            </legend>
+                                            </label>
 
-
-                                            {index.childs.map(function (item: any, index: any) {
+                                      <div className='d-flex'>
+                                      {index.childs.map(function (item: any, index: any) {
                                                 return (
                                                     <>
-                                                        <div className="marginR41">
+                                                        <div>
                                                             {(item.Item_x0020_Cover != undefined && item.Item_x0020_Cover.Url != undefined) &&
                                                                 <span>
                                                                     <img className="AssignUserPhoto" ui-draggable="true"
@@ -653,22 +655,24 @@ const changeTimesDec=(items:any)=>{
                                                     </>
                                                 )
                                             })}
-                                        </fieldset>
+                                      </div>
+                                         
+                                        </div>
                                     </div>
                                 )
                             })}
 
                         </div>
-                        <div className="col-sm-12 padL-0 PadR0 mb-10 mt-10" style={{ marginLeft: "9px!important" }}>
-                            <div className="col-sm-7 padL-0 PadR0">
-                                <h3 className="md2 mb2 fontSize15 bold mt-0">Team Members</h3>
-                                <div className="col-sm-12 padL-0 PadR0 UserTimeTabGray">
+                        <div className="row">
+                            <div className="col-sm-7 ">
+                                <h6>Team Members</h6>
+                                <div className="d-flex UserTimeTabGray  p-1">
 
-                                    <div className="col-sm-5 padL-0 PadR0" style={{ borderRight: "1px solid #666363", paddingBottom: "10px" }}>
+                                    <div className="border-end col-sm-5 p-0">
                                         {props.props.Items.Item_x0020_Type == undefined &&
-                                            <div ng-show="" className="col-sm-12 PadR0 padL-0" onDragEnd={drop}>
-                                                <div className=" PtL-5">
-                                                    <div style={{ width: "100%", display: "Flex" }}>
+                                         
+                                                <div className='col' ng-show="" onDragEnd={drop} >
+                                                    <div>
                                                         <div>
                                                             {ResponsibleTeams.map((image: any, index) => {
                                                                 return (
@@ -715,12 +719,12 @@ const changeTimesDec=(items:any)=>{
                                                     }
 
                                                 </div>
-                                            </div>
+                                         
                                         }
 
                                         {props.props.Items.Item_x0020_Type != undefined &&
-                                            <div ng-show="Item_x0020_Type != undefined" className="col-sm-12 PadR0 padL-0" onDragEnd={drop}>
-                                                <div className=" PtL-5">
+                                            <div ng-show="Item_x0020_Type != undefined" className="row" onDragEnd={drop}>
+                                                <div className="">
                                                     <div style={{ width: "100%", display: "Flex" }}>
                                                         {AssignedToUser.map((image: any, index) => {
                                                             return (
@@ -773,21 +777,21 @@ const changeTimesDec=(items:any)=>{
                                             </div>
                                         }
                                     </div>
-                                    <div className="col-sm-7 padL-0 PadR0">
+                                    <div className="col-sm-7 ps-2 pe-0">
                                         {props.props.Items.Item_x0020_Type == undefined &&
-                                            <div ng-show="Item_x0020_Type == undefined" className="col-sm-12 padL-0 PadR0" onDragEnd={drop}>
-                                                <div className="PtL-5">
-                                                    <div style={{ width: "100%", display: "Flex" }}>
+                                            <div ng-show="Item_x0020_Type == undefined" className="col" onDragEnd={drop}>
+                                                <div>
+                                                    <div className='d-flex'>
                                                         {TeamMemberUser.map((image: any) => {
                                                             return (
                                                                 <>
 
-                                                                    <div>
+                                                                    <FaSolarPanel>
                                                                         {image.userImage != undefined &&
                                                                             <img ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, TeamMemberUsers,'Team Members',$data)" data-toggle="popover" data-trigger="hover" className="ProirityAssignedUserPhoto" ng-repeat="image in TeamMemberUsers"
                                                                                 title={image.Title} src={image.userImage} ng-click="openTeamPage(image)" />
                                                                         }
-                                                                    </div>
+                                                                    </FaSolarPanel>
                                                                 </>
                                                             )
                                                         })}
@@ -795,12 +799,12 @@ const changeTimesDec=(items:any)=>{
                                                             return (
                                                                 <>
 
-                                                                    <div>
+                                                                    <span>
                                                                         {(image.userImage == undefined && image.Item_x0020_Cover != undefined && image.Item_x0020_Cover.Url != undefined) &&
                                                                             <img ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, TeamMemberUsers,'Team Members',$data)" data-toggle="popover" data-trigger="hover" className="ProirityAssignedUserPhoto" ng-repeat="image in TeamMemberUsers"
                                                                                 title={image.Title} src={image.userImage} ng-click="openTeamPage(image)" />
                                                                         }
-                                                                    </div>
+                                                                    </span>
                                                                 </>
                                                             )
                                                         })}
@@ -808,10 +812,10 @@ const changeTimesDec=(items:any)=>{
                                                             return (
                                                                 <>
                                                                     {(image.userImage == undefined) && (image.Item_x0020_Cover == undefined || image.Item_x0020_Cover.Url == undefined) &&
-                                                                        <div title={image.Title} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, TeamMemberUsers,'Team Members',$data)" data-toggle="popover" data-trigger="hover" ng-repeat="image in TeamMemberUsers"
+                                                                        <span title={image.Title} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, TeamMemberUsers,'Team Members',$data)" data-toggle="popover" data-trigger="hover" ng-repeat="image in TeamMemberUsers"
                                                                             ng-src={image.Suffix} ng-click="openTeamPage(image)" className="text-center create title2  ng-binding ProirityAssignedUserPhoto">
                                                                             {image.Suffix}
-                                                                        </div>
+                                                                        </span>
                                                                     }
                                                                 </>
                                                             )
@@ -826,19 +830,19 @@ const changeTimesDec=(items:any)=>{
                                             </div>
                                         }
                                         {props.props.Items.Item_x0020_Type != undefined &&
-                                            <div ng-show="Item_x0020_Type != undefined" className="col-sm-12 padL-0 PadR0" ui-on-drop="onDropTeam($event,$data,TeamMemberUsers,'Team Members',taskUsers)">
-                                                <div className="PtL-5">
-                                                    <div style={{ width: "100%", display: "Flex" }}>
+                                            <div ng-show="Item_x0020_Type != undefined" className="row" ui-on-drop="onDropTeam($event,$data,TeamMemberUsers,'Team Members',taskUsers)">
+                                                <div className="">
+                                                    <div className='d-flex'>
                                                         {TeamMemberUser.map((image: any) => {
                                                             return (
                                                                 <>
 
-                                                                    <div>
+                                                                    <span>
                                                                         {image.userImage != undefined &&
                                                                             <img ui-draggable="true" ng-if="" on-drop-success="dropSuccessHandler($event, $index, TeamMemberUsers,'Team Members',$data)" data-toggle="popover" data-trigger="hover" className="ProirityAssignedUserPhoto" ng-repeat="image in TeamMemberUsers"
                                                                                 title={image.Title} src={image.userImage} ng-click="openTeamPage(image)" />
                                                                         }
-                                                                    </div>
+                                                                    </span>
                                                                 </>
                                                             )
                                                         })}
@@ -846,12 +850,12 @@ const changeTimesDec=(items:any)=>{
                                                         {TeamMemberUser.map((image: any) => {
                                                             return (<>
 
-                                                                <div>
+                                                                <span>
                                                                     {(image.userImage == undefined && image.Item_x0020_Cover != undefined && image.Item_x0020_Cover.Url != undefined) &&
                                                                         <img ui-draggable="true" ng-if="" on-drop-success="dropSuccessHandler($event, $index, TeamMemberUsers,'Team Members',$data)" data-toggle="popover" data-trigger="hover" className="ProirityAssignedUserPhoto" ng-repeat="image in TeamMemberUsers"
                                                                             src={image.Item_x0020_Cover.Url} ng-click="openTeamPage(image)" />
                                                                     }
-                                                                </div>
+                                                                </span>
                                                             </>)
                                                         })}
                                                         {TeamMemberUser.map((image: any) => {
@@ -859,11 +863,11 @@ const changeTimesDec=(items:any)=>{
                                                                 <>
                                                                     {
                                                                         (image.userImage == undefined && image.Item_x0020_Cover == undefined || image.Item_x0020_Cover.Url == undefined) &&
-                                                                        <div ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, TeamMemberUsers,'Team Members',$data)" data-toggle="popover" data-trigger="hover" ng-repeat="image in TeamMemberUsers"
+                                                                        <span ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, TeamMemberUsers,'Team Members',$data)" data-toggle="popover" data-trigger="hover" ng-repeat="image in TeamMemberUsers"
                                                                             title={image.Title} ng-click="openTeamPage(image)"
                                                                             className="text-center create title2  ng-binding ProirityAssignedUserPhoto">
                                                                             {image.Suffix}
-                                                                        </div>
+                                                                        </span>
                                                                     }
                                                                 </>
                                                             )
@@ -880,11 +884,11 @@ const changeTimesDec=(items:any)=>{
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-sm-3 padL-0 PadR0" ng-show="Item_x0020_Type == undefined">
-                                <h3 className="md2 mb2 Ml-13 fontSize15 bold mt-0">Working Members</h3>
-                                <div className="col-sm-12 PadR0" ui-on-drop="onDropTeam1($event,$data,AssignedToUsers,'Assigned User',taskUsers)">
-                                    <div className="TimeTabBox PtL-5" style={{ height: "70px" }}>
-                                        <div style={{ width: "100%", display: "Flex" }}>
+                            <div className="col-sm-3" ng-show="Item_x0020_Type == undefined">
+                                <h6>Working Members</h6>
+                                <div className="col" ui-on-drop="onDropTeam1($event,$data,AssignedToUsers,'Assigned User',taskUsers)">
+                                    <div className="working-box p-1" >
+                                        <div>
 
                                             {AssignedToUser.map((image: any) => {
                                                 return (
@@ -940,14 +944,14 @@ const changeTimesDec=(items:any)=>{
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-sm-2 padL-0">
-                                <div className="mt-10" style={{ float: "right" }}>
+                            <div className="col-sm-2 ">
+                           
                                     <div ui-on-drop="onDropRemoveTeam($event,$data, taskUsers)">
-                                        <img ng-show="Item.Portfolio_x0020_Type=='Component'" style={{ height: "80px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
+                                        <img className='full_width'  ng-show="Item.Portfolio_x0020_Type=='Component'"  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
                                         {/* <img ng-show="Item.Portfolio_x0020_Type=='Service'" title="Drag user here to  remove user from team for this Network Activity." className="height80" ng-src="{{site_Url}}/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" />
                             <img ng-show="Item.Portfolio_x0020_Type=='Events'" title="Drag user here to  remove user from team for this Network Activity." className="height80" ng-src="{{site_Url}}/SiteCollectionImages/ICONS/Event_Icons/icon_Dustbin-orange.png" /> */}
                                     </div>
-                                </div>
+                            
                             </div>
 
                             <div className='col'>

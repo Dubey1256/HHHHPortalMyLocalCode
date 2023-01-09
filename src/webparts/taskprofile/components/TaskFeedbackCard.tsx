@@ -228,10 +228,10 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                             <div className="col-sm-11 p-0">
                               <div>
                               {fbComment.AuthorName} - {fbComment.Created}
-                                <a onClick={()=>this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
-                                <a onClick={()=>this.clearComment(false, k, 0)}><img src='/_layouts/images/delete.gif'></img></a>
+                                <a className="ps-1" onClick={()=>this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
+                                <a className="ps-1" onClick={()=>this.clearComment(false, k, 0)}><img src='/_layouts/images/delete.gif'></img></a>
                               </div>
-                              <div>{fbComment.Title}</div>
+                              <div><span  dangerouslySetInnerHTML={{ __html:fbComment.Title}}></span></div>
                             </div>
                           </div>
                         </div>
@@ -274,7 +274,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
 
             <div className="border p-2 full-width">
-              <span className="ng-binding">{fbSubData.Title.replace(/<[^>]*>/g, '')}</span>
+              <span className="ng-binding"><span  dangerouslySetInnerHTML={{ __html:fbSubData.Title.replace(/<[^>]*>/g, '')}}></span></span>
               <div className="feedbackcomment col-sm-12 PadR0 mt-10">
               {fbSubData.Comments != null && fbSubData.Comments.length > 0 && fbSubData.Comments.map( (fbComment:any,k:any)=> {
                 return <div className="col-sm-12 mb-2 add_cmnt ng-scope">
@@ -286,10 +286,10 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                             <div className="col-sm-11 pad0">
                               <div className="ng-binding">
                               {fbComment.AuthorName} - {fbComment.Created}
-                                <a onClick={()=>this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
-                                <a onClick={()=>this.clearComment(true, k, j)}><img src='/_layouts/images/delete.gif'></img></a>
+                                <a className="ps-1" onClick={()=>this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
+                                <a className="ps-1" onClick={()=>this.clearComment(true, k, j)}><img src='/_layouts/images/delete.gif'></img></a>
                               </div>
-                              <div className="ng-binding">{fbComment.Title}</div>
+                              <div className="ng-binding"><span  dangerouslySetInnerHTML={{ __html:fbComment.Title}}></span></div>
                             </div>
                           </div>
                         </div>

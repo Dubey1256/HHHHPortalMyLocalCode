@@ -90,7 +90,6 @@
         }
       ]
     },
-
     "h-rjointcontactserach-web-part": {
       "components": [
         {
@@ -131,12 +130,19 @@
         }
       ]
     },
-
     "categories-weekly-multiple-report-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/categoriesWeeklyMultipleReport/CategoriesWeeklyMultipleReportWebPart.js",
           "manifest": "./src/webparts/categoriesWeeklyMultipleReport/CategoriesWeeklyMultipleReportWebPart.manifest.json"
+        }
+      ]
+    },
+    "hr-contact-search-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hrContactSearch/HrContactSearchWebPart.js",
+          "manifest": "./src/webparts/hrContactSearch/HrContactSearchWebPart.manifest.json"
         }
       ]
     }
@@ -171,13 +177,12 @@
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
-
     "HRjointcontactserachWebPartStrings": "lib/webparts/hRjointcontactserach/loc/{locale}.js",
     "HRjointcontactprofileWebPartStrings": "lib/webparts/hRjointcontactprofile/loc/{locale}.js",
     "HrContractsearchWebPartStrings": "lib/webparts/hrContractsearch/loc/{locale}.js",
     "HRcontractProfileWebPartStrings": "lib/webparts/hRcontractProfile/loc/{locale}.js",
     "ProjectmanagementOverviewToolWebPartStrings": "lib/webparts/projectmanagementOverviewTool/loc/{locale}.js",
-    
-    "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js"
+    "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
+    "HrContactSearchWebPartStrings": "lib/webparts/hrContactSearch/loc/{locale}.js"
   }
 }

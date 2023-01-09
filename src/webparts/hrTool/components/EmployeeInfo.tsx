@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
 import Information from './TaxInformation';
-import SalarySlipPopup from './SalarySlipPopup';
+import SalarySlipPopup from './SalarySlipPopup'
 import { Web } from "sp-pnp-js";
 import { useEffect, useState ,useCallback} from 'react';
 import * as moment from 'moment';

@@ -555,7 +555,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <div className="card">
                 <ul className="list-unstyled">
                 {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 && this.state.Result["Comments"].slice(0,3).map( (cmtData:any,i:any)=> {
-                  return <li className="media ng-scope">
+                  return <li className="media ng-scope d-flex ng-scope p-1">
                     <span className="round pt-2">
                       <img className="align-self-start mr-3" title={cmtData.AuthorName}
                           src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ? 

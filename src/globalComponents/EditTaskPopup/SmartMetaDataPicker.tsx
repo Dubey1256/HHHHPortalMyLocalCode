@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as $ from 'jquery';
-import '../../webparts/taskDashboard/components/foundation.scss';
+//import '../../webparts/taskDashboard/components/foundation.scss';
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../../webparts/taskDashboard/components/TaskDashboard.scss';
+import '../../webparts/cssFolder/Style.scss';
+//import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 const Picker=(item:any)=>{
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(false);
     const [AllCategories, setAllCategories] = React.useState([]);
