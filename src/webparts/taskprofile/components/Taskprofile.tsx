@@ -267,8 +267,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     if (listName.toLowerCase() == 'Offshore tasks')
       siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png';
-  
-    return siteicon;
+    
+    if (listName.toLowerCase() == 'kathabeck')
+      siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png';
+    
+      return siteicon;
   }
 
   private GetUserObjectFromCollection(UsersValues:any){  
@@ -681,7 +684,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
             </ul>
           </div>
           </div>
-          
+
         }
       
       <section className='row p-0'>
@@ -887,7 +890,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                     this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
-                      <div className="Addcomment">
+                      <div className={"Addcomment "+ styles.manage_gap}>
                         {this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
                           return <TaskFeedbackCard feedback = {fbData} index={i+1} 
                                                   onPost={()=>{this.onPost()}} 
