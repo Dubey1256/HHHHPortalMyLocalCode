@@ -172,7 +172,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     let tempTask = {
       SiteIcon : this.GetSiteIcon(this.state.listName),
-      ID: 'T'+taskDetails["ID"],
+      Id: taskDetails["ID"],
+      ID: taskDetails["ID"],
+      TaskId : "T"+taskDetails["ID"],
       Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"],
       Categories: taskDetails["Categories"],
@@ -697,7 +699,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
             <div className='col-md-4 p-0'>
               <dl>
                 <dt className='bg-fxdark'>Task Id</dt>
-                <dd className='bg-light' ng-show="Task.Shareweb_x0020_ID!=undefined" ng-repeat="taskId in maincollection">{this.state.Result["ID"]}</dd>
+                <dd className='bg-light' ng-show="Task.Shareweb_x0020_ID!=undefined" ng-repeat="taskId in maincollection">{this.state.Result["TaskId"]}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Due Date</dt>
