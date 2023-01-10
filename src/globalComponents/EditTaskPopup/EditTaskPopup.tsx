@@ -17,7 +17,7 @@ import axios, { AxiosResponse } from 'axios';
 import "bootstrap/js/dist/tab.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import LinkedComponent from './LinkedComponent';
-import '../../../src/webparts/cssFolder/Style.scss';
+// import '../../../src/webparts/cssFolder/Style.scss';
 var AllMetaData: any = []
 var taskUsers: any = []
 var myarray: any = [];

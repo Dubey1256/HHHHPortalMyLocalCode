@@ -2,7 +2,7 @@ import * as React from "react";
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 //import '../../webparts/taskDashboard/components/foundation.scss';
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../../webparts/cssFolder/Style.scss';
+// import '../../webparts/cssFolder/Style.scss';
 const { useState,useCallback } = React;
 import { memo } from "react";
 

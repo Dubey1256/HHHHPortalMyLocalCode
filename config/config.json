@@ -152,17 +152,13 @@
       "path": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js",
       "globalName": "jQuery"
     },
-    "bootstrap-css": {
-      "path": "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css",
-      "globalName": "Common-css"
+    "GlobalCss":{
+      "path":"https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/SPFx/CSS/Style.scss",
+      "globalName": "CustomCss"
     },
-    "bootstrap-js": {
-      "path": "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js",
-      "globalName": "common-js"
-    },
-    "bootstrap": {
-      "path": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js Jump ",
-      "globalName": "bootstrap"
+    "GlobalSiteColor":{
+      "path":"https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/SPFx/CSS/site_color.scss",
+      "globalName": "SiteColor"
     }
   },
   "localizedResources": {
