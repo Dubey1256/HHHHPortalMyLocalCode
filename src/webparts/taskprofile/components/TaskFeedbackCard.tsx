@@ -27,8 +27,6 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
  
   constructor(props: ITaskFeedbackProps) {
     super(props);
-    console.log('In Task Feedback Component');
-    console.log(this.props.feedback);
     this.state = {
         showcomment : 'none',
         showcomment_subtext : 'none',
