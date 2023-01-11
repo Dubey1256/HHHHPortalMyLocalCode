@@ -21,6 +21,7 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 // import { NavItem } from 'react-bootstrap';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
+import EditInstituton from '../../EditPopupFiles/EditComponent'
 function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
@@ -30,7 +31,10 @@ function Portfolio({ ID }: any) {
     const [datak, setdatak] = React.useState([])
     const [dataj, setdataj] = React.useState([])
     const [datams, setdatams] = React.useState([])
+    const [datamb, setdatamb] = React.useState([])
     const [FolderData, SetFolderData] = React.useState([]);
+    const [IsComponent, setIsComponent] = React.useState(false);
+    const [SharewebComponent, setSharewebComponent] = React.useState('');
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
         setIsActive(false);
@@ -62,6 +66,12 @@ function Portfolio({ ID }: any) {
         setIsActive(true);
         item.showm = item.showm = item.showm == true ? false : true;
         setdatams(datams => ([...datams]));
+    };
+    const handleOpen6 = (item: any) => {
+        setIsActive(current => !current);
+        setIsActive(true);
+        item.showm = item.showb = item.showb == true ? false : true;
+        setdatamb(datamb => ([...datamb]));
     };
     React.useEffect(() => {
         var folderId: any = "";
@@ -170,6 +180,18 @@ function Portfolio({ ID }: any) {
     //    Get Folder data
     const [lgShow, setLgShow] = React.useState(false);
     const handleClose = () => setLgShow(false);
+
+    const EditComponentPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+
+    const Call = React.useCallback((item1) => {
+        setIsComponent(false);
+       
+    }, []);
     return (
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
             {/* breadcrumb & title */}
@@ -201,17 +223,26 @@ function Portfolio({ ID }: any) {
                 <div className='row'>
                     <div className='p-0' style={{ verticalAlign: "top" }}>
                         {data.map(item =>
+                        <>
                             <h2 className='headign'>
                                 {item.Portfolio_x0020_Type == 'Component' &&
                                     <>
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>
+                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a> 
+                                        <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                                        </span>
                                     </>
                                 }
                                 {item.Portfolio_x0020_Type == 'Service' &&
                                     <>
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>
+                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a> 
+                                        <span>
+                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+                        
+                                        </span>
+
                                     </>}
                             </h2>
+                            </>
                         )}
                     </div>
                 </div>
@@ -452,6 +483,29 @@ function Portfolio({ ID }: any) {
                         </div>
                         <section className='row  accordionbox'>
                             <div className="accordion p-0  overflow-hidden">
+                                  {/* description */}
+                                {data.map(item =>
+                                    <>
+                                        {item.Body !== null &&
+                                            <div className="card shadow-none  mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen6(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showb ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>   Description</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.showb &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                {data.map(item =>
+                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
+                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                    </p>)}
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        } </>)}
+
                                 {/* Short description */}
                                 {data.map(item =>
                                     <>
@@ -631,7 +685,10 @@ function Portfolio({ ID }: any) {
                     )
                 })}
             </div>
+            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} ></EditInstituton>}
         </div>
+
+
     )
 }
 export default Portfolio;

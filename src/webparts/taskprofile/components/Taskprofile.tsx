@@ -163,8 +163,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .get()
       
     console.log(taskDetails);
-    taskDetails["siteType"] = this.state.listName;
-    taskDetails["siteUrl"] = this.props.siteUrl;
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
 
@@ -174,8 +172,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SiteIcon : this.GetSiteIcon(this.state.listName),
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      siteType: taskDetails["siteType"],
-      siteUrl: taskDetails["siteUrl"],
       TaskId : "T"+taskDetails["ID"],
       Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"],
@@ -888,7 +884,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                   })}
                   </div>
                   }
-                  <div className="col-sm-8 pe-0">
+                  <div className="col-sm-8 pe-0 mt-2">
                     {this.state.Result["SharewebTaskType"] !=null && (this.state.Result["SharewebTaskType"] =='' || 
                     this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 

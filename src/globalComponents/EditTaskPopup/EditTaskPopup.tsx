@@ -177,7 +177,7 @@ const EditTaskPopup = (Items: any) => {
             }
 
             smartMeta.map((item: any) => {
-                item.saveImage = []
+                let saveImage = []
                 if (item.PercentComplete != undefined) {
                     item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
                 }
@@ -185,7 +185,7 @@ const EditTaskPopup = (Items: any) => {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
                 }
                 if (item.BasicImageInfo != undefined) {
-                    item.saveImage.push(JSON.parse(item.BasicImageInfo))
+                    saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
                 if (item.Priority_x0020_Rank != undefined) {
                     currentUsers.map((rank: any) => {
@@ -194,6 +194,9 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                 }
+                let saveImgArray = saveImage[0];
+                item.AssignedUserName = saveImgArray[1].UserName;
+                item.AssignedUserImage = saveImgArray[1].UserImage;
                 setEditData(item)
                 setPriorityStatus(item.Priority)
             })
@@ -454,7 +457,7 @@ const EditTaskPopup = (Items: any) => {
                                     <button className="nav-link" id="TIME-SHEET" data-bs-toggle="tab" data-bs-target="#TIMESHEET" type="button" role="tab" aria-controls="TIMESHEET" aria-selected="false">TIMESHEET</button>
                                 </ul>
                                 {/* {EditData.map((items: any) => {
-                                    return ( 
+                                    return (
                                         <> */}
                                 <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                                     <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
@@ -475,7 +478,7 @@ const EditTaskPopup = (Items: any) => {
                                                         ng-required="true" defaultValue={EditData.Title} onChange={(e) => setSaveData({ ...saveData, Title: e.target.value })} />
                                                 </div>
                                                 <div className="mx-0 row  mb-10">
-                                                    <div className="col">
+                                                    <div className="col ps-0 mt-2">
                                                         <label className="form-label" >Start Date</label>
                                                         <input type="date" className="form-control"
                                                             defaultValue={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ''}
@@ -484,7 +487,7 @@ const EditTaskPopup = (Items: any) => {
                                                             })}
                                                         />
                                                     </div>
-                                                    <div className="col">
+                                                    <div className="col pe-0 mt-2">
 
                                                         <label className="form-label">Due Date</label>
                                                         <span title="Re-occurring Due Date">
@@ -500,7 +503,7 @@ const EditTaskPopup = (Items: any) => {
                                                             })}
                                                         />
                                                     </div>
-                                                    <div className="col">
+                                                    <div className="col ps-0 mt-2">
                                                         <label className="form-label"
                                                         >Completed Date</label>
                                                         <input type="date" className="form-control"
@@ -510,7 +513,7 @@ const EditTaskPopup = (Items: any) => {
                                                             })}
                                                         />
                                                     </div>
-                                                    <div className="col">
+                                                    <div className="col pe-0 mt-2">
                                                         <label className="form-label">Item Rank</label>
                                                         <select className="form-select" defaultValue={EditData.Priority_x0020_Rank} onClick={(e) => saveItemrank(e)}>
                                                             {currentUsers.map(function (h: any, i: any) {
@@ -521,7 +524,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div className="mx-0 row  mb-10">
+                                                <div className="mx-0 row  mb-10 mt-2">
                                                     <div className="col ps-0">
                                                         <div className="input-group mb-10">
                                                             <label ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
@@ -636,7 +639,6 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="fa fa-pencil ml-10"
                                                                         aria-hidden="true"></i>
                                                                     </span>
-
                                                                 </div>
                                                                 {/* samir commented {Items != undefined && Items.Items != undefined && Items.Items.Categories != "" ?
                                                                     <>
@@ -645,10 +647,8 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a className="hreflink" ng-click="removeSmartComponent(item.Id)"></a>
                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
                                                                             <span className="input-group-text">
-
                                                                                 <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                     onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
-
                                                                             </span>
                                                                         </div>
                                                                     </> :
@@ -660,9 +660,6 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a className="hreflink" ng-click="removeSmartComponent(item.Id)"></a>
                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
                                                                             <span className="input-group-text">
-
-
-
                                                                             </span>
                                                                         </div>
                                                                     </> :
@@ -676,8 +673,6 @@ const EditTaskPopup = (Items: any) => {
                                                                                 </span>
                                                                             </div>
                                                                         }
-
-
                                                                     </>
                                                                 }
                                                             </div>
@@ -718,25 +713,31 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="text" className="form-control"
                                                                 placeholder="Priority" defaultValue={PriorityStatus ? PriorityStatus : ''}
                                                             />
-                                                            <ul>
+                                                            <ul className="p-0 mt-1">
                                                                 <li className="form-check">
 
                                                                     <input className="form-check-input"
                                                                         name="radioPriority" type="radio"
                                                                         value="(1) High" checked={PriorityStatus === "(1) High"}
-                                                                        onChange={(e: any) => setPriority("(1) High")} />High
-
+                                                                        onChange={(e: any) => setPriority("(1) High")}
+                                                                    />
+                                                                    <label className="form-check-label">High</label>
                                                                 </li>
                                                                 <li className="form-check">
 
                                                                     <input className="form-check-input" name="radioPriority"
                                                                         type="radio" value="(2) Normal" onChange={(e) => setPriority("(2) Normal")}
-                                                                        checked={PriorityStatus === "(2) Normal"} />Normal
+                                                                        checked={PriorityStatus === "(2) Normal"}
+                                                                    />
+                                                                    <label className="form-check-label">Normal</label>
                                                                 </li>
                                                                 <li className="form-check">
                                                                     <input className="form-check-input" name="radioPriority"
                                                                         type="radio" value="(3) Low" onChange={(e) => setPriority("(3) Low")}
-                                                                        checked={PriorityStatus === "(3) Low"}></input>Low
+                                                                        checked={PriorityStatus === "(3) Low"}
+                                                                    />
+                                                                    <label className="form-check-label">Low</label>
+
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -761,7 +762,6 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </div>
                                                             <div>
-
                                                                 {((Items.Items.linkedComponent != undefined) && (Items.Items.linkedComponent.length > 0)) ?
                                                                     <>
                                                                         {Items.Items.linkedComponent.map((com: any) => {
@@ -1009,49 +1009,63 @@ const EditTaskPopup = (Items: any) => {
                                                         defaultChecked={true}/> {PercentComplete}</>} */}
                                                 </div>
                                                 <div className="row">
-                                                    <div className="col time-status">
+                                                    <div className="col mt-2 time-status">
                                                         <div>
                                                             <label className="form-label" ng-bind-html="GetColumnDetails('time') | trustedHTML">Time</label>
 
                                                             <input type="text" className="form-control" placeholder="Time"
                                                                 defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} />
-                                                            <ul style={{ paddingLeft: "0rem !important" }}>
+                                                            <ul className="p-0 mt-1">
                                                                 <li className="form-check">
                                                                     <input name="radioTime" className="form-check-input"
                                                                         checked={EditData.Mileage === '15'} type="radio"
-                                                                        onChange={(e) => setEditData({ ...EditData, Mileage: '15' })} defaultChecked={EditData.Mileage == "05" ? true : false} />Very
-                                                                    Quick
+                                                                        onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
+                                                                        defaultChecked={EditData.Mileage == "15" ? true : false}
+                                                                    />
+                                                                    <label className="form-check-label">Very Quick</label>
+
                                                                 </li>
                                                                 <li className="form-check">
                                                                     <input name="radioTime" className="form-check-input"
                                                                         checked={EditData.Mileage === '60'} type="radio"
-                                                                        onChange={(e) => setEditData({ ...EditData, Mileage: '60' })} defaultChecked={EditData.Mileage == "15"} />Quick
+                                                                        onChange={(e) => setEditData({ ...EditData, Mileage: '60' })}
+                                                                        defaultChecked={EditData.Mileage == "60"}
+                                                                    />
+                                                                    <label className="form-check-label">Quick</label>
+
                                                                 </li>
                                                                 <li className="form-check">
                                                                     <input name="radioTime" className="form-check-input"
                                                                         checked={EditData.Mileage === '240'} type="radio"
-                                                                        onChange={(e) => setEditData({ ...EditData, Mileage: '240' })} defaultChecked={EditData.Mileage == "60"} />Medium
+                                                                        onChange={(e) => setEditData({ ...EditData, Mileage: '240' })}
+                                                                        defaultChecked={EditData.Mileage == "240"}
+                                                                    />
+                                                                    <label className="form-check-label">Medium</label>
+
                                                                 </li>
                                                                 <li className="form-check">
                                                                     <input name="radioTime" className="form-check-input"
                                                                         checked={EditData.Mileage === '480'} type="radio"
-                                                                        onChange={(e) => setEditData({ ...EditData, Mileage: '480' })} defaultChecked={EditData.Mileage == "240"} />Long
+                                                                        onChange={(e) => setEditData({ ...EditData, Mileage: '480' })}
+                                                                        defaultChecked={EditData.Mileage == "480"}
+                                                                    />
+                                                                    <label className="form-check-label">Long</label>
                                                                 </li>
                                                             </ul>
                                                         </div>
                                                     </div>
-                                                    <div className="col">
+                                                    <div className="col mt-2">
                                                         <div className="input-group" ng-if="AssignedToUsers.length>0">
-                                                            <label className="form-label">Task Users</label>
+                                                            <label className="form-label mx-2">Task Users</label>
                                                             <div className="TaskUsers">
                                                                 <a ng-if="image.userImage!=undefined"
                                                                     ng-repeat="image in AssignedToUsers"
                                                                     target="_blank"
                                                                     href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Santosh%20Kumar.png">
-                                                                    <img ui-draggable="true" className="rounded"
+                                                                    <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={EditData.AssignedUserName ? EditData.AssignedUserName : ''}
                                                                         on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                        data-toggle="popover" data-trigger="hover" style={{ width: "25px" }}
-                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Santosh%20Kumar.png"
+                                                                        data-toggle="popover" data-trigger="hover" style={{ width: "35px", height:"35px", marginLeft:"10px", borderRadius: "50px" }}
+                                                                        src={EditData.AssignedUserImage ? EditData.AssignedUserImage : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                     />
                                                                 </a>
                                                             </div>
@@ -1068,7 +1082,6 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                         </div>
                                         <div className="row py-3">
-
                                             {ImageSection.map(function (Image: any) {
                                                 return (
                                                     <div ng-show="selectedAdminImageUrl != undefined && selectedAdminImageUrl != ''"
@@ -1082,9 +1095,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                                                     </svg>
                                                                 </a>
-
                                                             </span>
-
                                                             <div className="img">
                                                                 <a className="sit-preview hreflink preview" target="_blank"
                                                                     rel="{{BasicImageUrl.Url}}" href="{{BasicImageUrl.Url}}">
@@ -1118,7 +1129,6 @@ const EditTaskPopup = (Items: any) => {
                                                             isDragging,
                                                             dragProps
                                                         }: any) => (
-                                                            // write your building UI
                                                             <div className="upload__image-wrapper">
                                                                 <a
                                                                     style={isDragging ? { color: "red" } : { color: "darkblue" }}

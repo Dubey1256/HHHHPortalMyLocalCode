@@ -11,8 +11,6 @@ import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 import { sp } from "@pnp/sp";
 import "@pnp/sp/sputilities";
- import '../../webparts/cssFolder/Style.scss'
- import '../../webparts/cssFolder/site_color.scss'
 export interface ICommentCardProps {
   siteUrl? : string;
   userDisplayName? : string;
