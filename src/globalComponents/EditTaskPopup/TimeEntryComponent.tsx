@@ -806,8 +806,8 @@ function TimeEntryPopup(item: any) {
         var UpdatedData: any = {}
          smartTermId = "Task" + item.props.siteType + "Id";
 
-
-        var AddedData: any = []
+    
+    var AddedData: any = []
 
         if (checkCategories == undefined && checkCategories == undefined) {
             alert("please select category or Title");

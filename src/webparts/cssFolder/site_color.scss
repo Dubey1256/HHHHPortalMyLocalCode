@@ -1,6 +1,6 @@
 /*------comman class --------------
 ---------------------------------*/
-a:active, a:hover, a:link, a:visited{
+a:active, a:hover, a:link, a:visited, .Addcomment a {
     color: #000069 !important;
     text-decoration: none;
 }
@@ -38,10 +38,8 @@ background-color: #f4f4f4;
 
 /*------comman class end --------------
 ---------------------------------*/
-.headign a{
-    color: #000069 ;
-}
-.fw-medium, .panel-title, .headign a, .spfxbreadcrumb li a,  svg {
+
+.fw-medium, .card-title, .headign, .panel-title, .headign a, .spfxbreadcrumb li a,  svg {
     color: #000069;
 }
 /*------breadcrumb class --------------
@@ -72,8 +70,11 @@ background-color: #f4f4f4;
 
 }
 .Sitecomposition .btn-secondary:hover{
-    color: #fff;
+    color: #fff !important;
     background: #000069;
+  }
+  .Sitecomposition a svg:hover{
+    color: #fff;
   }
 
 
@@ -149,9 +150,7 @@ background-color: #f4f4f4;
   }
 
   .serviepannelgreena .spfxbreadcrumb svg {
-
     font-size: 23px;
-
 }
 
 
