@@ -545,21 +545,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
                                         <div className="commentMedia">
             {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 &&
-              <div className="card">
+              <div>
                 <ul className="list-unstyled">
                 {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 && this.state.Result["Comments"].slice(0,3).map( (cmtData:any,i:any)=> {
-                  return <li className="media ng-scope d-flex ng-scope p-1">
-                    <span className="round pt-2  px-1">
+                  return <li className="media border p-1 my-1">
+                 
+                    <div className="media-bodyy">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span className="comment-date ng-binding">
+                        <span className="round  pe-1">
                       <img className="align-self-start " title={cmtData.AuthorName}
                           src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ? 
                           cmtData.AuthorImage  :
                             "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                             />
                     </span>
-                    <div className="media-bodyy">
-                      <div className="d-flex">
-                        <span className="comment-date pt-2 ng-binding">{cmtData.Created}</span>
-                          <div className="ml-auto media-icons pt-2">
+                          {cmtData.Created}</span>
+                          <div className="ml-auto media-icons ">
                             <a className="mx-1" onClick={()=>this.openEditModal(cmtData,i)}>
                               <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
                             </a>
@@ -568,7 +570,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             </a>
                           </div>
                       </div>
-                      <div className="col-sm-12 pad0 d-flex">
+                      <div className="row mt-1 ">
                         { cmtData.Header !='' && <h6 className="userid pt-2"><a className="ng-binding">{cmtData.Header}</a></h6>}
                       </div>
                       <p className="media-text ng-binding"><span dangerouslySetInnerHTML={{ __html: cmtData.Description}}></span></p>

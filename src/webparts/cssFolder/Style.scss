@@ -2,8 +2,17 @@
   margin: 0px;
   padding: 0px;
 }
+#navbarNavDropdown .navbar-nav>li>.dropdown-menu{
+  margin-top: 0px !important;
+}
+#navbarNavDropdown .dropdown-submenu>.dropdown-menu {
+  margin-top: 10px!important;
+}
 .CanvasComponent.LCS .CanvasSection--read:not(.CanvasSection--fullWidth) .ControlZone{
   margin: 0px;
+}
+.CanvasComponent.LCS .row{
+  margin:0px;
 }
 .t_e_8474018e {
 max-width: 1125px !important;
@@ -204,7 +213,7 @@ width: 100%;
 top right side bar
 ------------------------ */
 .card-title{
-  font: 14px;
+  font-size: 14px;
   font-weight: 600;
 }
 aside .card {
@@ -684,7 +693,12 @@ justify-content: flex-start;
 .user_Member_img {
 margin: 0 2px;
 }
-
+.user_Member_img:first-child {
+  border-right: 1px solid #ccc;
+  margin-right: 4px;
+  padding-right: 4px;
+  margin-left: 0px;
+}
 .seperator {
 font-size: 24px;
 margin: 0 2px;
@@ -736,7 +750,7 @@ color: #6f6f6f !important;
 font-size: 13px;
 line-height: 18px;
 clear: both;
-/* padding-top: 5px; */
+padding-left: 17%; 
 margin-bottom: 0px;
 word-break: break-word;
 }
@@ -772,6 +786,8 @@ padding: 1%;
 }
 .list-none{
   list-style: none;
+  margin: 0px;
+ padding: 0px;
 }
 .add_cmnt {
   padding: 5px;
@@ -779,3 +795,9 @@ padding: 1%;
   background: #fbfbfb;
   color: #000;
 }
+.commentMedia .comment-date {
+  color: #000066;
+  font-size: 11px;
+  font-weight: 600;
+}
+

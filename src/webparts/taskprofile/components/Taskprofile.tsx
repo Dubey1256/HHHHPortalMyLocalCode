@@ -8,9 +8,6 @@ import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-//import '../../cssFolder/foundation.scss';
-//import '../../cssFolder/foundationmin.scss';
-//import './Taskprofile.module.scss';
 import '../../cssFolder/Style.scss'
 import '../../cssFolder/site_color.scss'
 
@@ -166,6 +163,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .get()
       
     console.log(taskDetails);
+    taskDetails["siteType"] = this.state.listName;
+    taskDetails["siteUrl"] = this.props.siteUrl;
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
 
@@ -175,6 +174,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SiteIcon : this.GetSiteIcon(this.state.listName),
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
+      siteType: taskDetails["siteType"],
+      siteUrl: taskDetails["siteUrl"],
       TaskId : "T"+taskDetails["ID"],
       Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"],
@@ -700,7 +701,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
 <section>
   <div className='row'>
   <div className="col-9 bg-white">
-  <div className="team_member row  py-2">
+  <div className="team_member row">
             <div className='col-md-4 p-0'>
               <dl>
                 <dt className='bg-fxdark'>Task Id</dt>
@@ -736,7 +737,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                   return  <div className="user_Member_img"><img className="imgAuthor" src={rcData.userImage}></img></div>                        
                 })} 
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 &&
-                  <div className="seperator">|</div>
+                  <div></div>
                 }               
 
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
@@ -842,7 +843,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
           <div className='row'>
           <div className="d-flex p-0">
              <div className='bg-fxdark p-2'><label>Url</label></div> 
-              <div className='bg-light p-2 text-break'>
+              <div className='bg-light p-2 text-break full-width'>
               {this.state.Result["component_url"] != null &&
                       <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a> 
                     }
@@ -887,7 +888,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                   })}
                   </div>
                   }
-                  <div className="col-sm-8">
+                  <div className="col-sm-8 pe-0">
                     {this.state.Result["SharewebTaskType"] !=null && (this.state.Result["SharewebTaskType"] =='' || 
                     this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 

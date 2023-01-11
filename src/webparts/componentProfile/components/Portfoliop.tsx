@@ -592,7 +592,7 @@ function Portfolio({ ID }: any) {
                                     </div>
                                 </div>
                             )})} </>
-                               }  */}
+                               }  */} 
                             <div className='mb-3 card'>
                                 <>
                                     {data.map(item =>
