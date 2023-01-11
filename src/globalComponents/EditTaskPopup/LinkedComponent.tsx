@@ -4,7 +4,7 @@ import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Version } from '@microsoft/sp-core-library';
 //import '../../webparts/cssFolder/foundation.scss';
 import "bootstrap/dist/css/bootstrap.min.css";
-// import '../../webparts/cssFolder/Style.scss';
+import '../../webparts/cssFolder/Style.scss';
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
 const LinkedComponent = (item: any) => {

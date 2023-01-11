@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import Modal from 'react-bootstrap/Modal';
+import '../../cssFolder/Style.scss'
+import '../../cssFolder/site_color.scss';
 var TypeSite: string;
 // if(TypeSite=="Service"){
 //     require('../../cssFolder/sitecolorservice.scss');
@@ -8,6 +10,7 @@ var TypeSite: string;
 // if(TypeSite=="Component"){
 //     require('../../cssFolder/site_color.scss');
 // }
+import '../../cssFolder/site_color.scss';
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
 import Tooltip from './Tooltip';
@@ -181,7 +184,7 @@ function Portfolio({ ID }: any) {
                                         <li>
                                             {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                                             {item.Portfolio_x0020_Type != undefined &&
-                                                <a target="_blank" data-interception="off"
+                                                <a target='_blank' data-interception="off"
                                                     href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${item.Portfolio_x0020_Type}-Portfolio-SPFx.aspx`}>
                                                     {item.Portfolio_x0020_Type}-Portfolio
                                                 </a>
@@ -192,7 +195,7 @@ function Portfolio({ ID }: any) {
                                 )
                             })}
                         </ul>
-                        <span className="text-end"><a  target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
+                        <span className="text-end"><a target='_blank' data-interception="off"  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                     </div>
                 </div>
                 <div className='row'>
@@ -321,7 +324,7 @@ function Portfolio({ ID }: any) {
                                                 <dl>
                                                     <dt className='bg-fxdark'>Parent</dt>
                                                     <dd className='bg-light'>
-                                                        <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Parent.Id}`}>{item.Parent.Title}</a>
+                                                        <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Parent.Id}`}>{item.Parent.Title}</a>
                                                         <span className="pull-right">
                                                             <span className="pencil_icon">
                                                                 <span className="hreflink"
@@ -344,13 +347,13 @@ function Portfolio({ ID }: any) {
                                             {item.Portfolio_x0020_Type == "Component" &&
                                                 <dl>
                                                     <dt className='bg-fxdark'>Service Portfolio</dt>
-                                                    <dd className='bg-light'><a style={{ border: "0px" }} target="_blank" data-interception="off"  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></dd>
+                                                    <dd className='bg-light'><a style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></dd>
                                                 </dl>
                                             }
                                             {item.Portfolio_x0020_Type == "Service" &&
                                                 <dl>
                                                     <dt className='bg-fxdark'>Component Portfolio</dt>
-                                                    <dd className='bg-light'><a style={{ border: "0px" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}>{item.ComponentPortfolio.Title}</a></dd>
+                                                    <dd className='bg-light'><a style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}>{item.ComponentPortfolio.Title}</a></dd>
                                                 </dl>
                                             }
                                         </>

@@ -1,26 +1,18 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-// import '../../webparts/cssFolder/foundation.scss'
-// import '../../webparts/cssFolder/foundationmin.scss';
-// import './CommentStyle.scss';
-import '../../webparts/cssFolder/Style.scss';
-import '../../webparts/cssFolder/site_color.scss';
 import { Modal } from 'office-ui-fabric-react';
-
 import 'setimmediate'; 
 import { Editor } from "react-draft-wysiwyg";
 //import { EditorState, ContentState, convertFromHTML, convertToRaw } from 'draft-js'
 import { EditorState, convertToRaw,Modifier, ContentState, convertFromHTML } from 'draft-js';  
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from 'draftjs-to-html'; 
-
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
-
-
 import { sp } from "@pnp/sp";
 import "@pnp/sp/sputilities";
- 
+ import '../../webparts/cssFolder/Style.scss'
+ import '../../webparts/cssFolder/site_color.scss'
 export interface ICommentCardProps {
   siteUrl? : string;
   userDisplayName? : string;
@@ -517,6 +509,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                     </div>
                                     <div className='card-body'>
                                         <div className="comment-box  mb-2">
+                                            <div className='mb-1'>
                                             <span> <strong>To:</strong>  </span>
                                             {this.topCommenters != null && this.topCommenters.length>0 && this.topCommenters.map( (topCmnt:any,i:any)=> {
                   return <span>
@@ -526,7 +519,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             </a>
                           </span>
                 })}
-                  
+                  </div>
                 
                 <span>
                 <MentionsInput value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
@@ -543,7 +536,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                             <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
                                             Comment shouldn't be empty
                                         </p> */}
-                                            <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 float-end">
+                                            <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end">
                                                 Post
                                             </button>
                                         </div>
@@ -556,18 +549,18 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <ul className="list-unstyled">
                 {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 && this.state.Result["Comments"].slice(0,3).map( (cmtData:any,i:any)=> {
                   return <li className="media ng-scope d-flex ng-scope p-1">
-                    <span className="round pt-2">
-                      <img className="align-self-start mr-3" title={cmtData.AuthorName}
+                    <span className="round pt-2  px-1">
+                      <img className="align-self-start " title={cmtData.AuthorName}
                           src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ? 
                           cmtData.AuthorImage  :
                             "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                             />
                     </span>
                     <div className="media-bodyy">
-                      <div className="col-sm-12 pad0 d-flex">
+                      <div className="d-flex">
                         <span className="comment-date pt-2 ng-binding">{cmtData.Created}</span>
                           <div className="ml-auto media-icons pt-2">
-                            <a className="mr-5" onClick={()=>this.openEditModal(cmtData,i)}>
+                            <a className="mx-1" onClick={()=>this.openEditModal(cmtData,i)}>
                               <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
                             </a>
                             <a title="Delete" onClick={()=>this.clearComment(i)}>

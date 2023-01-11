@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
-// import '../../webparts/cssFolder/Style.scss';
+import '../../webparts/cssFolder/Style.scss';
 import axios, { AxiosResponse } from 'axios';
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
 //import { BiTime, BiCalendar } from 'react-icons/Bi';
@@ -116,9 +116,9 @@ const changeTimesDec=(items:any)=>{
     const GetTimeSheet = async () => { 
         var TimeSheets:any =[]
 
-         const web =new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP'); 
+         const web =new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP'); 
         
-         const res = await web.lists.getById('01A34938-8C7E-4EA6-A003-CEE649E8C67A').items
+         const res = await web.lists.getById('01A34938-8C7E-4EA6-A003-CEE649E8C67A').items
         .select("Id,Title,TaxType").top(4999).get();
         res.map((item:any)=>{
               if(item.TaxType == "TimesheetCategories"){
