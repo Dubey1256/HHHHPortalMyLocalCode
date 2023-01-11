@@ -19,6 +19,7 @@
     "@microsoft/sp-property-pane": "1.15.2",
     "@microsoft/sp-webpart-base": "1.15.2",
     "@pnp/common": "^2.11.0",
+    "@pnp/graph": "^3.10.0",
     "@pnp/logging": "^2.11.0",
     "@pnp/odata": "^2.11.0",
     "@pnp/sp": "^2.15.0",
