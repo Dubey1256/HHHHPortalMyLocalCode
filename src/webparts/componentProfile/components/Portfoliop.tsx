@@ -246,6 +246,7 @@ function Portfolio({ ID }: any) {
                 </div>
                 {data.map(item=>
                     <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                    <EditInstituton props={SharewebComponent} Call={Call} />
                     </span>
                 )}
             </section>
@@ -687,7 +688,7 @@ function Portfolio({ ID }: any) {
                     )
                 })}
             </div>
-            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} ></EditInstituton>}
+            
         </div>
 
 

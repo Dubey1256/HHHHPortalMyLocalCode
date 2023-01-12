@@ -710,6 +710,7 @@ function EditInstitution(item: any) {
         <>
             {/* <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
                 src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> */}
+                {console.log("Done")}
             <Modal
                 isOpen={modalIsOpen}
                 // onDismiss={setModalIsOpenToFalse}
@@ -717,7 +718,7 @@ function EditInstitution(item: any) {
             // {width:"1250px"}
             >
                 {/* {CompoenetItem != undefined && CompoenetItem.map(item => */}
-                {EditData.Title != undefined &&
+                {EditData != undefined && EditData.Title != undefined &&
                     <div id="EditGrueneContactSearch" >
 
                         <div className="modal-dialog modal-lg modal-fixed ">

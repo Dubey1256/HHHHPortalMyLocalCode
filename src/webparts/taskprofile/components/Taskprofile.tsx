@@ -11,6 +11,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 
 
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import { forEach } from 'lodash';
 
 export interface ITaskprofileState {  
   Result : any;
@@ -153,12 +154,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];    
+    let listInfo = await web.lists.getByTitle(this.state.listName).get();
+    console.log(listInfo);
     taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified")
-      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component","Services","Editor")
+      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified","Attachments","AttachmentFiles")
+      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component","Services","Editor","AttachmentFiles")
       .get()
       
     console.log(taskDetails);
@@ -184,9 +187,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       PercentComplete: taskDetails["PercentComplete"],
       Priority: taskDetails["Priority"],
       Created:  taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
-      Author: this.GetUserObject(taskDetails["Author"]),
+      Author: this.GetUserObject(taskDetails["Author"].Title),
       component_url: taskDetails["component_x0020_link"],
-      BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
+      //BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
+      BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"],taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : '',
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
@@ -194,7 +198,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Services : taskDetails["Services"],
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
-      ModifiedBy : taskDetails["Editor"]
+      ModifiedBy : taskDetails["Editor"],
+      listId : listInfo.Id,
+      Attachments : taskDetails["Attachments"],
+      AttachmentFiles : taskDetails["AttachmentFiles"]
     };
     
     console.log(tempTask);   
@@ -204,6 +211,31 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     },()=>{
       this.loadOtherDetailsForComponents(this.taskResult);      
     });
+  }
+
+  private GetAllImages(BasicImageInfo:any, AttachmentFiles:any, Attachments:any){
+    let ImagesInfo:any = [];
+    if(Attachments){
+      AttachmentFiles.forEach(function (Attach:any) {
+        let attachdata =BasicImageInfo.filter(function (ingInfo:any, i:any){      
+            return ingInfo.ImageName == Attach.FileName
+          });
+        if (attachdata.length == 0){
+          ImagesInfo.push({
+            ImageName : Attach.FileName,
+            ImageUrl : Attach.ServerRelativeUrl,
+            UploadeDate : '',
+            UserImage : null,
+            UserName : null
+          })
+        }        
+      });
+      ImagesInfo = ImagesInfo.concat(BasicImageInfo);
+    }
+    else{
+      ImagesInfo = BasicImageInfo
+    }
+    return ImagesInfo;
   }
   
   private async GetTaskUsers(){
@@ -293,10 +325,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private GetUserObject(username:any){
+    //username = username.Title != undefined ? username.Title : username;
     let userDeatails = [];
     let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
       if (user.AssingedToUser != undefined ){        
-        return user.AssingedToUser['Title'] == username      
+        return user.AssingedToUser['Title'] == username     
       }
       });
       if (senderObject.length > 0){
@@ -310,6 +343,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }    
     return userDeatails;
   }
+
+  
   
 
   //open the model
@@ -782,7 +817,11 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               <dl>
                 <dt className='bg-fxdark'>Created</dt>
                 <dd className='bg-light'>
-                {this.state.Result["Created"]} | <span className='ms-1'><img className="imgAuthor" src={this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].userImage}></img></span>
+                {this.state.Result["Created"]} | <span className='ms-1'>
+                  {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
+                  <img className="imgAuthor" src={this.state.Result["Author"][0].userImage}></img>
+                }
+                  </span>
                 
                 </dd>
               </dl>
@@ -866,7 +905,11 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                               <div className='usericons'>
                                 <span  ng-show="attachedFiles.FileName==imageInfo.ImageName" ng-repeat="imageInfo in BasicImageInfo">
                                   <span >{imgData.UploadeDate}</span>  
-                                  <span className='round px-1'><img className='align-self-start'  title={imgData.UserName} src={imgData.UserImage}/></span>                               
+                                  <span className='round px-1'>
+                                    {imgData.UserImage != null &&
+                                    <img className='align-self-start'  title={imgData.UserName} src={imgData.UserImage}/>
+                                    }
+                                    </span>                               
                              
                                 </span>
                               </div>
@@ -905,7 +948,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
           <div className='row'>
             {this.state.Result != undefined &&
               <div className="ItemInfo mb-20" style={{paddingTop:'15px'}}>
-                <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] !=null && this.state.Result['Author'][0]}</span>
+                <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] !=null && this.state.Result['Author'].length>0 && this.state.Result['Author'][0].Title}</span>
                 </div>
                 <div>Last modified <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['ModifiedBy'] !=null && this.state.Result['ModifiedBy'].Title}</span>
                 </div>
