@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Moment from 'moment';
-import styles from './Taskprofile.module.scss';
+///import styles from './Taskprofile.module.scss';
 import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
 import { escape } from '@microsoft/sp-lodash-subset';
@@ -8,12 +8,10 @@ import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-//import '../../cssFolder/foundation.scss';
-//import '../../cssFolder/foundationmin.scss';
-import './Taskprofile.module.scss';
-import '../../cssFolder/Style.scss';
-import '../../cssFolder/site_color.scss';
+
+
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import { forEach } from 'lodash';
 
 export interface ITaskprofileState {  
   Result : any;
@@ -156,12 +154,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];    
+    let listInfo = await web.lists.getByTitle(this.state.listName).get();
+    console.log(listInfo);
     taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified")
-      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component","Services","Editor")
+      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified","Attachments","AttachmentFiles")
+      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component","Services","Editor","AttachmentFiles")
       .get()
       
     console.log(taskDetails);
@@ -187,9 +187,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       PercentComplete: taskDetails["PercentComplete"],
       Priority: taskDetails["Priority"],
       Created:  taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
-      Author: this.GetUserObject(taskDetails["Author"]),
+      Author: this.GetUserObject(taskDetails["Author"].Title),
       component_url: taskDetails["component_x0020_link"],
-      BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
+      //BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
+      BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"],taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : '',
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
@@ -197,7 +198,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Services : taskDetails["Services"],
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
-      ModifiedBy : taskDetails["Editor"]
+      ModifiedBy : taskDetails["Editor"],
+      listId : listInfo.Id,
+      Attachments : taskDetails["Attachments"],
+      AttachmentFiles : taskDetails["AttachmentFiles"]
     };
     
     console.log(tempTask);   
@@ -207,6 +211,31 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     },()=>{
       this.loadOtherDetailsForComponents(this.taskResult);      
     });
+  }
+
+  private GetAllImages(BasicImageInfo:any, AttachmentFiles:any, Attachments:any){
+    let ImagesInfo:any = [];
+    if(Attachments){
+      AttachmentFiles.forEach(function (Attach:any) {
+        let attachdata =BasicImageInfo.filter(function (ingInfo:any, i:any){      
+            return ingInfo.ImageName == Attach.FileName
+          });
+        if (attachdata.length == 0){
+          ImagesInfo.push({
+            ImageName : Attach.FileName,
+            ImageUrl : Attach.ServerRelativeUrl,
+            UploadeDate : '',
+            UserImage : null,
+            UserName : null
+          })
+        }        
+      });
+      ImagesInfo = ImagesInfo.concat(BasicImageInfo);
+    }
+    else{
+      ImagesInfo = BasicImageInfo
+    }
+    return ImagesInfo;
   }
   
   private async GetTaskUsers(){
@@ -296,10 +325,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private GetUserObject(username:any){
+    //username = username.Title != undefined ? username.Title : username;
     let userDeatails = [];
     let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
       if (user.AssingedToUser != undefined ){        
-        return user.AssingedToUser['Title'] == username.Title      
+        return user.AssingedToUser['Title'] == username     
       }
       });
       if (senderObject.length > 0){
@@ -313,6 +343,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }    
     return userDeatails;
   }
+
+  
   
 
   //open the model
@@ -689,7 +721,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
       
       <section className='row p-0'>
             <h2 className="headign ps-0">
-              <img className={styles.imgWid29} src={this.state.Result["SiteIcon"]}/>
+              <img className="imgWid29 "src={this.state.Result["SiteIcon"]}/>
                 {this.state.Result['Title']}
                 <a className="hreflink ng-scope ps-2" onClick={()=>this.OpenEditPopUp()}>
                   <img style={{width: '16px',height: '16px',borderRadius: '0'}} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
@@ -698,8 +730,8 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
         </section>
 <section>
   <div className='row'>
-  <div className="col-md-9 bg-white">
-  <div className="team_member row  py-2">
+  <div className="col-9 bg-white">
+  <div className="team_member row">
             <div className='col-md-4 p-0'>
               <dl>
                 <dt className='bg-fxdark'>Task Id</dt>
@@ -730,25 +762,25 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
             <dl>
                 <dt className='bg-fxdark'>Team Members</dt>
                 <dd className='bg-light'>
-                <div className={styles.team_Members_Item}>
+                <div className="d-flex align-items-center">
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 && this.state.Result["TeamLeader"].map( (rcData:any,i:any)=> {
-                  return  <div className={styles.user_Member_img}><img className={styles.imgAuthor} src={rcData.userImage}></img></div>                        
+                  return  <div className="user_Member_img"><img className="imgAuthor" src={rcData.userImage}></img></div>                        
                 })} 
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 &&
-                  <div className={styles.seperator}>|</div>
+                  <div></div>
                 }               
 
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                  <div className={styles.user_Member_img}><img className={styles.imgAuthor} src={this.state.Result["TeamMembers"][0].userImage}></img></div>                        
+                  <div className="user_Member_img"><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></div>                        
                 }
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 1 &&
-                  <div className={styles.user_Member_img_suffix2} onMouseOver={(e) =>this.handleSuffixHover()} onMouseLeave={(e) =>this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
-                    <span className={styles.tooltiptext} style={{display: this.state.Display, padding:'10px'}}>
+                  <div className="user_Member_img_suffix2" onMouseOver={(e) =>this.handleSuffixHover()} onMouseLeave={(e) =>this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
+                    <span className="tooltiptext" style={{display: this.state.Display, padding:'10px'}}>
                       <div>                        
                           { this.state.Result["TeamMembers"].slice(1).map( (rcData:any,i:any)=> {
                             
-                            return  <div className={styles.team_Members_Item} style={{padding: '2px'}}>
-                              <div><img className={styles.imgAuthor} src={rcData.userImage}></img></div>
+                            return  <div className="team_Members_Item" style={{padding: '2px'}}>
+                              <div><img className="imgAuthor" src={rcData.userImage}></img></div>
                               <div>{rcData.Title}</div>
                             </div>
                                                     
@@ -785,8 +817,12 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               <dl>
                 <dt className='bg-fxdark'>Created</dt>
                 <dd className='bg-light'>
-                <span className="ng-binding">{this.state.Result["Created"]} | 
-                      <img className={styles.imgAuthor} src={this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].userImage}></img></span>
+                {this.state.Result["Created"]} | <span className='ms-1'>
+                  {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
+                  <img className="imgAuthor" src={this.state.Result["Author"][0].userImage}></img>
+                }
+                  </span>
+                
                 </dd>
               </dl>
               
@@ -841,7 +877,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
           <div className='row'>
           <div className="d-flex p-0">
              <div className='bg-fxdark p-2'><label>Url</label></div> 
-              <div className='bg-light p-2 text-break'>
+              <div className='bg-light p-2 text-break full-width'>
               {this.state.Result["component_url"] != null &&
                       <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a> 
                     }
@@ -850,10 +886,10 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               </div> 
           </div>
           <section>
-          <div className="row">
-                <div className="Taskaddcomment ps-0 row">
+          <div className="col">
+                <div className="Taskaddcomment row">
                 {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
-                  <div className="col-sm-4 bg-white col-sm-4 pt-3 ps-0">
+                  <div className="col-sm-4 bg-white col-sm-4 pt-3 p-0">
                   {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].map( (imgData:any,i:any)=> {
                   return <div className="taskimage border mb-3">
                          {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
@@ -868,8 +904,13 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                             <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
                               <div className='usericons'>
                                 <span  ng-show="attachedFiles.FileName==imageInfo.ImageName" ng-repeat="imageInfo in BasicImageInfo">
-                                  <span >{imgData.UploadeDate}</span>                                 
-                                  <img className='ms-2'  title={imgData.UserName} src={imgData.UserImage}/>
+                                  <span >{imgData.UploadeDate}</span>  
+                                  <span className='round px-1'>
+                                    {imgData.UserImage != null &&
+                                    <img className='align-self-start'  title={imgData.UserName} src={imgData.UserImage}/>
+                                    }
+                                    </span>                               
+                             
                                 </span>
                               </div>
                               <div>
@@ -885,12 +926,12 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                   })}
                   </div>
                   }
-                  <div className="col-sm-8">
+                  <div className="col-sm-8 pe-0 mt-2">
                     {this.state.Result["SharewebTaskType"] !=null && (this.state.Result["SharewebTaskType"] =='' || 
                     this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
-                      <div className={"Addcomment "+ styles.manage_gap}>
+                      <div className={"Addcomment "+ "manage_gap"}>
                         {this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
                           return <TaskFeedbackCard feedback = {fbData} index={i+1} 
                                                   onPost={()=>{this.onPost()}} 
@@ -907,7 +948,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
           <div className='row'>
             {this.state.Result != undefined &&
               <div className="ItemInfo mb-20" style={{paddingTop:'15px'}}>
-                <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] !=null && this.state.Result['Author'][0].Title}</span>
+                <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] !=null && this.state.Result['Author'].length>0 && this.state.Result['Author'][0].Title}</span>
                 </div>
                 <div>Last modified <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['ModifiedBy'] !=null && this.state.Result['ModifiedBy'].Title}</span>
                 </div>
@@ -919,15 +960,15 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
           </section>
     
   </div>
-  <div className="col-md-3">
+  <div className="col-3">
   <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
   </div>
   </div>
 </section>
 
       <div style={{display : this.state.showPopup}}>
-        <div className={styles.popup}>
-          <div className={styles.parentDiv}>            
+        <div className="popup">
+          <div className="parentDiv">            
               <span style={{color:'white'}}>{this.state.imageInfo["ImageName"]}</span>
               <img style={{maxWidth: '100%'}} src={this.state.imageInfo["ImageUrl"]}></img>
           </div>
