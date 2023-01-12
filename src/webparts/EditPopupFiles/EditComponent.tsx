@@ -320,7 +320,7 @@ function EditInstitution(item: any) {
     }
     React.useEffect(() => {
         var initLoading = function () {
-            if (item.props != undefined && item.props.siteType != undefined) {
+            if (item.props != undefined) {
                 var Item = item.props;
                 if (Item.siteType == 'HTTPS:') {
                     Item.siteType = 'HHHH';

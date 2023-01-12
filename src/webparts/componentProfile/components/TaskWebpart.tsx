@@ -2303,7 +2303,7 @@ export default function ComponentTable({ props }: any) {
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                 </span>
-                                                <Dropdown className='dropdown-fliter'>
+                                                {/* <Dropdown className='dropdown-fliter'>
                                                     <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
                                                         <FaFilter />
                                                     </Dropdown.Toggle>
@@ -2312,7 +2312,7 @@ export default function ComponentTable({ props }: any) {
                                                         <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                         <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                                                     </Dropdown.Menu>
-                                                </Dropdown>
+                                                </Dropdown> */}
                                                 {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
                                                                         onClick={setStatusmodalIsOpenToTrue}
@@ -2330,7 +2330,7 @@ export default function ComponentTable({ props }: any) {
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                 </span>
-                                                <Dropdown className='dropdown-fliter'>
+                                                {/* <Dropdown className='dropdown-fliter'>
                                                     <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
                                                         <FaFilter />
                                                     </Dropdown.Toggle>
@@ -2339,7 +2339,7 @@ export default function ComponentTable({ props }: any) {
                                                         <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                         <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                                                     </Dropdown.Menu>
-                                                </Dropdown>
+                                                </Dropdown> */}
                                                 {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
                                                                         onClick={setItemRankmodalIsOpenToTrue}
@@ -2358,7 +2358,7 @@ export default function ComponentTable({ props }: any) {
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                 </span>
-                                                <Dropdown className='dropdown-fliter'>
+                                                {/* <Dropdown className='dropdown-fliter'>
                                                     <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
                                                         <FaFilter />
                                                     </Dropdown.Toggle>
@@ -2367,7 +2367,7 @@ export default function ComponentTable({ props }: any) {
                                                         <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                         <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                                                     </Dropdown.Menu>
-                                                </Dropdown>
+                                                </Dropdown> */}
                                                 {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
                                                                         onClick={setTeamMembermodalIsOpenToTrue}
@@ -2386,7 +2386,7 @@ export default function ComponentTable({ props }: any) {
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                 </span>
-                                                <Dropdown className='dropdown-fliter'>
+                                                {/* <Dropdown className='dropdown-fliter'>
                                                     <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
                                                         <FaFilter />
                                                     </Dropdown.Toggle>
@@ -2395,7 +2395,7 @@ export default function ComponentTable({ props }: any) {
                                                         <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                         <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                                                     </Dropdown.Menu>
-                                                </Dropdown>
+                                                </Dropdown> */}
                                                 {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
                                                                         onClick={setDuemodalIsOpenToTrue}
@@ -2414,7 +2414,7 @@ export default function ComponentTable({ props }: any) {
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                 </span>
-                                                <Dropdown className='dropdown-fliter'>
+                                                {/* <Dropdown className='dropdown-fliter'>
                                                     <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
                                                         <FaFilter />
                                                     </Dropdown.Toggle>
@@ -2423,7 +2423,7 @@ export default function ComponentTable({ props }: any) {
                                                         <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                         <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                                                     </Dropdown.Menu>
-                                                </Dropdown>
+                                                </Dropdown> */}
                                                 {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"
@@ -2443,7 +2443,7 @@ export default function ComponentTable({ props }: any) {
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                 </span>
-                                                <Dropdown className='dropdown-fliter'>
+                                                {/* <Dropdown className='dropdown-fliter'>
                                                     <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
                                                         <FaFilter />
                                                     </Dropdown.Toggle>
@@ -2452,7 +2452,7 @@ export default function ComponentTable({ props }: any) {
                                                         <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                         <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                                                     </Dropdown.Menu>
-                                                </Dropdown>
+                                                </Dropdown> */}
                                                 {/* <span className="dropdown filer-icons">
                                                                     <span className="filter-iconfil"
                                                                         //  href="#myDropdown1"

@@ -10,6 +10,7 @@ var TypeSite: string;
 // if(TypeSite=="Component"){
 //     require('../../cssFolder/site_color.scss');
 // }
+import { Web } from 'sp-pnp-js';
 import '../../cssFolder/site_color.scss';
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
@@ -22,6 +23,11 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
 import EditInstituton from '../../EditPopupFiles/EditComponent'
+
+var TeamMembers: any = [];
+var AssigntoMembers: any = [];
+
+var AllTeamMember:any = [];
 function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
@@ -36,6 +42,7 @@ function Portfolio({ ID }: any) {
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [IsTask, setIsTask] = React.useState(false);
+    const [AllTaskuser, setAllTaskuser] = React.useState([]);
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
         setIsActive(false);
@@ -128,9 +135,27 @@ function Portfolio({ ID }: any) {
         var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
         var responsen: any = [];// this variable is used for storing list items
         GetListItems();
+        getTaskUser();
         open();
     },
         []);
+
+    // Get All User
+     
+    const getTaskUser=async()=>{
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+         await web.lists.getById('b318ba84-e21d-4876-8851-88b94b9dc300').items
+         .orderBy("Created", true)
+         .get()
+         .then((Data: any[])=>{
+            console.log(Data);
+            
+            setAllTaskuser(Data);
+         }) 
+         .catch((err) => {
+               console.log(err.message);
+            });
+         }
     function open() {
         data.map((item: any) => {
             handleOpen(item);
@@ -147,6 +172,39 @@ function Portfolio({ ID }: any) {
     data.map(item => {
         if (item.Portfolio_x0020_Type != undefined) {
             TypeSite = item.Portfolio_x0020_Type
+        }
+
+       if(item.Team_x0020_Members.results != undefined ){
+            AllTaskuser.map(users=>{
+                
+                item.Team_x0020_Members.results.map((members:any)=>{
+                    if(members.Id!=undefined){
+                         if(users.AssingedToUserId == members.Id){
+                        TeamMembers.push(users); }
+                    }
+                    
+                })
+          
+                
+            })
+            console.log(TeamMembers);
+            
+       }
+        if(item.AssignedTo.results != undefined ){
+            AllTaskuser.map(users=>{
+                item.AssignedTo.results.map((members:any)=>{
+                   
+                         if(users.AssingedToUserId == members.Id){
+                            AssigntoMembers.push(users);
+                        
+                     }
+                    
+                    
+                })
+                
+            })
+            console.log(AssigntoMembers);
+            
         }
         if (item.Sitestagging != null) {
             myarray.push(JSON.parse(item.Sitestagging));
@@ -192,6 +250,23 @@ function Portfolio({ ID }: any) {
         setIsComponent(false);
         setIsTask(false);
     }, []);
+
+
+
+    const UniqueArray = [...TeamMembers, ...AssigntoMembers];
+    
+     AllTeamMember = UniqueArray.reduce(function(previous, current){
+        var alredyExists = previous.filter(function(item:any){
+            return item.Id === current.Id
+        }).length > 0
+        if(!alredyExists){
+            previous.push(current)
+        }
+        return previous
+    }, [])
+
+   console.log(AllTeamMember)
+     
    
     return (
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
@@ -246,7 +321,7 @@ function Portfolio({ ID }: any) {
                 </div>
                 {data.map(item=>
                     <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
-                    <EditInstituton props={SharewebComponent} Call={Call} />
+                  
                     </span>
                 )}
             </section>
@@ -292,7 +367,10 @@ function Portfolio({ ID }: any) {
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Team Members</dt>
-                                    <dd className='bg-light'></dd>
+                                    <dd className='bg-light'>{AllTeamMember.length!=0?AllTeamMember.map((item:any)=>
+                                             <img src={item.Item_x0020_Cover.Url}/>
+                                       
+                                    ):""}</dd>
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Item Rank</dt>
@@ -339,7 +417,7 @@ function Portfolio({ ID }: any) {
                                 <dl>
                                     <dt className='bg-fxdark'>% Complete</dt>
                                     <dd className='bg-light'>
-                                        {data.map(item => <a>{item.PercentComplete}</a>)}
+                                        {data.map(item => <a>{item.PercentComplete * 100 }</a>)}
                                         <span className="pull-right">
                                             <span className="pencil_icon">
                                                 <span className="hreflink"
@@ -688,7 +766,7 @@ function Portfolio({ ID }: any) {
                     )
                 })}
             </div>
-            
+            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
         </div>
 
 
