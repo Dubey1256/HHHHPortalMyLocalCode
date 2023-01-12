@@ -17,6 +17,7 @@ import { map } from "lodash";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
+import { EditorState } from 'draft-js'
 
 
 
@@ -38,11 +39,18 @@ function EditInstitution(item: any) {
     const [Startdate, setStartdate] = React.useState(undefined);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
+    const [editorState, setEditorState] = React.useState(EditorState.createEmpty());
     // $('.ms-Dialog-main .main-153').hide();
     const setModalIsOpenToTrue = (e: any) => {
         // e.preventDefault()
         setModalIsOpen(true)
     }
+    const onEditorStateChange = React.useCallback(
+        (rawcontent) => {
+          setEditorState(rawcontent.blocks[0].text);
+        },
+        [editorState]
+    );
     const setModalIsOpenToFalse = () => {
 
         EditComponentCallback();
@@ -686,18 +694,18 @@ function EditInstitution(item: any) {
         setSharewebCategory(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    const onEditorStateChange = (e: any, item: any) => {
-        //  item.Description = e.target.value;
-        setComponent(EditData => ([...EditData]));
-        // const { components } = this.state;
-        // const x = { components };
-        // for (const i in x){
-        //     if(x[i].id ==== id){
-        //         x[i].contentValue.editorState = e;
-        //     }
-        // }
-        // this.setState({components: x})
-    }
+    // const onEditorStateChange = (e: any, item: any) => {
+    //     //  item.Description = e.target.value;
+    //     setComponent(EditData => ([...EditData]));
+    //     // const { components } = this.state;
+    //     // const x = { components };
+    //     // for (const i in x){
+    //     //     if(x[i].id ==== id){
+    //     //         x[i].contentValue.editorState = e;
+    //     //     }
+    //     // }
+    //     // this.setState({components: x})
+    // }
     const ChangeStatus = (e: any, item: any) => {
         item.AdminStatus = e.target.value;
         setComponent(EditData => ([...EditData]));
@@ -1123,13 +1131,14 @@ function EditInstitution(item: any) {
                                                                                     <span>Verified</span>
                                                                                 </span>
                                                                                 <Editor
-                                                                                    editorState={EditData.Description}
+                                                                                    // editorState={EditData.Description}
+                                                                                    editorState={editorState}
                                                                                     toolbarClassName="toolbarClassName"
                                                                                     wrapperClassName="wrapperClassName"
                                                                                     editorClassName="editorClassName"
                                                                                     // defaultValue={EditData.Short_x0020_Description_x0020_On}
                                                                                     wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                                    onEditorStateChange={(e) => onEditorStateChange(e, EditData)}
+                                                                                    onChange={onEditorStateChange}
                                                                                 />
 
                                                                                 {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: EditData.Short_x0020_Description_x0020_On }}>

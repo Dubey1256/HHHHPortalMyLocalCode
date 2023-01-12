@@ -315,13 +315,29 @@ content: none !important;}
     .bg_lb {background: #0000BC;} 
     .icon-sites-img {height: 21px;width: 20px !important;}
     .icon-sites {height: 50px;width: 50px;display: block;margin: 0 auto 5px;}
-    .searchclearTagTask{
-      top: -6px;
-      right: 20px;
+    .searchclearTagTask {
+      top: -8px;
+      right: 47px;
       font-size: 30px;
       position: absolute;
-    }
-    .searchTaskTag{
-      position: relative;
-      margin: 5px;
-    }
+      cursor: pointer;
+      opacity: 0.5;
+  }
+    .btn {
+      --bs-btn-border-radius: 0rem !important;
+  }
+  .searchTaskTag {
+    position: relative;
+    margin: 5px;
+    padding: 0px 15px;
+}
+.searchTaskTag .form-control {
+  height: 32px;
+  border-radius: 0;
+}
+.searchTaskTag .input-group-text {
+  padding: 5px;
+  top: 0px;
+  border-radius: inherit;
+  right: 12px;
+}
