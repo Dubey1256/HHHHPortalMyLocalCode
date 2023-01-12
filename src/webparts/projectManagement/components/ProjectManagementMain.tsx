@@ -26,7 +26,9 @@ const ProjectManagementMain = () => {
     const [datams, setdatams] = React.useState([])
     const [passdata, setpassdata] = React.useState('');
     const [Title, setTitle] = React.useState()
-    const [projectId, setProjectId] = React.useState('')
+    const [projectTitle, setProjectTitle] = React.useState('')
+    const [projectId, setProjectId] = React.useState(null)
+
     var QueryId: any = ''
     React.useEffect(() => {
         getQueryVariable((e: any) => e);
@@ -107,6 +109,10 @@ const ProjectManagementMain = () => {
 
             }
         })
+        if(AllUsers?.length>0){
+            setProjectTitle(AllUsers[0].Title)
+        }
+ 
         setMasterdata(AllUsers)
 
     }
@@ -279,6 +285,13 @@ const ProjectManagementMain = () => {
 
                 });
     }
+    const tagAndCreateCallBack=React.useCallback(
+      () => {
+        LoadAllSiteTasks();
+      },
+      []
+    )
+    
     const LoadAllSiteTasks = function () {
         loadAdminConfigurations();
         var AllTask: any = []
@@ -447,8 +460,9 @@ const ProjectManagementMain = () => {
                             </h2>
                         </div>
                         <div className='col-sm-3 pull-right' style={{ verticalAlign: "top" }}>
-                            <CreateTaskFromProject projectId={projectId}/>
-                        <TagTaskToProjectPopup projectId={projectId}/>
+                        {projectId&&<CreateTaskFromProject projectId={projectId} callBack={tagAndCreateCallBack}/>}
+                        {projectId&&<TagTaskToProjectPopup projectId={projectId} callBack={tagAndCreateCallBack} projectTitle={projectTitle}/>}
+                        
                         </div>
                     </div>
                 </div>
