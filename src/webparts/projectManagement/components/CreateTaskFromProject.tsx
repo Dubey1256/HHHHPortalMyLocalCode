@@ -19,9 +19,11 @@ const CreateTaskFromProject = (props: any) => {
         setisOpenEditPopup(false)
     },[])
     const handleClose = () => {
+       
         setSelectedSite({Title:undefined,listId:undefined,siteUrl:undefined});
         setTaskTitle('')
         setLgShow(false);
+        
     }
     const EditPopup=React.useCallback((item:any)=>{
         
@@ -71,6 +73,7 @@ const CreateTaskFromProject = (props: any) => {
                     data.data.listId=selectedSite?.listId;
                     EditPopup(data.data)
                     console.log(data,"Task Created")
+                    props.callBack();
                     handleClose()
                 })
             }
@@ -144,8 +147,8 @@ const CreateTaskFromProject = (props: any) => {
 
                     <div className="row">
                         <div className="pull-right">
-                            <Button type="button" className="me-2" variant="primary" onClick={handleClose}>Cancel</Button>
-                            <Button type="button" variant="secondary" onClick={() => createTask()}>Create Task</Button>
+                            <Button type="button" className="me-2" variant="secondary" onClick={handleClose}>Cancel</Button>
+                            <Button type="button" variant="primary" onClick={() => createTask()}>Create</Button>
                         </div>
                     </div>
                 </div>
