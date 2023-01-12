@@ -1,6 +1,6 @@
 /*------comman class --------------
 ---------------------------------*/
-a:active, a:hover, a:link, a:visited{
+a:active, a:hover, a:link, a:visited, .Addcomment a {
     color: #000069 !important;
     text-decoration: none;
 }
@@ -21,7 +21,7 @@ a:active, a:hover, a:link, a:visited{
     background-color: #fff;
     color: #000;
 }
-.bg-69, .block, .block a{
+.bg-69, .block, .block a, .date-div .Date-Div-BAR, .session-control-buttons button{
     background-color: #000069;
     color: #fff !important; 
 }
@@ -38,10 +38,8 @@ background-color: #f4f4f4;
 
 /*------comman class end --------------
 ---------------------------------*/
-.headign a{
-    color: #000069 ;
-}
-.fw-medium, .panel-title, .headign a, .spfxbreadcrumb li a,  svg {
+
+.fw-medium, .card-title, .headign, .panel-title, .headign a, .spfxbreadcrumb li a,  svg {
     color: #000069;
 }
 /*------breadcrumb class --------------
@@ -66,12 +64,17 @@ background-color: #f4f4f4;
     font-size: 23px;
 }
 .btn-primary {
-    background-color: #000069 ;
-    border-color: #000069 ;
+    background-color: #000069 !important ;
+    border-color: #000069 !important ;
+    color: #fff !important;
+
 }
 .Sitecomposition .btn-secondary:hover{
-    color: #fff;
+    color: #fff !important;
     background: #000069;
+  }
+  .Sitecomposition a svg:hover{
+    color: #fff;
   }
 
 
@@ -147,9 +150,7 @@ background-color: #f4f4f4;
   }
 
   .serviepannelgreena .spfxbreadcrumb svg {
-
     font-size: 23px;
-
 }
 
 

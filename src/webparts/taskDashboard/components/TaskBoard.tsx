@@ -240,6 +240,10 @@ const TaskDashboard = (props: any) => {
             "UserGroup": "Senior Developer Team",
         },
         {
+            "Title": "Sameer  Gupta",
+            "UserGroup": "Senior Developer Team",
+        },
+        {
             "Title": "Pravesh Kumar",
             "UserGroup": "Senior Developer Team",
         },
@@ -388,7 +392,7 @@ const TaskDashboard = (props: any) => {
                             item.siteType = site.Title;
                             item.listId = site.listId;
                             item.SiteIcon = site.SiteIcon;
-                            item.SiteUrl = site.SiteUrl;
+                            item.siteUrl = site.SiteUrl;
                             item.DisplaySiteName = site.DisplaySiteName;
                             item.Responsible_x0020_TeamID = "";
                             //SiteIcon  SiteUrl                   

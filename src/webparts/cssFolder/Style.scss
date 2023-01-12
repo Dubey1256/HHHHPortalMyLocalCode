@@ -2,13 +2,38 @@
   margin: 0px;
   padding: 0px;
 }
-.t_e_8474018e{
-  max-width: 1924px;
+#navbarNavDropdown .navbar-nav>li>.dropdown-menu{
+  margin-top: 0px !important;
 }
-.root-61 {
+#navbarNavDropdown .dropdown-submenu>.dropdown-menu {
+  margin-top: 10px!important;
+}
+.CanvasComponent.LCS .CanvasSection--read:not(.CanvasSection--fullWidth) .ControlZone{
+  margin: 0px;
+}
+.CanvasComponent.LCS .row{
+  margin:0px;
+}
+.t_e_8474018e {
+max-width: 1125px !important;
+}
 
+.root-61 {
 background-color: #f5f5f5;
 color: #323130;
+}
+.fade{
+  opacity: 1;
+}
+
+.btn-primary {
+padding: 5px !important;
+border-radius: inherit;
+}
+.modal-title {
+font-size: 18px;
+line-height: 24px;
+width: 100%;
 }
 
 #sharewebprogressbar-image{
@@ -99,7 +124,7 @@ width: 100%;
 }
 
 .fw-medium, .panel-title, .headign a, .spfxbreadcrumb li a{
-  font-size: 14px;
+font-size: 14px;
 
 }
 
@@ -145,7 +170,7 @@ background: #e7e7e7;
 
 .spxdropdown-menu {
   position: absolute;
-  z-index: 1000;
+  z-index: 0;
   display: block;
   min-width: 10rem;
   padding: 0.5rem 0;
@@ -187,6 +212,10 @@ width: 100%;
 /*-----------------------
 top right side bar
 ------------------------ */
+.card-title{
+  font-size: 14px;
+  font-weight: 600;
+}
 aside .card {
   position: relative;
   display: flex;
@@ -206,10 +235,13 @@ aside .card-header {
   background-color: #fff;
   border-bottom: 0 solid transparent;
 }
+
 aside .card-title {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #495057;
+  font-size: 14px;
+  font-weight: 600;
+}
+.card-body {
+  padding: 5px;
 }
 .card-actions button{
   border: none;
@@ -239,8 +271,8 @@ float: left;
   background-color: #e7e7e7;
 }
 .accordionbox  .accordion-button{
-  background-color: #e7e7e7 !important;
-  color: #000 !important;
+background-color: #e7e7e7 !important;
+color: #000 !important;
 }
 
 /*-----------------------
@@ -289,7 +321,6 @@ border-color: #dee2e6 #dee2e6 #fff;
 .Tabmenu .nav-link {
 display: block;
 padding: 0.5rem 1rem;
-color: #0d6efd;
 text-decoration: none;
 transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
 }
@@ -298,15 +329,9 @@ background-color: #fff;
 }
 
 .tabmenu .nav-link {
-
 display: block;
-
 padding: 0.5rem 1rem;
-
-color: #0d6efd;
-
 text-decoration: none;
-
 transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
 
 }
@@ -379,7 +404,12 @@ width:10px;
 .dropdown-fliter button:hover{
 background-color: transparent;
 }
-
+// .Alltable svg{  width: 20px; height: 20px;}
+.btn-primary svg{
+width: 22px;
+height: 22px;
+}
+.Alltable table {margin: 5px 0px;}
 .Alltable{width: 100%;float: left;position: relative;border: 1px solid #ccc;}
 .Alltable .smart .section-event {padding-top: 45px ;border: 0px ;position: relative;}
 .Alltable .section-event th .smart-relative {position: absolute;background: transparent;color: #fff;padding: 5px 10px;top: 0;line-height: normal;}
@@ -400,6 +430,7 @@ background-color: transparent;
 .dropdown-content h4 .fa-times-circle {font-size: 20px;font-weight: 300;margin-top: 3px;position: absolute;right:2px;top:-3px;}
 .Alltable .smart-relative .alignmen {position:absolute; padding: 0px; top: 12px; display: inline-flex;}
 
+
 .border-top{
 border-top: 1px solid #ccc ;
 }
@@ -419,7 +450,7 @@ height: 35px;
   height: 30px;
 }
 .ml-auto, .mx-auto {
-  margin-left: auto!important;
+margin-left: auto!important;
 }
 
 .btn {
@@ -456,8 +487,8 @@ border-radius: 50%;
 }
 .round .align-self-start {
 border-radius: 100%;
-width: 30px;
-height: 30px;
+width: 25px;
+height: 25px;
 }
 
 .input-group>.form-control, .input-group>.form-select{
@@ -493,9 +524,6 @@ fieldset.team {
 padding-bottom: 5px;
 margin-right: 10px;
 }
-.t_e_8474018e {
-max-width: 1125px !important;
-}
 
 
 
@@ -508,17 +536,17 @@ margin-top: 60px;
 -----------------------------*/
 .AssignUserPhoto {
 display: inline-block;
-width: 30px ;
+width: 25px ;
 border-radius: 50%;
-height: 30px;
+height:25px;
 margin-left: 2px;
 margin-bottom: 5px;
 }
 .AssignUserPhoto1{
-  display: inline-block;
-width: 40px ;
+display: inline-block;
+width: 25px ;
 border-radius: 50%;
-height: 40px;
+height: 25px;
 margin-left: 2px;
 margin-bottom: 5px;
 }
@@ -539,8 +567,6 @@ margin-right: 10px;
 }
 .team label.BdrBtm {
 background: none;
-border-bottom: 2px solid #0000BC;
-color: #0000BC;
 padding-left: 0px;
 margin-bottom: 7px;
 width: 100%;
@@ -565,3 +591,213 @@ border-bottom: 1px solid #0000BC;
 box-shadow: 0 5px 6px 0 #d7d7d7;
 transition: all 0.3s ease 0s;
 }
+
+/**------add task time---------
+------------------------------*/
+.date-div .Date-Div-BAR {
+justify-content: space-evenly;
+font-size: 13px;
+padding: 2px 0px;
+font-weight: 400;
+}
+.date-div .Date-Div-BAR > span {
+cursor: pointer;
+padding: 0 10px;
+}
+.session-control-buttons {
+
+justify-content: space-between;
+align-items: center;
+}
+.session-control-buttons button {
+min-width: 100% ;
+
+border: none;
+padding: 5px 0;
+
+}
+.session-control-buttons span.min-input {
+width: 100%;
+float: left;
+text-align: center;
+
+}
+.session-control-buttons button.plus-minus {
+font-size: 18px;
+}
+.Time-control-buttons {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.Full-Time button.btn, .Quaterly-Time button.btn {
+min-width: 10px;
+padding: 5px;
+}
+.Full-Time span, .Quaterly-Time span {
+background-color: #efefef;
+padding: 7px 6px;
+height: 27px;
+text-align: center;
+font-size: 14px;
+font-weight: 500;
+line-height: 17px;
+position: relative;
+top: 2px;
+}
+
+
+/*--------task profile css-----------
+------------------------------*/
+
+
+.welcome {
+text-align: center;
+}
+
+.welcomeImage {
+width: 100%;
+max-width: 420px;
+}
+
+.links {
+a {
+  text-decoration: none;
+  color: "[theme:link, default:#03787c]";
+  color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+
+  &:hover {
+    text-decoration: underline;
+    color: "[theme:linkHovered, default: #014446]";
+    color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+  }
+}
+}
+.popup {
+position: fixed;      
+top: 15%;
+left: 35%;
+text-align: center;
+background-color: #0000BC;
+width: 50%;
+}
+
+.imgWid29{
+vertical-align: middle;
+width: 29px;
+}
+.team_Members_Item {
+display: flex;
+justify-content: flex-start;
+}
+.user_Member_img {
+margin: 0 2px;
+}
+.user_Member_img:first-child {
+  border-right: 1px solid #ccc;
+  margin-right: 4px;
+  padding-right: 4px;
+  margin-left: 0px;
+}
+.seperator {
+font-size: 24px;
+margin: 0 2px;
+line-height: 24px;
+color: #858586;
+}
+.imgAuthor {	
+width: 24px;	
+height: 24px;		
+border-radius: 50%;	
+margin: 0px;
+
+}	
+.user_Member_img_suffix2 {
+background: #dadada;
+width: 24px;
+height: 24px;
+border-radius: 15px;
+text-align: center;
+vertical-align: text-top;
+font-size: 16px;
+font-weight: 500;
+}
+.tooltiptext {
+
+min-width:200px;
+background-color: #fff;
+color: #000;
+text-align: center;
+padding: 5px 0;
+position: absolute;
+z-index: 1;
+font-size: 13px;
+font-weight: normal;
+line-height: 18px;
+border-width: 1px;
+color: #333;
+padding: 0px;
+font-size: 12px;
+font-family: Verdana, Arial;
+max-height: 350px;
+text-align: left;
+left: 27%;
+// box-shadow: 0 4px 9px rgb(0 0 0 / 5%), 0 0px 3px rgb(0 0 0 / 2%);
+}
+
+.media-text{
+color: #6f6f6f !important;
+font-size: 13px;
+line-height: 18px;
+clear: both;
+padding-left: 17%; 
+margin-bottom: 0px;
+word-break: break-word;
+}
+.manage_gap p>br {
+  display: none;
+  margin-top: -10px;
+}
+.parentDiv{
+display: inline-block;
+width: 100%;
+// float: left;
+box-sizing: border-box;
+position: sticky;
+overflow: hidden;
+padding: 1%;
+}
+
+.custommodalpopup {
+  width: 45%;
+   padding: 0px !important; 
+   overflow-y: hidden !important;
+}
+.closeButtonRow{
+  float: right;
+  padding-right: 10px;
+  cursor: pointer;
+
+}
+.btnPrimary{
+  color: #fff !important;
+    background-color: #000069 !important;
+    border-color: #000069 !important;
+}
+.list-none{
+  list-style: none;
+  margin: 0px;
+ padding: 0px;
+}
+.add_cmnt {
+  padding: 5px;
+  border: 1px solid #ccc;
+  background: #fbfbfb;
+  color: #000;
+}
+.commentMedia .comment-date {
+  color: #000066;
+  font-size: 11px;
+  font-weight: 600;
+}
+

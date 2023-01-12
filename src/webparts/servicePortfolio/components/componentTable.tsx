@@ -404,8 +404,7 @@ function ComponentTable() {
                                 if (result['Shareweb_x0020_ID'] == undefined) {
                                     result['Shareweb_x0020_ID'] = "";
                                 }
-                                result['Item_x0020_Type'] = 'Task';
-                                
+                                result['Item_x0020_Type'] = 'Task';      
                                 TasksItem.push(result);
                                 // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
 
@@ -2648,7 +2647,7 @@ function ComponentTable() {
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                         <td style={{ width: "3%" }}><td>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td></td>
                                                                                                                                                         <td style={{ width: "3%" }}></td>
-                                                                                                                                                    </tr>
+                                                s                                                                                                    </tr>
                                                                                                                                                 </table>
                                                                                                                                             </td>
                                                                                                                                         </tr>
