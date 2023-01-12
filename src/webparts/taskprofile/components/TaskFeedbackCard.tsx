@@ -2,8 +2,6 @@ import * as React from 'react';
 //import styles from './Taskprofile.module.scss';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import {Modal} from '@fluentui/react';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
 export interface ITaskFeedbackProps {
     fullfeedback: any;
     feedback: any;
@@ -263,7 +261,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           <div className="d-flex pe-0">
             <div className="border p-1 me-1">
               <span className="ng-binding">{this.state.index}.{j+1}</span>
-              <ul className="list-non">
+              <ul className="list-none">
               <li>
               {fbSubData.Completed != null && fbSubData.Completed &&
                 <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>

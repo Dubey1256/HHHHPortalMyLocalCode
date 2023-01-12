@@ -8,8 +8,7 @@ import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
+
 
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 

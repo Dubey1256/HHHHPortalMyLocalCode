@@ -35,6 +35,7 @@ function Portfolio({ ID }: any) {
     const [FolderData, SetFolderData] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [IsTask, setIsTask] = React.useState(false);
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
         setIsActive(false);
@@ -187,11 +188,11 @@ function Portfolio({ ID }: any) {
         setSharewebComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-
     const Call = React.useCallback((item1) => {
         setIsComponent(false);
-       
+        setIsTask(false);
     }, []);
+   
     return (
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
             {/* breadcrumb & title */}
@@ -228,24 +229,25 @@ function Portfolio({ ID }: any) {
                                 {item.Portfolio_x0020_Type == 'Component' &&
                                     <>
                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a> 
-                                        <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
-                                        </span>
+                                        
                                     </>
                                 }
                                 {item.Portfolio_x0020_Type == 'Service' &&
                                     <>
                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a> 
-                                        <span>
-                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
-                        
-                                        </span>
+                                        
 
                                     </>}
                             </h2>
+                            
                             </>
                         )}
                     </div>
                 </div>
+                {data.map(item=>
+                    <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                    </span>
+                )}
             </section>
             {/* left bar  & right bar */}
             <section>
