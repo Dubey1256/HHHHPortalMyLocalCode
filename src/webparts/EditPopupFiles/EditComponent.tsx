@@ -16,8 +16,7 @@ import { map } from "lodash";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
-
-import { EditorState, convertToRaw, Modifier, ContentState, convertFromHTML } from "draft-js"
+import { EditorState } from 'draft-js'
 
 
 
@@ -39,9 +38,7 @@ function EditInstitution(item: any) {
     const [Startdate, setStartdate] = React.useState(undefined);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
-    //const [editorState, setEditorState] = React.useState(undefined);
-    const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
-    //const [editorState, setEditorState] = React.useState(undefined);
+    const [editorState, setEditorState] = React.useState(EditorState.createEmpty());
     // $('.ms-Dialog-main .main-153').hide();
     const setModalIsOpenToTrue = (e: any) => {
         // e.preventDefault()
@@ -329,7 +326,6 @@ function EditInstitution(item: any) {
         console.log(smartmetaDetails);
     }
     React.useEffect(() => {
-        // const [editorState, setEditorState] = React.useState(EditorState.createEmpty())
         var initLoading = function () {
             if (item.props != undefined) {
                 var Item = item.props;
@@ -1111,16 +1107,12 @@ function EditInstitution(item: any) {
                                                                         <span className="ps-1">Verified</span>
                                                                     </span>
                                                                     <Editor
-                                                                        // editorState={editorState}
-                                                                        // // toolbarClassName="toolbarClassName"
-                                                                        // // wrapperClassName="wrapperClassName"
-                                                                        // // editorClassName="editorClassName"
-                                                                        // // wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                        // onChange={onEditorStateChange}
+                                                                        editorState={editorState}
                                                                         toolbarClassName="toolbarClassName"
                                                                         wrapperClassName="wrapperClassName"
                                                                         editorClassName="editorClassName"
                                                                         wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                        onChange={onEditorStateChange}
                                                                     />
                                                                 </div>
                                                             }

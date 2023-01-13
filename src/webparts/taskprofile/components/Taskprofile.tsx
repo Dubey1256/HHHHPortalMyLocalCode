@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as Moment from 'moment';
+import * as moment from 'moment';
 ///import styles from './Taskprofile.module.scss';
 import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
@@ -160,7 +161,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified","Attachments","AttachmentFiles")
+      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","Team_x0020_Members/Id","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","Responsible_x0020_Team/Id","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified","Attachments","AttachmentFiles")
       .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component","Services","Editor","AttachmentFiles")
       .get()
       
@@ -184,7 +185,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
       TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
       ItemRank: taskDetails["ItemRank"],
-      PercentComplete: taskDetails["PercentComplete"],
+      PercentComplete: (taskDetails["PercentComplete"]*100),
       Priority: taskDetails["Priority"],
       Created:  taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
       Author: this.GetUserObject(taskDetails["Author"].Title),
@@ -244,7 +245,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     taskUsers = await web.lists
     .getByTitle('Task Users')
     .items
-    .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title')
+    .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title','AssingedToUser/Id',)
     .filter("ItemType eq 'User'")
     .expand('AssingedToUser')
     .get();    
@@ -308,12 +309,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     for (let index = 0; index < UsersValues.length; index++) {
       let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
         if (user.AssingedToUser != undefined){
-          return user.AssingedToUser['Title'] == UsersValues[index].Title
+          return user.AssingedToUser["Id"] == UsersValues[index].Id
         }
       });
       if (senderObject.length > 0){
           userDeatails.push({
-            'Id' : senderObject[0].Id,
+            'Id' : senderObject[0].AssingedToUser.Id,
             'Name' : senderObject[0].Email,
             'Suffix' : senderObject[0].Suffix,
             'Title' : senderObject[0].Title,
@@ -329,12 +330,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let userDeatails = [];
     let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
       if (user.AssingedToUser != undefined ){        
-        return user.AssingedToUser['Title'] == username     
+        return user.AssingedToUser['Title'] == username    
       }
       });
       if (senderObject.length > 0){
           userDeatails.push({
-            'Id' : senderObject[0].Id,
+            'Id' : senderObject[0].AssingedToUser.Id,
             'Name' : senderObject[0].Email,
             'Suffix' : senderObject[0].Suffix,
             'Title' : senderObject[0].Title,
@@ -476,7 +477,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             gAllDataMatches.forEach(function (value:any) {
                 if (item.Id == value.Id) {
 
-                    if (value.Parent.Id != undefined) {
+                    if (value.Parent!=undefined && value.Parent.Id != undefined ) {
                       gAllDataMatches.forEach(function (component:any) {
                             if (component.Id == value.Parent.Id) {
                                 if (value.Item_x0020_Type == "SubComponent") {
@@ -500,7 +501,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                 }
                             }
                         })
-                    } else if (value.Parent.Id == undefined) {
+                    } else if (value.Parent ==undefined || value.Parent.Id == undefined) {
                         if (value.Item_x0020_Type == 'Component') {
                             flag = true;
                             breadcrumbitem.Parentitem = value;
@@ -739,15 +740,15 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Due Date</dt>
-                <dd className='bg-light'>{this.state.Result["DueDate"] != null ? (new Date(this.state.Result["DueDate"])).toLocaleDateString() : ''}</dd>
+                <dd className='bg-light'>{this.state.Result["DueDate"] != null ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY"): ''}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Start Date</dt>
-                <dd className='bg-light'>{this.state.Result["StartDate"]}</dd>
+                <dd className='bg-light'>{this.state.Result["CompletedDate"]!=undefined?moment(this.state.Result["StartDate"]).format("DD/MM/YYYY"):""}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Completion Date</dt>
-                <dd className='bg-light'> {this.state.Result["CompletedDate"]}</dd>
+                <dd className='bg-light'> {this.state.Result["CompletedDate"]!=undefined?moment(this.state.Result["CompletedDate"]).format("DD/MM/YYYY"):""}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark' title="Task Id">Categories</dt>
@@ -764,14 +765,14 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                 <dd className='bg-light'>
                 <div className="d-flex align-items-center">
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 && this.state.Result["TeamLeader"].map( (rcData:any,i:any)=> {
-                  return  <div className="user_Member_img"><img className="imgAuthor" src={rcData.userImage}></img></div>                        
+                  return  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={rcData.userImage}></img></a></div>                        
                 })} 
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 &&
                   <div></div>
                 }               
 
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                  <div className="user_Member_img"><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></div>                        
+                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></a></div>                        
                 }
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 1 &&
                   <div className="user_Member_img_suffix2" onMouseOver={(e) =>this.handleSuffixHover()} onMouseLeave={(e) =>this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
@@ -780,7 +781,8 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                           { this.state.Result["TeamMembers"].slice(1).map( (rcData:any,i:any)=> {
                             
                             return  <div className="team_Members_Item" style={{padding: '2px'}}>
-                              <div><img className="imgAuthor" src={rcData.userImage}></img></div>
+                              <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                <img className="imgAuthor" src={rcData.userImage}></img></a></div>
                               <div>{rcData.Title}</div>
                             </div>
                                                     
@@ -817,7 +819,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               <dl>
                 <dt className='bg-fxdark'>Created</dt>
                 <dd className='bg-light'>
-                {this.state.Result["Created"]} | <span className='ms-1'>
+                {moment(this.state.Result["Created"]).format("DD/MM/YYYY")} | <span className='ms-1'>
                   {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                   <img className="imgAuthor" src={this.state.Result["Author"][0].userImage}></img>
                 }
@@ -858,7 +860,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                          </span>
                           {cltime.ClienTimeDescription !=undefined &&
                          <span>
-                            {cltime.ClienTimeDescription}%
+                            {cltime.ClienTimeDescription}.00%
                           </span>
                           }
                       </li>
