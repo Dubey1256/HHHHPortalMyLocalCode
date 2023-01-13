@@ -10,6 +10,7 @@ var TypeSite: string;
 // if(TypeSite=="Component"){
 //     require('../../cssFolder/site_color.scss');
 // }
+import { Web } from 'sp-pnp-js';
 import '../../cssFolder/site_color.scss';
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
@@ -21,6 +22,12 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 // import { NavItem } from 'react-bootstrap';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
+import EditInstituton from '../../EditPopupFiles/EditComponent'
+
+var TeamMembers: any = [];
+var AssigntoMembers: any = [];
+
+var AllTeamMember:any = [];
 function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
@@ -30,7 +37,12 @@ function Portfolio({ ID }: any) {
     const [datak, setdatak] = React.useState([])
     const [dataj, setdataj] = React.useState([])
     const [datams, setdatams] = React.useState([])
+    const [datamb, setdatamb] = React.useState([])
     const [FolderData, SetFolderData] = React.useState([]);
+    const [IsComponent, setIsComponent] = React.useState(false);
+    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [IsTask, setIsTask] = React.useState(false);
+    const [AllTaskuser, setAllTaskuser] = React.useState([]);
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
         setIsActive(false);
@@ -62,6 +74,12 @@ function Portfolio({ ID }: any) {
         setIsActive(true);
         item.showm = item.showm = item.showm == true ? false : true;
         setdatams(datams => ([...datams]));
+    };
+    const handleOpen6 = (item: any) => {
+        setIsActive(current => !current);
+        setIsActive(true);
+        item.showm = item.showb = item.showb == true ? false : true;
+        setdatamb(datamb => ([...datamb]));
     };
     React.useEffect(() => {
         var folderId: any = "";
@@ -117,9 +135,27 @@ function Portfolio({ ID }: any) {
         var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
         var responsen: any = [];// this variable is used for storing list items
         GetListItems();
+        getTaskUser();
         open();
     },
         []);
+
+    // Get All User
+     
+    const getTaskUser=async()=>{
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+         await web.lists.getById('b318ba84-e21d-4876-8851-88b94b9dc300').items
+         .orderBy("Created", true)
+         .get()
+         .then((Data: any[])=>{
+            console.log(Data);
+            
+            setAllTaskuser(Data);
+         }) 
+         .catch((err) => {
+               console.log(err.message);
+            });
+         }
     function open() {
         data.map((item: any) => {
             handleOpen(item);
@@ -136,6 +172,39 @@ function Portfolio({ ID }: any) {
     data.map(item => {
         if (item.Portfolio_x0020_Type != undefined) {
             TypeSite = item.Portfolio_x0020_Type
+        }
+
+       if(item.Team_x0020_Members.results != undefined ){
+            AllTaskuser.map(users=>{
+                
+                item.Team_x0020_Members.results.map((members:any)=>{
+                    if(members.Id!=undefined){
+                         if(users.AssingedToUserId == members.Id){
+                        TeamMembers.push(users); }
+                    }
+                    
+                })
+          
+                
+            })
+            console.log(TeamMembers);
+            
+       }
+        if(item.AssignedTo.results != undefined ){
+            AllTaskuser.map(users=>{
+                item.AssignedTo.results.map((members:any)=>{
+                   
+                         if(users.AssingedToUserId == members.Id){
+                            AssigntoMembers.push(users);
+                        
+                     }
+                    
+                    
+                })
+                
+            })
+            console.log(AssigntoMembers);
+            
         }
         if (item.Sitestagging != null) {
             myarray.push(JSON.parse(item.Sitestagging));
@@ -170,6 +239,35 @@ function Portfolio({ ID }: any) {
     //    Get Folder data
     const [lgShow, setLgShow] = React.useState(false);
     const handleClose = () => setLgShow(false);
+
+    const EditComponentPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+    const Call = React.useCallback((item1) => {
+        setIsComponent(false);
+        setIsTask(false);
+    }, []);
+
+
+
+    const UniqueArray = [...TeamMembers, ...AssigntoMembers];
+    
+     AllTeamMember = UniqueArray.reduce(function(previous, current){
+        var alredyExists = previous.filter(function(item:any){
+            return item.Id === current.Id
+        }).length > 0
+        if(!alredyExists){
+            previous.push(current)
+        }
+        return previous
+    }, [])
+
+   console.log(AllTeamMember)
+     
+   
     return (
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
             {/* breadcrumb & title */}
@@ -201,20 +299,31 @@ function Portfolio({ ID }: any) {
                 <div className='row'>
                     <div className='p-0' style={{ verticalAlign: "top" }}>
                         {data.map(item =>
+                        <>
                             <h2 className='headign'>
                                 {item.Portfolio_x0020_Type == 'Component' &&
                                     <>
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>
+                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a> 
+                                        
                                     </>
                                 }
                                 {item.Portfolio_x0020_Type == 'Service' &&
                                     <>
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>
+                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a> 
+                                        
+
                                     </>}
                             </h2>
+                            
+                            </>
                         )}
                     </div>
                 </div>
+                {data.map(item=>
+                    <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                  
+                    </span>
+                )}
             </section>
             {/* left bar  & right bar */}
             <section>
@@ -258,7 +367,10 @@ function Portfolio({ ID }: any) {
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Team Members</dt>
-                                    <dd className='bg-light'></dd>
+                                    <dd className='bg-light'>{AllTeamMember.length!=0?AllTeamMember.map((item:any)=>
+                                             <img src={item.Item_x0020_Cover.Url}/>
+                                       
+                                    ):""}</dd>
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Item Rank</dt>
@@ -305,7 +417,7 @@ function Portfolio({ ID }: any) {
                                 <dl>
                                     <dt className='bg-fxdark'>% Complete</dt>
                                     <dd className='bg-light'>
-                                        {data.map(item => <a>{item.PercentComplete}</a>)}
+                                        {data.map(item => <a>{item.PercentComplete * 100 }</a>)}
                                         <span className="pull-right">
                                             <span className="pencil_icon">
                                                 <span className="hreflink"
@@ -452,6 +564,29 @@ function Portfolio({ ID }: any) {
                         </div>
                         <section className='row  accordionbox'>
                             <div className="accordion p-0  overflow-hidden">
+                                  {/* description */}
+                                {data.map(item =>
+                                    <>
+                                        {item.Body !== null &&
+                                            <div className="card shadow-none  mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen6(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showb ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>   Description</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.showb &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                {data.map(item =>
+                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
+                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                    </p>)}
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        } </>)}
+
                                 {/* Short description */}
                                 {data.map(item =>
                                     <>
@@ -592,7 +727,7 @@ function Portfolio({ ID }: any) {
                                     </div>
                                 </div>
                             )})} </>
-                               }  */}
+                               }  */} 
                             <div className='mb-3 card'>
                                 <>
                                     {data.map(item =>
@@ -631,7 +766,10 @@ function Portfolio({ ID }: any) {
                     )
                 })}
             </div>
+            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
         </div>
+
+
     )
 }
 export default Portfolio;

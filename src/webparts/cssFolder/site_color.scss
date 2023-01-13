@@ -1,6 +1,6 @@
 /*------comman class --------------
 ---------------------------------*/
-a:active, a:hover, a:link, a:visited{
+a:active, a:hover, a:link, a:visited, .Addcomment a {
     color: #000069 !important;
     text-decoration: none;
 }
@@ -71,6 +71,9 @@ background-color: #f4f4f4;
 .Sitecomposition .btn-secondary:hover{
     color: #fff !important;
     background: #000069;
+  }
+  .Sitecomposition a svg:hover{
+    color: #fff;
   }
 
 

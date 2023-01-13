@@ -2,8 +2,6 @@ import * as React from 'react';
 //import styles from './Taskprofile.module.scss';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import {Modal} from '@fluentui/react';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
 export interface ITaskFeedbackProps {
     fullfeedback: any;
     feedback: any;
@@ -27,8 +25,6 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
  
   constructor(props: ITaskFeedbackProps) {
     super(props);
-    console.log('In Task Feedback Component');
-    console.log(this.props.feedback);
     this.state = {
         showcomment : 'none',
         showcomment_subtext : 'none',
@@ -194,13 +190,13 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
       <div>
-        <div className="row">
-          <span className="text-end">
+        <div className="col mb-2">
+          <span className="d-block text-end">
             <a style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBox()}>Add Comment</a>
           </span>
 
-          <div className="d-flex">
-            <div className="border p-1">
+          <div className="d-flex p-0">
+            <div className="border p-1 me-1">
               <span>{this.state.index}.</span>
               <ul className='list-none'>
               <li>
@@ -216,21 +212,23 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               </ul>
             </div>
 
-            <div className="border p-2 full-width">
+            <div className="border p-2 full-width text-break">
               <span  dangerouslySetInnerHTML={{ __html: this.state.fbData['Title'] }}></span>
               <div className="col">
               {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments'].map( (fbComment:any,k:any)=> {
-                return <div className="row add_cmnt">
+                return <div className="col add_cmnt my-1">
                          
                             <div className="col-1 p-0">
                               <img className="AssignUserPhoto1" src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
                                   fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
                             </div>
                             <div className="col-10 pe-0">
-                              <div>
+                              <div className='d-flex justify-content-between align-items-center'>
                               {fbComment.AuthorName} - {fbComment.Created}
+                              <span>
                                 <a className="ps-1" onClick={()=>this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
                                 <a className="ps-1" onClick={()=>this.clearComment(false, k, 0)}><img src='/_layouts/images/delete.gif'></img></a>
+                                </span>
                               </div>
                               <div><span  dangerouslySetInnerHTML={{ __html:fbComment.Title}}></span></div>
                             </div>
@@ -240,13 +238,14 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
             </div>
           </div>
-
-          <div  className="col-sm-11 mt-2" style={{display: this.state.showcomment}}>
+<div className='d-flex'>
+          <div  className="col-sm-11 mt-2 p-0" style={{display: this.state.showcomment}}>
             <textarea id="txtComment" onChange={(e)=>this.handleInputChange(e)}  className="form-control full-width" ></textarea>
           </div>
 
-          <div  className="col-sm-1 p-0 mt-2 " style={{display: this.state.showcomment}}>
+          <div  className="col-sm-1 pe-0 mt-2  " style={{display: this.state.showcomment}}>
             <button type="button"  className="post btn btn-primary pull-right ng-binding" onClick={()=>this.PostButtonClick()}>Post</button>
+          </div>
           </div>
 
         </div>
@@ -257,10 +256,10 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             <a  style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBoxOfSubText()}>Add Comment</a>
           </span>
 
-          <div className="d-flex">
-            <div className="border p-1">
+          <div className="d-flex pe-0">
+            <div className="border p-1 me-1">
               <span className="ng-binding">{this.state.index}.{j+1}</span>
-              <ul className="list-non">
+              <ul className="list-none">
               <li>
               {fbSubData.Completed != null && fbSubData.Completed &&
                 <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
@@ -274,11 +273,11 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               </ul>
             </div>
 
-            <div className="border p-2 full-width">
+            <div className="border p-2 full-width text-break">
               <span className="ng-binding"><span  dangerouslySetInnerHTML={{ __html:fbSubData.Title.replace(/<[^>]*>/g, '')}}></span></span>
               <div className="feedbackcomment col-sm-12 PadR0 mt-10">
               {fbSubData.Comments != null && fbSubData.Comments.length > 0 && fbSubData.Comments.map( (fbComment:any,k:any)=> {
-                return <div className="col-sm-12 mb-2 add_cmnt ng-scope">
+                return <div className="col-sm-12 mb-2 add_cmnt my-1 ng-scope">
                          
                             <div className="col-sm-1 padL-0 wid35">
                               <img className="AssignUserPhoto1" src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
@@ -298,15 +297,15 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
             </div>
           </div>
-
-          <div  className="col-sm-11 " style={{display: this.state.showcomment_subtext}}>
+<div className='d-flex '>
+          <div  className="col-sm-11 mt-2 p-0 " style={{display: this.state.showcomment_subtext}}>
             <textarea id="txtCommentSubtext" onChange={(e)=>this.handleInputChange(e)} style={{width:'100%'}} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
           </div>
 
-          <div  className="col-sm-1" style={{display: this.state.showcomment_subtext}}>
+          <div  className="col-sm-1 pe-0 mt-2 " style={{display: this.state.showcomment_subtext}}>
             <button type="button"  className="post btn btn-primary" onClick={()=>this.SubtextPostButtonClick(j)}>Post</button>
           </div>
-
+          </div>
         
         </div>
         })}

@@ -2070,7 +2070,7 @@ function ComponentTable() {
                                         title="Smart Filter" onClick={() => Updateitem()}>
                                         Update
                                     </button>
-                                    <button type="button" className="btn btn-grey ml5" title="Clear All"
+                                    <button type="button" className="btn btn-grey ms-2" title="Clear All"
                                         onClick={() => Clearitem()} >
                                         Clear All
                                     </button>
@@ -2087,7 +2087,7 @@ function ComponentTable() {
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container p-0">
-                            <div className="Alltable mt-10">
+                            <div className="Alltable mt-2">
                                 <div className="tbl-headings">
                                     <span className="leftsec w65">
                                         <label>
@@ -2294,11 +2294,11 @@ function ComponentTable() {
                                                                                     </td>
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
                                                                                     <td style={{ width: "20%" }}>
-                                                                                        {item.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                        {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank"  className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
-                                                                                        {item.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                        {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank"  className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
@@ -2394,11 +2394,11 @@ function ComponentTable() {
                                                                                                             </td>
 
                                                                                                             <td style={{ width: "20%" }}>
-                                                                                                                {childitem.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank"  className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
-                                                                                                                {childitem.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank"  className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
@@ -2492,12 +2492,12 @@ function ComponentTable() {
 
                                                                                                                                     <td style={{ width: "20%" }}>
 
-                                                                                                                                        {childinew.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                        {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank"  className="hreflink serviceColor_Active"
 
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
-                                                                                                                                        {childinew.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                        {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank"  className="hreflink serviceColor_Active"
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
@@ -2588,11 +2588,11 @@ function ComponentTable() {
                                                                                                                                                         </td>
 
                                                                                                                                                         <td style={{ width: "20%" }}>
-                                                                                                                                                            {subchilditem.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                            {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank"  className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
-                                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}

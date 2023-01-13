@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as Moment from 'moment';
+import * as moment from 'moment';
 ///import styles from './Taskprofile.module.scss';
 import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
@@ -8,13 +9,10 @@ import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-//import '../../cssFolder/foundation.scss';
-//import '../../cssFolder/foundationmin.scss';
-//import './Taskprofile.module.scss';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
+
 
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import { forEach } from 'lodash';
 
 export interface ITaskprofileState {  
   Result : any;
@@ -157,12 +155,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];    
+    let listInfo = await web.lists.getByTitle(this.state.listName).get();
+    console.log(listInfo);
     taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified")
-      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component","Services","Editor")
+      .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","Team_x0020_Members/Id","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","Responsible_x0020_Team/Id","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified","Attachments","AttachmentFiles")
+      .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component","Services","Editor","AttachmentFiles")
       .get()
       
     console.log(taskDetails);
@@ -185,12 +185,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
       TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
       ItemRank: taskDetails["ItemRank"],
-      PercentComplete: taskDetails["PercentComplete"],
+      PercentComplete: (taskDetails["PercentComplete"]*100),
       Priority: taskDetails["Priority"],
       Created:  taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
-      Author: this.GetUserObject(taskDetails["Author"]),
+      Author: this.GetUserObject(taskDetails["Author"].Title),
       component_url: taskDetails["component_x0020_link"],
-      BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
+      //BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
+      BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"],taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : '',
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
@@ -198,7 +199,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Services : taskDetails["Services"],
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
-      ModifiedBy : taskDetails["Editor"]
+      ModifiedBy : taskDetails["Editor"],
+      listId : listInfo.Id,
+      Attachments : taskDetails["Attachments"],
+      AttachmentFiles : taskDetails["AttachmentFiles"]
     };
     
     console.log(tempTask);   
@@ -209,6 +213,31 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       this.loadOtherDetailsForComponents(this.taskResult);      
     });
   }
+
+  private GetAllImages(BasicImageInfo:any, AttachmentFiles:any, Attachments:any){
+    let ImagesInfo:any = [];
+    if(Attachments){
+      AttachmentFiles.forEach(function (Attach:any) {
+        let attachdata =BasicImageInfo.filter(function (ingInfo:any, i:any){      
+            return ingInfo.ImageName == Attach.FileName
+          });
+        if (attachdata.length == 0){
+          ImagesInfo.push({
+            ImageName : Attach.FileName,
+            ImageUrl : Attach.ServerRelativeUrl,
+            UploadeDate : '',
+            UserImage : null,
+            UserName : null
+          })
+        }        
+      });
+      ImagesInfo = ImagesInfo.concat(BasicImageInfo);
+    }
+    else{
+      ImagesInfo = BasicImageInfo
+    }
+    return ImagesInfo;
+  }
   
   private async GetTaskUsers(){
     let web = new Web(this.props.siteUrl);     
@@ -216,7 +245,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     taskUsers = await web.lists
     .getByTitle('Task Users')
     .items
-    .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title')
+    .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title','AssingedToUser/Id',)
     .filter("ItemType eq 'User'")
     .expand('AssingedToUser')
     .get();    
@@ -280,12 +309,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     for (let index = 0; index < UsersValues.length; index++) {
       let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
         if (user.AssingedToUser != undefined){
-          return user.AssingedToUser['Title'] == UsersValues[index].Title
+          return user.AssingedToUser["Id"] == UsersValues[index].Id
         }
       });
       if (senderObject.length > 0){
           userDeatails.push({
-            'Id' : senderObject[0].Id,
+            'Id' : senderObject[0].AssingedToUser.Id,
             'Name' : senderObject[0].Email,
             'Suffix' : senderObject[0].Suffix,
             'Title' : senderObject[0].Title,
@@ -297,15 +326,16 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private GetUserObject(username:any){
+    //username = username.Title != undefined ? username.Title : username;
     let userDeatails = [];
     let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
       if (user.AssingedToUser != undefined ){        
-        return user.AssingedToUser['Title'] == username      
+        return user.AssingedToUser['Title'] == username    
       }
       });
       if (senderObject.length > 0){
           userDeatails.push({
-            'Id' : senderObject[0].Id,
+            'Id' : senderObject[0].AssingedToUser.Id,
             'Name' : senderObject[0].Email,
             'Suffix' : senderObject[0].Suffix,
             'Title' : senderObject[0].Title,
@@ -314,6 +344,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }    
     return userDeatails;
   }
+
+  
   
 
   //open the model
@@ -445,7 +477,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             gAllDataMatches.forEach(function (value:any) {
                 if (item.Id == value.Id) {
 
-                    if (value.Parent.Id != undefined) {
+                    if (value.Parent!=undefined && value.Parent.Id != undefined ) {
                       gAllDataMatches.forEach(function (component:any) {
                             if (component.Id == value.Parent.Id) {
                                 if (value.Item_x0020_Type == "SubComponent") {
@@ -469,7 +501,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                 }
                             }
                         })
-                    } else if (value.Parent.Id == undefined) {
+                    } else if (value.Parent ==undefined || value.Parent.Id == undefined) {
                         if (value.Item_x0020_Type == 'Component') {
                             flag = true;
                             breadcrumbitem.Parentitem = value;
@@ -700,7 +732,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
 <section>
   <div className='row'>
   <div className="col-9 bg-white">
-  <div className="team_member row  py-2">
+  <div className="team_member row">
             <div className='col-md-4 p-0'>
               <dl>
                 <dt className='bg-fxdark'>Task Id</dt>
@@ -708,15 +740,15 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Due Date</dt>
-                <dd className='bg-light'>{this.state.Result["DueDate"] != null ? (new Date(this.state.Result["DueDate"])).toLocaleDateString() : ''}</dd>
+                <dd className='bg-light'>{this.state.Result["DueDate"] != null ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY"): ''}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Start Date</dt>
-                <dd className='bg-light'>{this.state.Result["StartDate"]}</dd>
+                <dd className='bg-light'>{this.state.Result["CompletedDate"]!=undefined?moment(this.state.Result["StartDate"]).format("DD/MM/YYYY"):""}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Completion Date</dt>
-                <dd className='bg-light'> {this.state.Result["CompletedDate"]}</dd>
+                <dd className='bg-light'> {this.state.Result["CompletedDate"]!=undefined?moment(this.state.Result["CompletedDate"]).format("DD/MM/YYYY"):""}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark' title="Task Id">Categories</dt>
@@ -733,14 +765,14 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                 <dd className='bg-light'>
                 <div className="d-flex align-items-center">
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 && this.state.Result["TeamLeader"].map( (rcData:any,i:any)=> {
-                  return  <div className="user_Member_img"><img className="imgAuthor" src={rcData.userImage}></img></div>                        
+                  return  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={rcData.userImage}></img></a></div>                        
                 })} 
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 &&
-                  <div className="seperator">|</div>
+                  <div></div>
                 }               
 
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                  <div className="user_Member_img"><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></div>                        
+                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></a></div>                        
                 }
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 1 &&
                   <div className="user_Member_img_suffix2" onMouseOver={(e) =>this.handleSuffixHover()} onMouseLeave={(e) =>this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
@@ -749,7 +781,8 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                           { this.state.Result["TeamMembers"].slice(1).map( (rcData:any,i:any)=> {
                             
                             return  <div className="team_Members_Item" style={{padding: '2px'}}>
-                              <div><img className="imgAuthor" src={rcData.userImage}></img></div>
+                              <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                <img className="imgAuthor" src={rcData.userImage}></img></a></div>
                               <div>{rcData.Title}</div>
                             </div>
                                                     
@@ -786,7 +819,11 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               <dl>
                 <dt className='bg-fxdark'>Created</dt>
                 <dd className='bg-light'>
-                {this.state.Result["Created"]} | <span className='ms-1'><img className="imgAuthor" src={this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].userImage}></img></span>
+                {moment(this.state.Result["Created"]).format("DD/MM/YYYY")} | <span className='ms-1'>
+                  {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
+                  <img className="imgAuthor" src={this.state.Result["Author"][0].userImage}></img>
+                }
+                  </span>
                 
                 </dd>
               </dl>
@@ -823,7 +860,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                          </span>
                           {cltime.ClienTimeDescription !=undefined &&
                          <span>
-                            {cltime.ClienTimeDescription}%
+                            {cltime.ClienTimeDescription}.00%
                           </span>
                           }
                       </li>
@@ -842,7 +879,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
           <div className='row'>
           <div className="d-flex p-0">
              <div className='bg-fxdark p-2'><label>Url</label></div> 
-              <div className='bg-light p-2 text-break'>
+              <div className='bg-light p-2 text-break full-width'>
               {this.state.Result["component_url"] != null &&
                       <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a> 
                     }
@@ -870,7 +907,11 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                               <div className='usericons'>
                                 <span  ng-show="attachedFiles.FileName==imageInfo.ImageName" ng-repeat="imageInfo in BasicImageInfo">
                                   <span >{imgData.UploadeDate}</span>  
-                                  <span className='round px-1'><img className='align-self-start'  title={imgData.UserName} src={imgData.UserImage}/></span>                               
+                                  <span className='round px-1'>
+                                    {imgData.UserImage != null &&
+                                    <img className='align-self-start'  title={imgData.UserName} src={imgData.UserImage}/>
+                                    }
+                                    </span>                               
                              
                                 </span>
                               </div>
@@ -887,7 +928,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
                   })}
                   </div>
                   }
-                  <div className="col-sm-8">
+                  <div className="col-sm-8 pe-0 mt-2">
                     {this.state.Result["SharewebTaskType"] !=null && (this.state.Result["SharewebTaskType"] =='' || 
                     this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
                     this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
@@ -909,7 +950,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
           <div className='row'>
             {this.state.Result != undefined &&
               <div className="ItemInfo mb-20" style={{paddingTop:'15px'}}>
-                <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] !=null && this.state.Result['Author'][0]}</span>
+                <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] !=null && this.state.Result['Author'].length>0 && this.state.Result['Author'][0].Title}</span>
                 </div>
                 <div>Last modified <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['ModifiedBy'] !=null && this.state.Result['ModifiedBy'].Title}</span>
                 </div>
