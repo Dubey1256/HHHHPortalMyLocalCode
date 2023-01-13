@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useEffect, useState } from 'react';
 import { Web } from "sp-pnp-js";
+import * as moment from 'moment';
 var AllUser: any = []
 var siteConfig: any = []
 var DataSiteIcon: any = []
@@ -13,7 +14,7 @@ const TagTaskToProjectPopup = (props: any) => {
 
     const [lgShow, setLgShow] = useState(false);
     const handleClose = () => {
-      
+
         setLgShow(false);
 
         clearSearch()
@@ -214,7 +215,7 @@ const TagTaskToProjectPopup = (props: any) => {
                 smartmeta = await web.lists
                     .getById(config.listId)
                     .items
-                    .select("Id,StartDate,DueDate,Title,PercentComplete,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title")
+                    .select("Id,StartDate,DueDate,Title,Created,PercentComplete,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title")
                     .top(4999)
                     // .filter("Project/Id ne " + props.projectId)
                     .expand("Project,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType")
@@ -238,12 +239,18 @@ const TagTaskToProjectPopup = (props: any) => {
                         items['Portfoliotype'] = 'Service';
                     }
                     if (DataSiteIcon != undefined) {
-                        DataSiteIcon.map((site: any) => {
-                            if (site.Site == items.siteType) {
-                                items['siteIcon'] = site.SiteIcon
-                            }
-                        })
+                        if(config.Title=="DRR"||config.Title=="Gender"||config.Title=="KathaBeck"){
+                            items['siteIcon'] = config.Item_x005F_x0020_Cover.Url
+                        }else{
+                            DataSiteIcon.map((site: any) => {
+                                if (site.Site == items.siteType) {
+                                    items['siteIcon'] = site.SiteIcon
+                                }
+                            })
+                        }
+                       
                     }
+                    items.CreatedDis=items?.Created != null ? moment(items.Created).format('DD/MM/YYYY') : ""
                     items.componentString = items.Component != undefined && items.Component != undefined && items.Component.length > 0 ? getComponentasString(items.Component) : '';
                     items.Shareweb_x0020_ID = getSharewebId(items);
                     if (items.Team_x0020_Members != undefined) {
@@ -321,8 +328,8 @@ const TagTaskToProjectPopup = (props: any) => {
             SearchedTasks = AllTasks.filter((task: any) => {
                 if (
                     task?.Title?.toLowerCase().includes(searchText.toLowerCase()) || task?.Shareweb_x0020_ID?.toLowerCase().includes(searchText.toLowerCase())
-                    // ta.phone.toLowerCase().includes(searchText.toLowerCase()) || employee.userName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    // employee.email.toLowerCase().includes(searchText.toLowerCase())
+                    || task.Priority.toLowerCase().includes(searchText.toLowerCase()) || task.PercentComplete.toLowerCase().includes(searchText.toLowerCase()) ||
+                    task.Author.Title.toLowerCase().includes(searchText.toLowerCase())||task.siteType.toLowerCase().includes(searchText.toLowerCase())||task.CreatedDis.toLowerCase().includes(searchText.toLowerCase())
                 ) {
                     return true;
                 }
@@ -406,12 +413,12 @@ const TagTaskToProjectPopup = (props: any) => {
                             <div className='row'>
                                 <div className='col-sm-6 searchTaskTag'>
                                     <input className="form-control " type="text" value={searchText} onKeyDown={handleKeyDown} onChange={onSearchText} placeholder="Search" aria-label="Search" />
-                                    <span className="input-group-text" onClick={()=>{ searchTaskToTag()}}><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none">
+                                    <span className="input-group-text" onClick={() => { searchTaskToTag() }}><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none">
                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M31.0138 7.06731C33.8354 7.61202 36.1852 8.86678 37.9071 10.7481C39.8647 12.8866 40.832 15.2084 40.979 18.1218C41.0896 20.3107 40.7731 21.8402 39.7795 23.9182C39.1457 25.2435 38.8458 25.6499 37.5723 26.9085C35.1834 29.2697 33.1175 30.1768 29.783 30.3289C27.9988 30.4101 27.6948 30.3806 26.3472 29.9939C24.6941 29.5197 23.8671 29.1402 22.7405 28.3386C22.3186 28.0385 21.9187 27.7929 21.8519 27.7929C21.7851 27.7929 18.7525 30.7738 15.1127 34.4173C8.73245 40.8041 8.47514 41.04 7.93518 40.9963C7.15937 40.9331 6.78471 40.3003 7.12757 39.6316C7.25623 39.3804 10.2498 36.2724 13.78 32.7251C17.3101 29.1776 20.1984 26.2245 20.1984 26.1623C20.1984 26.1003 19.9343 25.6607 19.6115 25.1856C17.4873 22.0598 17.0424 17.9103 18.4541 14.3929C19.8012 11.0364 22.4973 8.58667 26.0904 7.45461C27.2002 7.10508 30.0487 6.88084 31.0138 7.06731ZM27.5326 9.2402C26.2441 9.47559 24.1717 10.4672 23.1928 11.3167C20.2179 13.8984 19.0413 17.6838 20.0893 21.3025C21.0407 24.5876 23.6698 27.1581 26.9782 28.0375C28.2549 28.3769 30.5384 28.3442 31.8541 27.9679C35.2193 27.0055 37.9175 24.2229 38.6949 20.9132C39.1038 19.1722 38.9464 16.9223 38.3009 15.2809C36.5751 10.8934 32.1303 8.40004 27.5326 9.2402Z" fill="#333333" />
                                     </svg></span>
-                                    {searchText?.length > 0?<span className='searchclearTagTask' onClick={clearSearch} >×</span>:''}
+                                    {searchText?.length > 0 ? <span className='searchclearTagTask' onClick={clearSearch} >×</span> : ''}
                                 </div>
-                                {SearchedAllTasks?.length > 0? <div className="col-sm-12">
+                                {SearchedAllTasks?.length > 0 ? <div className="col-sm-12">
                                     <div className="col-sm-12">
                                         <div className="tbl-header">
                                             <table className="compareTable">
@@ -420,12 +427,12 @@ const TagTaskToProjectPopup = (props: any) => {
                                                         <th><input type="checkbox" id="isActive" checked={selectAll} defaultChecked={selectAll} onChange={() => selectAllFiltered(selectAll)} /></th>
                                                         <th style={{ width: "5%" }}>Site</th>
                                                         <th style={{ width: "10%" }}>Task Id</th>
-                                                        <th > Task Title</th>
-                                                        {/* <th>Phone</th>
-                                                <th>Email</th>
-                                                <th>Is Active</th>
-                                                <th>Delete</th>
-                                                <th>Edit</th> */}
+                                                        <th style={{ width: "35%" }}> Task Title</th>
+                                                        <th style={{ width: "20%" }}>Portfolio Type</th>
+                                                        <th style={{ width: "10%" }}> % Complete</th>
+                                                        <th style={{ width: "10%" }}>Priority</th>
+                                                        <th style={{ width: "10%" }}>Created</th>
+                                                        {/* <th>Edit</th> */}
                                                     </tr>
                                                 </thead>
                                             </table>
@@ -434,21 +441,54 @@ const TagTaskToProjectPopup = (props: any) => {
                                             <table className="compareTable">
                                                 <tbody>
                                                     {
-                                                        SearchedAllTasks.map((item, index) => {
+                                                        SearchedAllTasks.map((item: any, index: any) => {
                                                             return (
                                                                 <tr className="table-body-content" key={index}>
                                                                     <td><input type="checkbox" id="isActive" onClick={() => { selectRow(item, index) }} checked={item?.selected} /></td>
                                                                     <td style={{ width: "5%" }}>
                                                                         <img className="icon-sites-img"
-                                                                            src={item?.siteIcon} />
+                                                                           title={item?.siteType} src={item?.siteIcon} />
                                                                     </td >
                                                                     <td style={{ width: "10%" }}>{item?.Shareweb_x0020_ID}</td>
-                                                                    <td>{item?.Title}</td>
-                                                                    {/* <td>{item?.phone}</td>
-                                                            <td>{item?.email}</td>
-                                                            <td><input type="checkbox" id="isActive" defaultChecked={item?.isActive} disabled /></td>
-                                                            <td><DeleteUsers userId={item?.userId} getUsers={getUsers} setshowSnackbar={setshowSnackbar} setSnackMessage={setSnackMessage}  /></td>
-                                                            <td className='editIcon'><Update userId={item?.userId} getUsers={getUsers} setshowSnackbar={setshowSnackbar} setSnackMessage={setSnackMessage} /></td> */}
+                                                                    <td style={{ width: "35%" }}>{item?.Title}</td>
+                                                                    <td style={{ width: "20%" }}>
+                                                                        {item.Component != undefined &&
+                                                                            <>
+                                                                                {item.Component.map((types: any) => {
+                                                                                    return (
+                                                                                        <>
+                                                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                                                        </>
+                                                                                    )
+                                                                                })}
+                                                                            </>
+                                                                        }
+                                                                        {item.Component == undefined &&
+                                                                            <>
+                                                                                {item.Services.map((types: any) => {
+                                                                                    return (
+                                                                                        <>
+                                                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                                                        </>
+                                                                                    )
+                                                                                })}
+                                                                            </>
+                                                                        }
+                                                                    </td>
+                                                                    <td style={{ width: "10%" }}><span className="ml-2">{item.PercentComplete}</span></td>
+                                                                    <td style={{ width: "10%" }}>{item.Priority}</td>
+                                                                    <td style={{ width: "10%" }}>{item.CreatedDis}
+                                                                        {
+                                                                            AllUser.map((user: any) => {
+                                                                                if (user.AssingedToUserId == item.Author.Id) {
+                                                                                    return (
+                                                                                        <img className="AssignUserPhoto1" title={user.Title} src={user.Item_x0020_Cover.Url} alt={user.Title} />
+                                                                                    )
+
+                                                                                }
+                                                                            }) 
+                                                                        }
+                                                                    </td>
                                                                 </tr>
                                                             )
                                                         })
@@ -457,8 +497,8 @@ const TagTaskToProjectPopup = (props: any) => {
                                             </table>
                                         </div>
                                     </div>
-                                </div>:''}
-                               
+                                </div> : ''}
+
                             </div>
                         </div> : 'Loading ...'
                     }
