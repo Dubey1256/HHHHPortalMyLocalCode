@@ -11,8 +11,6 @@ import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 import { sp } from "@pnp/sp";
 import "@pnp/sp/sputilities";
- import '../../webparts/cssFolder/Style.scss'
- import '../../webparts/cssFolder/site_color.scss'
 export interface ICommentCardProps {
   siteUrl? : string;
   userDisplayName? : string;
@@ -522,7 +520,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   </div>
                 
                 <span>
-                <MentionsInput value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
+                <MentionsInput  placeholder='Recipients Name' value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
                       className="form-control"
                       classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} className={mentionClass.mentions__mention}/>            

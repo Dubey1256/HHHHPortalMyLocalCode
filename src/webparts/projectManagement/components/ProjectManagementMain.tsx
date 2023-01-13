@@ -8,6 +8,8 @@ import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import * as Moment from 'moment';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import axios, { AxiosResponse } from 'axios';
+import TagTaskToProjectPopup from './TagTaskToProjectPopup'
+import CreateTaskFromProject from './CreateTaskFromProject';
 var AllUser: any = []
 var siteConfig: any = []
 var DataSiteIcon:any=[]
@@ -24,7 +26,9 @@ const ProjectManagementMain = () => {
     const [datams, setdatams] = React.useState([])
     const [passdata, setpassdata] = React.useState('');
     const [Title, setTitle] = React.useState()
-    //const [QueryId, setQueryId] = React.useState()
+    const [projectTitle, setProjectTitle] = React.useState('')
+    const [projectId, setProjectId] = React.useState(null)
+
     var QueryId: any = ''
     React.useEffect(() => {
         getQueryVariable((e: any) => e);
@@ -48,6 +52,7 @@ const ProjectManagementMain = () => {
 
             var pair = vars[i].split("=");
             QueryId = pair[1]
+            setProjectId(QueryId)
 
             console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ]
 
@@ -104,6 +109,10 @@ const ProjectManagementMain = () => {
 
             }
         })
+        if(AllUsers?.length>0){
+            setProjectTitle(AllUsers[0].Title)
+        }
+ 
         setMasterdata(AllUsers)
 
     }
@@ -247,6 +256,10 @@ const ProjectManagementMain = () => {
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
             }
 
+        }else {
+            if (item?.Id!= undefined) {
+                Shareweb_x0020_ID = 'T' + item?.Id 
+            }
         }
         return Shareweb_x0020_ID;
     }
@@ -272,6 +285,13 @@ const ProjectManagementMain = () => {
 
                 });
     }
+    const tagAndCreateCallBack=React.useCallback(
+      () => {
+        LoadAllSiteTasks();
+      },
+      []
+    )
+    
     const LoadAllSiteTasks = function () {
         loadAdminConfigurations();
         var AllTask: any = []
@@ -297,7 +317,7 @@ const ProjectManagementMain = () => {
                     items.AllTeamMember = []
                     items.siteType = config.Title;
                     items.listId = config.listId;
-                    items.SiteUrl = config.siteUrl.Url;
+                    items.siteUrl = config.siteUrl.Url;
                     items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                     if (items.Component != undefined && items.Component.results != undefined && items.Component.results.length > 0) {
                         items['Portfoliotype'] = 'Component';
@@ -428,17 +448,23 @@ const ProjectManagementMain = () => {
                             </ul>
                             {/* <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span> */}
                         </div>
+                        
+                        
                     </div>
 
                     <div className='row'>
-                        <div className='p-0' style={{ verticalAlign: "top" }}>
+                        <div className='col-sm-9 p-0' style={{ verticalAlign: "top" }}>
                             <h2 className='headign'>
                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png" />
                                 {Masterdata.map(item => <a>{item.Title}</a>)}
                             </h2>
                         </div>
+                        <div className='col-sm-3 pull-right' style={{ verticalAlign: "top" }}>
+                        {projectId&&<CreateTaskFromProject projectId={projectId} callBack={tagAndCreateCallBack}/>}
+                        {projectId&&<TagTaskToProjectPopup projectId={projectId} callBack={tagAndCreateCallBack} projectTitle={projectTitle}/>}
+                        
+                        </div>
                     </div>
-
                 </div>
             </section>
             <section>
@@ -551,29 +577,29 @@ const ProjectManagementMain = () => {
                                 <tr>
                                     <th></th>
                                     <th style={{ width: "10%" }}>
-                                        <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Task Id </div></th>
+                                        <div> Task Id </div></th>
 
                                     <th style={{ width: "25%" }}> 
-                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Title </div></th>
+                                    <div> Title </div></th>
 
                                     <th style={{ width: "10%" }}>
-                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Portfolio Type </div>
+                                    <div> Portfolio Type </div>
                                     </th>
 
                                     <th style={{ width: "10%" }}>
-                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> % Complete </div>
+                                    <div> % Complete </div>
                                     </th>
 
                                     <th style={{ width: "13%" }}>
-                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Priority </div>
+                                    <div> Priority </div>
                                     </th>
 
                                     <th style={{ width: "15%" }}>
-                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Team </div>
+                                    <div> Team </div>
                                     </th>
 
                                     <th style={{ width: "13%" }}>
-                                    <div style={{color:"#2c2c30",position:"absolute",top:"22px"}}> Due Date </div>
+                                    <div> Due Date </div>
                                     </th>
 
                                     <th style={{ width: "2%" }}>
@@ -603,7 +629,7 @@ const ProjectManagementMain = () => {
                                                 </td>
                                                 <td>{item.Shareweb_x0020_ID}</td>
                                                 <td>
-                                                    <span><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
+                                                    <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
 
                                                 </td>
                                                 <td>
@@ -612,7 +638,7 @@ const ProjectManagementMain = () => {
                                                     {item.Component.map((types:any)=>{
                                                         return(
                                                             <>
-                                                            <span><a target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
                                                             </>
                                                         )
                                                     })}
@@ -623,7 +649,7 @@ const ProjectManagementMain = () => {
                                                     {item.Services.map((types:any)=>{
                                                         return(
                                                             <>
-                                                            <span><a target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
                                                             </>
                                                         )
                                                     })}

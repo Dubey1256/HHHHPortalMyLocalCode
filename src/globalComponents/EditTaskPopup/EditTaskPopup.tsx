@@ -645,10 +645,8 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a className="hreflink" ng-click="removeSmartComponent(item.Id)"></a>
                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
                                                                             <span className="input-group-text">
-
                                                                                 <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                     onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
-
                                                                             </span>
                                                                         </div>
                                                                     </> :

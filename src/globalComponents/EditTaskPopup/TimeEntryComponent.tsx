@@ -574,7 +574,7 @@ function TimeEntryPopup(item: any) {
 
                     "Accept": "application/json; odata=verbose"
 
-                },
+                }, 
 
                 success: function (data) {
                     count++;
