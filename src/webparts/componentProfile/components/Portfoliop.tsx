@@ -28,6 +28,7 @@ var TeamMembers: any = [];
 var AssigntoMembers: any = [];
 
 var AllTeamMember:any = [];
+var AssignTeamMember:any = [];
 function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
     const [isActive, setIsActive] = React.useState(false);
@@ -41,6 +42,7 @@ function Portfolio({ ID }: any) {
     const [FolderData, SetFolderData] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [showBlock, setShowBlock] = React.useState(false);
     const [IsTask, setIsTask] = React.useState(false);
     const [AllTaskuser, setAllTaskuser] = React.useState([]);
     const handleOpen = (item: any) => {
@@ -187,7 +189,7 @@ function Portfolio({ ID }: any) {
           
                 
             })
-            console.log(TeamMembers);
+            // console.log(TeamMembers);
             
        }
         if(item.AssignedTo.results != undefined ){
@@ -203,7 +205,7 @@ function Portfolio({ ID }: any) {
                 })
                 
             })
-            console.log(AssigntoMembers);
+            // console.log(AssigntoMembers);
             
         }
         if (item.Sitestagging != null) {
@@ -252,10 +254,20 @@ function Portfolio({ ID }: any) {
     }, []);
 
 
-
-    const UniqueArray = [...TeamMembers, ...AssigntoMembers];
+    //  Remove duplicate values
+    // const UniqueArray = [...TeamMembers, ...AssigntoMembers];
     
-     AllTeamMember = UniqueArray.reduce(function(previous, current){
+     AllTeamMember = TeamMembers.reduce(function(previous:any, current:any){
+        var alredyExists = previous.filter(function(item:any){
+            return item.Id === current.Id
+        }).length > 0
+        if(!alredyExists){
+            previous.push(current)
+        }
+        return previous
+    }, [])
+
+    AssignTeamMember = AssigntoMembers.reduce(function(previous:any, current:any){
         var alredyExists = previous.filter(function(item:any){
             return item.Id === current.Id
         }).length > 0
@@ -268,6 +280,15 @@ function Portfolio({ ID }: any) {
    console.log(AllTeamMember)
      
    
+
+   function handleSuffixHover(){
+    setShowBlock(true)
+  }
+
+  function handleuffixLeave(){
+    
+    setShowBlock(false)
+  }
     return (
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
             {/* breadcrumb & title */}
@@ -303,13 +324,13 @@ function Portfolio({ ID }: any) {
                             <h2 className='headign'>
                                 {item.Portfolio_x0020_Type == 'Component' &&
                                     <>
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a> 
+                                        <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a> 
                                         
                                     </>
                                 }
                                 {item.Portfolio_x0020_Type == 'Service' &&
                                     <>
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a> 
+                                        <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a> 
                                         
 
                                     </>}
@@ -367,9 +388,45 @@ function Portfolio({ ID }: any) {
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Team Members</dt>
-                                    <dd className='bg-light'>{AllTeamMember.length!=0?AllTeamMember.map((item:any)=>
-                                             <img src={item.Item_x0020_Cover.Url}/>
-                                       
+                                    <dd className='bg-light d-flex'>{AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
+                                    <>
+                                            <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
+                                             <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
+                                            </a>
+                                            <div></div>
+                                            {AllTeamMember != null && AllTeamMember.length > 0 &&
+                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url}></img></a></div>                        
+                }
+                {AllTeamMember != null && AllTeamMember.length > 1 &&
+                  <div className="user_Member_img_suffix2 multimember" onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
+                   {showBlock &&
+                    <span className="tooltiptext" >
+                      <div>                        
+                          { AllTeamMember.slice(1).map( (rcData:any,i:any)=> {
+                            
+                            return  <div className="team_Members_Item" style={{padding: '2px'}}>
+                              <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
+                              <div>{rcData.Title}</div>
+                            </div>
+                                                    
+                          })
+                          }
+                       
+                      </div>
+                    </span>
+                    }
+                  </div>                        
+                }   
+                                            {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
+                                            <>
+                                                    <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
+                                                    <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
+                                                   </a>
+                                            </>
+                                            ):""} */}
+
+                                    </>
                                     ):""}</dd>
                                 </dl>
                                 <dl>
@@ -442,7 +499,19 @@ function Portfolio({ ID }: any) {
                                                                 <span className="hreflink"
                                                                     title="Edit Inline"
                                                                 >
-                                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
+                                                                       {item.Portfolio_x0020_Type == 'Component' &&
+                                    <>
+                                        <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${ID}`}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />    </a> 
+                                        
+                                    </>
+                                }
+                                {item.Portfolio_x0020_Type == 'Service' &&
+                                    <>
+                                       <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${ID}`}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> </a> 
+                                        
+
+                                    </>}
+                                                                 
                                                                 </span>
                                                             </span>
                                                         </span>
