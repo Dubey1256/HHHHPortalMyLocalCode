@@ -323,7 +323,7 @@ export default function ProjectOverview() {
                                         <>
                                             <tr >
                                                 <td>
-                                                    <span><a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`} target="_blank">{item.Title}</a></span>
+                                                    <span><a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`}  data-interception="off" target="_blank">{item.Title}</a></span>
                                                 </td>
                                                 <td><span className="ml-2">{item.PercentComplete}</span></td>
                                                 <td>{item.Priority}</td>

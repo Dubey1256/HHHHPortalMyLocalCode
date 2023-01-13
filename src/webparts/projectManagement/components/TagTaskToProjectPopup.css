@@ -341,3 +341,13 @@ content: none !important;}
   border-radius: inherit;
   right: 12px;
 }
+
+.bdrbox {
+  border: 1px solid #ccc;
+}
+.AssignUserPhoto1 {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50%;
+  display: inline-flex;
+}
