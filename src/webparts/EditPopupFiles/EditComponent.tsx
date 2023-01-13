@@ -2,7 +2,7 @@ import * as React from "react";
 // import ImagesC from "./Images";
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
 
-import "bootstrap/dist/css/bootstrap.min.css";
+//import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
 import * as moment from 'moment';
@@ -17,7 +17,6 @@ import { map } from "lodash";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
-import { EditorState } from 'draft-js'
 
 
 
@@ -39,18 +38,11 @@ function EditInstitution(item: any) {
     const [Startdate, setStartdate] = React.useState(undefined);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
-    const [editorState, setEditorState] = React.useState(EditorState.createEmpty());
     // $('.ms-Dialog-main .main-153').hide();
     const setModalIsOpenToTrue = (e: any) => {
         // e.preventDefault()
         setModalIsOpen(true)
     }
-    const onEditorStateChange = React.useCallback(
-        (rawcontent) => {
-          setEditorState(rawcontent.blocks[0].text);
-        },
-        [editorState]
-    );
     const setModalIsOpenToFalse = () => {
 
         EditComponentCallback();
@@ -328,8 +320,8 @@ function EditInstitution(item: any) {
     }
     React.useEffect(() => {
         var initLoading = function () {
-            if (item.props != undefined) {
-                var Item = item.props;
+            if (item.item != undefined && item.item.siteType != undefined) {
+                var Item = item.item;
                 if (Item.siteType == 'HTTPS:') {
                     Item.siteType = 'HHHH';
                 }
@@ -694,18 +686,18 @@ function EditInstitution(item: any) {
         setSharewebCategory(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    // const onEditorStateChange = (e: any, item: any) => {
-    //     //  item.Description = e.target.value;
-    //     setComponent(EditData => ([...EditData]));
-    //     // const { components } = this.state;
-    //     // const x = { components };
-    //     // for (const i in x){
-    //     //     if(x[i].id ==== id){
-    //     //         x[i].contentValue.editorState = e;
-    //     //     }
-    //     // }
-    //     // this.setState({components: x})
-    // }
+    const onEditorStateChange = (e: any, item: any) => {
+        //  item.Description = e.target.value;
+        setComponent(EditData => ([...EditData]));
+        // const { components } = this.state;
+        // const x = { components };
+        // for (const i in x){
+        //     if(x[i].id ==== id){
+        //         x[i].contentValue.editorState = e;
+        //     }
+        // }
+        // this.setState({components: x})
+    }
     const ChangeStatus = (e: any, item: any) => {
         item.AdminStatus = e.target.value;
         setComponent(EditData => ([...EditData]));
@@ -718,7 +710,6 @@ function EditInstitution(item: any) {
         <>
             {/* <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
                 src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> */}
-                {console.log("Done")}
             <Modal
                 isOpen={modalIsOpen}
                 // onDismiss={setModalIsOpenToFalse}
@@ -726,7 +717,7 @@ function EditInstitution(item: any) {
             // {width:"1250px"}
             >
                 {/* {CompoenetItem != undefined && CompoenetItem.map(item => */}
-                {EditData != undefined && EditData.Title != undefined &&
+                {EditData.Title != undefined &&
                     <div id="EditGrueneContactSearch" >
 
                         <div className="modal-dialog modal-lg modal-fixed ">
@@ -1131,14 +1122,13 @@ function EditInstitution(item: any) {
                                                                                     <span>Verified</span>
                                                                                 </span>
                                                                                 <Editor
-                                                                                    // editorState={EditData.Description}
-                                                                                    editorState={editorState}
+                                                                                    editorState={EditData.Description}
                                                                                     toolbarClassName="toolbarClassName"
                                                                                     wrapperClassName="wrapperClassName"
                                                                                     editorClassName="editorClassName"
                                                                                     // defaultValue={EditData.Short_x0020_Description_x0020_On}
                                                                                     wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                                    onChange={onEditorStateChange}
+                                                                                    onEditorStateChange={(e) => onEditorStateChange(e, EditData)}
                                                                                 />
 
                                                                                 {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: EditData.Short_x0020_Description_x0020_On }}>

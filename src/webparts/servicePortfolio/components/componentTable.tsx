@@ -1,16 +1,14 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
-import '../../cssFolder/foundation.scss';
+//import '../../cssFolder/foundation.scss';
 import { Modal } from 'office-ui-fabric-react';
-import "bootstrap/dist/css/bootstrap.min.css";
+//import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
 //import SmartFilter from './SmartFilter';
-import '../../cssFolder/foundation.scss';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
+//import '../../cssFolder/foundation.scss';
 import { map } from 'jquery';
 import { concat } from 'lodash';
 import EditInstituton from '../../EditPopupFiles/EditComponent';
@@ -334,7 +332,7 @@ function ComponentTable() {
                             item.flag = true;
                             item.siteType = config.Title;
                             item.childs = [];
-                            item.listId =config.listId;
+                            item.listId = config.listId;
                             if (item.SharewebCategories.results != undefined) {
                                 if (item.SharewebCategories.results.length > 0) {
                                     $.each(item.SharewebCategories.results, function (ind: any, value: any) {
@@ -404,7 +402,7 @@ function ComponentTable() {
                                 if (result['Shareweb_x0020_ID'] == undefined) {
                                     result['Shareweb_x0020_ID'] = "";
                                 }
-                                result['Item_x0020_Type'] = 'Task';      
+                                result['Item_x0020_Type'] = 'Task';
                                 TasksItem.push(result);
                                 // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
 
@@ -1746,7 +1744,7 @@ function ComponentTable() {
     function AddItem() {
     }
     return (
-        <div className="app component taskprofilepagegreen">
+        <div className="app component serviepannelgreena">
 
             {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
             {/* <Modal
@@ -1764,7 +1762,7 @@ function ComponentTable() {
                                 <div className="col-sm-12 tab-content">
                                     <div className="col-md-5">
                                         <div className="row">
-                                            <div className="col-sm-4 mb-10 pad0" title="Task Name">
+                                            <div className="col-sm-4 mb-10 p-0" title="Task Name">
                                                 <label>Title</label>
                                                 <input type="text" className="form-control" placeholder="Task Name"
                                                     value={Title} onChange={handleTitle} />
@@ -1792,7 +1790,7 @@ function ComponentTable() {
                                         </div>
                                         <div className="row">
 
-                                            <div className="col-sm-6 pad0">
+                                            <div className="col-sm-6 p-0">
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Service'"
                                                     className="col-sm-12 mb-10 Doc-align padL-0">
                                                     <div className="col-sm-11 PadR0 Doc-align">
@@ -1821,7 +1819,7 @@ function ComponentTable() {
                                                 </div>
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Component'"
                                                     className="col-sm-12 padL-0">
-                                                    <div className="col-sm-11 pad0 Doc-align">
+                                                    <div className="col-sm-11 p-0 Doc-align">
 
                                                         <label>
                                                             Service Portfolio
@@ -1892,7 +1890,7 @@ function ComponentTable() {
                 </div>
             </Modal> */}
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
-            <div className="col-sm-12 padL-0 PadR0">
+            <div className="col-sm-12 ">
                 <h2 className="alignmentitle ng-binding">
                     Service Portfolio
                     <span className="icontype display_hide padLR">
@@ -1900,9 +1898,9 @@ function ComponentTable() {
 
                 </h2>
             </div>
-            <div className="col-sm-12 padL-0 PadR0">
+            <div className="col-sm-12 ">
                 <section className="ContentSection">
-                    <div className="bg-f5f5 bdrbox pad10 clearfix">
+                    <div className="bg-wihite border p-2">
                         <div className="togglebox">
                             <label className="toggler full_width mb-10">
                                 <span className=" siteColor">
@@ -1928,7 +1926,7 @@ function ComponentTable() {
                                     }
 
                                 </span>
-                                <span className="pull-right siteColor">
+                                <span className="pull-right bg-color">
                                     <img className="icon-sites-img  wid22 ml5" ng-show="pagesType=='componentportfolio'"
                                         title="Share SmartFilters selection" ng-click="GenerateUrl()"
                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png" />
@@ -1941,143 +1939,138 @@ function ComponentTable() {
                                 </span>
                             </label>
                             <div className="togglecontent">
-                                <div className="col-sm-12 pad0">
-                                    <table width="100%" className="indicator_search">
-                                        <tr>
-                                            {filterGroups.map(function (item) {
-                                                return (
-                                                    <>
+                                <table width="100%" className="indicator_search">
+                                    <tr>
+                                        {filterGroups.map(function (item) {
+                                            return (
+                                                <>
 
-                                                        <td valign="top">
-                                                            <fieldset>
-                                                                <legend>{item != 'teamSites' && <span>{item}</span>}</legend>
-                                                                <legend>{item == 'teamSites' && <span>Sites</span>}</legend>
-                                                            </fieldset>
-                                                            {filterItems.map(function (ItemType, index) {
-                                                                return (
+                                                    <td valign="top">
+                                                        <fieldset>
+                                                            <legend>{item != 'teamSites' && <span className="mparent">{item}</span>}</legend>
+                                                            <legend>{item == 'teamSites' && <span className="mparent">Sites</span>}</legend>
+                                                        </fieldset>
+                                                        {filterItems.map(function (ItemType, index) {
+                                                            return (
 
-                                                                    <>
-                                                                        {ItemType.Group == item &&
-                                                                            <div style={{ display: "block" }}>
-                                                                                <>
-                                                                                    <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
-                                                                                        {ItemType.childs.length > 0 &&
-                                                                                            <a className='hreflink'
-                                                                                                title="Tap to expand the childs">
-                                                                                                {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                    : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
+                                                                <>
+                                                                    {ItemType.Group == item &&
+                                                                        <div style={{ display: "block" }}>
+                                                                            <>
 
-                                                                                            </a>}
-                                                                                    </span>
-                                                                                    {ItemType.TaxType != 'Status' &&
-                                                                                        <span className="ml-1">
+                                                                                {ItemType.TaxType != 'Status' &&
+                                                                                    
+                                                                                    <div className="align-items-center d-flex">
+                                                                                        <span className="hreflink me-1 GByicon" onClick={() => handleOpen2(ItemType)}>
+                                                                                            {ItemType.childs.length > 0 &&
+                                                                                                <a title="Tap to expand the childs">
+                                                                                                    {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
 
-
-                                                                                            <input type="checkbox" checked={ItemType.Selected == true} className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-
-                                                                                            <span className="ml-2">
-                                                                                                {ItemType.Title}
-
-                                                                                            </span>
-
+                                                                                                </a>}
                                                                                         </span>
-                                                                                    }
-                                                                                    {ItemType.TaxType == 'Status' &&
-                                                                                        <span className="ml-2">
-
-
-                                                                                            <input type="checkbox" checked={ItemType.Selected == true} className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                                            <span className="ml-2">
-                                                                                                {ItemType.Title}
-
-                                                                                            </span>
-
-                                                                                        </span>
-                                                                                    }
-                                                                                    <ul id="id_{ItemType.Id}"
-                                                                                        className="subfilter width-85">
-                                                                                        <span>
-                                                                                            {ItemType.show && (
-                                                                                                <>
-                                                                                                    {ItemType.childs.map(function (child1: any, index: any) {
-                                                                                                        return (
-                                                                                                            <>
-                                                                                                                <div style={{ display: "block" }}>
+                                                                                        <input className="form-check-input me-1" checked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <label className="form-check-label">
+                                                                                            {ItemType.Title}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                }
+                                                                                {ItemType.TaxType == 'Status' &&
+                                                                                    
+                                                                                    <div className="align-items-center d-flex">
+                                                                                        <input className="form-check-input me-1" checked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <label className="form-check-label">
+                                                                                            {ItemType.Title}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                }
+                                                                                <ul id="id_{ItemType.Id}"
+                                                                                    className="m-0">
+                                                                                    <span>
+                                                                                        {ItemType.show && (
+                                                                                            <>
+                                                                                                {ItemType.childs.map(function (child1: any, index: any) {
+                                                                                                    return (
+                                                                                                        <>
+                                                                                                            
+                                                                                                                <div className="align-items-center d-flex">
                                                                                                                     {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                                        <span className="plus-icon hreflink"
+                                                                                                                        <span className="hreflink me-1 GByicon"
                                                                                                                             ng-click="loadMoreFilters(child1);">
                                                                                                                             <img
                                                                                                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
                                                                                                                         </span>
                                                                                                                     }
                                                                                                                     {child1.childs.length > 0 && child1.expanded &&
-                                                                                                                        <span className="plus-icon hreflink"
+                                                                                                                        <span className="hreflink me-1 GByicon"
                                                                                                                             ng-click="loadMoreFilters(child1);">
                                                                                                                             <img
                                                                                                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                                                         </span>
                                                                                                                     }
-                                                                                                                    <input type="checkbox" checked={child1.Selected == true} className="icon-input mr0" ng-model="child1.Selected"
-                                                                                                                        onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
-
-                                                                                                                    <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
-                                                                                                                    >
+                                                                                                                    <input type="checkbox" checked={child1.Selected == true} className="form-check-input me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                    <label className="form-check-label">
+                                                                                                                        {child1.Title}
+                                                                                                                    </label>
+                                                                                                                    <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="m-0">
                                                                                                                         {child1.childs.map(function (child2: any) {
                                                                                                                             <li>
-                                                                                                                                <input type="checkbox" checked={child1.Selected == true}
-
-                                                                                                                                    ng-model="child2.Selected"
-                                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
+                                                                                                                                <div className="align-items-center d-flex">
+                                                                                                                                    <input className="form-check-input me-1" type="checkbox" checked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                                    <label className="form-check-label">
+                                                                                                                                    {child2.Title}
+                                                                                                                                    </label>
+                                                                                                                                </div>
                                                                                                                             </li>
                                                                                                                         })}
                                                                                                                     </ul>
                                                                                                                 </div>
-                                                                                                            </>
-                                                                                                        )
 
-                                                                                                    })}
-                                                                                                </>
-                                                                                            )}
-                                                                                        </span>
-                                                                                    </ul>
+                                                                                                            
+                                                                                                        </>
+                                                                                                    )
 
-                                                                                </>
+                                                                                                })}
+                                                                                            </>
+                                                                                        )}
+                                                                                    </span>
+                                                                                </ul>
+
+                                                                            </>
 
 
-                                                                            </div>
-                                                                        }
-                                                                    </>
+                                                                        </div>
+                                                                    }
+                                                                </>
 
-                                                                )
-                                                            })}
+                                                            )
+                                                        })}
 
-                                                        </td>
+                                                    </td>
 
-                                                    </>
-                                                )
-                                            })}
-                                            {/* {filterItems.length >0 && <CheckboxTree
-                                                nodes={filterItems}
-                                                checked={checked}
-                                                // expanded={expanded}
-                                                // onCheck={checked => setchecked({ checked })}
-                                                // onExpand={expanded => this.setState({ expanded })}
-                                                nativeCheckboxes={true}
-                                                showNodeIcon={false}
+                                                </>
+                                            )
+                                        })}
+                                        {/* {filterItems.length >0 && <CheckboxTree
+                                            nodes={filterItems}
+                                            checked={checked}
+                                            // expanded={expanded}
+                                            // onCheck={checked => setchecked({ checked })}
+                                            // onExpand={expanded => this.setState({ expanded })}
+                                            nativeCheckboxes={true}
+                                            showNodeIcon={false}
 
-                                            />
-                                           } */}
+                                        />
+                                        } */}
 
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div className="pull-right">
-
+                                    </tr>
+                                </table>
+                                <div className="text-end">
                                     <button type="button" className="btn btn-primary"
                                         title="Smart Filter" onClick={() => Updateitem()}>
                                         Update
                                     </button>
-                                    <button type="button" className="btn btn-grey ml5" title="Clear All"
+                                    <button type="button" className="btn btn-grey ms-2" title="Clear All"
                                         onClick={() => Clearitem()} >
                                         Clear All
                                     </button>
@@ -2093,8 +2086,8 @@ function ComponentTable() {
             <section className="TableContentSection taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
-                        <div className="container pad0">
-                            <div className="Alltable mt-10">
+                        <div className="container p-0">
+                            <div className="Alltable mt-2">
                                 <div className="tbl-headings">
                                     <span className="leftsec w65">
                                         <label>
@@ -2144,6 +2137,9 @@ function ComponentTable() {
                                             disabled={true}>
                                             Restructure
                                         </button>
+                                        <a onClick={clearSearch}>
+                                            <i className="brush"><FaPaintBrush /></i>
+                                        </a>
                                         <a onClick={Prints}>
                                             <i className="print"><FaPrint /></i>
                                         </a>
@@ -2152,15 +2148,13 @@ function ComponentTable() {
                                                 <i className="excal"><FaFileExcel /></i>
                                             </CSVLink>
                                         </a>
-                                        <a onClick={clearSearch}>
-                                            <i className="brush"><FaPaintBrush /></i>
-                                        </a>
+
                                         {/* <span>
                                         <ExpandTable/>
                                         </span> */}
                                     </span>
                                 </div>
-                                <div className="col-sm-12 pad0 smart">
+                                <div className="col-sm-12 p-0 smart">
                                     <div className="section-event">
                                         <div className="wrapper">
                                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
@@ -2170,15 +2164,13 @@ function ComponentTable() {
                                                             <div></div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "7%" }} className="smart-relative">
+                                                            <div style={{ width: "6%" }} className="smart-relative">
                                                                 <input type="search" placeholder="ID" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} />
 
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-
-
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "20%" }}>
@@ -2205,8 +2197,8 @@ function ComponentTable() {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "20%" }}>
-                                                            <div style={{ width: "19%" }} className="smart-relative">
+                                                        <th style={{ width: "17%" }}>
+                                                            <div style={{ width: "16%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                 // onChange={event => handleChange(event, 'Team')} 
@@ -2269,8 +2261,8 @@ function ComponentTable() {
                                                             return (
                                                                 <>
                                                                     <tr >
-                                                                        <td className="pad0" colSpan={9}>
-                                                                            <table className="table" style={{ width: "100%" }}>
+                                                                        <td className="p-0" colSpan={10}>
+                                                                            <table className="table m-0" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
 
                                                                                     <td style={{ width: "2%" }}>
@@ -2337,7 +2329,7 @@ function ComponentTable() {
                                                                                                 )
                                                                                             })}</div>
                                                                                     </td>
-                                                                                    <td style={{ width: "20%" }}>
+                                                                                    <td style={{ width: "17%" }}>
                                                                                         <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.length > 0 && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                             return (
                                                                                                 <span className="ClientCategory-Usericon"
@@ -2370,8 +2362,8 @@ function ComponentTable() {
 
                                                                                         <>
                                                                                             <tr >
-                                                                                                <td className="pad0" colSpan={9}>
-                                                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                                                <td className="p-0" colSpan={10}>
+                                                                                                    <table className="table m-0" style={{ width: "100%" }}>
                                                                                                         <tr className="for-c02">
                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childitem)}>
@@ -2437,7 +2429,7 @@ function ComponentTable() {
                                                                                                                         )
                                                                                                                     })}</div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "20%" }}>
+                                                                                                            <td style={{ width: "17%" }}>
                                                                                                                 <div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.length > 0 && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                     return (
                                                                                                                         <div className="ClientCategory-Usericon"
@@ -2466,8 +2458,8 @@ function ComponentTable() {
                                                                                                             return (
                                                                                                                 <>
                                                                                                                     <tr >
-                                                                                                                        <td className="pad0" colSpan={10}>
-                                                                                                                            <table className="table" style={{ width: "100%" }}>
+                                                                                                                        <td className="p-0" colSpan={10}>
+                                                                                                                            <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                         {childinew.childs.length > 0 &&
@@ -2536,7 +2528,7 @@ function ComponentTable() {
                                                                                                                                                 )
                                                                                                                                             })}</div>
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "20%" }}>
+                                                                                                                                    <td style={{ width: "17%" }}>
                                                                                                                                         <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.length > 0 && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                                             return (
                                                                                                                                                 <span className="ClientCategory-Usericon"
@@ -2564,8 +2556,8 @@ function ComponentTable() {
 
                                                                                                                                     <>
                                                                                                                                         <tr >
-                                                                                                                                            <td className="pad0" colSpan={9}>
-                                                                                                                                                <table className="table" style={{ width: "100%" }}>
+                                                                                                                                            <td className="p-0" colSpan={10}>
+                                                                                                                                                <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                                     <tr className="for-c02">
                                                                                                                                                         <td style={{ width: "2%" }}>
                                                                                                                                                             <div className="accordian-header" onClick={() => handleOpen(subchilditem)}>
@@ -2631,7 +2623,7 @@ function ComponentTable() {
                                                                                                                                                                     )
                                                                                                                                                                 })}</div>
                                                                                                                                                         </td>
-                                                                                                                                                        <td style={{ width: "20%" }}>
+                                                                                                                                                        <td style={{ width: "17%" }}>
                                                                                                                                                             <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.length > 0 && subchilditem.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                                                                 return (
                                                                                                                                                                     <div className="ClientCategory-Usericon"
@@ -2647,7 +2639,7 @@ function ComponentTable() {
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                         <td style={{ width: "3%" }}><td>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td></td>
                                                                                                                                                         <td style={{ width: "3%" }}></td>
-                                                s                                                                                                    </tr>
+                                                                                                                                                    </tr>
                                                                                                                                                 </table>
                                                                                                                                             </td>
                                                                                                                                         </tr>
