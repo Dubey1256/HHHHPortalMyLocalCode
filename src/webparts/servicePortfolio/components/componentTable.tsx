@@ -1,16 +1,14 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
-import '../../cssFolder/foundation.scss';
+
 import { Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
 //import SmartFilter from './SmartFilter';
-import '../../cssFolder/foundation.scss';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
+// import '../../cssFolder/foundation.scss';
 import { map } from 'jquery';
 import { concat } from 'lodash';
 import EditInstituton from '../../EditPopupFiles/EditComponent';

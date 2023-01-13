@@ -192,7 +192,7 @@ function Portfolio({ ID }: any) {
         setIsComponent(false);
         setIsTask(false);
     }, []);
-   
+
     return (
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
             {/* breadcrumb & title */}
@@ -218,35 +218,35 @@ function Portfolio({ ID }: any) {
                                 )
                             })}
                         </ul>
-                        <span className="text-end"><a target='_blank' data-interception="off"  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
+                        <span className="text-end"><a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                     </div>
                 </div>
                 <div className='row'>
                     <div className='p-0' style={{ verticalAlign: "top" }}>
                         {data.map(item =>
-                        <>
-                            <h2 className='headign'>
-                                {item.Portfolio_x0020_Type == 'Component' &&
-                                    <>
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a> 
-                                        
-                                    </>
-                                }
-                                {item.Portfolio_x0020_Type == 'Service' &&
-                                    <>
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a> 
-                                        
+                            <>
+                                <h2 className='headign'>
+                                    {item.Portfolio_x0020_Type == 'Component' &&
+                                        <>
+                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>
 
-                                    </>}
-                            </h2>
-                            
+                                        </>
+                                    }
+                                    {item.Portfolio_x0020_Type == 'Service' &&
+                                        <>
+                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>
+
+
+                                        </>}
+                                </h2>
+
                             </>
                         )}
                     </div>
                 </div>
-                {data.map(item=>
-                    <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
-                    <EditInstituton props={SharewebComponent} Call={Call} />
+                {data.map(item =>
+                    <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+
                     </span>
                 )}
             </section>
@@ -486,7 +486,7 @@ function Portfolio({ ID }: any) {
                         </div>
                         <section className='row  accordionbox'>
                             <div className="accordion p-0  overflow-hidden">
-                                  {/* description */}
+                                {/* description */}
                                 {data.map(item =>
                                     <>
                                         {item.Body !== null &&
@@ -649,7 +649,7 @@ function Portfolio({ ID }: any) {
                                     </div>
                                 </div>
                             )})} </>
-                               }  */} 
+                               }  */}
                             <div className='mb-3 card'>
                                 <>
                                     {data.map(item =>
@@ -688,7 +688,7 @@ function Portfolio({ ID }: any) {
                     )
                 })}
             </div>
-            
+            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} />}
         </div>
 
 
