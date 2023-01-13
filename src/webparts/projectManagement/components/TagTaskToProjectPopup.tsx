@@ -230,7 +230,7 @@ const TagTaskToProjectPopup = (props: any) => {
                         items.selected = false;
                     }
                     items.listId = config.listId;
-                    items.SiteUrl = config.siteUrl.Url;
+                    items.siteUrl = config.siteUrl.Url;
                     items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                     if (items.Component != undefined && items.Component.results != undefined && items.Component.results.length > 0) {
                         items['Portfoliotype'] = 'Component';
@@ -354,7 +354,7 @@ const TagTaskToProjectPopup = (props: any) => {
         if (confirmation == true) {
             SearchedAllTasks?.map(async (item: any) => {
                 if (item.selected == true) {
-                    const web = new Web(item?.SiteUrl);
+                    const web = new Web(item?.siteUrl);
                     await web.lists.getById(item?.listId).items.getById(item?.Id).update({
                         ProjectId: props?.projectId != undefined ? props?.projectId : ''
                     }).then((e: any) => {
