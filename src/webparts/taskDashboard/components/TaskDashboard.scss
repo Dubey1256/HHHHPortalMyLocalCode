@@ -1,0 +1,155 @@
+.left-option {text-align: center;}
+
+.left-option .side-opt {
+    width: 110px;
+    height: 70px;
+    border: 1px solid #fff;
+    display: inline-block;
+    border-radius: 4px;
+    margin: 0 5px 5px 0;
+    color: #fff;
+    padding: 10px;
+    vertical-align: middle;
+    text-align: center;
+}
+.bg-siteColor{background-color: #000066;}
+// listing css
+.work-today dt, dd {
+    width: 30%;
+    float: left;
+    padding: 5px 10px;
+    /* border-bottom: 1px solid #cccc; */
+}
+.shreweb-btn{
+    width:100%;
+}
+
+.fordates p {text-align: center;margin-bottom:0px;}
+.fordates .todaydate {
+    font-size: 60px;
+}
+.pull-right{float: right;}
+
+@media screen and (min-width: 1024px){
+    .a_c_50a7110f:not(.b_c_50a7110f) .k_c_50a7110f {
+        display: flex;
+        max-width: 1268px;
+        max-width: 1286px;
+        margin: 0 auto;
+    }
+    
+}
+// .main-109 {
+//     box-shadow: rgb(0 0 0 / 22%) 0px 25.6px 57.6px 0px, rgb(0 0 0 / 18%) 0px 4.8px 14.4px 0px;
+//     border-radius: 2px;
+//     background-color: rgb(255, 255, 255);
+//     box-sizing: border-box;
+//     position: relative;
+//     text-align: left;
+//     outline: transparent solid 3px;
+//     max-height: calc(100% - 32px);
+//     max-width: calc(100% - 32px);
+//     min-height: 80%;
+//     min-width: 50%;
+//     overflow-y: auto;
+// }
+@media (min-width: 992px){.modal-lg {
+    width: 1250px !important;
+}
+}
+@media (min-width: 992px)
+{
+.col-md-3 {
+    width: 19% !important;
+}
+}
+.ProirityAssignedUserPhoto {
+    width: 26px!important;
+    border-radius: 29px;
+    height: 26px;
+}
+  
+ 
+  .hhProcesscat .toltrip {
+    float: left;
+    position: absolute;
+    top: 27px;
+    right: 0;
+    width: 26px;
+    height: 32px;
+    line-height: 30px;
+    text-align: center;
+    background: #006;
+}
+.divPanelBody #main-menu li:hover>ul.sub-menu{display: block;}
+ul.sub-menu {
+    display: none;
+    left: 305px;
+    padding-top: 7px;
+    position: absolute;
+    top: -8px;
+    width: 280px;
+    z-index: 9999;
+}
+.divPanelBody #main-menu {
+    width: 25%!important;
+    padding-left: 0;
+    margin-top: 10px;
+}
+.divPanelBody{
+    height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.rdw-editor-main {
+    height: 200px;
+    overflow: auto;
+    box-sizing: border-box;
+}
+.addCommentBox {
+    width: 90% !important;
+    height: 51px !important;
+    border: 1px solid;
+    float: left;
+    margin-left: 116px;
+}
+.ImageBox{
+      /* width: 64%!important; */
+      min-height: 177px!important;
+      border-top: 2px solid #040459; 
+      box-shadow: 0px 0px 0px 1px #ccc;
+      background-color: white;
+}
+.main-109 {
+    box-shadow: rgb(0 0 0 / 22%) 0px 25.6px 57.6px 0px, rgb(0 0 0 / 18%) 0px 4.8px 14.4px 0px;
+    border-radius: 2px;
+    background-color: rgb(255, 255, 255);
+    box-sizing: border-box;
+    position: relative;
+    text-align: left;
+    outline: transparent solid 3px;
+    max-height: calc(100% - 32px);
+    max-width: calc(100% - 32px);
+    min-height: 176px;
+    min-width: 288px;
+    overflow-y: clip;
+
+}
+
+
+// edit popup css
+
+.modal-lg, .modal-xl {
+    max-width: initial;
+}
+.hhProcesscat {
+    position: relative;
+}
+.input-group-text {
+    position: absolute;
+    right: 1px;
+    z-index: 9;
+    top: 2px;
+    padding: 8px 8px;
+    top: 25px;
+}

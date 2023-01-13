@@ -1,5 +1,7 @@
 import * as React from 'react';
-import './styles.css';
+
+import '../../cssFolder/Style.scss';
+import Tabs from './Tabs';
 type Props = {
   title: string
   index: number
@@ -7,9 +9,9 @@ type Props = {
 }
 
 const TabTitle: React.FC<Props> = ({ title, setSelectedTab, index }) => {
-
+const  [tabselect, settabselect] = React.useState(0);
   return (
-      <button type='button' onClick={() => setSelectedTab(index)}>{title}</button>
+      <button  type='button' className={Tabs.length ==0 ?'nav-link':'nav-link'}  onClick={() => setSelectedTab(index)}>{title}</button>
   )
 }
 

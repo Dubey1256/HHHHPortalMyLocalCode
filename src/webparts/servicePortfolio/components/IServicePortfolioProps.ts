@@ -4,4 +4,10 @@ export interface IServicePortfolioProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  siteUrl : string;
+  ComponentlistId:string;
+  TasklistId:string;
+  SmartMetaDataId:string;
+  TaskUserlistId:string;
+  Context: any;
 }

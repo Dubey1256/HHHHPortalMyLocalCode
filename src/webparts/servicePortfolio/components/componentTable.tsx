@@ -1,17 +1,21 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
-import '../../cssFolder/foundation.scss' ;
+//import '../../cssFolder/foundation.scss';
 import { Modal } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
 //import SmartFilter from './SmartFilter';
-import '../../cssFolder/foundation.scss' ;
+//import '../../cssFolder/foundation.scss';
 import { map } from 'jquery';
 import { concat } from 'lodash';
-import EditInstitution from '../../EditPopupFiles/EditComponent';
+import EditInstituton from '../../EditPopupFiles/EditComponent';
+import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+import { any, number } from 'prop-types';
+import CheckboxTree from 'react-checkbox-tree';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 
 
 
@@ -23,9 +27,6 @@ function ComponentTable() {
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
     // const [Editpopup, setEditpopup] = React.useState(false)
     const [maidataBackup, setmaidataBackup] = React.useState([])
-    const [show, setShow] = React.useState(false);
-    //const [passData, setPassData] = React.useState([]);
-    const [child, setChild] = React.useState(false);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [data, setData] = React.useState([])
     const [Title, setTitle] = React.useState()
@@ -34,7 +35,7 @@ function ComponentTable() {
     const [SubComponentsData, setSubComponentsData] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
     const [table, setTable] = React.useState(data);
-    const [AllUsers, setTaskUser] = React.useState([])
+    const [AllUsers, setTaskUser] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
     const [Editpopup, setEditpopup] = React.useState(false);
@@ -45,40 +46,86 @@ function ComponentTable() {
     const [filterItems, setfilterItems] = React.useState([])
     const [Editdata, setEditdata] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
-    const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
-
-    const [collapseItem, setcollapseItem] = React.useState(true);
-    const [EditTaskItemitle, setEditItem] = React.useState('');
-    const [popupStatus, setPopupItem] = React.useState(false);
-    const [itemData, setItemData] = React.useState([])
-
+    const [IsComponent, setIsComponent] = React.useState(false);
+    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [IsTask, setIsTask] = React.useState(false);
+    const [SharewebTask, setSharewebTask] = React.useState('');
+    const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([])
+    const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
+    const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
+    const [checked, setchecked] = React.useState([]);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-    const editProfile = (itemData: any) => {
-        console.log('test')
-        setPopupItem(true);
-        setItemData(['']);
-        setItemData(itemData);// => ([...itemData]));
+
+    var IsExitSmartfilter = function (array: any, Item: any) {
+        var isExists = false;
+        var count = 0;
+        Item.MultipleTitle = '';
+        map(array, (item) => {
+            if (item.TaxType != undefined && Item.Title != undefined && item.TaxType == Item.Title) {
+                isExists = true;
+                count++;
+                Item.MultipleTitle += item.Title + ', ';
+                return false;
+            }
+        });
+        if (Item.MultipleTitle != "")
+            Item.MultipleTitle = Item.MultipleTitle.substring(0, Item.MultipleTitle.length - 2);
+        Item.count = count;
+        return isExists;
+    }
 
 
+    var issmartExists = function (array: any, title: any) {
+        var isExists = false;
+        map(array, (item) => {
+            if (item.Title == title.Title) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
     }
     const SingleLookDatatest = (e: any, item: any, value: any) => {
         const { checked } = e.target;
         if (checked) {
             state.push(item);
+            if (item.childs != undefined && item.childs.length > 0) {
+                map(item.childs, (child) => {
+                    state.push(child);
+                })
+            }
 
         }
         else {
             $.each(state, function (index: any, newite: any) {
-                // if (newite.Title != undefined) {
-                //     if (newite.Title == item.Title)
-                //         state.splice(index, 1);
-                // }
-                if (newite.Id == item.Id) {
+                if (newite.Title == item.Title) {
                     state.splice(index, 1);
                 }
+                if (item.childs != undefined && item.childs.length > 0) {
+                    for (var i: number = 0; item.childs > 0; i++) {
+                        state.splice(i, 1);
+                        --i;
+                    }
+                }
+
             })
         }
-        setState(state)
+        var ArrayItem: any = []
+        if (state != undefined) {
+            map(state, (smart) => {
+                var smartfilterItems: any = {};
+                smartfilterItems.Title = smart.TaxType;
+                if (IsExitSmartfilter(state, smartfilterItems)) {
+                    if (smartfilterItems.count >= 3) {
+                        smartfilterItems.selectTitle = ' : (' + smartfilterItems.count + ')';
+                    } else smartfilterItems.selectTitle = ' : ' + smartfilterItems.MultipleTitle;
+                }
+                if (!issmartExists(ArrayItem, smartfilterItems))
+                    ArrayItem.push(smartfilterItems);
+            })
+        }
+        setShowSelectdSmartfilter(ShowSelectdSmartfilter => ([...ArrayItem]));
+        // setState(state)
     }
     const Clearitem = () => {
         // setData(maini...[maidataBackup])
@@ -86,55 +133,541 @@ function ComponentTable() {
         // const { checked } = e.target;
 
     }
+    // const isItemExists = function (arr: any, Id: any) {
+    //     var isExists = false;
+    //     map(arr, (item) => {
+    //         if (item.Id == Id) {
+    //             isExists = true;
+    //             return false;
+    //         }
+    //     });
+    //     return isExists;
+    // }
     const Updateitem = () => {
         var filters: any[] = []
+        var CategoryItems: any = [];
+        var TeamUsers: any = [];
+        var IsTeamUsers: any = false;
+        var PriorityItems: any = [];
+        var isPrioritySelected: any = false;
+        var ResponsibilityItems: any = [];
+        var isResponsibilitySelected: any = false;
+        var PortfolioItems: any = [];
+        var isPortfolioSelected = false;
         if (state.length == 0) {
             setData(maidataBackup)
         }
         else {
-            $.each(maidataBackup, function (index: any, item) {
+            map(maidataBackup, (item) => {
 
-                $.each(state, function (index: any, select) {
-                    if (item.Id == select.Id) {
-                        filters.push(item);
-                    }
-                    $.each(item.TeamLeaderUser, function (index: any, team) {
-                        if (select.Title == team.Title) {
+                map(state, (select) => {
+                    if (select.Selected)
+                        switch (select.TaxType) {
+                            case 'Portfolio':
+                                if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                    item.flag = true
+                                    PortfolioItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.Item_x0020_Type != undefined && child.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                            child.flag = true
+                                            PortfolioItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.Item_x0020_Type != undefined && subchild.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                                    child.flag = true
+                                                    PortfolioItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
 
-                            filters.push(item);
+                            case 'Type':
+                                if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                    item.flag = true
+                                    CategoryItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.SharewebTaskType != undefined && child.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                            child.flag = true
+                                            CategoryItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.SharewebTaskType != undefined && subchild.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                                    child.flag = true
+                                                    CategoryItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+                            case 'Priority':
+                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                    item.flag = true
+                                    PriorityItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                            child.flag = true
+                                            PriorityItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                                    child.flag = true
+                                                    PriorityItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+                            case 'Sites':
+                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                    item.flag = true
+                                    PriorityItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                            child.flag = true
+                                            PriorityItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                                    child.flag = true
+                                                    PriorityItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+                            case 'Team Members':
+                                if (item.TeamLeaderUserTitle != undefined && item.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title) > -1 && !isItemExists(ResponsibilityItems, item.Id)) {
+                                    item.flag = true
+                                    ResponsibilityItems.push(item);
+                                }
+                                if (item.childs != undefined && item.childs.length > 0) {
+                                    map(item.childs, (child) => {
+                                        if (child.TeamLeaderUserTitle != undefined && child.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title && !isItemExists(ResponsibilityItems, item.Id))) {
+                                            child.flag = true
+                                            ResponsibilityItems.push(item);
+                                        }
+                                        if (child.childs != undefined && child.childs.length > 0) {
+                                            map(child.childs, (subchild) => {
+                                                if (subchild.TeamLeaderUserTitle != undefined && subchild.TeamLeaderUserTitle == select.Title && !isItemExists(ResponsibilityItems, item.Id)) {
+                                                    child.flag = true
+                                                    ResponsibilityItems.push(item);
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                                break;
+
+
                         }
-
-                    })
-                    $.each(item.Child, function (index: any, childitem) {
-                        if (childitem.Id == select.Id) {
-                            filters.push(childitem);
-                        }
-
-                    })
-                    $.each(item.Child.TeamLeaderUser, function (index: any, childteam) {
-                        if (select.Title == childteam.Title) {
-
-                            filters.push(childteam);
-                        }
-
-                    })
-
                 })
-
-
-
-
-
             })
-        }
 
-        setData(filters)
+        }
+        if (state.length > 0)
+            setData(CategoryItems)
 
 
     }
 
 
+    const LoadAllSiteTasks = function () {
 
+        var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+        var Counter = 0;
+
+
+        $.each(siteConfig, function (index: any, config: any) {
+            if (config.Title != 'SDC Sites') {
+                //     $.each($scope.filterItems, function (filter) {
+                //         if (config.Title == filter.Title) {
+                //             filter.DataLoad = true;
+                //         }
+                //         if (filter.childs != undefined && filter.childs.length > 0) {
+                //             angular.forEach(filter.childs, function (child) {
+                //                 if (config.Title == child.Title) {
+                //                     child.DataLoad = true;
+                //                 }
+                //             })
+                //         }
+                //     })
+                config.DataLoad = true;
+                var Response: any = []
+                var select = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientCategory/Id,ClientCategory/Title,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories";
+                if (config.Title == 'Master Tasks') {
+                    select = "ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent";
+                }
+                var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('" + config.listId + "')/items?$select=" + select + '&$' + query;
+                $.ajax({
+                    url: url,
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json; odata=verbose"
+                    },
+                    success: function (data) {
+                        Counter++;
+                        console.log(data.d.results.length);
+                        $.each(data.d.results, function (index: any, item: any) {
+                            item.isDrafted = false;
+                            item.flag = true;
+                            item.siteType = config.Title;
+                            item.childs = [];
+                            item.listId = config.listId;
+                            if (item.SharewebCategories.results != undefined) {
+                                if (item.SharewebCategories.results.length > 0) {
+                                    $.each(item.SharewebCategories.results, function (ind: any, value: any) {
+                                        if (value.Title.toLowerCase() == 'draft') {
+                                            item.isDrafted = true;
+                                        }
+                                    });
+                                }
+                            }
+                        })
+                        AllTasks = AllTasks.concat(data.d.results);
+                        AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
+                        // var result = $.grep(AllTasks, function (mPho, index) {
+                        //     {return mPho.isDrafted == false};
+                        // });
+                        if (Counter == 18) {
+                            $.each(AllTasks, function (index: any, result: any) {
+                                result.TeamLeaderUser = []
+                                result.TeamLeaderUserTitle = ''
+                                result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
+
+                                if (result.DueDate == 'Invalid date' || '') {
+                                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                                }
+                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                                if (result.Short_x0020_Description_x0020_On != undefined) {
+                                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                                }
+
+                                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                                    $.each(result.AssignedTo, function (index: any, Assig: any) {
+                                        if (Assig.Id != undefined) {
+                                            $.each(TaskUsers, function (index: any, users: any) {
+
+                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                                    users.ItemCover = users.Item_x0020_Cover;
+                                                    result.TeamLeaderUser.push(users);
+                                                    result.TeamLeaderUserTitle += users.Title + ';';
+                                                }
+
+                                            })
+                                        }
+                                    })
+                                }
+                                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
+                                    $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
+                                        if (Assig.Id != undefined) {
+                                            $.each(TaskUsers, function (index: any, users: any) {
+                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                                    users.ItemCover = users.Item_x0020_Cover;
+                                                    result.TeamLeaderUser.push(users);
+                                                    result.TeamLeaderUserTitle += users.Title + ';';
+                                                }
+
+                                            })
+                                        }
+                                    })
+                                }
+                                result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
+                                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                                        result.ClientCategory.push(catego);
+                                    })
+                                }
+                                result['Shareweb_x0020_ID'] = getSharewebId(result);
+                                if (result['Shareweb_x0020_ID'] == undefined) {
+                                    result['Shareweb_x0020_ID'] = "";
+                                }
+                                result['Item_x0020_Type'] = 'Task';
+                                TasksItem.push(result);
+                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
+
+                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
+                                //     })
+                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
+                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                 clientcategory.ParentClientCategoryStructure = '';
+                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
+                                //             }
+                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
+                                //             }
+                                //         })
+                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
+                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
+                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                         clientcategory.ParentClientCategoryStructure = '';
+                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
+                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
+                                //                     }
+                                //                 })
+                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
+                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
+                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                                 clientcategory.ParentClientCategoryStructure = '';
+                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
+                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
+                                //                             }
+                                //                         })
+                                //                     })
+
+                                //                 }
+                                //             })
+
+                                //         }
+                                //     })
+                                // } else task.ClientCategory = [];
+
+                                // task['Item_x0020_Type'] = 'Task';
+                                // task['flag'] = true;
+                                // task['newTitle'] = task.Title;
+                                // task['childsLength'] = 0;
+                                // task['childs'] = [];
+                                // task['select'] = false;
+                                // task['isShifted'] = false;
+                                // task['mailcomments'] = '';
+                                // if (task['Body'] != "") {
+                                //     task['WordCount'] = countOfWord(task['Body']);
+                                // }
+                                // task.Short_x0020_Description_x0020_On = []
+                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
+                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
+                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
+                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
+                                // }
+                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
+                                //     $.each(item.Comments, function (index: any, com: any) {
+                                //         task['searchSortDescription'] = com.Title;
+                                //     })
+                                // })
+                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
+                                //     task.mailComment = parseJSON(task.Comments)
+                                // $.each(task.mailComment, function (index: any, item: any) {
+                                //     task['mailcomments'] += item.Description
+                                // })
+                                // task['PortfolioItemsId'] = undefined
+                                // if (task.Component.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
+                                // }
+                                // else if (task.Services.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
+                                // }
+                                // else if (task.Events.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
+                                // }
+                                // if (task.SharewebTaskType.Title == undefined) {
+                                //     task.SharewebTaskType.Title = 'Task';
+                                // }
+                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
+                                // if (task['Shareweb_x0020_ID'] == undefined) {
+                                //     task['Shareweb_x0020_ID'] = "";
+                                // }
+                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
+                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
+                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
+                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
+                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
+                                // if (task['DueDate'] != undefined) {
+                                //     task['MainDueDate'] = (task.DueDate);
+                                //     var dateE = (new Date(task.DueDate));
+                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
+                                // }
+                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
+                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
+                                // task.AssignedUser = [];
+                                // task.TeamMemberUser = [];
+                                // task.AllTeamName = '';
+                                // task['AdditionalTeam'] = [];
+                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
+                                // task.TeamLeaderUser = []
+                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
+                                // getTeamLeadersName(task.Team_x0020_Members, task);
+
+                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
+                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
+                                // TasksItem.push(task);
+                                // task['AdditionalTeamName'] = '';
+                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
+                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
+                                // });
+                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
+
+                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
+                                //     })
+                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
+                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                 clientcategory.ParentClientCategoryStructure = '';
+                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
+                                //             }
+                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
+                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
+                                //             }
+                                //         })
+                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
+                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
+                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                         clientcategory.ParentClientCategoryStructure = '';
+                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
+                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
+                                //                     }
+                                //                 })
+                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
+                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
+                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
+                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
+                                //                                 clientcategory.ParentClientCategoryStructure = '';
+                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
+                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
+                                //                             }
+                                //                         })
+                                //                     })
+
+                                //                 }
+                                //             })
+
+                                //         }
+                                //     })
+                                // } else task.ClientCategory = [];
+
+                                // task['Item_x0020_Type'] = 'Task';
+                                // task['flag'] = true;
+                                // task['newTitle'] = task.Title;
+                                // task['childsLength'] = 0;
+                                // task['childs'] = [];
+                                // task['select'] = false;
+                                // task['isShifted'] = false;
+                                // task['mailcomments'] = '';
+                                // if (task['Body'] != "") {
+                                //     task['WordCount'] = countOfWord(task['Body']);
+                                // }
+                                // task.Short_x0020_Description_x0020_On = []
+                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
+                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
+                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
+                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
+                                // }
+                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
+                                //     $.each(item.Comments, function (index: any, com: any) {
+                                //         task['searchSortDescription'] = com.Title;
+                                //     })
+                                // })
+                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
+                                //     task.mailComment = parseJSON(task.Comments)
+                                // $.each(task.mailComment, function (index: any, item: any) {
+                                //     task['mailcomments'] += item.Description
+                                // })
+                                // task['PortfolioItemsId'] = undefined
+                                // if (task.Component.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
+                                // }
+                                // else if (task.Services.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
+                                // }
+                                // else if (task.Events.results.length > 0) {
+                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
+                                // }
+                                // if (task.SharewebTaskType.Title == undefined) {
+                                //     task.SharewebTaskType.Title = 'Task';
+                                // }
+                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
+                                // if (task['Shareweb_x0020_ID'] == undefined) {
+                                //     task['Shareweb_x0020_ID'] = "";
+                                // }
+                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
+                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
+                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
+                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
+                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
+                                // if (task['DueDate'] != undefined) {
+                                //     task['MainDueDate'] = (task.DueDate);
+                                //     var dateE = (new Date(task.DueDate));
+                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
+                                // }
+                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
+                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
+                                // task.AssignedUser = [];
+                                // task.TeamMemberUser = [];
+                                // task.AllTeamName = '';
+                                // task['AdditionalTeam'] = [];
+                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
+                                // task.TeamLeaderUser = []
+                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
+                                // getTeamLeadersName(task.Team_x0020_Members, task);
+
+                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
+                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
+                                // TasksItem.push(task);
+                                // task['AdditionalTeamName'] = '';
+                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
+                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
+                                // });
+                            })
+                            TasksItem = (AllTasks);
+                            console.log(Response);
+                            $.each(TasksItem, function (index: any, task: any) {
+                                if (!isItemExistsNew(CopyTaskData, task)) {
+                                    CopyTaskData.push(task);
+                                }
+                            })
+                            filterDataBasedOnList();
+                            // $scope.Advancefilter();
+                            // $scope.Advancefilter();
+                        }
+                        // if (data.d.__next) {
+                        //     url = data.d.__next;
+                        // }
+                        // else setTask(Response);
+                        // if (data.d.__next) {
+                        //     url = data.d.__next;
+                        // }
+                        // else setTask(Response);
+                    },
+                    error: function (error) {
+                        Counter++;
+                    }
+
+                });
+
+
+
+            } else Counter++;
+
+        })
+
+    }
     const handleOpen2 = (item: any) => {
 
         item.show = item.show = item.show == true ? false : true;
@@ -147,7 +680,8 @@ function ComponentTable() {
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
 
-    }; const handleEditPopup = (item: any) => {
+    };
+    const handleEditPopup = (item: any) => {
 
         //    item.Isclick = item.Isclick = item.Isclick == true ? false : true;
         //    setData(data => ([...data]));
@@ -156,13 +690,22 @@ function ComponentTable() {
         //setData(data => ([...data]));
 
     };
-    const handleTimeOpen = (item: any) => {
 
-        item.show = item.show = item.show == true ? false : true;
-        setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
-        // setData(data => ([...data]));
+    // const handleTimeOpen = (item: any) => {
 
-    };
+    //     item.show = item.show = item.show == true ? false : true;
+    //     setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+    //     // setData(data => ([...data]));
+
+    // };
+
+    // const handleTimeOpen = (item: any) => {
+
+    //     item.show = item.show = item.show == true ? false : true;
+    //     setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+    //     // setData(data => ([...data]));
+
+    // };
 
 
     const addModal = () => {
@@ -170,9 +713,6 @@ function ComponentTable() {
     }
     const setModalIsOpenToTrue = () => {
         setModalIsOpen(true)
-    }
-    const setModalIsTimeOpenToTrue = () => {
-        setTimeModalIsOpen(true)
     }
 
 
@@ -194,10 +734,14 @@ function ComponentTable() {
         setTable(copy)
 
     }
-    let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
-        setSearch(e.target.value.toLowerCase());
-        var Title = titleName;
-    };
+    // let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
+    //     setSearch(e.target.value.toLowerCase());
+    //     var Title = titleName;
+    // };
+    // let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
+    //     setSearch(e.target.value.toLowerCase());
+    //     var Title = titleName;
+    // };
     var stringToArray = function (input: any) {
         if (input) {
             return input.match(/\S+/g);
@@ -292,6 +836,8 @@ function ComponentTable() {
     var AllComponetsData: any = [];
     var TaskUsers: any = [];
     var RootComponentsData: any = [];
+    // var ComponentsData: any = [];
+    // var SubComponentsData: any = []; var FeatureData: any = [];
     var MetaData: any = []
     var showProgressBar = () => {
         $(' #SpfxProgressbar').show();
@@ -302,6 +848,7 @@ function ComponentTable() {
     }
     React.useEffect(() => {
 
+
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------
@@ -310,13 +857,18 @@ function ComponentTable() {
 
             $.ajax({
 
+
                 url: url,
+
 
                 method: "GET",
 
+
                 headers: {
 
+
                     "Accept": "application/json; odata=verbose"
+
 
                 },
 
@@ -325,6 +877,17 @@ function ComponentTable() {
                     Response = Response.concat(data.d.results);
                     TaskUsers = Response;
                     console.log(Response);
+                    setTaskUser(Response);
+                    //   if (data.d.__next) {
+
+                    //   url = data.d.__next;
+
+
+
+                    // }
+                    //  else setTaskUser(Response);
+
+
                     setTaskUser(Response);
                     //   if (data.d.__next) {
 
@@ -353,6 +916,8 @@ function ComponentTable() {
 
             var metadatItem: any = []
             var filterItems: any = [];
+            // siteConfig =[];
+            // var filterGroups: any = [];
             // siteConfig =[];
             // var filterGroups: any = [];
             filterGroups.push("Portfolio");
@@ -432,6 +997,8 @@ function ComponentTable() {
                             item.ID = item.Id = filterItem.Id;
                             item.Title = filterItem.Title;
                             item.Group = filterItem.TaxType;
+                            item.value = filterItem.Id;
+                            item.label = filterItem.Title;
                             item.TaxType = filterItem.TaxType;
                             if (item.Title == "Activities" || item.Title == "Workstream" || item.Title == "Task") {
                                 item.Selected = true;
@@ -457,7 +1024,7 @@ function ComponentTable() {
                         }
                     });
 
-                    filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true, "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true, "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true, "childs": [] });
+                    filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true, 'value': 1000, 'label': "Component", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true, 'value': 10000, 'label': "SubComponent", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true, 'value': 100000000, 'label': "Feature", "childs": [] });
                     $.each(filterItems, function (neww: any, item) {
                         if (item.TaxType == "Sites" && item.Title == 'SDC Sites' || item.Title == 'Tasks') {
                             item.Selected = true;
@@ -469,6 +1036,8 @@ function ComponentTable() {
                         item.childs = [];
                         $.each(items, function (child: any, childItem) {
                             if (childItem.UserGroupId != undefined && childItem.UserGroupId == item.Id) {
+                                childItem.value = childItem.Id;
+                                childItem.label = childItem.Title;
                                 item.childs.push(childItem);
                                 getChildsBasedonId(childItem, items);
                             }
@@ -478,6 +1047,8 @@ function ComponentTable() {
                         item.childs = [];
                         $.each(MetaData, function (news: any, childItem) {
                             if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
+                                childItem.value = childItem.Id;
+                                childItem.label = childItem.Title;
                                 item.childs.push(childItem);
                                 getChildsBasedOn(childItem, items);
                             }
@@ -501,6 +1072,10 @@ function ComponentTable() {
             spRequest.setRequestHeader("Accept", "application/json");
 
             spRequest.onreadystatechange = function () {
+                //  var RootComponentsData: any[] = [];
+                // var ComponentsData: any = [];
+                // var SubComponentsData: any = [];
+                // var FeatureData: any = [];
                 //  var RootComponentsData: any[] = [];
                 // var ComponentsData: any = [];
                 // var SubComponentsData: any = [];
@@ -813,12 +1388,14 @@ function ComponentTable() {
     }
     const getTeamLeadersName = function (Items: any, Item: any) {
         if (Items != undefined) {
-            $.each(Items.results, function (index: any, user: any) {
+            map(Items.results, (index: any, user: any) => {
                 $.each(AllUsers, function (index: any, item: any) {
-                    if (user.Id == item.AssingedToUserId) {
-                        Item.AllTeamName = Item.AllTeamName + item.Title + ' ';
-                    }
-                });
+                    $.each(AllUsers, function (index: any, item: any) {
+                        if (user.Id == item.AssingedToUserId) {
+                            Item.AllTeamName = Item.AllTeamName + item.Title + ' ';
+                        }
+                    });
+                })
             })
         }
     }
@@ -866,6 +1443,7 @@ function ComponentTable() {
     const bindData = function () {
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
+            result.TeamLeaderUserTitle = '';
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -886,6 +1464,7 @@ function ComponentTable() {
                             if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
+                                result.TeamLeaderUserTitle += users.Title + ';';
                             }
 
                         })
@@ -899,6 +1478,7 @@ function ComponentTable() {
                             if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
+                                result.TeamLeaderUserTitle += users.Title + ';';
                             }
 
                         })
@@ -940,6 +1520,10 @@ function ComponentTable() {
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 FeatureData.push(result);
             }
+            if (result.Title == 'Others') {
+                //result['childs'] = result['childs'] != undefined ? result['childs'] : [];
+                ComponentsData.push(result);
+            }
         });
 
         $.each(SubComponentsData, function (index: any, subcomp: any) {
@@ -979,13 +1563,29 @@ function ComponentTable() {
                     findTaggedComponents(task);
                 }
                 else if (task['Component'] != undefined && task['Component']['results'].length == 0 && task['Events'] != undefined && task['Events']['results'].length == 0) {
-                    ComponetsData['allUntaggedTasks'].push(task);
+                    if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                        ComponetsData['allUntaggedTasks'].push(task);
                 }
+
             }
         })
+        var temp: any = {};
+        temp.Title = 'Others';
+        temp.childs = [];
+        temp.flag = true;
+        // ComponetsData['allComponets'][i]['childs']
+        map(ComponetsData['allUntaggedTasks'], (task: any) => {
+            if (task.Title != undefined)
+                temp.childs.push(task);
+        })
+        ComponetsData['allComponets'].push(temp);
         bindData();
     }
     const filterDataBasedOnList = function () {
+        //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
+        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+
+        //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
         //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
 
@@ -1022,258 +1622,7 @@ function ComponentTable() {
         //  makeGroupingBasedOnLevel();
     }
     var TasksItem: any = [];
-    const LoadAllSiteTasks = function () {
 
-        var query = "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
-        var Counter = 0;
-
-
-        $.each(siteConfig, function (index: any, config: any) {
-            if (config.Title != 'SDC Sites') {
-                //     $.each($scope.filterItems, function (filter) {
-                //         if (config.Title == filter.Title) {
-                //             filter.DataLoad = true;
-                //         }
-                //         if (filter.childs != undefined && filter.childs.length > 0) {
-                //             angular.forEach(filter.childs, function (child) {
-                //                 if (config.Title == child.Title) {
-                //                     child.DataLoad = true;
-                //                 }
-                //             })
-                //         }
-                //     })
-                config.DataLoad = true;
-                var Response: any = []
-                var select = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientCategory/Id,ClientCategory/Title,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories";
-                if (config.Title == 'Master Tasks') {
-                    select = "ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent";
-                }
-                var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('" + config.listId + "')/items?$select=" + select + '&$' + query;
-                $.ajax({
-                    url: url,
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json; odata=verbose"
-                    },
-                    success: function (data) {
-                        Counter++;
-                        $.each(data.d.results, function (index: any, item: any) {
-                            item.isDrafted = false;
-                            item.flag = true;
-                            item.siteType = config.Title;
-                            item.childs = [];
-
-                            if (item.SharewebCategories.results != undefined) {
-                                if (item.SharewebCategories.results.length > 0) {
-                                    $.each(item.SharewebCategories.results, function (ind: any, value: any) {
-                                        if (value.Title.toLowerCase() == 'draft') {
-                                            item.isDrafted = true;
-                                        }
-                                    });
-                                }
-                            }
-                        })
-                        AllTasks = AllTasks.concat(data.d.results);
-                        AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
-                        // var result = $.grep(AllTasks, function (mPho, index) {
-                        //     {return mPho.isDrafted == false};
-                        // });
-                        if (Counter == 18) {
-                            $.each(AllTasks, function (index: any, result: any) {
-                                result.TeamLeaderUser = []
-                                result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
-
-                                if (result.DueDate == 'Invalid date' || '') {
-                                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-                                }
-                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-                                if (result.Short_x0020_Description_x0020_On != undefined) {
-                                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-                                }
-
-                                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                                    $.each(result.AssignedTo, function (index: any, Assig: any) {
-                                        if (Assig.Id != undefined) {
-                                            $.each(TaskUsers, function (index: any, users: any) {
-
-                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                                    users.ItemCover = users.Item_x0020_Cover;
-                                                    result.TeamLeaderUser.push(users);
-                                                }
-
-                                            })
-                                        }
-                                    })
-                                }
-                                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
-                                    $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
-                                        if (Assig.Id != undefined) {
-                                            $.each(TaskUsers, function (index: any, users: any) {
-                                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                                    users.ItemCover = users.Item_x0020_Cover;
-                                                    result.TeamLeaderUser.push(users);
-                                                }
-
-                                            })
-                                        }
-                                    })
-                                }
-                                result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
-                                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                                        result.ClientCategory.push(catego);
-                                    })
-                                }
-                                result['Shareweb_x0020_ID'] = getSharewebId(result);
-                                if (result['Shareweb_x0020_ID'] == undefined) {
-                                    result['Shareweb_x0020_ID'] = "";
-                                }
-                                TasksItem.push(result);
-                                // if (task.ClientCategory != undefined && task.ClientCategory.results != undefined && task.ClientCategory.results.length > 0) {
-
-                                //     $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //         task.ClientCategoryTitle = task.ClientCategoryTitle + ';' + clientcategory.Title;
-                                //     })
-                                //     $.each(TaxonomyItems, function (newindex: any, firstLevel: any) {
-                                //         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //             if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                 clientcategory.ParentClientCategoryStructure = '';
-                                //             if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title != undefined) {
-                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Parent.Title + '>' + firstLevel.Title;
-                                //             }
-                                //             else if (firstLevel.Id == clientcategory.Id && firstLevel.Parent.Title == undefined) {
-                                //                 clientcategory.ParentClientCategoryStructure = firstLevel.Title;
-                                //             }
-                                //         })
-                                //         if (firstLevel.childs != undefined && firstLevel.childs.length > 0) {
-                                //             $.each(firstLevel.childs, function (index: any, SecondLevel: any) {
-                                //                 $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //                     if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                         clientcategory.ParentClientCategoryStructure = '';
-                                //                     if (SecondLevel.Id == clientcategory.Id && SecondLevel.Parent.Title != undefined) {
-                                //                         clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + SecondLevel.Title;
-                                //                     }
-                                //                 })
-                                //                 if (SecondLevel.childs != undefined && SecondLevel.childs.length > 0) {
-                                //                     $.each(SecondLevel.childs, function (index: any, ThirdLevel: any) {
-                                //                         $.each(task.ClientCategory.results, function (index: any, clientcategory: any) {
-                                //                             if (clientcategory.ParentClientCategoryStructure == undefined)
-                                //                                 clientcategory.ParentClientCategoryStructure = '';
-                                //                             if (ThirdLevel.Id == clientcategory.Id && ThirdLevel.Parent.Title != undefined) {
-                                //                                 clientcategory.ParentClientCategoryStructure = SecondLevel.Parent.Title + '>' + ThirdLevel.Parent.Title + '>' + ThirdLevel.Title;
-                                //                             }
-                                //                         })
-                                //                     })
-
-                                //                 }
-                                //             })
-
-                                //         }
-                                //     })
-                                // } else task.ClientCategory = [];
-
-                                // task['Item_x0020_Type'] = 'Task';
-                                // task['flag'] = true;
-                                // task['newTitle'] = task.Title;
-                                // task['childsLength'] = 0;
-                                // task['childs'] = [];
-                                // task['select'] = false;
-                                // task['isShifted'] = false;
-                                // task['mailcomments'] = '';
-                                // if (task['Body'] != "") {
-                                //     task['WordCount'] = countOfWord(task['Body']);
-                                // }
-                                // task.Short_x0020_Description_x0020_On = []
-                                // if (task.FeedBack != undefined && task.FeedBack[0] != '' && parseJSON(task.FeedBack) != undefined && parseJSON(task.FeedBack)[0] != undefined && parseJSON(task.FeedBack)[0] != '') {
-                                //     task.Short_x0020_Description_x0020_On = parseJSON(task.FeedBack)[0].FeedBackDescriptions
-                                //     if (task.Short_x0020_Description_x0020_On[0] != undefined && task.Short_x0020_Description_x0020_On[0] != '' && task.Short_x0020_Description_x0020_On[0].Title != '' && task.Short_x0020_Description_x0020_On[0].Title != undefined)
-                                //         task['searchSortDescription'] = task.Short_x0020_Description_x0020_On[0].Title.replace(/<\/?.+?>/ig, '');
-                                // }
-                                // $.each(task.Short_x0020_Description_x0020_On, function (index: any, item: any) {
-                                //     $.each(item.Comments, function (index: any, com: any) {
-                                //         task['searchSortDescription'] = com.Title;
-                                //     })
-                                // })
-                                // if (task.Comments != undefined && task.Comments != '' && task.Comments != null && task.Comments != 'Done')
-                                //     task.mailComment = parseJSON(task.Comments)
-                                // $.each(task.mailComment, function (index: any, item: any) {
-                                //     task['mailcomments'] += item.Description
-                                // })
-                                // task['PortfolioItemsId'] = undefined
-                                // if (task.Component.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Component.results[0].Id;
-                                // }
-                                // else if (task.Services.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Services.results[0].Id;
-                                // }
-                                // else if (task.Events.results.length > 0) {
-                                //     task['PortfolioItemsId'] = task.Events.results[0].Id;
-                                // }
-                                // if (task.SharewebTaskType.Title == undefined) {
-                                //     task.SharewebTaskType.Title = 'Task';
-                                // }
-                                // task['Shareweb_x0020_ID'] = getSharewebId(index, task);
-                                // if (task['Shareweb_x0020_ID'] == undefined) {
-                                //     task['Shareweb_x0020_ID'] = "";
-                                // }
-                                // if (task['DateModified'] != undefined) task['Modified'] = Moment(task['DateModified']).format('DD/MM/YYYY'); //new Date(task['DateModified']).format('dd/MM/yyyy');
-                                // if (task['Created'] != undefined) task['Created'] = Moment(task['Created']).format('DD/MM/YYYY'); //new Date(task['Created']).format('dd/MM/yyyy');
-                                // if (task['CompletedDate'] != undefined) task['DateTaskDueDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']);
-                                // if (task['CompletedDate'] != undefined) task['CompletedDate'] = Moment(task['CompletedDate']).format('DD/MM/YYYY'); //new Date(task['CompletedDate']).format('dd/MM/yyyy');
-                                // if (task['StartDate'] != undefined) task['StartDate'] = Moment(task['StartDate']).format('DD/MM/YYYY'); //new Date(task['StartDate']).format('dd/MM/yyyy');
-                                // if (task['DueDate'] != undefined) {
-                                //     task['MainDueDate'] = (task.DueDate);
-                                //     var dateE = (new Date(task.DueDate));
-                                //     task.NewestDueDate = dateE.setDate(dateE.getDate());
-                                // }
-                                // task['SiteIcon'] = GetIconImageUrl(task.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', '');
-                                // if (task['DueDate'] != undefined) task['DueDate'] = Moment(task['DueDate']).format('DD/MM/YYYY'); //new Date(task['DueDate']).toString('dd/MM/yyyy');
-                                // task.AssignedUser = [];
-                                // task.TeamMemberUser = [];
-                                // task.AllTeamName = '';
-                                // task['AdditionalTeam'] = [];
-                                // task['CompleteStructure'] = makeFullStructureOfPortfolioTaskDatabase(task, AllTasks);
-                                // task.TeamLeaderUser = []
-                                // getTeamLeadersName(task.Responsible_x0020_Team, task);
-                                // getTeamLeadersName(task.Team_x0020_Members, task);
-
-                                // // getTeamLeadersShowImage(task.Responsible_x0020_Team, task.AssignedUser, task['AdditionalTeam']);
-                                // // getTeamLeadersShowImage(task.Team_x0020_Members, task.TeamMemberUser, task['AdditionalTeam']);
-                                // TasksItem.push(task);
-                                // task['AdditionalTeamName'] = '';
-                                // $.each(task['AdditionalTeam'], function (index: any, team: any) {
-                                //     task['AdditionalTeamName'] += "<div>" + (index + 1) + ". " + team.Title + "</div>";
-                                // });
-                            })
-                            TasksItem = TasksItem.concat(AllTasks);
-                            console.log(Response);
-                            $.each(TasksItem, function (index: any, task: any) {
-                                if (!isItemExistsNew(CopyTaskData, task)) {
-                                    CopyTaskData.push(task);
-                                }
-                            })
-                            filterDataBasedOnList();
-                            // $scope.Advancefilter();
-                        }
-                        // if (data.d.__next) {
-                        //     url = data.d.__next;
-                        // }
-                        // else setTask(Response);
-                    },
-                    error: function (error) {
-                        Counter++;
-                    }
-
-                });
-
-
-
-            } else Counter++;
-
-        })
-
-    }
     function Buttonclick(e: any) {
         e.preventDefault();
         this.setState({ callchildcomponent: true });
@@ -1282,9 +1631,7 @@ function ComponentTable() {
     const setModalIsOpenToFalse = () => {
         setModalIsOpen(false)
     }
-    const setModalTimmeIsOpenToFalse = () => {
-        setTimeModalIsOpen(false)
-    }
+
     const closeModal = () => {
         setAddModalOpen(false)
     }
@@ -1308,18 +1655,7 @@ function ComponentTable() {
 
     }
 
-    // const openEditPopup = () => {
-    //     setEditpopup(true)
-    // }
-    // const EditpopupClose = () => {
-    //     setEditpopup(false)
-    // }
-    const openexpendTime = () => {
-        setcollapseItem(true)
-    }
-    const collapseTime = () => {
-        setcollapseItem(false)
-    }
+
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1351,7 +1687,7 @@ function ComponentTable() {
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
     var AllTimeSpentDetails: any = [];
-    var isItemExists = function (arr: any, Id: any) {
+    const isItemExists = function (arr: any, Id: any) {
         var isExists = false;
         $.each(arr, function (index: any, item: any) {
             if (item.Id == Id) {
@@ -1376,689 +1712,42 @@ function ComponentTable() {
         })
     }
 
-
-    const getStructureData = function () {
-        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-            if (item.TimesheetTitle.Id == undefined) {
-                item.Expanded = true;
-                item.isAvailableToDelete = false;
-                $.each(AllTimeSpentDetails, function (index: any, val: any) {
-                    if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id == item.Id) {
-                        val.isShifted = true;
-                        val.show = true;
-                        $.each(val.AdditionalTime, function (index: any, value: any) {
-                            value.ParentID = val.Id;
-                            value.siteListName = val.__metadata.type;
-                            value.MainParentId = item.Id;
-                            value.AuthorTitle = val.Author.Title;
-                            value.EditorTitle = val.Editor.Title;
-                            value.show = true;
-                            if (val.Created != undefined)
-                                //  value.TaskTimeCreatedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Created, 'DD/MM/YYYY HH:mm');
-                                if (val.Modified != undefined)
-                                    // value.TaskTimeModifiedDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(val.Modified, 'DD/MM/YYYY HH:mm');
-                                    item.AdditionalTime.push(value);
-                        })
-
-                    }
-                })
-            }
-        })
-        AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { return type.isShifted == false });
-        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-            if (item.AdditionalTime.length == 0) {
-                item.isAvailableToDelete = true;
-            }
-            // if (item.AdditionalTime != undefined && item.AdditionalTime.length > 0) {
-            //    // var sortArray = sortArray.conct(item.AdditionalTime);
-            //     // SharewebCommonFactoryService.DynamicSortitems(sortArray, 'ID', 'Number', 'Descending');
-            //     var TimeTaskId = sortArray[0].ID;
-            //     var TimeTaskId = TimeTaskId + 1;
-            //     $.each(sortArray, function (index: any, first: any) {
-            //         var count = 0;
-            //         $.each(item.AdditionalTime, function (index2: any, second: any) {
-            //             if (second.ID != 0 && second.ID == undefined) {
-            //                 second.ID = TimeTaskId;
-            //                 TimeTaskId = TimeTaskId + 1;
-            //             }
-            //             else if (second.ID != undefined && first.ID == second.ID) {
-            //                 if (count != 0) {
-            //                     second.ID = TimeTaskId;
-            //                     TimeTaskId = TimeTaskId + 1;
-            //                 }
-            //                 count++;
-            //             }
-            //         })
-            //     })
-            // }
-            if (item.AdditionalTime != undefined && item.AdditionalTime.length > 0) {
-                $.each(item.AdditionalTime, function (index: any, type: any) {
-                    if (type.Id != undefined)
-                        type.Id = type.ID;
-                })
-            }
-        });
-        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-            if (item.AdditionalTime.length > 0) {
-                $.each(item.AdditionalTime, function (index: any, val: any) {
-                    var NewDate = val.TaskDate;
-                    try {
-                        getDateForTimeEntry(NewDate, val);
-                    } catch (e) { }
-                })
-            }
-        })
-        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-            if (item.Category.Title == undefined)
-                checkCategory(item, 319);
-            else
-                checkCategory(item, item.Category.Id);
-        })
-        var IsTimeSheetAvailable = false;
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, item: any) {
-            if (item.Childs.length > 0) {
-                IsTimeSheetAvailable = true;
-            }
-        });
-        setTimeSheet(TaskTimeSheetCategoriesGrouping);
-        setModalIsTimeOpenToTrue();
-    }
-    const getDateForTimeEntry = function (newDate: any, items: any) {
-        var LatestDate = [];
-        var getMonth = '';
-        var combinedDate = '';
-        LatestDate = newDate.split('/');
-        switch (LatestDate[1]) {
-            case "01":
-                getMonth = 'January ';
-                break;
-            case "02":
-                getMonth = 'Febuary ';
-                break;
-            case "03":
-                getMonth = 'March ';
-                break;
-            case "04":
-                getMonth = 'April ';
-                break;
-            case "05":
-                getMonth = 'May ';
-                break;
-            case "06":
-                getMonth = 'June ';
-                break;
-            case "07":
-                getMonth = 'July ';
-                break;
-            case "08":
-                getMonth = 'August ';
-                break;
-            case "09":
-                getMonth = 'September'
-                break;
-            case "10":
-                getMonth = 'October ';
-                break;
-            case "11":
-                getMonth = 'November ';
-                break;
-            case "12":
-                getMonth = 'December ';
-                break;
-        }
-        combinedDate = LatestDate[0] + ' ' + getMonth + ' ' + LatestDate[2];
-        var dateE = new Date(combinedDate);
-        items.NewestCreated = dateE.setDate(dateE.getDate());
-    }
-    var AllTimeSpentDetails: any = [];
     const EditData = (e: any, item: any) => {
-        TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
-        TaskTimeSheetCategoriesGrouping = TaskTimeSheetCategoriesGrouping.concat(TaskTimeSheetCategories);
-        TaskTimeSheetCategoriesGrouping.push({ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 319, "Title": "Others", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": null, "TaxType": "TimesheetCategories", "Selectable": true, "ParentID": "ParentID", "SmartSuggestions": false, "ID": 319 });
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
-            categoryTitle.Childs = [];
-            categoryTitle.Expanded = true;
-            categoryTitle.flag = true;
-            // categoryTitle.AdditionalTime = [];
-            categoryTitle.isAlreadyExist = false;
-            categoryTitle.AdditionalTimeEntry = undefined;
-            categoryTitle.Author = {};
-            categoryTitle.AuthorId = 0;
-            categoryTitle.Category = {};
-            categoryTitle.Created = undefined;
-            categoryTitle.Editor = {};
-            categoryTitle.Modified = undefined
-            categoryTitle.TaskDate = undefined
-            categoryTitle.TaskTime = undefined
-            categoryTitle.TimesheetTitle = [];
-
-        });
-        getStructurefTimesheetCategories();
-        setEditItem(item.Title);
-        var filteres = "Task" + item.siteType + "/Id eq " + item.Id;
-        var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
-        var count = 0;
-        var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
-        // { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" },
-        { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }]
-        $.each(allurls, function (index: any, item: any) {
-            $.ajax({
-
-                url: item.Url,
-
-                method: "GET",
-
-                headers: {
-
-                    "Accept": "application/json; odata=verbose"
-
-                },
-
-                success: function (data) {
-                    count++;
-                    if (data.d.results != undefined && data.d.results.length > 0) {
-
-                        AllTimeSpentDetails = AllTimeSpentDetails.concat(data.d.results);
-                    }
-                    if (allurls.length == count) {
-                        //  var AllTimeSpentDetails = data.d.results;
-                        let TotalPercentage = 0
-                        let TotalHours = 0;
-                        let totletimeparentcount = 0;
-                        //  let totletimeparentcount = 0;
-                        let AllAvailableTitle = [];
-                        $.each(AllTimeSpentDetails, function (index: any, item: any) {
-                            item.IsVisible = false;
-                            item.Item_x005F_x0020_Cover = undefined;
-                            item.Parent = {};
-                            item.ParentID = 0;
-                            item.ParentId = 0;
-                            item.ParentType = undefined
-                            item.Selectable = undefined;
-                            item.SmartFilters = undefined;
-                            item.SmartSuggestions = undefined;
-                            item.isAlreadyExist = false
-                            item.listId = null;
-                            item.siteName = null
-                            item.siteUrl = null;
-                            if (item.TimesheetTitle.Id != undefined) {
-                                if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
-                                    try {
-                                        item.AdditionalTime = JSON.parse(item.AdditionalTimeEntry);
-                                        if (item.AdditionalTime.length > 0) {
-                                            $.each(item.AdditionalTime, function (index: any, additionalTime: any) {
-                                                var time = parseFloat(additionalTime.TaskTime)
-                                                if (!isNaN(time)) {
-                                                    totletimeparentcount += time;
-                                                    // $scope.totletimeparentcount += time;;
-                                                }
-                                            });
-                                        }
-                                        //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
-                                    } catch (e) {
-                                        console.log(e)
-                                    }
-                                }
-
-                                $.each(AllUsers, function (index: any, taskUser: any) {
-                                    if (taskUser.AssingedToUserId == item.AuthorId) {
-                                        item.AuthorName = taskUser.Title;
-                                        item.AuthorImage = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
-                                    }
-                                });
-                                if (item.TaskTime != undefined) {
-                                    var TimeInHours = item.TaskTime / 60;
-                                    // item.IntegerTaskTime = item.TaskTime / 60;
-                                    item.TaskTime = TimeInHours.toFixed(2);
-                                }
-                            } else {
-                                AllAvailableTitle.push(item);
-                            }
-
-                            if (item.AdditionalTime == undefined) {
-                                item.AdditionalTime = [];
-                            }
-                            // item.ServerTaskDate = angular.copy(item.TaskDate);
-                            // item.TaskDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.TaskDate, 'DD/MM/YYYY');
-                            item.isShifted = false;
-
-                        })
-                        getStructureData();
-                    }
-
-                },
-                error: function (error) {
-                    count++;
-                    if (allurls.length == count)
-                        getStructureData();
-                }
-            })
-        })
-        // spRequest.onreadystatechange = function () {
-
-        //     if (spRequest.readyState === 4 && spRequest.status === 200) {
-        //         var result = JSON.parse(spRequest.responseText);
-
-        //         if (result.value.ItemType == "Group") {
-        //             result.value.UserType = "Group"
-
-        //         }
-        //         else {
-
-        //             setEditdata(result.value)
-
-        //         }
-        //     }
-
-        //     else if (spRequest.readyState === 4 && spRequest.status !== 200) {
-        //         console.log('Error Occurred !');
-        //     }
-        //     setModalIsTimeOpenToTrue();
-
-
-        // };
-        // spRequest.send();
+        setIsTimeEntry(true);
+        setSharewebTimeComponent(item);
     }
-
-
 
     const handleTitle = (e: any) => {
         setTitle(e.target.value)
 
     };
-    function AddItem() {
-        var MyData = JSON.stringify({
-            '__metadata': {
-                'type': 'SP.Data.Master_x0020_TasksListItem'
-            },
-            "Title": Title,
-            "Item_x0020_Type": itemType,
-            "Portfolio_x0020_Type": 'Component'
-        })
-        $.ajax({
-            url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/contextinfo",
-            type: "POST",
-            headers: {
-                "Accept": "application/json;odata=verbose"
-            },
-            success: function (contextData: any) {
-                $.ajax({
-                    url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items",
-                    method: "POST",
-                    contentType: "application/json;odata=verbose",
-                    data: MyData,
-                    async: false,
-                    headers: {
-                        "Accept": "application/json;odata=verbose",
-                        "X-RequestDigest": contextData.d.GetContextWebInformation.FormDigestValue,
-                        "IF-MATCH": "*",
-                        "X-HTTP-Method": "POST"
-                    },
-                    success: function (data: any) {
-                        alert('success');
-                        setModalIsOpenToFalse();
-                        window.location.reload();
-                    },
-                    error: function (jqXHR: any, textStatus: any, errorThrown: any) {
-                        alert('error');
-                    }
-                });
-            },
-            error: function (jqXHR: any, textStatus: any, errorThrown: any) {
-                alert('error');
-            }
-        });
+    const Call = React.useCallback((item1) => {
+        setIsComponent(false);
+        setIsTask(false);
+    }, []);
 
-
+    const TimeEntryCallBack = React.useCallback((item1) => {
+        setIsTimeEntry(false);
+    }, []);
+    const EditComponentPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-
-
-    // React.useEffect(()=>{
-    //     eventBus.on("Successful", (data:any) =>
-    //     setPassData({data:selected2)
-    //   );
-    // },[])
+    const EditItemTaskPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsTask(true);
+        setSharewebTask(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+    function AddItem() {
+    }
     return (
-        <div className="app component taskprofilepagegreen">
-            <Modal
-                isOpen={modalTimeIsOpen}
-                onDismiss={setModalTimmeIsOpenToFalse}
-                isBlocking={false} >
-                <div className='modal-dialog modal-lg'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h3 className='modal-title'>All Time Entry -  {EditTaskItemitle}</h3>
-                            <button className='close pull-right' onClick={setModalTimmeIsOpenToFalse}>x</button>
-                        </div>
-                        <div className='modal-body clearfix bg-f5f5'>
-                            <div className="col-sm-12 pad0 TimeTabBox">
-                                <div className='smartToggler'>
-                                    <span className="CategoryFilter">
-                                        <span className="dropdown filer-icons">
-                                            <span className="filter-iconfil"
-                                            >
-                                                <i title="Site" className="fa fa-filter hreflink "
-                                                ></i>
-                                                <i title="Site" className="fa fa-filter hreflink siteColor"
-                                                ></i>
-                                            </span> Category Filter
-                                        </span>
-                                        {/* <span id="myDropdown1" className="dropdown-content"
-                                                    >
-                                                    
-                                                        <h5 className="col-sm-12 siteColor quickheader">
-                                                            Categories <span title="Close popup" className="pull-right hreflink"
-                                                            >
-                                                                <i className="fa fa-times-circle" aria-hidden="true"></i>
-                                                            </span>
-                                                        </h5>
-                                                        <div className="col-sm-12 mt-10 mb-10 text-center">
-                                                            <button type="button"
-                                                                className="btn btn-sm btn-primary">
-                                                                Apply
-                                                            </button>
-                                                            <button type="button" className="btn btn-sm btn-default"
-                                                            >
-                                                                Cancel
-                                                            </button>
-                                                        </div>
+        <div className="app component serviepannelgreena">
 
-                                                    </span> */}
-                                    </span>
-                                    <label>
-                                        <a className="sign">{collapseItem ? <img onClick={event => collapseTime()} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                            : <img onClick={event => openexpendTime()} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-                                        </a>
-                                        <span className="pull-right">
-                                            <a className="hreflink mt-5 mr-0" >
-                                                + Add Time in New Structure
-                                            </a>
-                                        </span>
-                                    </label>
-
-                                    {collapseItem && <div className="togglecontent clearfix">
-                                        <div id="forShowTask" className="pt-0" >
-                                            <div className='Alltable'>
-                                                <div className="col-sm-12 pad0 smart">
-                                                    <div className="section-event">
-                                                        <div className="wrapper">
-                                                            <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th style={{ width: "2%" }}>
-                                                                            <div></div>
-                                                                        </th>
-                                                                        <th style={{ width: "20%" }}>
-                                                                            <div style={{ width: "19%" }} className="smart-relative">
-                                                                                <input type="search" placeholder="AuthorName" className="full_width searchbox_height" />
-
-                                                                                <span className="sorticon">
-                                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                                </span>
-
-
-                                                                            </div>
-                                                                        </th>
-                                                                        <th style={{ width: "15%" }}>
-                                                                            <div style={{ width: "16%" }} className="smart-relative">
-                                                                                <input id="searchClientCategory" type="search" placeholder="Date"
-                                                                                    title="Client Category" className="full_width searchbox_height"
-                                                                                    onChange={event => handleChange(event, 'Date')} />
-                                                                                <span className="sorticon">
-                                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                                </span>
-                                                                            </div>
-                                                                        </th>
-                                                                        <th style={{ width: "15%" }}>
-                                                                            <div style={{ width: "14%" }} className="smart-relative">
-                                                                                <input id="searchClientCategory" type="search" placeholder="Time"
-                                                                                    title="Client Category" className="full_width searchbox_height"
-                                                                                    onChange={event => handleChange(event, 'Time')} />
-                                                                                <span className="sorticon">
-                                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                                </span>
-
-                                                                            </div>
-                                                                        </th>
-                                                                        <th style={{ width: "48%" }}>
-                                                                            <div style={{ width: "43%" }} className="smart-relative">
-                                                                                <input id="searchClientCategory" type="search" placeholder="Description"
-                                                                                    title="Client Category" className="full_width searchbox_height"
-                                                                                    onChange={event => handleChange(event, 'Description')} />
-                                                                                <span className="sorticon">
-                                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                                </span>
-
-                                                                            </div>
-                                                                        </th>
-                                                                        <th style={{ width: "2%" }}></th>
-                                                                        <th style={{ width: "2%" }}></th>
-                                                                        <th style={{ width: "2%" }}></th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {AllTimeSheetDataNew != undefined && AllTimeSheetDataNew.length > 0 && AllTimeSheetDataNew.map(function (item, index) {
-                                                                        if (item.Childs != undefined && item.Childs.length > 0) {
-                                                                            return (
-                                                                                <>
-
-                                                                                    {item.Childs != undefined && item.Childs.length > 0 && (
-                                                                                        <>
-                                                                                            {item.Childs.map(function (childitem: any) {
-
-                                                                                                return (
-
-                                                                                                    <>
-                                                                                                        <tr >
-                                                                                                            <td className="pad0" colSpan={9}>
-                                                                                                                <table className="table" style={{ width: "100%" }}>
-                                                                                                                    <tr className="for-c02">
-                                                                                                                        <td style={{ width: "2%" }}>
-                                                                                                                            {/* {childinew.show ?  */}
-                                                                                                                            {/* <a className="hreflink"
-
-                                                                                                                                title="Tap to expand the {child.Title} childs">
-                                                                                                                                <img
-                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/list-icon.png"></img>
-                                                                                                                            </a>
-                                                                                                                            <a className="hreflink"
-
-                                                                                                                                title="Tap to expand the {child.Title} childs">
-                                                                                                                                <img
-                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"></img>
-                                                                                                                            </a> */}
-
-
-                                                                                                                            <div className="sign" onClick={() => handleTimeOpen(childitem)}>{childitem.AdditionalTime.length > 0 && childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-                                                                                                                            </div>
-                                                                                                                        </td>
-
-                                                                                                                        <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                                            <span>{item.Title} - {childitem.Title}</span>
-
-                                                                                                                            <span className="ml5">
-                                                                                                                                <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif' className="button-icon hreflink" title="Edit">
-                                                                                                                                </img>
-                                                                                                                            </span>
-                                                                                                                            <span className="ml5">
-                                                                                                                                <a
-                                                                                                                                    className="hreflink" title="Delete">
-                                                                                                                                    <img
-                                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete.gif"></img>
-                                                                                                                                </a>
-                                                                                                                            </span>
-                                                                                                                        </td>
-                                                                                                                        <td style={{ width: "8%" }}>
-                                                                                                                            <button type="button"
-                                                                                                                                className="btn btn-primary pull-right mt-5 mr-0"
-
-                                                                                                                            >
-                                                                                                                                Add Time
-                                                                                                                                <img className="button-icon hreflink"
-                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/CreateComponentIcon.png" ></img>
-                                                                                                                            </button>
-                                                                                                                        </td>
-
-                                                                                                                    </tr>
-                                                                                                                </table>
-                                                                                                            </td>
-                                                                                                        </tr>
-
-                                                                                                        {childitem.AdditionalTime != undefined && childitem.show && childitem.AdditionalTime.length > 0 && (
-                                                                                                            <>
-                                                                                                                {childitem.AdditionalTime.map(function (childinew: any) {
-                                                                                                                    return (
-                                                                                                                        <>
-                                                                                                                            <tr >
-                                                                                                                                <td className="pad0" colSpan={10}>
-                                                                                                                                    <table className="table" style={{ width: "100%" }}>
-                                                                                                                                        <tr className="tdrow">
-
-                                                                                                                                            <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                                                <img className="AssignUserPhoto1 wid29 bdrbox"
-                                                                                                                                                    title="{subchild.AuthorName}"
-                                                                                                                                                    data-toggle="popover"
-                                                                                                                                                    data-trigger="hover"
-                                                                                                                                                    src={childinew.AuthorImage}></img>
-                                                                                                                                                <span className="ml5"> {childinew.AuthorName}</span>
-                                                                                                                                            </td>
-
-                                                                                                                                            <td style={{ width: "15%" }}>
-
-                                                                                                                                                {childinew.TaskDate}
-                                                                                                                                            </td>
-                                                                                                                                            <td style={{ width: "15%" }}>
-                                                                                                                                                {childinew.TaskTime}
-                                                                                                                                            </td>
-                                                                                                                                            <td style={{ width: "42%" }}>
-                                                                                                                                                {childinew.Description}
-                                                                                                                                            </td>
-                                                                                                                                            <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
-                                                                                                                                                <img
-                                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"></img>
-                                                                                                                                            </a></td>
-
-                                                                                                                                            <td style={{ width: "2%" }}>  <a className="hreflink"
-                                                                                                                                            >
-                                                                                                                                                <img
-                                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif"></img>
-                                                                                                                                            </a></td>
-                                                                                                                                            <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
-                                                                                                                                                <img style={{ width: "19px" }}
-                                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete_m.svg"></img>
-                                                                                                                                            </a></td>
-                                                                                                                                        </tr>
-                                                                                                                                    </table>
-                                                                                                                                </td>
-                                                                                                                            </tr>
-                                                                                                                            {childinew.AdditionalTime != undefined && childinew.AdditionalTime.length > 0 && (
-                                                                                                                                <>
-                                                                                                                                    {childinew.AdditionalTime.map(function (subchilditem: any) {
-
-                                                                                                                                        return (
-
-                                                                                                                                            <>
-                                                                                                                                                <tr >
-                                                                                                                                                    <td className="pad0" colSpan={9}>
-                                                                                                                                                        <table className="table" style={{ width: "100%" }}>
-                                                                                                                                                            <tr className="for-c02">
-
-                                                                                                                                                                <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                                                                    <img className="AssignUserPhoto1  bdrbox"
-                                                                                                                                                                        title="{subchilds.AuthorName}"
-                                                                                                                                                                        data-toggle="popover"
-                                                                                                                                                                        data-trigger="hover"
-                                                                                                                                                                        src={subchilditem.AuthorImage}></img>
-                                                                                                                                                                    <span
-                                                                                                                                                                        className="ml5">{subchilditem.AuthorName}</span>
-                                                                                                                                                                </td>
-
-                                                                                                                                                                <td style={{ width: "15%" }}>
-                                                                                                                                                                    {subchilditem.TaskDate}
-                                                                                                                                                                </td>
-                                                                                                                                                                <td style={{ width: "15%" }}>
-                                                                                                                                                                    {subchilditem.TaskTime}
-                                                                                                                                                                </td>
-                                                                                                                                                                <td style={{ width: "42%" }}>
-                                                                                                                                                                    {subchilditem.Description}</td>
-                                                                                                                                                                <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
-                                                                                                                                                                >
-                                                                                                                                                                    <img
-                                                                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"></img>
-                                                                                                                                                                </a></td>
-
-
-                                                                                                                                                                <td style={{ width: "2%" }}>
-                                                                                                                                                                    <a className="hreflink"
-                                                                                                                                                                    >
-                                                                                                                                                                        <img
-                                                                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif"></img>
-                                                                                                                                                                    </a></td>
-                                                                                                                                                                <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
-                                                                                                                                                                >
-                                                                                                                                                                    <img style={{ width: "19px" }}
-                                                                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete_m.svg"></img>
-                                                                                                                                                                </a></td>
-                                                                                                                                                            </tr>
-                                                                                                                                                        </table>
-                                                                                                                                                    </td>
-                                                                                                                                                </tr>
-                                                                                                                                            </>
-                                                                                                                                        )
-                                                                                                                                    })}
-                                                                                                                                </>
-                                                                                                                            )}
-
-
-                                                                                                                        </>
-                                                                                                                    )
-                                                                                                                })}</>
-                                                                                                        )}</>
-                                                                                                )
-                                                                                            })}
-                                                                                        </>
-                                                                                    )}
-                                                                                </>
-
-
-                                                                            )
-                                                                        }
-                                                                    })}
-
-
-
-                                                                </tbody>
-
-
-
-                                                            </table>
-                                                            {AllTimeSheetDataNew.length == 0 && <div className="right-col pt-0 MtPb"
-                                                            >
-                                                                No Timesheet Available
-                                                            </div>}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>}
-                                </div>
-                            </div>
-                        </div>
-                        <div className='modal-footer '>
-                            <button type="button" className="btn btn-primary m-2" onClick={AddItem}>Save</button>
-                            <button type="button" className="btn btn-danger" onClick={setModalTimmeIsOpenToFalse}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </Modal>
             {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
-            <Modal
+            {/* <Modal
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 isBlocking={false} >
@@ -2073,7 +1762,7 @@ function ComponentTable() {
                                 <div className="col-sm-12 tab-content">
                                     <div className="col-md-5">
                                         <div className="row">
-                                            <div className="col-sm-4 mb-10 pad0" title="Task Name">
+                                            <div className="col-sm-4 mb-10 p-0" title="Task Name">
                                                 <label>Title</label>
                                                 <input type="text" className="form-control" placeholder="Task Name"
                                                     value={Title} onChange={handleTitle} />
@@ -2101,7 +1790,7 @@ function ComponentTable() {
                                         </div>
                                         <div className="row">
 
-                                            <div className="col-sm-6 pad0">
+                                            <div className="col-sm-6 p-0">
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Service'"
                                                     className="col-sm-12 mb-10 Doc-align padL-0">
                                                     <div className="col-sm-11 PadR0 Doc-align">
@@ -2130,7 +1819,7 @@ function ComponentTable() {
                                                 </div>
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Component'"
                                                     className="col-sm-12 padL-0">
-                                                    <div className="col-sm-11 pad0 Doc-align">
+                                                    <div className="col-sm-11 p-0 Doc-align">
 
                                                         <label>
                                                             Service Portfolio
@@ -2175,10 +1864,10 @@ function ComponentTable() {
                     <button type="button" className="btn btn-primary m-2" onClick={AddItem}>Save</button>
                     <button type="button" className="btn btn-danger" onClick={setModalIsOpenToFalse}>Cancel</button>
                 </div>
-            </Modal>
+            </Modal> */}
             {/* ------------------------Add Popup------------------------------------------------------------------------------------------------------------------------------ */}
 
-            <Modal
+            {/* <Modal
                 isOpen={addModalOpen}
                 onDismiss={closeModal}
                 isBlocking={false}>
@@ -2199,9 +1888,9 @@ function ComponentTable() {
                     <button type="button" className="btn btn-primary m-2" disabled={true}> Create & Open Popup</button>
                     <button type="button" className="btn btn-primary" disabled={true} onClick={closeModal}>Create</button>
                 </div>
-            </Modal>
+            </Modal> */}
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
-            <div className="col-sm-12 padL-0 PadR0">
+            <div className="col-sm-12 ">
                 <h2 className="alignmentitle ng-binding">
                     Service Portfolio
                     <span className="icontype display_hide padLR">
@@ -2209,22 +1898,35 @@ function ComponentTable() {
 
                 </h2>
             </div>
-            <div className="col-sm-12 padL-0 PadR0">
+            <div className="col-sm-12 ">
                 <section className="ContentSection">
-                    <div className="bg-f5f5 bdrbox pad10 clearfix">
+                    <div className="bg-wihite border p-2">
                         <div className="togglebox">
                             <label className="toggler full_width mb-10">
                                 <span className=" siteColor">
-                                    <img className="hreflink wid22" ng-show="pagesType=='componentportfolio'"
+                                    <img className="hreflink wid22"
                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" />
                                     SmartSearch – Filters
                                 </span>
                                 <span className="ml-20 siteColor">
-                                    <span ng-repeat="obj in ShowSelectdSmartfilter">Sites<span
-                                        className="font-normal"> (14)</span><span
-                                            ng-if="$index != (ShowSelectdSmartfilter.length -1)"> | </span> </span>
+                                    {ShowSelectdSmartfilter != undefined && ShowSelectdSmartfilter.length > 0 &&
+
+                                        <>
+                                            {ShowSelectdSmartfilter.map(function (obj, index) {
+                                                return (
+                                                    <>
+                                                        {obj.Title}
+                                                        <span className="font-normal">{obj.selectTitle}</span>
+                                                        {index != ShowSelectdSmartfilter.length - 1 && <span> | </span>}
+                                                    </>
+                                                )
+                                            })
+                                            }
+                                        </>
+                                    }
+
                                 </span>
-                                <span className="pull-right siteColor">
+                                <span className="pull-right bg-color">
                                     <img className="icon-sites-img  wid22 ml5" ng-show="pagesType=='componentportfolio'"
                                         title="Share SmartFilters selection" ng-click="GenerateUrl()"
                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png" />
@@ -2237,95 +1939,94 @@ function ComponentTable() {
                                 </span>
                             </label>
                             <div className="togglecontent">
-                                <div className="col-sm-12 pad0">
-                                    <table width="100%" className="indicator_search">
-                                        <tr>
-                                            {filterGroups.map(function (item) {
-                                                return (
-                                                    <>
+                                <table width="100%" className="indicator_search">
+                                    <tr>
+                                        {filterGroups.map(function (item) {
+                                            return (
+                                                <>
 
-                                                        <td valign="top">
-                                                            <fieldset>
-                                                                <legend>{item != 'teamSites' && <span>{item}</span>}</legend>
-                                                                <legend>{item == 'teamSites' && <span>Sites</span>}</legend>
-                                                            </fieldset>
-                                                            {filterItems.map(function (ItemType, index) {
-                                                                return (
-                                                                    <>
-                                                                        <div style={{ display: "block" }}> {ItemType.Group == item &&
+                                                    <td valign="top">
+                                                        <fieldset>
+                                                            <legend>{item != 'teamSites' && <span className="mparent">{item}</span>}</legend>
+                                                            <legend>{item == 'teamSites' && <span className="mparent">Sites</span>}</legend>
+                                                        </fieldset>
+                                                        {filterItems.map(function (ItemType, index) {
+                                                            return (
+
+                                                                <>
+                                                                    {ItemType.Group == item &&
+                                                                        <div style={{ display: "block" }}>
                                                                             <>
-                                                                                <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
-                                                                                    {ItemType.childs.length > 0 &&
-                                                                                        <a className='hreflink'
-                                                                                            title="Tap to expand the childs">
-                                                                                            {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
 
-                                                                                        </a>}
-                                                                                </span>
                                                                                 {ItemType.TaxType != 'Status' &&
-                                                                                    <span className="ml-1">
+                                                                                    
+                                                                                    <div className="align-items-center d-flex">
+                                                                                        <span className="hreflink me-1 GByicon" onClick={() => handleOpen2(ItemType)}>
+                                                                                            {ItemType.childs.length > 0 &&
+                                                                                                <a title="Tap to expand the childs">
+                                                                                                    {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
 
-
-                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-
-                                                                                        <span className="ml-2">
-                                                                                            {ItemType.Title}
-
+                                                                                                </a>}
                                                                                         </span>
-
-                                                                                    </span>
+                                                                                        <input className="form-check-input me-1" checked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <label className="form-check-label">
+                                                                                            {ItemType.Title}
+                                                                                        </label>
+                                                                                    </div>
                                                                                 }
                                                                                 {ItemType.TaxType == 'Status' &&
-                                                                                    <span className="ml-2">
-
-
-                                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                                        <span className="ml-2">
+                                                                                    
+                                                                                    <div className="align-items-center d-flex">
+                                                                                        <input className="form-check-input me-1" checked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <label className="form-check-label">
                                                                                             {ItemType.Title}
-
-                                                                                        </span>
-
-                                                                                    </span>
+                                                                                        </label>
+                                                                                    </div>
                                                                                 }
                                                                                 <ul id="id_{ItemType.Id}"
-                                                                                    className="subfilter width-85">
+                                                                                    className="m-0">
                                                                                     <span>
                                                                                         {ItemType.show && (
                                                                                             <>
                                                                                                 {ItemType.childs.map(function (child1: any, index: any) {
                                                                                                     return (
                                                                                                         <>
-                                                                                                            <div style={{ display: "block" }}>
-                                                                                                                {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                                    <span className="plus-icon hreflink"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                {child1.childs.length > 0 && child1.expanded &&
-                                                                                                                    <span className="plus-icon hreflink"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                <input type="checkbox" className="icon-input mr0" ng-model="child1.Selected"
-                                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
+                                                                                                            
+                                                                                                                <div className="align-items-center d-flex">
+                                                                                                                    {child1.childs.length > 0 && !child1.expanded &&
+                                                                                                                        <span className="hreflink me-1 GByicon"
+                                                                                                                            ng-click="loadMoreFilters(child1);">
+                                                                                                                            <img
+                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                                                                                                        </span>
+                                                                                                                    }
+                                                                                                                    {child1.childs.length > 0 && child1.expanded &&
+                                                                                                                        <span className="hreflink me-1 GByicon"
+                                                                                                                            ng-click="loadMoreFilters(child1);">
+                                                                                                                            <img
+                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                        </span>
+                                                                                                                    }
+                                                                                                                    <input type="checkbox" checked={child1.Selected == true} className="form-check-input me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                    <label className="form-check-label">
+                                                                                                                        {child1.Title}
+                                                                                                                    </label>
+                                                                                                                    <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="m-0">
+                                                                                                                        {child1.childs.map(function (child2: any) {
+                                                                                                                            <li>
+                                                                                                                                <div className="align-items-center d-flex">
+                                                                                                                                    <input className="form-check-input me-1" type="checkbox" checked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                                    <label className="form-check-label">
+                                                                                                                                    {child2.Title}
+                                                                                                                                    </label>
+                                                                                                                                </div>
+                                                                                                                            </li>
+                                                                                                                        })}
+                                                                                                                    </ul>
+                                                                                                                </div>
 
-                                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
-                                                                                                                >
-                                                                                                                    {child1.childs.map(function (child2: any) {
-                                                                                                                        <li>
-                                                                                                                            <input type="checkbox"
-
-                                                                                                                                ng-model="child2.Selected"
-                                                                                                                                onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
-                                                                                                                        </li>
-                                                                                                                    })}
-                                                                                                                </ul>
-                                                                                                            </div>
+                                                                                                            
                                                                                                         </>
                                                                                                     )
 
@@ -2337,24 +2038,34 @@ function ComponentTable() {
 
                                                                             </>
 
-                                                                        }
+
                                                                         </div>
-                                                                    </>
-                                                                )
-                                                            })}
+                                                                    }
+                                                                </>
 
-                                                        </td>
+                                                            )
+                                                        })}
 
-                                                    </>
-                                                )
-                                            })}
+                                                    </td>
 
+                                                </>
+                                            )
+                                        })}
+                                        {/* {filterItems.length >0 && <CheckboxTree
+                                            nodes={filterItems}
+                                            checked={checked}
+                                            // expanded={expanded}
+                                            // onCheck={checked => setchecked({ checked })}
+                                            // onExpand={expanded => this.setState({ expanded })}
+                                            nativeCheckboxes={true}
+                                            showNodeIcon={false}
 
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div className="pull-right">
+                                        />
+                                        } */}
 
+                                    </tr>
+                                </table>
+                                <div className="text-end">
                                     <button type="button" className="btn btn-primary"
                                         title="Smart Filter" onClick={() => Updateitem()}>
                                         Update
@@ -2370,11 +2081,12 @@ function ComponentTable() {
                         </div>
                     </div>
                 </section>
-            </div>
-            <section className="TableContentSection">
+            </div >
+
+            <section className="TableContentSection taskprofilepagegreen">
                 <div className="container-fluid">
                     <section className="TableSection">
-                        <div className="container pad0">
+                        <div className="container p-0">
                             <div className="Alltable mt-10">
                                 <div className="tbl-headings">
                                     <span className="leftsec w65">
@@ -2425,6 +2137,9 @@ function ComponentTable() {
                                             disabled={true}>
                                             Restructure
                                         </button>
+                                        <a onClick={clearSearch}>
+                                            <i className="brush"><FaPaintBrush /></i>
+                                        </a>
                                         <a onClick={Prints}>
                                             <i className="print"><FaPrint /></i>
                                         </a>
@@ -2433,15 +2148,13 @@ function ComponentTable() {
                                                 <i className="excal"><FaFileExcel /></i>
                                             </CSVLink>
                                         </a>
-                                        <a onClick={clearSearch}>
-                                            <i className="brush"><FaPaintBrush /></i>
-                                        </a>
+
                                         {/* <span>
                                         <ExpandTable/>
                                         </span> */}
                                     </span>
                                 </div>
-                                <div className="col-sm-12 pad0 smart">
+                                <div className="col-sm-12 p-0 smart">
                                     <div className="section-event">
                                         <div className="wrapper">
                                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
@@ -2451,15 +2164,13 @@ function ComponentTable() {
                                                             <div></div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "7%" }} className="smart-relative">
+                                                            <div style={{ width: "6%" }} className="smart-relative">
                                                                 <input type="search" placeholder="ID" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} />
 
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-
-
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "20%" }}>
@@ -2478,18 +2189,20 @@ function ComponentTable() {
                                                             <div style={{ width: "17%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={event => handleChange(event, 'Client Category')} />
+                                                                // onChange={event => handleChange(event, 'Client Category')} 
+                                                                />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "20%" }}>
-                                                            <div style={{ width: "19%" }} className="smart-relative">
+                                                        <th style={{ width: "17%" }}>
+                                                            <div style={{ width: "16%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                                     title="Client Category" className="full_width searchbox_height"
-                                                                    onChange={event => handleChange(event, 'Team')} />
+                                                                // onChange={event => handleChange(event, 'Team')} 
+                                                                />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2548,8 +2261,8 @@ function ComponentTable() {
                                                             return (
                                                                 <>
                                                                     <tr >
-                                                                        <td className="pad0" colSpan={9}>
-                                                                            <table className="table" style={{ width: "100%" }}>
+                                                                        <td className="p-0" colSpan={10}>
+                                                                            <table className="table m-0" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
 
                                                                                     <td style={{ width: "2%" }}>
@@ -2569,24 +2282,25 @@ function ComponentTable() {
                                                                                     <td style={{ width: "7%" }}>
                                                                                         <div className="">
                                                                                             <span>
-                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                {item.SiteIcon != undefined && <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                                     {/* <img className="icon-sites-img"
                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" /> */}
                                                                                                 </a>
+                                                                                                }
                                                                                             </span>
                                                                                             <span className="ml-2">{item.Shareweb_x0020_ID}</span>
                                                                                         </div>
                                                                                     </td>
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
                                                                                     <td style={{ width: "20%" }}>
-                                                                                        {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                        {item.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
-                                                                                        >{item.Title}
+                                                                                        ><span>{item.Title}</span>
                                                                                         </a>}
-                                                                                        {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                                        >{item.Title}
+                                                                                        {item.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                                        ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
                                                                                             <span>({item.childs.length})</span>
@@ -2606,7 +2320,7 @@ function ComponentTable() {
                                                                                     </td>
                                                                                     <td style={{ width: "18%" }}>
                                                                                         <div>
-                                                                                            {item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                            {item.ClientCategory != undefined && item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
                                                                                                 return (
                                                                                                     <span className="ClientCategory-Usericon"
                                                                                                         title={client.Title}>
@@ -2615,8 +2329,8 @@ function ComponentTable() {
                                                                                                 )
                                                                                             })}</div>
                                                                                     </td>
-                                                                                    <td style={{ width: "20%" }}>
-                                                                                        <div>{item.TeamLeaderUser.length > 0 && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                    <td style={{ width: "17%" }}>
+                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.length > 0 && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                             return (
                                                                                                 <span className="ClientCategory-Usericon"
                                                                                                     title={client1.Title}>
@@ -2631,7 +2345,9 @@ function ComponentTable() {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "3%" }}><a onClick={(e) => editProfile(item)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a></td>
+                                                                                    <td style={{ width: "3%" }}>{item.siteType == "Master Tasks" && <a><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
+                                                                                        {item.siteType != "Master Tasks" && <a><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
+                                                                                    {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
                                                                         </td>
@@ -2646,8 +2362,8 @@ function ComponentTable() {
 
                                                                                         <>
                                                                                             <tr >
-                                                                                                <td className="pad0" colSpan={9}>
-                                                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                                                <td className="p-0" colSpan={10}>
+                                                                                                    <table className="table m-0" style={{ width: "100%" }}>
                                                                                                         <tr className="for-c02">
                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childitem)}>
@@ -2678,12 +2394,12 @@ function ComponentTable() {
                                                                                                             </td>
 
                                                                                                             <td style={{ width: "20%" }}>
-                                                                                                                {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                {childitem.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
-                                                                                                                {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                                {childitem.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 &&
@@ -2713,7 +2429,7 @@ function ComponentTable() {
                                                                                                                         )
                                                                                                                     })}</div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "20%" }}>
+                                                                                                            <td style={{ width: "17%" }}>
                                                                                                                 <div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.length > 0 && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                     return (
                                                                                                                         <div className="ClientCategory-Usericon"
@@ -2728,7 +2444,8 @@ function ComponentTable() {
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                            <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => editProfile(childitem)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td>
+                                                                                                            <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
+                                                                                                                {childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                                         </tr>
                                                                                                     </table>
                                                                                                 </td>
@@ -2741,8 +2458,8 @@ function ComponentTable() {
                                                                                                             return (
                                                                                                                 <>
                                                                                                                     <tr >
-                                                                                                                        <td className="pad0" colSpan={10}>
-                                                                                                                            <table className="table" style={{ width: "100%" }}>
+                                                                                                                        <td className="p-0" colSpan={10}>
+                                                                                                                            <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                         {childinew.childs.length > 0 &&
@@ -2775,13 +2492,13 @@ function ComponentTable() {
 
                                                                                                                                     <td style={{ width: "20%" }}>
 
-                                                                                                                                        {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                                        {childinew.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
 
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
-                                                                                                                                        {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                        {childinew.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.childs.length > 0 &&
@@ -2811,7 +2528,7 @@ function ComponentTable() {
                                                                                                                                                 )
                                                                                                                                             })}</div>
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "20%" }}>
+                                                                                                                                    <td style={{ width: "17%" }}>
                                                                                                                                         <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.length > 0 && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                                             return (
                                                                                                                                                 <span className="ClientCategory-Usericon"
@@ -2826,7 +2543,7 @@ function ComponentTable() {
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
                                                                                                                                     <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType == "Master Tasks" && <a onClick={(e) => editProfile(childinew)}><img style={{ width: "22px" }} src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png"></img></a>}</td>
+                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType == "Master Tasks" && <a>   <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} /></a>}</td>
                                                                                                                                 </tr>
                                                                                                                             </table>
                                                                                                                         </td>
@@ -2839,8 +2556,8 @@ function ComponentTable() {
 
                                                                                                                                     <>
                                                                                                                                         <tr >
-                                                                                                                                            <td className="pad0" colSpan={9}>
-                                                                                                                                                <table className="table" style={{ width: "100%" }}>
+                                                                                                                                            <td className="p-0" colSpan={10}>
+                                                                                                                                                <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                                     <tr className="for-c02">
                                                                                                                                                         <td style={{ width: "2%" }}>
                                                                                                                                                             <div className="accordian-header" onClick={() => handleOpen(subchilditem)}>
@@ -2871,12 +2588,12 @@ function ComponentTable() {
                                                                                                                                                         </td>
 
                                                                                                                                                         <td style={{ width: "20%" }}>
-                                                                                                                                                            {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
+                                                                                                                                                            {subchilditem.siteType == "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
-                                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <a target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&
@@ -2906,8 +2623,8 @@ function ComponentTable() {
                                                                                                                                                                     )
                                                                                                                                                                 })}</div>
                                                                                                                                                         </td>
-                                                                                                                                                        <td style={{ width: "20%" }}>
-                                                                                                                                                            <div>{subchilditem.TeamLeaderUser && subchilditem.TeamLeaderUser.length > 0 && subchilditem.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                                                                        <td style={{ width: "17%" }}>
+                                                                                                                                                            <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.length > 0 && subchilditem.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                                                                 return (
                                                                                                                                                                     <div className="ClientCategory-Usericon"
                                                                                                                                                                         title={client1.Title}>
@@ -2962,18 +2679,17 @@ function ComponentTable() {
                                 </div>
                             </div>
                         </div></section>
-                </div></section>
-            {popupStatus ? <EditInstitution props={itemData} /> : null}
-        </div>
+                </div></section>{IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
+            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
+        </div >
     );
 }
 export default ComponentTable;
-function RetrieveSPData() {
-    throw new Error("Function not implemented.");
-}
 
 
-function openModal(): React.MouseEventHandler<HTMLAnchorElement> {
-    throw new Error("Function not implemented.");
-}
+
+
+
+
 

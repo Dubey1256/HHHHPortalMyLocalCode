@@ -1,56 +1,100 @@
 import * as React from "react";
 // import ImagesC from "./Images";
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
-import Tabs from "./Tabs/Tabs";
-import Tab from "./Tabs/Tab";
+
+//import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/js/dist/modal.js";
+import "bootstrap/js/dist/tab.js";
 import * as moment from 'moment';
 import './Tabs/styles.css';
-
-// import { Editor } from "react-draft-wysiwyg";
-//import { Editor, EditorState, ContentState } from "react-draft-wysiwyg";
-// import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-//import Tooltip from "./Tooltip/popup";
-
+import { Web } from "sp-pnp-js";
+import ComponentPortPolioPopup from './ComponentPortfolioSelection';
+import CommentCard from "../../globalComponents/Comments/CommentCard";
+import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { map } from "lodash";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 
 
 
 function EditInstitution(item: any) {
     // Id:any
 
-
-
-
     const [CompoenetItem, setComponent] = React.useState([]);
+    const [EditData, setEditData] = React.useState<any>({});
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [useeffectdata, setuseeffectdata] = React.useState(false);
     const [selectedOption, setselectedOption] = React.useState('');
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
-    const setModalIsOpenToTrue = (e:any) => {
-        e.preventDefault()
+    const [IsComponent, setIsComponent] = React.useState(false);
+    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [SharewebCategory, setSharewebCategory] = React.useState('');
+    const [AllComponents, setComponentsData] = React.useState([]);
+    const [CollapseExpend, setCollapseExpend] = React.useState(false);
+    const [date, setDate] = React.useState(undefined);
+    const [Startdate, setStartdate] = React.useState(undefined);
+    const [Completiondate, setCompletiondate] = React.useState(undefined);
+    const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
+    // $('.ms-Dialog-main .main-153').hide();
+    const setModalIsOpenToTrue = (e: any) => {
+        // e.preventDefault()
         setModalIsOpen(true)
     }
-
-
-
     const setModalIsOpenToFalse = () => {
+
+        EditComponentCallback();
         setModalIsOpen(false)
     }
-    var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-        if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
-
-        // below logic works fine in all condition 
-        if (LocalDateTime != '') {
-            var serverDateTime;
-            var vLocalDateTime = new Date(LocalDateTime);
-            //var offsetObj = GetServerOffset();
-            //var IANATimeZoneName = GetIANATimeZoneName();
-            var mDateTime = moment(LocalDateTime);
-            // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
-            //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
-            return serverDateTime;
+    const handleDate = (date: any) => {
+        EditData.CompletedDate = date;
+        setCompletiondate(date);
+        setComponent(EditData => ([...EditData]));
+    };
+    const handleDatestart = (date: any) => {
+        EditData.StartDate = date;
+        setStartdate(date);
+        setComponent(EditData => ([...EditData]));
+    };
+    const handleDatedue = (date: any) => {
+        EditData.DueDate = date;
+        setDate(date);
+        setComponent(EditData => ([...EditData]));
+    };
+    const Call = React.useCallback((item1) => {
+        if (EditData != undefined && item1 != undefined) {
+            item.props.smartComponent = item1.smartComponent;
+            // setComponent([ item.props]);
         }
-        return '';
-    }
+        if (item1 != undefined && item1.Categories != "") {
+            var title: any = {};
+            title.Title = item1.categories;
+            item.props.smartCategories = item1.smartCategories;
+            //  item.props.smartCategories.push(title);
+
+        }
+        setIsComponentPicker(false);
+        setIsComponent(false);
+        // setComponent(CompoenetItem => ([...CompoenetItem]));
+    }, []);
+    // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
+    //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
+
+    //     // below logic works fine in all condition 
+    //     if (LocalDateTime != '') {
+    //         var serverDateTime;
+    //         var vLocalDateTime = new Date(LocalDateTime);
+    //         //var offsetObj = GetServerOffset();
+    //         //var IANATimeZoneName = GetIANATimeZoneName();
+    //         var mDateTime = moment(LocalDateTime);
+    //         // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
+    //         //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
+    //         return serverDateTime;
+    //     }
+    //     return '';
+    // }
     var getMultiUserValues = function (item: any) {
         var users = '';
         var isuserexists = false;
@@ -96,17 +140,7 @@ function EditInstitution(item: any) {
         }
         return IconUrl;
     }
-    var getpriority = function (item: any) {
-        if (item.PriorityRank >= 0 && item.PriorityRank <= 3) {
-            item.Item.Priority = '(3) Low';
-        }
-        if (item.PriorityRank >= 4 && item.PriorityRank <= 7) {
-            item.Item.Priority = '(2) Normal';
-        }
-        if (item.PriorityRank >= 8) {
-            item.Item.Priority = '(1) High';
-        }
-    }
+
     // var SelectPriority = function (Item:any) {
     //     switch (Item.Priority) {
     //         case '(3) Low':
@@ -120,67 +154,141 @@ function EditInstitution(item: any) {
     //             break;
     //     }
     // }
-    var getMasterTaskListTasks = function () {
-        var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.item.Id + "";
-        $.ajax({
-            url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
-            method: "GET",
-            headers: {
-                "Accept": "application/json; odata=verbose"
-            },
-            success: function (data) {
-                var Tasks = data.d.results;
-                $.each(Tasks, function (index: any, item: any) {
-                    item.DateTaskDueDate = new Date(item.DueDate);
-                    if (item.DueDate != null)
-                        item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
-                    item.FilteredModifiedDate = item.Modified;
-                    item.DateModified = new Date(item.Modified);
-                    item.DateCreatedNew = new Date(item.Created);
+    const handleChange = (newValue: any) => {
+        console.log("newValue: ", newValue);
+        // setStartdate(newValue);
+        //  props.setDate( newValue );
+    };
+    const getpriority = function (item: any) {
+        if (item.Priority_x0020_Rank >= 0 && item.Priority_x0020_Rank <= 3) {
+            item.Priority = '(3) Low';
+        }
+        if (item.Priority_x0020_Rank >= 4 && item.Priority_x0020_Rank <= 7) {
+            item.Priority = '(2) Normal';
+        }
+        if (item.Priority_x0020_Rank >= 8) {
+            item.Priority = '(1) High';
+        }
+    }
+    var getMasterTaskListTasks = async function () {
+        //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let componentDetails = [];
+        componentDetails = await web.lists
+            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            // .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            .getByTitle('Master Tasks')
+            .items
+            .select("ComponentCategory/Id", "ComponentCategory/Title", "ComponentPortfolio/Id", "ComponentPortfolio/Title", "ServicePortfolio/Id", "ServicePortfolio/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
 
-                    item.DateCreated = item.CreatedDate = ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-                    item.Creatednewdate = ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
-                    item.Modified = ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
-                    if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
-                        switch (item.Priority) {
-                            case '(1) High':
-                                item.Priority_x0020_Rank = 8;
-                                break;
-                            case '(2) Normal':
-                                item.Priority_x0020_Rank = 4;
-                                break;
-                            case '(3) Low':
-                                item.Priority_x0020_Rank = 1;
-                                break;
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "ComponentPortfolio", "ServicePortfolio", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .filter("Id eq " + item.props.Id + "")
+            .get()
+        console.log(componentDetails);
+        // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
+        // $.ajax({
+        //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
+        //     method: "GET",
+        //     headers: {
+        //         "Accept": "application/json; odata=verbose"
+        //     },
+        //     success: function (data) {
+        var Tasks = componentDetails;
+        $.each(Tasks, function (index: any, item: any) {
+            item.DateTaskDueDate = new Date(item.DueDate);
+            if (item.DueDate != null)
+                item.TaskDueDate = moment(item.DueDate).format('DD/MM/YYYY');
+            // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
+            item.FilteredModifiedDate = item.Modified;
+            item.DateModified = new Date(item.Modified);
+            item.DateCreatedNew = new Date(item.Created);
+
+            item.DateCreated = item.CreatedDate = moment(item.Created).format('DD/MM/YYYY');// ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
+            item.Creatednewdate = moment(item.Created).format('DD/MM/YYYY');//ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
+            // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
+            //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+            if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
+                switch (item.Priority) {
+                    case '(1) High':
+                        item.Priority_x0020_Rank = 8;
+                        break;
+                    case '(2) Normal':
+                        item.Priority_x0020_Rank = 4;
+                        break;
+                    case '(3) Low':
+                        item.Priority_x0020_Rank = 1;
+                        break;
 
 
-                        }
+                }
+            }
+            getpriority(item)
+            item.assigned = getMultiUserValues(item);
+            if (item.ItemRank != undefined)
+                item.ItemRankTitle = TaskItemRank[0].filter((option: { rank: any; }) => option.rank == item.ItemRank)[0].rankTitle;
+            item.PercentComplete = item.PercentComplete <= 1 ? item.PercentComplete * 100 : item.PercentComplete;
+            if (item.PercentComplete != undefined) {
+                item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+            }
+            item.smartComponent = [];
+            item.smartCategories = [];
+            if (item.ComponentPortfolio != undefined) {
+                if (item.ComponentPortfolio.Id != undefined) {
+                    if (item.smartComponent != undefined)
+                        item.smartComponent.push({ 'Title': item.ComponentPortfolio.Title, 'Id': item.ComponentPortfolio.Id });
+
+                }
+            }
+            if (item.SharewebCategories != undefined) {
+                if (item.SharewebCategories.results != undefined) {
+                    map(item.SharewebCategories.results, (bj) => {
+                        if (bj.Title != undefined)
+                            item.smartCategories.push({ 'Title': bj.Title, 'Id': bj.Id });
+
                     }
-                    item.assigned = getMultiUserValues(item);
-                    item.PercentComplete = item.PercentComplete <= 1 ? item.PercentComplete * 100 : item.PercentComplete;
-                    if (item.PercentComplete != undefined) {
-                        item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
-                    }
-                    item.siteType = 'Master Tasks';
-                    item.taskLeader = 'None';
-                    if (item.AssignedTo != undefined && item.AssignedTo.results != undefined && item.AssignedTo.results.length > 0)
-                        item.taskLeader = getMultiUserValues(item);
-                    if (item.Task_x0020_Type == undefined)
-                        item.Task_x0020_Type = 'Activity Tasks';
-                    item.SmartCountries = [];
-                    item['SiteIcon'] = item.siteType == "Master Tasks" ? GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined) : GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
-                });
-                //  deferred.resolve(Tasks);
-                setComponent(Tasks);
-              //  setModalIsOpenToTrue();
-            },
-
-            error: function (error) {
-
-
+                    )
+                }
+            }
+            item.siteType = 'Master Tasks';
+            item.taskLeader = 'None';
+            if (item.AssignedTo != undefined && item.AssignedTo.results != undefined && item.AssignedTo.results.length > 0)
+                item.taskLeader = getMultiUserValues(item);
+            if (item.Task_x0020_Type == undefined)
+                item.Task_x0020_Type = 'Activity Tasks';
+            if (item.DueDate != undefined) {
+                item.DueDate = moment(item.DueDate).format('DD/MM/YYYY')
+                // setDate(item.DueDate);
+            }
+            if (item.StartDate != undefined) {
+                item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
+                //setStartdate(item.StartDate);
+            }
+            if (item.CompletedDate != undefined) {
+                item.CompletedDate = moment(item.CompletedDate).format('DD/MM/YYYY')
+                // item.CompletedDate = item.CompletedDate.toString();
+                // setCompletiondatenew(item.CompletedDate);
+            }
+            item.SmartCountries = [];
+            item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+            item['SiteIcon'] = item.siteType == "Master Tasks" ? GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined) : GetIconImageUrl(item.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+            if (item.Synonyms != undefined && item.Synonyms.length > 0) {
+                item.Synonyms = JSON.parse(item.Synonyms);
             }
         });
-    }
+        //  deferred.resolve(Tasks);
+        setComponent(Tasks);
+        setEditData(Tasks[0]);
+        setModalIsOpenToTrue(true)
+
+        //  setModalIsOpenToTrue();
+    };
+
+    //     error: function (error) {
+
+
+    //     }
+    // });
+    // }
 
 
 
@@ -190,10 +298,26 @@ function EditInstitution(item: any) {
     const [state, setState] = React.useState("state");
 
     const loadDataOnlyOnce = React.useCallback(() => {
-      console.log(`I need ${state}!!`);
+        console.log(`I need ${state}!!`);
     }, [state]);
-  
+
     var Item: any = '';
+    const TaskItemRank: any = [];
+    const GetSmartmetadata = async () => {
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let smartmetaDetails = [];
+        smartmetaDetails = await web.lists
+            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            .getByTitle('SmartMetadata')
+            .items
+            //.getById(this.state.itemID)
+            .select("ID", "Title")
+            .top(4999)
+            .filter("TaxType eq 'Categories'")
+            .get()
+
+        console.log(smartmetaDetails);
+    }
     React.useEffect(() => {
         var initLoading = function () {
             if (item.item != undefined && item.item.siteType != undefined) {
@@ -201,528 +325,1326 @@ function EditInstitution(item: any) {
                 if (Item.siteType == 'HTTPS:') {
                     Item.siteType = 'HHHH';
                 }
+                GetSmartmetadata();
                 getMasterTaskListTasks();
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
-                setSharewebItemRank([{ rankTitle: '(8) Top Highlights', rank: '8' }, { rankTitle: '(7) Featured Item', rank: '7' }, { rankTitle: '(6) Key Item', rank: '6' }, { rankTitle: '(5) Relevant Item', rank: '5' }, { rankTitle: '(4) Background Item', rank: '4' }, { rankTitle: '(2) to be verified', rank: '2' }, { rankTitle: '(1) Archive', rank: '1' }, { rankTitle: '(0) No Show', rank: '0' }]);
-                if(useeffectdata ==false)
-                setuseeffectdata(true);
-                else  setuseeffectdata(false);
+                TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
+                setSharewebItemRank(TaskItemRank[0]);
+                if (useeffectdata == false)
+                    setuseeffectdata(true);
+                else setuseeffectdata(false);
                 //loadColumnDetails();
             }
         }
         initLoading();
- 
-    },
-       [] );
 
-   
+    },
+        []);
+    const EditComponent = (item: any, title: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+    const GetComponents = async () => {
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let componentDetails = [];
+        componentDetails = await web.lists
+            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            .getByTitle('Master Tasks')
+            .items
+            //.getById(this.state.itemID)
+            .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo")
+            .top(4999)
+            .filter("Item_x0020_Type eq Component")
+            .get()
+
+        console.log(componentDetails);
+    }
+    function EditComponentCallback() {
+
+        item.Call();
+
+    }
+    let mentionUsers: any = [];
+    //  mentionUsers = this.taskUsers.map((i:any)=>{      
+    //     return({id : i.Title,display: i.Title})
+    // });
+
+    var generateHierarchichalData = function (item: any, items: any) {
+        var autoCompleteItem: any = {};
+        autoCompleteItem["value"] = item.Title;
+        autoCompleteItem['Id'] = item.Id;
+        autoCompleteItem['description'] = item.Description1;
+        autoCompleteItem['TaxType'] = item.TaxType;
+        if (item.SiteType != undefined)
+            autoCompleteItem['SiteType'] = item.SiteType
+        autoCompleteItem['label'] = item.Title;
+        map(items, (parentItem) => {
+            if (item.ParentID == parentItem.Id) {
+                autoCompleteItem['label'] = parentItem.Title + ' > ' + item.Title;
+                if (parentItem.ParentID > 0) {
+                    map(items, (gParentItem) => {
+                        if (parentItem.ParentID == gParentItem.Id) {
+                            autoCompleteItem['label'] = gParentItem.Title + ' > ' + autoCompleteItem.label;
+                            if (gParentItem.ParentID > 0) {
+                                map(items, (mParentItem) => {
+                                    if (gParentItem.ParentID == mParentItem.Id) {
+                                        autoCompleteItem['label'] = mParentItem.Title + ' > ' + autoCompleteItem.label;
+
+                                        return false;
+
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+
+
+                return false;
+            }
+        });
+
+        return autoCompleteItem;
+    }
+    // const bindAutoCompleteId = function (countrolId:any, taxItems:any, taxType:any, service:any, CompositionSiteType:any) {
+    //     var Items:any = [];
+    //     $.each(taxItems, function (taxItem:any) {
+    //         if (taxItem.TaxType == taxType && taxItem.TaxType != 'Components') {
+    //             var item = generateHierarchichalData(taxItem, taxItems);
+    //             item["Title"] = item.value;
+    //             Items.push(item);
+    //         }
+    //         if (taxItem.TaxType == 'Components') {
+    //             var item = generateHierarchichalData(taxItem, taxItems);
+    //             item["Title"] = item.value;
+    //             Items.push(item);
+    //         }
+    //     });
+    //     $("#" + countrolId).autocomplete({
+    //         source: function (request:any, response:any) {
+    //             // delegate back to autocomplete, but extract the last term
+    //             //var index= request.term.indexOf("@");
+    //             // if (request.term != undefined && request.term[index] == '@') 
+    //             //     request.term = request.term.substr(index + 1, request.term.length);
+    //             //response($.ui.autocomplete.filter(Items, $scope.extractLast(request.term)));
+    //             var responseItems = $.ui.autocomplete.filter(Items, $scope.extractLast(request.term));
+    //             SharewebCommonFactoryService.DynamicSortitems(responseItems, 'label', 'Text', 'Ascending')
+    //             response(responseItems);
+
+    //         },
+    //         focus: function () {
+    //             // prevent value inserted on focus
+    //             return false;
+    //         },
+    //         select: function (event, ui) {
+    //             var terms = $scope.split(this.value);
+    //             // remove the current input
+    //             terms.pop();
+    //             // add the selected item
+    //             terms.push(ui.item.value);
+    //             // add placeholder to get the comma-and-space at the end
+    //             terms.push("");
+    //             this.value = terms.join("; ");
+    //             if (ui.item.TaxType != undefined && service == 'Service') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.ServicesmartComponent, ui.item.Id)) {
+    //                     ui.item['siteType'] = 'Master Tasks';
+    //                     $scope.ServicesmartComponent[0] = ui.item;
+    //                     $scope.SmartCompCopy[0] = ui.item;
+    //                     $scope.$apply();
+    //                 }
+    //                 $('#txtServiceSharewebComponent').val('');
+    //                 $('#txtServiceSharewebComponentselsction').val('');
+    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Components') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartComponent, ui.item.Id)) {
+    //                     ui.item['siteType'] = 'Master Tasks';
+    //                     $scope.smartComponent[0] = ui.item;
+    //                     $scope.SmartCompCopy[0] = ui.item;
+    //                     $scope.$apply();
+    //                     $scope.Item.Portfolio_x0020_Type == 'Component'
+    //                 }
+    //                 $('#txtSharewebComponent').val('');
+    //                 $('#txtSharewebComponentselsction').val('');
+    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Categories') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartCategories, ui.item.Id)) {
+    //                     $scope.smartCategories.push(ui.item);
+    //                     $scope.$apply();
+    //                 }
+    //                 $('#txtCategories').val('');
+    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Sites') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.TargetedSites, ui.item.Id)) {
+    //                     $scope.TargetedSites.push(ui.item);
+    //                     $scope.$apply();
+    //                 }
+    //                 $('#txtSites').val('');
+    //             }
+    //             else if (ui.item.TaxType != undefined && ui.item.TaxType == 'SPComponents') {
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartSPComponents, ui.item.Id)) {
+    //                     $scope.smartSPComponents.push(ui.item);
+    //                     $scope.$apply();
+    //                 }
+    //                 $('#txtSPComponents').val('');
+    //                 $('#txtSPComponentsselsction').val('');
+    //             }
+    //             else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Client Category') {
+    //                 $scope.IsUpdateClientCategory = true;
+    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id)) {
+    //                     if ($scope.smartClientCategories != undefined && $scope.smartClientCategories.length > 0) {
+    //                         angular.forEach($scope.smartClientCategories, function (clientcategory, index) {
+    //                             $scope.IsPushed = true;
+    //                             if (clientcategory.SiteType == ui.item.SiteType && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id)) {
+    //                                 $scope.smartClientCategories.push(ui.item);
+    //                                 $scope.IsPushed = false
+    //                             }
+    //                         })
+    //                         if ($scope.IsPushed == true && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id))
+    //                             $scope.smartClientCategories.push(ui.item);
+    //                     }
+    //                     else {
+    //                         if (!$scope.isItemExists($scope.smartClientCategories, ui.item.Id))
+    //                             $scope.smartClientCategories.push(ui.item);
+    //                     }
+    //                 }
+    //                 angular.forEach($scope.smartClientCategories, function (item) {
+    //                     if (item.SiteType == 'EI' && !$scope.isItemExists($scope.EIClientCategory, item.Id)) {
+    //                         $scope.EIClientCategory.push(item);
+    //                     }
+
+    //                     else if (item.SiteType == 'EPS' && !$scope.isItemExists($scope.EPSClientCategory, item.Id)) {
+    //                         $scope.EPSClientCategory.push(item);
+    //                     }
+    //                     else if (item.SiteType == 'Education' && !$scope.isItemExists($scope.EducationClientCategory, item.Id)) {
+    //                         $scope.EducationClientCategory.push(item);
+    //                     }
+
+    //                 })
+    //                 $scope.$apply();
+    //                 $scope.CurrentCCSiteType = CompositionSiteType;
+    //                 $('#UpdateCCItem').show();
+    //                 $('#txtclientCategories').val('');
+    //                 $('#EItxtclientCategories').val('');
+    //                 $('#EPStxtclientCategories').val('');
+    //                 $('#EducationtxtclientCategories').val('');
+    //                 $('#txtclientCategories1').val('');
+    //             }
+    //             return false;
+    //         }
+    //     });
+    // }
+    const setPriority = function (item: any, val: number) {
+        item.Priority_x0020_Rank = val;
+        getpriority(item);
+
+        setComponent(EditData => ([...EditData]));
+    }
+    const setPriorityNew = function (e: any, item: any) {
+        item.Priority_x0020_Rank = e.target.value;
+        switch (item.Priority_x0020_Rank) {
+            case '8':
+                item.Priority = '(1) High';
+                break;
+            case '4':
+                item.Priority = '(2) Normal';
+                break;
+            case '1':
+                item.Priority = '(3) Low';
+                break;
+            case '':
+                item.Priority = '';
+                break;
+
+        }
+        // getpriority(item);
+        setComponent(EditData => ([...EditData]));
+    }
+    const setTime = function (item: any, val: any) {
+        item.Mileage = val;
+        setComponent(EditData => ([...EditData]));
+    }
+    const setStatus = function (item: any, val: any) {
+        item.AdminStatus = val;
+        setComponent(EditData => ([...EditData]));
+    }
+    const expendcollapsAccordion = (item: any, title: any) => {
+        item[title] = item[title] = item[title] == true ? false : true;
+        setComponent(EditData => ([...EditData]));
+    };
+    const test12 = (e: any, item: any) => {
+        item.SynonymsTitle = e.target.value;
+        setComponent(EditData => ([...EditData]));
+    };
+    const createSynonyms = (item: any) => {
+        if (item.SynonymsTitle == undefined || item.SynonymsTitle == '') {
+            alert('You have not enter Synonym name.');
+        } else {
+            let flag = true;
+            if (item['Synonyms'] != undefined && item['Synonyms'].length > 0) {
+                if (item['Synonyms'][item['Synonyms'].length - 1]['Title'] == item.SynonymsTitle) {
+                    flag = false;
+                    alert('You have a blank synonym try to fill it first');
+                } else if (item['Synonyms'][item['Synonyms'].length - 1]['status'] == false) {
+                    flag = false;
+                    alert('You have not saved your last item.');
+                }
+            } else
+                item['Synonyms'] = [];
+            flag ? item['Synonyms'].push({ 'status': true, 'Title': item.SynonymsTitle, 'Id': '' }) : null;
+            item.SynonymsTitle = '';
+        }
+        item.SynonymsTitle = '';
+        setComponent(EditData => ([...EditData]));
+    }
+    const deleteItem = (item: any) => {
+        if (item['Synonyms'] != undefined && item['Synonyms'].length > 0) {
+            map(item['Synonyms'], (val, index) => {
+                item['Synonyms'].splice(index, 1)
+            })
+        }
+        setComponent(EditData => ([...EditData]));
+    }
+    const SaveData = async () => {
+        var UploadImage: any = []
+
+        var item: any = {}
+        var smartComponentsIds: any[] = [];
+        var Items = EditData;
+
+        if (Items.smartComponent != undefined) {
+            Items.smartComponent.map((com: any) => {
+                // if (com.Title != undefined) {
+
+                //     component = com.Title
+
+                // }
+
+                if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
+
+                    $.each(Items.smartComponent, function (index: any, smart: any) {
+
+                        smartComponentsIds.push(smart.Id);
+
+                    })
+                }
+            })
+        }
+        if (Items.ItemRankTitle != undefined && Items.ItemRankTitle != 'Select Item Rank')
+            var ItemRank = SharewebItemRank.filter((option: { rankTitle: any; }) => option.rankTitle == Items.ItemRankTitle)[0].rank;
+        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        await web.lists.getById('ec34b38f-0669-480a-910c-f84e92e58adf').items.getById(Items.ID).update({
+
+            Title: Items.Title,
+
+            ItemRank: ItemRank,
+            Priority_x0020_Rank: Items.Priority_x0020_Rank,
+            ComponentId: { "results": smartComponentsIds },
+            Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
+            StartDate: Startdate != undefined ? new Date(Startdate).toDateString() : Startdate,
+            DueDate: date != undefined ? new Date(date).toDateString() : date,
+            CompletedDate: Completiondate != undefined ? new Date(Startdate).toDateString() : Completiondate,
+            Synonyms: JSON.stringify(Items['Synonyms']),
+            Package: Items.Package,
+            AdminStatus: Items.AdminStatus,
+            Priority: Items.Priority,
+            Mileage: Items.Mileage,
+            ValueAdded: Items.ValueAdded,
+            Idea: Items.Idea,
+            Background: Items.Background,
+            Admin_x0020_Notes: Items.Admin_x0020_Notes,
+            // component_x0020_link: {
+            //     '__metadata': { 'type': 'SP.FieldUrlValue' },
+            //     'Description': Items.component_x0020_link != undefined ? Items.component_x0020_link.Url : null,
+            //     'Url': Items.component_x0020_link != undefined ? Items.component_x0020_link.Url : null,
+            // },
+            // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete,
+
+
+
+            // Categories: Items.Categories
+
+            // BasicImageInfo: JSON.stringify(UploadImage)
+
+        })
+            .then((res: any) => {
+                console.log(res);
+
+                setModalIsOpenToFalse();
+
+
+
+
+            })
+
+
+
+    }
+    const EditComponentPicker = (item: any, title: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponentPicker(true);
+        setSharewebCategory(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+    const onEditorStateChange = (e: any, item: any) => {
+        //  item.Description = e.target.value;
+        setComponent(EditData => ([...EditData]));
+        // const { components } = this.state;
+        // const x = { components };
+        // for (const i in x){
+        //     if(x[i].id ==== id){
+        //         x[i].contentValue.editorState = e;
+        //     }
+        // }
+        // this.setState({components: x})
+    }
+    const ChangeStatus = (e: any, item: any) => {
+        item.AdminStatus = e.target.value;
+        setComponent(EditData => ([...EditData]));
+    }
+    const changeTime = (e: any, item: any) => {
+        item.Mileage = e.target.value;
+        setComponent(EditData => ([...EditData]));
+    }
     return (
         <>
-            <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
-                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />
+            {/* <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
+                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> */}
             <Modal
                 isOpen={modalIsOpen}
-                onDismiss={setModalIsOpenToFalse}
+                // onDismiss={setModalIsOpenToFalse}
                 isBlocking={false}
             // {width:"1250px"}
             >
-                {CompoenetItem != undefined && CompoenetItem.map(institution =>
-                    <div id="EditGrueneContactSearch">
-                        <div className="panel panel-default" ng-cloak>
-                            <div className="modal-header">
-                                <h3 className="modal-title">
-                                    <img style={{ width: "22px" }} ng-if="selectedImageUrl != undefined" id="selectedimage"
-                                        ng-src="{{selectedImageUrl}}?RenditionID=12" />
-                                    <img style={{ width: "22px" }} ng-if="selectedImageUrl == undefined"
-                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg" />
-                                    Edit Institution-
-                                    {institution.Title}
-                                    <span className="pull-right">
-                                        {/* <page-settings-info webpartid="'EditInstitutionPopup'"></page-settings-info> */}
-                                        {/* <Tooltip /> */}
-                                    </span>
-                                </h3>
-                                <button type="button" style={{ minWidth: "10px" }} className="close" data-dismiss="modal"
-                                    onClick={setModalIsOpenToFalse}>
-                                    &times;
-                                </button>
-                            </div>
-                            <div className="modal-body">
-                                <form name="ItemForm" noValidate role="form">
-                                    <div id="table-wrapper">
-                                        <div id="table-scroll">
-                                            <div id="itemtabs" className="exTab3">
+                {/* {CompoenetItem != undefined && CompoenetItem.map(item => */}
+                {EditData.Title != undefined &&
+                    <div id="EditGrueneContactSearch" >
 
-                                                <div className="tab-content clearfixnew">
-                                                    <Tabs>
-                                                        <Tab title="BASIC INFORMATION">
+                        <div className="modal-dialog modal-lg modal-fixed ">
+
+                            <div className="modal-content">
+
+                                <div className="modal-header">
 
 
-                                                            <div id="basicinfo">
-                                                                <div className="col-sm-12">
-                                                                    <div className="row form-group">
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Title</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Title != undefined ? institution.Title : ""} />
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0" title="Email">
-                                                                            <label className="full_width">Item Rank</label>
-                                                                            <select className="form-control">
-                                                                                <option>---select---</option>
-                                                                                {
-                                                                                    SharewebItemRank &&
-                                                                                    SharewebItemRank.map((h: any, i: any) =>
-                                                                                        (<option key={i} value={h.rankTitle}>{h.rankTitle}</option>))
-                                                                                }
-                                                                            </select>
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0" title="Categories">
-                                                                            <label className="full_width">Priority</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Categories != undefined ? institution.Categories : ""} />
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input" name="radioPriority"
-                                                                                        type="radio" value="(1) High" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'High'}></input>High
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input" name="radioPriority"
-                                                                                        type="radio" value="(2) Normal" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'Normal'}></input>Normal
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input" name="radioPriority"
-                                                                                        type="radio" value="(3) Low" ng-click="SelectPriority()"
-                                                                                        checked={selectedOption === 'Low'}></input>Low
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
 
-                                                                    </div>
-                                                                    <div className="row form-group">
+                                    <h5 className="modal-title" id="exampleModalLabel">
+                                        Service-Portfolio<span > {">"} </span>
+                                        {EditData.Title}
+                                        <span className="text-end">
+                                        </span>
+                                    </h5>
 
-                                                                        <div className="col-sm-3">
-                                                                            <div className="col-sm-11 padL-0 PadR0">
-                                                                                <label className="full_width">
-                                                                                    Component Portfolio
-                                                                                </label>
-                                                                                <input style={{ width: "100%" }} type="text"
-                                                                                    className="form-control" id="txtSmartCountries" />
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={setModalIsOpenToFalse} aria-label="Close"></button>
 
-                                                                            </div>
-                                                                            <div className="col-sm-1 PadR0">
-                                                                                <label className="full_width">&nbsp;</label>
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/PublishingImages/Logos/EMMCopyTerm.png"
-                                                                                    ng-click="openSmartTaxonomy('Countries');" />
-                                                                            </div>
-                                                                            <div className="col-sm-11 padL-0 PadR0 inner-tabb">
-                                                                                <div className="block mt-5" >
-
-                                                                                    {institution.SmartCountries.length != 0 ? institution.SmartCountries.Title : ""}
-
-
-                                                                                    <a className="hreflink"
-                                                                                        ng-click="removeSmartCountry(item.Id,Item)">
-                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                    </a>
-                                                                                </div>
-                                                                            </div>
-
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Deliverable-Synonyms</label>
-
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.WorkAddress != undefined ? institution.WorkAddress : ""} />
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            {/* <label className="full_width">Institution Type</label>
-
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.InstitutionType != undefined ? institution.InstitutionType : ""} /> */}
-                                                                        </div>
-                                                                        <div className="col-sm-3">
-                                                                            <form name="validURLFormforWebPage">
-                                                                                {/* <label className="full_width">Website</label>
-                                                                                <input type="text" name="validUrl"
-                                                                                    ng-pattern="/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,7}(:[0-9]{1,7})?(\/.*)?$/"
-                                                                                    className="form-control form-group"
-
-                                                                                    defaultValue={institution.WebPage != null ? institution.WebPage.Description : ""}
-                                                                                /> */}
-                                                                            </form>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="row form-group">
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Start Date</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.CellPhone != null ? institution.CellPhone : ""}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Due Date</label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.HomePhone != null ? institution.HomePhone : ""} />
-                                                                        </div>
-
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">
-                                                                                Completion Date <a className="hreflink" href={institution.LinkedIn != null ? institution.LinkedIn.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-linkedin"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.LinkedIn != null ? institution.LinkedIn.Description : ""} />
-                                                                        </div>
-
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Categories <a className="hreflink" href={institution.Facebook != null ? institution.Facebook.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-facebook"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Facebook != null ? institution.Facebook.Description : ""} />
-                                                                        </div>
-
-
-                                                                    </div>
-                                                                    <div className="row form-group">
-
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Synonyms <a className="hreflink" href={institution.Instagram != null ? institution.Instagram.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Instagram != null ? institution.Instagram.Description : ""} />
-                                                                        </div>
-
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Client Activity <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
-                                                                        </div>
-
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Package <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
-                                                                        </div>
-
-
-                                                                    </div>
-                                                                    <div className="row form-group">
-                                                                        <div className="col-sm-3">
-                                                                            <label className="full_width">Status</label>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='Not Started'"
-                                                                                        name="Not Started" type="radio" value="Not Started"
-                                                                                        ng-click="Adminstatus('Not Started')"
-                                                                                        ng-model="AdminStatusChecked"></input> Not Started
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='In Preparation'"
-                                                                                        name="In Preparation" type="radio"
-                                                                                        value="In Preparation"
-                                                                                        ng-click="Adminstatus('In Preparation')"
-                                                                                        ng-model="AdminStatusChecked"></input> In Preparation
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='In Development'"
-                                                                                        name="In Development" type="radio"
-                                                                                        value="In Development"
-                                                                                        ng-click="Adminstatus('In Development')"
-                                                                                        ng-model="AdminStatusChecked"></input> In Development
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='Active'" name="Active"
-                                                                                        type="radio" value="Active"
-                                                                                        ng-click="Adminstatus( 'Active')"
-                                                                                        ng-model="AdminStatusChecked"></input> Active
-                                                                                </label>
-                                                                            </div>
-                                                                            <div className="radio">
-                                                                                <label>
-                                                                                    <input className="form-check-input"
-                                                                                        ng-checked="Item.AdminStatus=='Archived'"
-                                                                                        name="Archived" type="radio" value="Archived"
-                                                                                        ng-click="Adminstatus('Archived')"
-                                                                                        ng-model="AdminStatusChecked"></input> Archived
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="col-sm-3 padL-0">
-                                                                            <label className="full_width">Time <a className="hreflink" href={institution.Twitter != null ? institution.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
-                                                                            <input type="text" className="form-control"
-                                                                                defaultValue={institution.Twitter != null ? institution.Twitter.Description : ""} />
-                                                                        </div>
-
-                                                                    </div>
-                                                                    <div className="col-sm-12">
-                                                                        <label className="full_width">Url</label>
-                                                                        <div className="forFullScreenButton" id="itemDescription" ng-model="localaboutdescription">
-
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="clearfix"></div>
-                                                            </div>
-                                                        </Tab>
-
-                                                        <Tab title="IMAGES INFOMATION">
-                                                            {/* <div id="ImageInfo">
-                                                                <ImagesC id={null} />
-                                                            </div> */}
-                                                        </Tab>
-
-                                                        <Tab title="DIVISION">
-                                                            <div id="Institution" className="tab-pane fade">
-                                                                <div className="divPanelBody clearfix">
-                                                                    <div className="col-sm-12 clearfix">
-                                                                        <ul id="main-menu" className="new">
-                                                                            <li>
-                                                                                <a className="hreflink" ng-click="editDivisionpopup()">
-                                                                                    <img src="https://kathabeck.sharepoint.com/sites/42/SiteCollectionImages/ICONS/Shareweb/Add-New.png"
-                                                                                        alt="" title="Add Taxonomy Item"
-                                                                                        className="img-icon" />
-                                                                                </a>
-                                                                            </li>
-                                                                            <li id="node_{{item.Id}}" ng-repeat="item in AllDivisions">
-                                                                                <a target="_blank" className="hreflink"
-                                                                                    ng-href="{{CurrentSiteUrl}}/SitePages/Institution-Profile.aspx?contactId={{item.Id}}&name={{item.Title}}">
-                                                                                    {/* {{item.Title}} */}
-                                                                                </a>
-                                                                                <a style={{ padding: "0px 6px" }}
-                                                                                    className="hreflink pull-right"
-                                                                                    ng-click="deleteitem(item);">
-                                                                                    <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                </a>
-                                                                            </li>
-
-                                                                        </ul>
-                                                                    </div>
-
-                                                                </div>
-                                                            </div>
-                                                        </Tab>
-
-                                                        <Tab title="SYNONYMS">
-                                                            <div id="AddSynonyms" className="tab-pane fade">
-                                                                <div className="fixed-divPanelBody clearfix">
-                                                                    <div className="col-sm-12">
-                                                                        <span className="pull-right mb-10 mt-10">
-                                                                            <button type="button" className="btn btn-primary" ng-click="addsynonyms()">
-                                                                                Add
-                                                                                Synonyms
-                                                                            </button>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="col-sm-12">
-                                                                        <div ng-if="Item['Synonyms'].length==0">
-                                                                            <div className="current_commnet">No Synonyms Available</div>
-                                                                        </div>
-                                                                        <div ng-if="Item['Synonyms'].length>0">
-                                                                            <div className="section-event">
-                                                                                <div className="container-new">
-                                                                                    <table className="table  compare_item" style={{ width: "100%" }}>
-                                                                                        <thead>
-                                                                                            <tr>
-                                                                                                <th style={{ width: "80%" }}>
-                                                                                                    <div className="text" style={{ width: "80%" }}>
-                                                                                                        Title
-                                                                                                    </div>
-                                                                                                </th>
-                                                                                                <th style={{ width: "10%" }}>
-                                                                                                    <div style={{ width: "10%" }}></div>
-                                                                                                </th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr ng-repeat="val in Item['Synonyms']">
-                                                                                                <td style={{ width: "95%" }}>
-                                                                                                    <input className="form-control" type="text"
-                                                                                                        ng-model="val.Title"
-                                                                                                        ng-disabled="val.status" />
-                                                                                                </td>
-                                                                                                <td>
-                                                                                                    <span ng-if="!val.status"
-                                                                                                        ng-click="val.status=!val.status"
-                                                                                                        title="Save">
-                                                                                                        <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png" />
-                                                                                                    </span>
-                                                                                                    <span ng-if="val.status"
-                                                                                                        ng-click="val.status=!val.status"
-                                                                                                        title="Edit">
-                                                                                                        <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/edit.png" />
-                                                                                                    </span>
-                                                                                                    <a className="hreflink"
-                                                                                                        ng-click="Item['Synonyms'].splice($index,1);">
-                                                                                                        <img ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" />
-                                                                                                    </a>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </Tab>
-                                                    </Tabs>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                                {/* <!--<item-info></item-info>--> */}
-
-                            </div>
-                            <div className="modal-footer">
-                                <div className="col-sm-12">
-                                    <div className="row">
-                                        <div className="ItemInfo col-sm-6">
-                                            <div className="text-left">
-                                                Created <span ng-bind="Item.Created | date:'dd/MM/yyyy'">{institution.Created != null ? moment(institution.Created).format('DD/MM/YYYY') : ""}</span> by
-                                                <span className="footerUsercolor">
-                                                    {/* {{Item.Author.Title}} */}
-                                                    {institution.Author.Title != undefined ? institution.Author.Title : ""}
-                                                </span>
-                                            </div>
-                                            <div className="text-left">
-                                                Last modified <span ng-bind="Item.Modified | date:'dd/MM/yyyy hh:mm'">{institution.Modified != null ? moment(institution.Modified).format('DD/MM/YYYY') : ""}</span> by <span className="footerUsercolor">
-                                                    {/* {{Item.Editor.Title}} */}
-                                                    {institution.Editor.Title != undefined ? institution.Editor.Title : ""}
-                                                </span>
-                                            </div>
-                                            <div className="text-left">
-                                                <a className="hreflink" ng-click="removeItem(institution.Id)">
-                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-6 ItemInfo-right">
-                                            <div className="pull-right">
-                                                <span>
-                                                    <a className="ForAll hreflink" target="_blank"
-                                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/Institution-Profile.aspx?contactId=${institution.Id}&name=${institution.Title}`}>
-                                                        <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
-                                                            ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
-                                                    </a>
-                                                </span>
-                                                <span>|</span>
-                                                <a ng-href={`https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/Lists/Institutions/EditForm.aspx?ID=${institution.Id}`}
-                                                    target="_blank">Open out-of-the-box form</a>
-                                                <button type="button" className="btn btn-primary" ng-click="SaveItem()">Save</button>
-                                                <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div id="getDivisionPopUp" className="modal fade in" tabIndex={-1} role="dialog" aria-labelledby="myModalLabel"
-                            aria-hidden="false" style={{ display: "none" }}>
-                            <div className="modal-dialog">
-                                <div className="modal-content">
-                                    <form name="createInstitutionForm" noValidate role="form">
-                                        <div className="panel-title">
-                                            <button type="button" className="close ml-2" style={{ minWidth: "10px" }} data-dismiss="modal"
-                                                ng-click="cancelDivisionpopup()">
-                                                &times;
-                                            </button>
-                                            {/* <page-settings-info webpartid="'CreateContactPopupItem'"></page-settings-info> */}
-                                            <h3 className="">Add Division</h3>
-                                        </div>
-                                        <div className="modal-body">
-                                            <div className="col-sm-12 tab-content phase mb-10 mt-10  PadR0">
-                                                <div className="form-group">
-                                                    <div className="form-group col-sm-12 padL-0">
-                                                        <label ng-bind-html="GetColumnDetails('InstitutionTitle') | trustedHTML">
-                                                        </label>
-                                                        <div>
-                                                            <input type="text" ng-model="Title"
-                                                                className="form-control" ng-required="true" />
+                                <div className="modal-body">
+                                    <ul className="nav nav-tabs" id="myTab" role="tablist">
+                                        <li className="nav-item" role="presentation">
+                                            <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
+                                        </li>
+                                        <li className="nav-item" role="presentation">
+                                            <button className="nav-link" id="cncept-tab" data-bs-toggle="tab" data-bs-target="#concept" type="button" role="tab" aria-controls="concept" aria-selected="false">Concept</button>
+                                        </li>
+                                        <li className="nav-item" role="presentation">
+                                            <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Architecture & Technologies</button>
+                                        </li>
+                                        {/* <li className="nav-item" role="presentation">
+                                            <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Help</button>
+                                        </li> */}
+                                    </ul>
+                                    <div className="tab-content border border-top-0 clearfix " id="myTabContent">
+                                        <div className="tab-pane  show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                            <div className="col  p-2">
+                                                <div>
+                                                    <div className="col-sm-5 mt-10">
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <label className="form-label">Title</label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={EditData.Title != undefined ? EditData.Title : ""} onChange={(e) => EditData.Title = e.target.value} />
+                                                            </div>
+                                                            <div className="col-sm-6 pe0" title="Email">
+                                                                <label className="form-label">Item Rank</label>
+                                                                {/* <select className="form-control" defaultValue={EditData.ItemRankTitle} onChange={(e) => EditData.ItemRankTitle = e.target.value}>
+                                                                    {
+                                                                        SharewebItemRank &&
+                                                                        SharewebItemRank.map((h: any, i: any): JSX.Element => {
+                                                                            return (
+                                                                                (
+                                                                                    <option key={i} defaultValue={EditData.ItemRankTitle == h.rankTitle ? EditData.ItemRankTitle : h.rankTitle} >{EditData.ItemRankTitle == h.rankTitle ? EditData.ItemRankTitle : h.rankTitle}</option>)
+                                                                            )
+                                                                        }
+                                                                        )
+                                                                    }
+                                                                </select> */}
+                                                                <select className="full_width searchbox_height" defaultValue={EditData.ItemRankTitle} onChange={(e) => EditData.ItemRankTitle = e.target.value}>
+                                                                    <option>{EditData.ItemRankTitle == undefined ? 'select Item Rank' : EditData.ItemRankTitle}</option>
+                                                                    {SharewebItemRank && SharewebItemRank.map(function (h: any, i: any) {
+                                                                        return (
+                                                                            <option key={i} defaultValue={EditData.ItemRankTitle} >{EditData.ItemRankTitle == h.rankTitle ? EditData.ItemRankTitle : h.rankTitle}</option>
+                                                                        )
+                                                                    })}
+                                                                                </select>
+                                                                            </div>
                                                         </div>
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <div className="col-sm-11 padL-0 PadR0">
+                                                                    <label className="form-label">
+                                                                        Component Portfolio
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        className="form-control" />
+                                                                    {/* <AutoSuggest
+                                                                        options={stateOptions}
+                                                                        handleChange={setState}
+                                                                        value={state}
+                                                                        name="State"
+                                                                    /> */}
+                                                                    <span className="input-group-text">
+                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                            onClick={(e) => EditComponent(EditData, 'Componet')} />
+                                                                    </span>
+                                                                </div>
+
+                                                                <div className="col-sm-11  inner-tabb">
+                                                                    <div>
+
+                                                                        {EditData != undefined && EditData.smartComponent != undefined && EditData.smartComponent.map((childinew: any) =>
+                                                                            < div className="block bgsiteColor"
+
+                                                                            >
+                                                                                <a className="hreflink" target="_blank"
+                                                                                    href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData.Id}}&amp;Site={{EditData.siteType}}">{childinew.Title}</a>
+                                                                                <a className="hreflink"
+                                                                                >
+                                                                                    <img src="/_layouts/images/delete.gif"></img>
+                                                                                </a>
+                                                                            </div>
+                                                                        )}
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div className="col-sm-6 padL-0">
+                                                                <label className="form-label">Deliverable-Synonyms</label>
+
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={EditData.Deliverable_x002d_Synonyms != undefined ? EditData.Deliverable_x002d_Synonyms : ""} onChange={(e) => EditData.Deliverable_x002d_Synonyms = e.target.value} />
+                                                            </div>
+                                                        </div>
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-4 ps-0">
+                                                                <label className="form-label">Start Date</label>
+                                                                {/* <input type="text" className="form-control"
+                                                                    defaultValue={EditData.CellPhone != null ? EditData.CellPhone : ""}
+                                                                /> */}
+                                                                <DatePicker className="form-control"
+                                                                    selected={Startdate}
+                                                                    // onChange={(Startdate) => setStartdate(Startdate)}
+                                                                    value={EditData.StartDate}
+                                                                    onChange={handleDatestart}
+                                                                    //  value={EditData.Startdate}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    locale="es"
+                                                                />
+                                                            </div>
+                                                            <div className="col-sm-4 ">
+                                                                <label className="form-label">Due Date</label>
+                                                                {/* <input type="text" className="form-control"
+                                                                    defaultValue={EditData.HomePhone != null ? EditData.HomePhone : ""} /> */}
+                                                                {/* <DatePicker onSelectDate={dueDate} dateFormat="dd/MM/yyyy" onChange={(date) => setStartDate(dueDate)} className="form-control ng-pristine ng-valid ng-touched ng-not-empty" /> */}
+                                                                <DatePicker className="form-control"
+                                                                    selected={date}
+                                                                    // onChange={(date) => setDate(date)}
+                                                                    value={EditData.DueDate}
+                                                                    onChange={handleDatedue}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    locale="es"
+                                                                />
+                                                            </div>
+
+                                                            <div className="col-sm-4 pe-0">
+                                                                <label className="form-label">
+                                                                    Completion Date </label>
+                                                                {/* <input type="text" className="form-control"
+                                                                    defaultValue={EditData.LinkedIn != null ? EditData.LinkedIn.Description : ""} /> */}
+                                                                <DatePicker className="form-control"
+                                                                    name="CompletionDate"
+                                                                    selected={Completiondate}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    value={EditData.CompletedDate}
+
+                                                                    // onChange={(Completiondate) => setCompletiondate(Completiondate)}
+                                                                    onChange={handleDate}
+                                                                    locale="es"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-4 ps-0">
+                                                                <label className="form-label">Synonyms <a className="hreflink" target="_blank"><span className="pull-right"><i className="fa fa-instagram"></i></span></a></label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={EditData.SynonymsTitle} onChange={(e) => EditData.SynonymsTitle = e.target.value} />
+                                                                <span className="input-group-text" onClick={(e) => createSynonyms(EditData)}> <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span>
+                                                                {EditData["Synonyms"] != undefined && EditData["Synonyms"].length > 0 && map(EditData["Synonyms"], (obj, index) => {
+                                                                    return (
+                                                                        <>
+                                                                            <div className="block full_width">
+                                                                                {
+                                                                                    obj.Title
+                                                                                }
+                                                                                <a className="input-group-text" onClick={(e) => deleteItem(EditData)}>
+                                                                                    <img src="/_layouts/images/delete.gif"></img>
+                                                                                </a>
+                                                                            </div>
+                                                                        </>
+                                                                    )
+                                                                })
+                                                                }
+                                                            </div>
+
+                                                            <div className="col-sm-4">
+                                                                <label className="form-label">Client Activity <a className="hreflink" href={EditData.Twitter != null ? EditData.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={EditData.Twitter != null ? EditData.Twitter.Description : ""} />
+                                                            </div>
+
+                                                            <div className="col-sm-4 pe-0">
+                                                                <label className="form-label">Package</label>
+                                                                <input type="text" className="form-control"
+                                                                    defaultValue={EditData.Package != null ? EditData.Package : ""} onChange={(e) => EditData.Package = e.target.value} />
+                                                            </div>
+                                                        </div>
+                                                        <div className="row mb-10">
+                                                            <div className="col-sm-6 ps-0">
+                                                                <label className="form-label">Status</label>
+                                                                <input type="text" className="form-control"
+                                                                    value={EditData.AdminStatus} onChange={(e) => ChangeStatus(e, EditData)} />
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input className="form-check-input"
+                                                                            name="NotStarted" type="radio" value="Not Started"
+                                                                            checked={EditData.AdminStatus === "Not Started" ? true : false}
+                                                                            onChange={(e) => setStatus(EditData, 'Not Started')}
+                                                                        ></input> Not Started
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input className="form-check-input"
+                                                                            name="NotStarted" type="radio"
+                                                                            value="In Preparation"
+                                                                            onChange={(e) => setStatus(EditData, 'In Preparation')}
+                                                                            checked={EditData.AdminStatus === "In Preparation" ? true : false}></input> In Preparation
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input className="form-check-input"
+                                                                            name="NotStarted" type="radio"
+                                                                            value="In Development"
+                                                                            onChange={(e) => setStatus(EditData, 'In Development')}
+                                                                            checked={EditData.AdminStatus === "In Development" ? true : false}></input> In Development
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input className="form-check-input" name="NotStarted"
+                                                                            type="radio" value="Active"
+                                                                            onChange={(e) => setStatus(EditData, 'Active')}
+                                                                            checked={EditData.AdminStatus === "Active" ? true : false}></input> Active
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input className="form-check-input"
+                                                                            name="NotStarted" type="radio" value="Archived"
+                                                                            onChange={(e) => setStatus(EditData, 'Archived')}
+                                                                            checked={EditData.AdminStatus === "Archived" ? true : false}></input> Archived
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-sm-6 pe-0">
+                                                                <label className="form-label">Time <a className="hreflink" href={EditData.Twitter != null ? EditData.Twitter.Url : ""} target="_blank"><span className="pull-right"><i className="fa fa-twitter"></i></span></a></label>
+                                                                <input type="text" className="form-control"
+                                                                    value={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e => changeTime(e, EditData))} />
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input name="radioTime" onChange={(e) => setTime(EditData, '05')} checked={EditData.Mileage === "05" ? true : false}
+                                                                            type="radio"></input>Very Quick
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input name="radioTime" onChange={(e) => setTime(EditData, '15')} checked={EditData.Mileage === "15" ? true : false}
+                                                                            type="radio" ></input>Quick
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input name="radioTime" onChange={(e) => setTime(EditData, '60')} checked={EditData.Mileage === "60" ? true : false}
+                                                                            type="radio" ></input>Medium
+                                                                    </label>
+                                                                </div>
+                                                                <div className="radio">
+                                                                    <label>
+                                                                        <input name="radioTime" onChange={(e) => setTime(EditData, "240")} checked={EditData.Mileage === "240" ? true : false}
+                                                                            type="radio" ></input>Long
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-sm-3 mt-10">
+                                                        <div className="col" title="Priority">
+                                                            <label className="form-label">Priority</label>
+                                                            <input type="text" className="form-control"
+                                                                value={EditData.Priority_x0020_Rank} onChange={(e) => setPriorityNew(e, EditData)} />
+                                                            <div className="radio">
+                                                                <label>
+                                                                    <input className="form-check-input" name="radioPriority"
+                                                                        type="radio" value="(1) High" onChange={(e) => setPriority(EditData, 8)}
+                                                                        checked={EditData.Priority === "(1) High" ? true : false}></input>High
+                                                                </label>
+                                                            </div>
+                                                            <div className="radio">
+                                                                <label>
+                                                                    <input className="form-check-input" name="radioPriority"
+                                                                        type="radio" value="(2) Normal" onChange={(e) => setPriority(EditData, 4)}
+                                                                        checked={EditData.Priority === "(2) Normal" ? true : false}></input>Normal
+                                                                </label>
+                                                            </div>
+                                                            <div className="radio">
+                                                                <label>
+                                                                    <input className="form-check-input" name="radioPriority"
+                                                                        type="radio" value="(3) Low" onChange={(e) => setPriority(EditData, 1)}
+                                                                        checked={EditData.Priority === "(3) Low" ? true : false}></input>Low
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col position-relative mt-10">
+                                                            <label className="form-label">Categories </label>
+                                                            <input type="text" className="form-control"
+                                                                defaultValue={EditData.Facebook != null ? EditData.Facebook.Description : ""} />
+                                                            <span className="input-group-text"  >
+                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/editEditData.gif"
+                                                                    onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
+
+                                                            </span>
+                                                            <div className="col-sm-11  inner-tabb">
+                                                                <div>
+
+                                                                    {EditData != undefined && EditData.smartCategories != undefined && EditData.smartCategories.map((childi: any) =>
+                                                                        // {childi.Title}
+                                                                        // return (
+                                                                        //     <>
+                                                                        < div className="block bgsiteColor"
+
+                                                                        >
+                                                                            <a className="hreflink" target="_blank"  >{childi.Title}</a>
+                                                                            <a className="hreflink"
+                                                                            >
+                                                                                <img src="/_layouts/images/delete.gif"></img>
+                                                                            </a>
+                                                                        </div>
+                                                                        //     </>
+                                                                        // )
+                                                                    )}
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div className="col-sm-4  mt-10">
+                                                        <CommentCard siteUrl={EditData.siteUrl} userDisplayName={EditData.userDisplayName} listName={EditData.siteType} itemID={EditData.Id}></CommentCard>
+
+
+                                                    </div>
+                                                    <div className="col-sm-8 ps-0 mb-10">
+                                                        <label className="form-label">Url</label>
+                                                        <input type="text" className="form-control" placeholder="Url"></input>
+
                                                     </div>
                                                 </div>
                                             </div>
+
+
                                         </div>
-                                        <div className="modal-footer">
-                                            <div className="col-sm-12 mt-10">
-                                                {/* <!--<button type="button" ng-show="IsTitleSelected" className="btn btn-primary" ng-click="createJoinInstitution()">Ok</button>--> */}
-                                                <button type="button" className="btn btn-primary"
-                                                    ng-click="saveDivision()">
-                                                    Save
-                                                </button>
-                                                <button type="button" className="btn btn-default" ng-click="setModalIsOpenToFalse()">Cancel</button>
+                                        <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
+
+                                            <div className="col  p-2">
+                                                <div className="container">
+                                                    <section className='accordionbox'>
+
+                                                        <div className="accordion p-0  overflow-hidden">
+                                                            <div className="card shadow-none mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showsAdmin')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{EditData.showsAdmin ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Admin Notes</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {EditData.showsAdmin &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                <textarea defaultValue={EditData.Admin_x0020_Notes} onChange={(e) => EditData.Admin_x0020_Notes = e.target.value}>
+
+                                                                                </textarea>
+                                                                            </div>
+
+
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div className="card shadow-none  mb-2">
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showdes')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{EditData.showdes ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span> Description</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {EditData.showdes &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* dangerouslySetInnerHTML={{__html: EditData.Short_x0020_Description_x0020_On}} */}
+                                                                                {/* <input type="textarea"
+                                                                                    name="textValue" defaultValue={EditData.Short_x0020_Description_x0020_On}
+                                                                                    onChange={this.handleChange}
+                                                                                /> */}
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={EditData.descriptionVerified === true}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <Editor
+                                                                                    editorState={EditData.Description}
+                                                                                    toolbarClassName="toolbarClassName"
+                                                                                    wrapperClassName="wrapperClassName"
+                                                                                    editorClassName="editorClassName"
+                                                                                    // defaultValue={EditData.Short_x0020_Description_x0020_On}
+                                                                                    wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                                    onEditorStateChange={(e) => onEditorStateChange(e, EditData)}
+                                                                                />
+
+                                                                                {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: EditData.Short_x0020_Description_x0020_On }}>
+                                                                                   
+                                                                                </p> */}
+                                                                            </div>
+                                                                        }
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div className="card shadow-none  mb-2">
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'show')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{EditData.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {EditData.show &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* dangerouslySetInnerHTML={{__html: EditData.Short_x0020_Description_x0020_On}} */}
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={EditData.ShortDescriptionVerified === true}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <Editor
+                                                                                    toolbarClassName="toolbarClassName"
+                                                                                    wrapperClassName="wrapperClassName"
+                                                                                    editorClassName="editorClassName"
+                                                                                    // defaultValue={EditData.Short_x0020_Description_x0020_On}
+                                                                                    wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                                />
+                                                                                {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: EditData.Short_x0020_Description_x0020_On }}>
+                                                                                   
+                                                                                </p> */}
+                                                                            </div>
+                                                                        }
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+
+
+                                                            <div className="card shadow-none  mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showl')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{EditData.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
+                                                                    <div className="accordion-collapse collapse show" >
+
+
+                                                                        {EditData.showl &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* <p className="m-0" > <a>{EditData.Background}</a></p> */}
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={EditData.BackgroundVerified === true} onChange={(e) => EditData.BackgroundVerified = e.target.value}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <textarea defaultValue={EditData.Background} onChange={(e) => EditData.Background = e.target.value}>
+
+                                                                                </textarea>
+                                                                            </div>
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div className="card shadow-none mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'shows')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{EditData.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Idea</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {EditData.shows &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={EditData.IdeaVerified === true} onChange={(e) => EditData.BackgroundVerified = e.target.value}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <textarea defaultValue={EditData.Idea} onChange={(e) => EditData.Idea = e.target.value}>
+
+                                                                                </textarea>
+                                                                            </div>
+
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+
+
+
+
+                                                            <div className="card shadow-none mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showj')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{EditData.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {EditData.showj &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={EditData.ValueAddedVerified === true} onChange={(e) => EditData.ValueAddedVerified = e.target.value}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: EditData.ValueAdded }}></p> */}
+
+                                                                                <textarea defaultValue={EditData.ValueAdded} onChange={(e) => EditData.ValueAdded = e.target.value}>
+
+                                                                                </textarea>
+                                                                            </div>
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <div className="card shadow-none mb-2">
+
+                                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showm')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="sign">{EditData.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+
+                                                                        {EditData.showm &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* <p className="m-0" dangerouslySetInnerHTML={{ __html: EditData.Deliverables }}></p> */}
+                                                                                <span className="pull-right">
+                                                                                    <input type="checkbox" defaultChecked={EditData.DeliverablesVerified === true}></input>
+                                                                                    <span>Verified</span>
+                                                                                </span>
+                                                                                <Editor
+                                                                                    toolbarClassName="toolbarClassName"
+                                                                                    wrapperClassName="wrapperClassName"
+                                                                                    editorClassName="editorClassName"
+                                                                                    // defaultValue={EditData.Short_x0020_Description_x0020_On}
+                                                                                    wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                                />
+                                                                            </div>
+                                                                        }
+
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+
+
+
+                                                    </section>
+                                                </div>
                                             </div>
                                         </div>
-                                    </form>
+                                        <div className="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+                                            <div className="col  p-2">
+                                                <div className="container">
+                                                    <dl className='Sitecomposition'>
+                                                        <div className="dropdown">
+
+                                                            <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} >
+
+                                                                <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Technical Concept
+
+                                                            </a>
+
+                                                            {CollapseExpend &&
+                                                                <div className='spxdropdown-menu'>
+                                                                    <span className="pull-right">
+                                                                        <input type="checkbox"
+                                                                            defaultValue={EditData.TechnicalExplanationsVerified} />
+                                                                        <span>Verified</span>
+                                                                    </span>
+
+                                                                    <Editor
+                                                                        toolbarClassName="toolbarClassName"
+                                                                        wrapperClassName="wrapperClassName"
+                                                                        editorClassName="editorClassName"
+                                                                        wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                                                    />
+
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </dl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/* <div className="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+
+                                            <div className="row  p-2">
+                                                <div className="col-sm-12 mb-10">
+                                                    <div className="col-sm-12 pull-left HedaBackclr">
+                                                        <div className="col-sm-11 padL-0 hreflink"
+                                                           >
+                                                            <img
+                                                                ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/right-list-iconwhite.png"></img>
+                                                            <span className="txtSizeClr">
+                                                                <label ng-bind-html="GetColumnDetails('HelpInformation') | trustedHTML"></label>
+                                                            </span>
+                                                        </div>
+                                                        <div ng-if="HelpInformationExpandad" className="col-sm-11 padL-0 hreflink"
+                                                            ng-click="forCollapse('HelpInformation')">
+                                                            <img
+                                                                ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/list-iconwhite.png"></img>
+                                                            <span className="txtSizeClr">
+                                                                <label ng-bind-html="GetColumnDetails('HelpInformation') | trustedHTML"></label>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-sm-12 mb-10  BdrBoxBlue" ng-show="HelpInformationExpandad">
+                                                        <div className="col-sm-12 pad0">
+                                                            <div className="form-group">
+                                                                <label></label>
+                                                                <span className="pull-right">
+                                                                    <input type="checkbox"
+                                                                        ng-click="chHelpInformationVerified(EditData.HelpInformationVerified)"
+                                                                        ng-model="EditData.HelpInformationVerified" />
+                                                                    <span>Verified</span>
+                                                                </span>
+                                                                <div id="HelpInformation"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="">
+                                                    <div className="col-md-12">
+                                                        <div className="col-sm-12  mt-10 pad0">
+                                                            <label className="">
+                                                                Questions
+                                                                Description
+                                                            </label><a className="hreflink pull-right"
+                                                                ng-click="AskQuestion('Question')">Add Questions</a>
+                                                        </div>
+                                                        <div className="col-sm-12 pad0 section-event pt-0">
+                                                            <table className="mb-10" width="100%" cellSpacing="0">
+
+                                                                <div className="accordin-header ng-scope"
+                                                                    ng-repeat="item in AllComponentRelated">
+                                                                    <input className="toggle-box-content" id="identifier-{{EditData.Id}}"
+                                                                        type="checkbox"></input>
+                                                                    <label htmlFor="identifier-{{EditData.Id}}" className="ng-binding">
+                                                                        <span>{EditData.Title}</span>
+                                                                        <span className="pull-right">
+                                                                            <a className="hreflink" ng-click="UpdateQuestion(item)">
+                                                                                <img ng-src="/_layouts/images/editEditData.gif"></img>
+                                                                            </a> <a className="hreflink"
+                                                                                ng-click="DeleteQuestion(item)">
+                                                                                <img src="/_layouts/images/delete.gif" />
+                                                                            </a>
+                                                                        </span>
+                                                                    </label>
+                                                                    <div ng-show="EditData.QuestionStatus=='Approved'"
+                                                                        className="ng-binding">
+                                                                        <div className="accordin-content"
+                                                                            ng-bind-html="EditData.Body | trustedHTML">
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+                                                            </table>
+                                                            <div ng-show="AllComponentRelated.length==0"
+                                                                className="text-center panel-heading">
+                                                                No Questions Description available
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div className="col-md-12">
+
+                                                        <div className="col-sm-12 mb-5 mt-10 pad0">
+                                                            <label className="">
+                                                                Help
+                                                                Description
+                                                            </label> <a className="pull-right hreflink"
+                                                                ng-click="AskQuestion('Help')">Add Help</a>
+                                                        </div>
+                                                        <div className="col-sm-12 pad0 section-event pt-0">
+                                                            <table width="100%" cellSpacing="0" className="mb-10">
+                                                                <div className="accordin-header ng-scope"
+                                                                    ng-repeat="item in AllComponentRelatedHelp">
+                                                                    <input className="toggle-box-content" id="identifier-{{EditData.Id}}"
+                                                                        type="checkbox"></input>
+                                                                    <label htmlFor="identifier-{{EditData.Id}}" className="ng-binding">
+                                                                        <span>{EditData.Title}</span>
+                                                                        <span className="pull-right">
+                                                                            <a className="hreflink" ng-click="UpdateHelp(item)">
+                                                                                <img ng-src="/_layouts/images/editEditData.gif"></img>
+                                                                            </a>
+                                                                            <div className="col-sm-12 mb-10">
+                                                                                <div className="col-sm-12 pull-left HedaBackclr">
+                                                                                    <div ng-if="!HelpInformationExpandad" className="col-sm-11 padL-0 hreflink"
+                                                                                        ng-click="forExpand('HelpInformation')">
+                                                                                        <img
+                                                                                            ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/right-list-iconwhite.png"></img>
+                                                                                        <span className="txtSizeClr">
+                                                                                            <label ng-bind-html="GetColumnDetails('HelpInformation') | trustedHTML"></label>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div ng-if="HelpInformationExpandad" className="col-sm-11 padL-0 hreflink"
+                                                                                        ng-click="forCollapse('HelpInformation')">
+                                                                                        <img
+                                                                                            ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/list-iconwhite.png"></img>
+                                                                                        <span className="txtSizeClr">
+                                                                                            <label ng-bind-html="GetColumnDetails('HelpInformation') | trustedHTML"></label>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="col-sm-12 mb-10  BdrBoxBlue" ng-show="HelpInformationExpandad">
+                                                                                    <div className="col-sm-12 pad0">
+                                                                                        <div className="form-group">
+                                                                                            <label></label>
+                                                                                            <span className="pull-right">
+                                                                                                <input type="checkbox"
+                                                                                                    ng-click="chHelpInformationVerified(EditData.HelpInformationVerified)"
+                                                                                                    ng-model="EditData.HelpInformationVerified" />
+                                                                                                <span>Verified</span>
+                                                                                            </span>
+                                                                                            <div id="HelpInformation"></div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="">
+                                                                                <div className="col-md-12">
+                                                                                    <div className="col-sm-12  mt-10 pad0">
+                                                                                        <label className="">
+                                                                                            Questions
+                                                                                            Description
+                                                                                        </label><a className="hreflink pull-right"
+                                                                                            ng-click="AskQuestion('Question')">Add Questions</a>
+                                                                                    </div>
+                                                                                    <div className="col-sm-12 pad0 section-event pt-0">
+                                                                                        <table className="mb-10" width="100%" cellSpacing="0">
+
+                                                                                            <div className="accordin-header ng-scope"
+                                                                                                ng-repeat="item in AllComponentRelated">
+                                                                                                <input className="toggle-box-content" id="identifier-{{EditData.Id}}"
+                                                                                                    type="checkbox"></input>
+                                                                                                <label htmlFor="identifier-{{EditData.Id}}" className="ng-binding">
+                                                                                                    <span>{EditData.Title}</span>
+                                                                                                    <span className="pull-right">
+                                                                                                        <a className="hreflink" ng-click="UpdateQuestion(item)">
+                                                                                                            <img ng-src="/_layouts/images/editEditData.gif"></img>
+                                                                                                        </a> <a className="hreflink"
+                                                                                                            ng-click="DeleteQuestion(item)">
+                                                                                                            <img src="/_layouts/images/delete.gif" />
+                                                                                                        </a>
+                                                                                                    </span>
+                                                                                                </label>
+                                                                                                <div ng-show="EditData.QuestionStatus=='Approved'"
+                                                                                                    className="ng-binding">
+                                                                                                    <div className="accordin-content"
+                                                                                                        ng-bind-html="EditData.Body | trustedHTML">
+                                                                                                    </div>
+
+                                                                                                </div>
+
+                                                                                            </div>
+                                                                                        </table>
+                                                                                        <div ng-show="AllComponentRelated.length==0"
+                                                                                            className="text-center panel-heading">
+                                                                                            No Questions Description available
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                                <div className="col-md-12">
+
+                                                                                    <div className="col-sm-12 mb-5 mt-10 pad0">
+                                                                                        <label className="">
+                                                                                            Help
+                                                                                            Description
+                                                                                        </label> <a className="pull-right hreflink"
+                                                                                            ng-click="AskQuestion('Help')">Add Help</a>
+                                                                                    </div>
+                                                                                    <div className="col-sm-12 pad0 section-event pt-0">
+                                                                                        <table width="100%" cellSpacing="0" className="mb-10">
+                                                                                            <div className="accordin-header ng-scope"
+                                                                                                ng-repeat="item in AllComponentRelatedHelp">
+                                                                                                <input className="toggle-box-content" id="identifier-{{EditData.Id}}"
+                                                                                                    type="checkbox"></input>
+                                                                                                <label htmlFor="identifier-{{EditData.Id}}" className="ng-binding">
+                                                                                                    <span>{EditData.Title}</span>
+                                                                                                    <span className="pull-right">
+                                                                                                        <a className="hreflink" ng-click="UpdateHelp(item)">
+                                                                                                            <img ng-src="/_layouts/images/editEditData.gif"></img>
+                                                                                                        </a> <a className="hreflink" ng-click="DeleteHelp(item)">
+                                                                                                            <img src="/_layouts/images/delete.gif" />
+                                                                                                        </a>
+                                                                                                    </span>
+                                                                                                </label>
+                                                                                                <div className="ng-binding">
+                                                                                                    <div className="accordin-content"
+                                                                                                        ng-bind-html="EditData.Body | trustedHTML">
+                                                                                                    </div>
+
+                                                                                                </div>
+
+                                                                                            </div>
+
+                                                                                        </table>
+                                                                                        <div ng-show="AllComponentRelatedHelp.length==0"
+                                                                                            className="text-center panel-heading">
+                                                                                            No Help Description available
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                            <img src="/_layouts/images/delete.gif" />
+
+                                                                        </span>
+                                                                    </label>
+                                                                    <div className="ng-binding">
+                                                                        <div className="accordin-content"
+                                                                            ng-bind-html="EditData.Body | trustedHTML">
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </table>
+                                                            <div ng-show="AllComponentRelatedHelp.length==0"
+                                                                className="text-center panel-heading">
+                                                                No Help Description available
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div> */}
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div id="modalAllCovers" className="modal fade in" tabIndex={-1} role="dialog" aria-labelledby="myModalLabel"
-                            aria-hidden="false" style={{ display: "none" }}>
-                            <div className="modal-dialog" style={{ width: "90%" }}>
-                                <div className="modal-content">
-                                    <div className="modal-header">
-                                        <button type="button" className="close" style={{ minWidth: "10px" }} ng-click="cancelItemCover()"
-                                            title="Click to exit">
-                                            &times;
-                                        </button>
-                                        <h4 className="modal-title">Select Item Cover</h4>
-                                        <div className="pull-right">
-                                            <button type="button" ng-disabled="rowPosition <= 115" className="btn btn-primary"
-                                                style={{ marginRight: "10px", marginTop: "-35px" }} ng-click="LoadPrevCovers(rowPosition)"
-                                                title="Click to load prev 100 Covers">
-                                                Prev
-                                            </button>
-                                            <button type="button" ng-disabled="rowPosition >= AllImages.length" className="btn btn-primary"
-                                                style={{ marginRight: "30px", marginTop: "-35px" }} ng-click="LoadNextCovers(rowPosition)"
-                                                title="Click to load next 100 Covers">
-                                                Next
-                                            </button>
+
+                                {/* <div className="modal-footer">
+
+      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+      <button type="button" className="btn btn-primary">Save changes</button>
+
+    </div> */}
+
+                                <div className="modal-footer">
+                                    <div className="col-sm-12">
+                                        <div className="row">
+                                            <div className="ItemInfo col-sm-6">
+                                                <div className="text-left">
+                                                    Created <span ng-bind="EditData.Created | date:'dd/MM/yyyy'">{EditData.Created != null ? moment(EditData.Created).format('DD/MM/YYYY MM:SS') : ""}</span> by
+                                                    <span className="footerUsercolor">
+                                                        {/* {{EditData.Author.Title}} */}
+                                                        {EditData.Author?.Title != undefined ? EditData.Author?.Title : ""}
+                                                    </span>
+                                                </div>
+                                                <div className="text-left">
+                                                    Last modified <span>{EditData.Modified != null ? moment(EditData.Modified).format('DD/MM/YYYY MM:SS') : ""}</span> by <span className="footerUsercolor">
+                                                        {/* {{EditData.Editor.Title}} */}
+                                                        {EditData.Editor.Title != undefined ? EditData.Editor.Title : ""}
+                                                    </span>
+                                                </div>
+                                                <div className="text-left">
+                                                    <a className="hreflink">
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 PadR0 ItemInfo-right">
+                                                <div className="pull-right">
+                                                    <span>
+                                                        <a className="ForAll hreflink" target="_blank"
+                                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData.Id}&name=${EditData.Title}`}>
+                                                            <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
+                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
+                                                        </a>
+                                                    </span>
+                                                    <span className="ml5">|</span>
+                                                    <a className="ml5" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
+                                                        target="_blank">Open out-of-the-box form</a>
+                                                    <button type="button" className="btn btn-primary ml5" onClick={(e) => SaveData()}>Save</button>
+                                                    <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="modal-body">
-                                        <div id="coverImagesPopup">
-                                            <img title="{{img.FileLeafRef}}" id="{{img.Id}}_imagepopup"
-                                                ng-src="{{img.EncodedAbsUrl}}?RenditionID=9" ng-click="selectImagePopup(img)"
-                                                className="morecovers" ng-repeat="img in Images" />
-                                        </div>
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button type="button" className="btn btn-primary" ng-click="cancelItemCover()"
-                                            title="Save changes & exit">
-                                            Save
-                                        </button>
-                                        <button type="button" className="btn btn-default" ng-click="cancelItemCover()"
-                                            title="Discard unsaved changes & exit" onClick={setModalIsOpenToFalse}>
-                                            Cancel
-                                        </button>
-                                    </div>
                                 </div>
+
                             </div>
+
                         </div>
 
-
-
+                        {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
+                        {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
 
                     </div>
-                )}
+                }
+                {/* )} */}
             </Modal>
         </>
     )
-} export default React.memo(EditInstitution);
+} export default EditInstitution;

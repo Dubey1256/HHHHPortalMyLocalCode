@@ -1,11 +1,12 @@
 import * as React from 'react';
-import './styles.css';
+
+import '../../cssFolder/Style.scss';
 type Props = {
   title: string
 }
 
-const Tab: React.FC<Props> = ({ children }) => {
-  return <div className="nav nav-tabs nav nav-pills " >{children}</div>
+const Tab = ({ children }:any) => {
+  return <div className="tab-content border border-top-0 clearfix" >{children}</div>
 }
 
 export default Tab
