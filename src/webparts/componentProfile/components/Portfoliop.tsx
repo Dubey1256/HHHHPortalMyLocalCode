@@ -321,16 +321,20 @@ function Portfolio({ ID }: any) {
                     <div className='p-0' style={{ verticalAlign: "top" }}>
                         {data.map(item =>
                         <>
-                            <h2 className='headign'>
+                            <h2 className='heading'>
                                 {item.Portfolio_x0020_Type == 'Component' &&
                                     <>
-                                        <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a> 
+                                        <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                  
+                  </span>
                                         
                                     </>
                                 }
                                 {item.Portfolio_x0020_Type == 'Service' &&
                                     <>
-                                        <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a> 
+                                        <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                  
+                  </span>
                                         
 
                                     </>}
@@ -340,11 +344,7 @@ function Portfolio({ ID }: any) {
                         )}
                     </div>
                 </div>
-                {data.map(item=>
-                    <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
-                  
-                    </span>
-                )}
+              
             </section>
             {/* left bar  & right bar */}
             <section>
