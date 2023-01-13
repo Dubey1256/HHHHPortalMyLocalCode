@@ -317,7 +317,7 @@ const ProjectManagementMain = () => {
                     items.AllTeamMember = []
                     items.siteType = config.Title;
                     items.listId = config.listId;
-                    items.SiteUrl = config.siteUrl.Url;
+                    items.siteUrl = config.siteUrl.Url;
                     items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                     if (items.Component != undefined && items.Component.results != undefined && items.Component.results.length > 0) {
                         items['Portfoliotype'] = 'Component';
