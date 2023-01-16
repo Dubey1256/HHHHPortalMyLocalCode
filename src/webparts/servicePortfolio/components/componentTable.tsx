@@ -333,6 +333,7 @@ function ComponentTable() {
                             item.siteType = config.Title;
                             item.childs = [];
                             item.listId = config.listId;
+                            item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                             if (item.SharewebCategories.results != undefined) {
                                 if (item.SharewebCategories.results.length > 0) {
                                     $.each(item.SharewebCategories.results, function (ind: any, value: any) {

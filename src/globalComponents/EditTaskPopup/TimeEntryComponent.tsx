@@ -2,20 +2,20 @@ import { Modal } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
-import * as moment from 'moment';
-import { post } from 'jquery';
-import { CurrentUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
+import * as Moment from 'moment';
 import pnp, { PermissionKind } from "sp-pnp-js";
-import Task from '../../webparts/taskUserManagement/components/TaskUser';
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
 var changeTime = 0;
-var childs: any = []
 var ParentId: any = ''
 var Category: any = '';
 var NewCategoryId: any = ''
+var Eyd=''
+var changeEdited ='';
+var Categoryy ='';
+var TaskCate:any=[]
 var AllUsers: any = [];
-var change= moment().format('MMMM Do YYYY')
+var change = Moment().format()
 function TimeEntryPopup(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
     const [changeTimeEdit, setchangeTimeEdit] = React.useState(0)
@@ -25,15 +25,18 @@ function TimeEntryPopup(item: any) {
     const [collapseItem, setcollapseItem] = React.useState(true);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(false);
+    const [Editcategory, setEditcategory] = React.useState(false);
     const [TaskStatuspopup2, setTaskStatuspopup2] = React.useState(false);
     const [CopyTaskpopup, setCopyTaskpopup] = React.useState(false);
     const [AddTaskTimepopup, setAddTaskTimepopup] = React.useState(false);
     const [TimeSheet, setTimeSheets] = React.useState([])
-    const [changeDates, setchangeDates] = React.useState(moment().format('MMMM Do YYYY'))
+    const [changeDates, setchangeDates] = React.useState(Moment().format())
     const [changeTimeAdd, setchangeTimeAdd] = React.useState()
     const [AdditionalTime, setAdditionalTime] = React.useState([])
     const [count, setCount] = React.useState(1)
     const [month, setMonth] = React.useState(1)
+    const [counts, setCounts] = React.useState(1)
+    const [months, setMonths] = React.useState(1)
     const [saveEditTaskTime, setsaveEditTaskTime] = React.useState([])
     const [postData, setPostData] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
     const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
@@ -42,8 +45,11 @@ function TimeEntryPopup(item: any) {
     const [AllUser, setAllUser] = React.useState([])
     const [checkCategories, setcheckCategories] = React.useState()
     const [updateData, setupdateData] = React.useState(0)
-
+    const [updateData2, setupdateData2] = React.useState(0)
+    const [editeddata, setediteddata] = React.useState('')
+    const [editTime, seteditTime] = React.useState('')
     const [year, setYear] = React.useState(1)
+    const [years, setYears] = React.useState(1)
     const [TimeInHours, setTimeInHours] = React.useState(0)
     const [TimeInMinutes, setTimeInMinutes] = React.useState(0)
     var smartTermName = "Task" + item.props.siteType;
@@ -67,56 +73,100 @@ function TimeEntryPopup(item: any) {
 
     });
 
-    const changeDate = (val: any) => {
+    const changeDate = (val: any,Type:any) => {
 
 
         if (val === 'Date') {
-            setCount(count + 1)
+            //setCount(count + 1)
+          var dateeee = change != undefined && change != ''?change:''
+            change = (Moment(dateeee).add(1, 'days').format())
+            setchangeDates(change)
+
+            if(Type == 'EditTime'){
+             changeEdited = (Moment(editeddata).add(1, 'days').format())
+            var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+            setediteddata(editaskk)
+            }
            
-           change = (moment().add(count, 'days').format("MMMM Do YYYY"))
-           setchangeDates(change)
 
+           
         }
         if (val === 'month') {
-            setMonth(month + 1)
-            // setchangeDates(moment().add(month, 'months').format("MMMM Do YYYY"))
-            change = (moment().add(month, 'months').format("MMMM Do YYYY"))
+           // setMonth(month + 1)
+            change = (Moment(change).add(1, 'months').format())
             setchangeDates(change)
 
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(1, 'months').format())
+            var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+           setediteddata(editaskk)
+
         }
+        }
+
+           
         if (val === 'Year') {
-            setYear(year + 1)
-            //setchangeDates(moment().add(year, 'years').format("MMMM Do YYYY"))
-            change = (moment().add(year, 'years').format("MMMM Do YYYY"))
+           // setYear(year + 1)
+            change = (Moment(change).add(1, 'years').format())
             setchangeDates(change)
 
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(1, 'years').format())
+            var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+            setediteddata(editaskk)
+
         }
+        }
+
+       
     }
-    const changeDateDec = (val: any) => {
+    const changeDateDec = (val: any,Type:any) => {
 
 
         if (val === 'Date') {
-            setCount(count - 1)
-            change= (moment().add(count, 'days').format("MMMM Do YYYY"))
+           // setCount(count - 1)
+           var dateeee = change != undefined && change != ''?change:''
+            change = (Moment(dateeee).add(-1, 'days').format())
             setchangeDates(change)
+
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(-1, 'days').format())
+                var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+                setediteddata(editaskk)
+                }
         }
         if (val === 'month') {
-            setMonth(month - 1)
-           change= (moment().add(month, 'months').format("MMMM Do YYYY"))
-           setchangeDates(change)
+           // setMonth(month - 1)
+            change = (Moment(change).add(-1, 'months').format())
+            setchangeDates(change)
+
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(-1, 'months').format())
+                var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+               setediteddata(editaskk)
+    
+            }
         }
-        if (val === 'Year') {
-            setYear(year - 1)
-           change=(moment().add(year, 'years').format("MMMM Do YYYY"))
-           setchangeDates(change)
+        if (val === 'year') {
+            //setYear(year - 1)
+            change = (Moment(change).add(-1, 'years').format())
+            setchangeDates(change)
+
+            
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(-1, 'years').format())
+                var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+                setediteddata(editaskk)
+    
+            }
         }
     }
 
-    const changeTimes = (val: any,time:any,type:any) => {
+    const changeTimes = (val: any, time: any, type: any) => {
         if (val === '15') {
             // setchangeTime(changeTime + 15)
             changeTime = changeTime + 15
-           
+
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
@@ -128,15 +178,20 @@ function TimeEntryPopup(item: any) {
         if (val === '60') {
             //setchangeTime(changeTime + 60)
             changeTime = changeTime + 60
+
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
             }
-            if(type=='EditTask'){
-               var changeTimeEdi = time + 1
-               setchangeTimeEdit(changeTimeEdi)
-               
-            }
+            setTimeInMinutes(changeTime)
+            // if(type=='EditTask'){
+            //     changeTime = changeTime + 15
+            //    var changeTimeEdi = time + 1
+            //    setTimeInHours(changeTimeEdi)
+            //    setTimeInMinutes(changeTime)
+
+
+            // }
             setTimeInMinutes(changeTime)
 
         }
@@ -145,20 +200,38 @@ function TimeEntryPopup(item: any) {
     const openTaskStatusUpdatePoup = () => {
         setTaskStatuspopup(true)
     }
+    const Editcategorypopup = (child:any) => {
+        Categoryy = child.Title
+        setEditcategory(true)
+    }
+
+    const closeEditcategorypopup = (child:any) => {
+        setEditcategory(false)
+    }
+ 
     const openCopyTaskpopup = () => {
         setCopyTaskpopup(true)
     }
 
     const openAddTasktimepopup = (val: any) => {
         ParentId = val.Id;
-        val.AdditionalTime.map(()=>{
+        val.AdditionalTime.map(() => {
 
         })
 
         var CategoryTitle = val.Title;
         setAddTaskTimepopup(true)
     }
+    let dateValue  =''
+    var dp = ''
+    var Dateet:any = ''
     const openTaskStatusUpdatePoup2 = (childitem: any, childinew: any) => {
+       
+         dateValue = childinew.TaskDate.split("/");
+         dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+          Dateet= new Date(dp)
+         Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
+         setediteddata(Eyd)
         var Array: any = []
         var Childitem: any = []
         setTaskStatuspopup2(true)
@@ -174,7 +247,7 @@ function TimeEntryPopup(item: any) {
         setTimeInHours(0)
         setTimeInMinutes(0)
         changeTime = 0;
-        setCount(0)
+        setchangeDates(Moment().format(''))
     }
     const closeCopyTaskpopup = () => {
         setCopyTaskpopup(false)
@@ -185,7 +258,8 @@ function TimeEntryPopup(item: any) {
         setAddTaskTimepopup(false)
         setTimeInHours(0)
         changeTime = 0;
-        setCount(0)
+        setchangeDates(Moment().format(''))
+        setPostData(undefined)
     }
     const closeTaskStatusUpdatePoup2 = () => {
         setTaskStatuspopup2(false)
@@ -193,7 +267,8 @@ function TimeEntryPopup(item: any) {
         setTimeInHours(0)
         setTimeInMinutes(0)
         changeTime = 0;
-        setCount(0)
+        setchangeDates(Moment().format())
+        setediteddata(undefined)
     }
     const changeTimesDec = (items: any) => {
         if (items === '15') {
@@ -213,6 +288,13 @@ function TimeEntryPopup(item: any) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
             }
+            // if(type=='EditTask'){
+            //     var changeTimeEdi = time - 1
+            //     setTimeInHours(changeTimeEdi)
+
+            //  }
+            //  setTimeInMinutes(changeTime)
+
 
         }
 
@@ -231,6 +313,11 @@ function TimeEntryPopup(item: any) {
                 TimeSheets.push(item)
 
             }
+            res.map((val: any,index:any) => {
+                if (val.Id == item.Id) {
+                    res.splice(index, 1)
+                }
+            })
         })
         setTimeSheets(TimeSheets)
 
@@ -244,15 +331,13 @@ function TimeEntryPopup(item: any) {
     React.useEffect(() => {
         GetTimeSheet();
         GetSmartMetadata();
-    }, [updateData])
+    }, [updateData,updateData2])
 
-    React.useEffect(() => {
-        changeDate((e:any)=>e);
-        
-    }, [changeDates])
     // React.useEffect(() => {
-    //    getStructureData()
-    // }, [AllTimeSheetDataNew])
+    //     changeDate((e: any) => e);
+
+    // }, [changeDates,TaskCate])
+
     var AllMetadata: [] = [];
     const GetSmartMetadata = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -266,9 +351,6 @@ function TimeEntryPopup(item: any) {
         await GetTaskUsers();
 
     }
-
-
-
 
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
@@ -299,44 +381,48 @@ function TimeEntryPopup(item: any) {
     }
 
     const getStructureData = function () {
+        TaskCate= AllTimeSpentDetails
+        closeTaskStatusUpdatePoup();
+       
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
-             if (items.TimesheetTitle.Id === undefined) {
-            items.Expanded = true;
-            items.isAvailableToDelete = false;
-            $.each(AllTimeSpentDetails, function (index: any, val: any) {
-                if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === items.Id) {
-                    val.isShifted = true;
-                    val.show = true;
-                    $.each(val.AdditionalTime, function (index: any, value: any) {
-                        value.ParentID = val.Id;
-                        value.siteListName = val.__metadata.type;
-                        value.MainParentId = items.Id;
-                        value.AuthorTitle = val.Author.Title;
-                        value.EditorTitle = val.Editor.Title;
-                        value.AuthorImage = val.AuthorImage
-                        value.show = true;
-                         if (val.Created != undefined)
-                          value.TaskDate =moment(val.Created).format('DD/MM/YYYY');
-                          if (val.Modified != undefined)
-                          value.Modified =moment(val.Modified).format('DD/MM/YYYY');
-                        
-                        
-                        if (!isItemExists(items.AdditionalTime, value.ID))
-                            items.AdditionalTime.push(value);
+            if (items.TimesheetTitle.Id === undefined) {
+                items.Expanded = true;
+                items.isAvailableToDelete = false;
+                $.each(AllTimeSpentDetails, function (index: any, val: any) {
+                    if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === items.Id) {
+                        val.isShifted = true;
+                        val.show = true;
+                        $.each(val.AdditionalTime, function (index: any, value: any) {
+                            value.ParentID = val.Id;
+                            value.siteListName = val.__metadata.type;
+                            value.MainParentId = items.Id;
+                            value.AuthorTitle = val.Author.Title;
+                            value.EditorTitle = val.Editor.Title;
+                            value.AuthorImage = val.AuthorImage
+                            value.show = true;
+                            if (val.changeDates != undefined)
+                            var date= new Date(val.changeDates)
+                                value.TaskDate = Moment(date).format('DD/MM/YYYY');
+                            if (val.Modified != undefined)
+                                value.Modified = Moment(val.Modified).format('DD/MM/YYYY');
 
 
-                    })
-                    // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
-                    //     if (items.Id == NewCategoryId) {
-                    //         items.Childs.push(val);
-                    //     }
-                    // });
-                    //  setAdditionalTime(item.AdditionalTime)
+                            if (!isItemExists(items.AdditionalTime, value.ID))
+                                items.AdditionalTime.push(value);
 
 
-                }
-            })
-             }
+                        })
+                        // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
+                        //     if (items.Id == NewCategoryId) {
+                        //         items.Childs.push(val);
+                        //     }
+                        // });
+                        //  setAdditionalTime(item.AdditionalTime)
+
+
+                    }
+                })
+            }
         })
 
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { return type.isShifted === false });
@@ -380,9 +466,7 @@ function TimeEntryPopup(item: any) {
 
             if (items.Childs != undefined && items.Childs.length > 0) {
                 $.each(items.Childs, function (index: any, child: any) {
-                    if (child.AdditionalTimeEntry != undefined) {
-                        child.AdditionalTime = JSON.parse(child.AdditionalTimeEntry);
-                    }
+                  if(child.TimesheetTitle.Id != undefined){
                     if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
                         $.each(child.AdditionalTime, function (index: any, Subchild: any) {
                             if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
@@ -391,11 +475,11 @@ function TimeEntryPopup(item: any) {
 
                             }
 
-
+                        
                         })
 
                     }
-
+                }
                 })
             }
 
@@ -403,10 +487,11 @@ function TimeEntryPopup(item: any) {
         });
 
         setAdditionalTime(AdditionalTimes)
+       
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
         if (TaskStatuspopup == true) {
-            closeTaskStatusUpdatePoup();
+
             setupdateData(updateData + 1)
         }
 
@@ -498,7 +583,8 @@ function TimeEntryPopup(item: any) {
         return Items;
     }
 
-    const EditData = async (item: any) => {
+  
+    const EditData = async (items: any) => {
         AllTimeSpentDetails = [];
 
         TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
@@ -524,10 +610,11 @@ function TimeEntryPopup(item: any) {
             categoryTitle.TimesheetTitle = [];
 
         });
+        
 
         getStructurefTimesheetCategories();
-        setEditItem(item.Title);
-        var filteres = "Task" + item.siteType + "/Id eq " + item.Id;
+        setEditItem(items.Title);
+        var filteres = "Task" + items.siteType + "/Id eq " + items.Id;
         var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
         var count = 0;
         var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
@@ -543,7 +630,7 @@ function TimeEntryPopup(item: any) {
 
                     "Accept": "application/json; odata=verbose"
 
-                }, 
+                },
 
                 success: function (data) {
                     count++;
@@ -589,6 +676,7 @@ function TimeEntryPopup(item: any) {
                             item.siteName = null
                             item.siteUrl = null;
                             if (NewParentId == item.Id) {
+                                var Datee = new Date(changeDates)
                                 var TimeInH: any = changeTime / 60
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
@@ -600,7 +688,7 @@ function TimeEntryPopup(item: any) {
                                 update['MainParentId'] = mainParentId;
                                 update['ParentID'] = NewParentId;
                                 update['TaskTime'] = TimeInH;
-                                update['TaskDate'] = moment(item.Created).format("MMMM Do YYYY");
+                                update['TaskDate'] =  Moment(Datee).format('DD/MM/YYYY');
                                 update['Description'] = newData.Description
                                 item.AdditionalTime.push(update)
                                 let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
@@ -609,17 +697,18 @@ function TimeEntryPopup(item: any) {
 
 
                                     AdditionalTimeEntry: JSON.stringify(item.AdditionalTime),
-                                    TimesheetTitleId:mainParentId
+                                    TimesheetTitleId: mainParentId
 
                                 }).then((res: any) => {
 
                                     console.log(res);
+                                    
 
 
                                 })
 
                             }
-                            
+
                             if (item.TimesheetTitle.Id != undefined) {
                                 if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
                                     try {
@@ -727,30 +816,32 @@ function TimeEntryPopup(item: any) {
 
     const deleteTaskTime = async (childinew: any) => {
         var UpdatedData: any = []
-        confirm("Are you sure, you want to delete this?")
+        var deleteConfirmation= confirm("Are you sure, you want to delete this?")
+        if(deleteConfirmation){
         $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
 
             if (items.Childs.length > 0 && items.Childs != undefined) {
                 $.each(items.Childs, function (index: any, subItem: any) {
                     if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
-                            $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
-                                if (NewsubItem.ParentID == childinew.ParentID) {
-                                    if (NewsubItem.ID === childinew.ID)
-                                        subItem.AdditionalTime.splice(index, 1)
-                                }
-                            })
-                            UpdatedData = subItem.AdditionalTime
-                        }
-                    
+                        $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
+                            if (NewsubItem.ParentID == childinew.ParentID) {
+                                if (NewsubItem.ID === childinew.ID)
+                                    subItem.AdditionalTime.splice(index, 1)
+                            }
+                        })
+                        UpdatedData = subItem.AdditionalTime
+                    }
+
                 })
             }
         })
+    }
         setAdditionalTime({ ...AdditionalTime })
         //  setTimeSheet(AllTimeSheetDataNew)
 
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
-        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(AdditionalTime[0].ParentID).update({
+        await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(childinew.ParentID).update({
 
 
             AdditionalTimeEntry: JSON.stringify(UpdatedData),
@@ -761,19 +852,24 @@ function TimeEntryPopup(item: any) {
 
 
         })
+        setupdateData(updateData + 1)
 
     }
 
     const UpdateAdditionaltime = async (child: any) => {
+        var Dateee =Moment(changeEdited).format('DD/MM/YYYY')
+        var DateFormate = new Date(Eyd)
         var UpdatedData: any = []
         $.each(saveEditTaskTime, function (index: any, update: any) {
             $.each(update.AdditionalTime, function (index: any, updateitem: any) {
                 if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
 
                     updateitem.Id = child.ID;
-                    updateitem.TaskTime = postData.TaskTime != undefined ? postData.TaskTime : child.TaskTime;
-                    updateitem.TaskDate = postData.TaskDate != undefined ? postData.TaskDate : child.TaskDate;
-                    updateitem.Description = postData.Description != undefined ? postData.Description : child.Description;
+                    updateitem.TaskTime = TimeInHours != undefined  ? TimeInHours  : child.TaskTime;
+                    updateitem.TaskTime = TimeInMinutes != undefined  ? TimeInMinutes  : child.TaskTimeInMinutes;
+                    updateitem.TaskDate = Dateee != "Invalid date"? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
+                    
+                    updateitem.Description = postData.Description != undefined && postData.Description != ''  ? postData.Description : child.Description;
 
 
                 }
@@ -799,15 +895,15 @@ function TimeEntryPopup(item: any) {
     }
     var NewParentId: any = ''
     var NewParentTitle: any = ''
-    var smartTermId=''
+    var smartTermId = ''
     var mainParentId: any = ''
     var mainParentTitle: any = ''
     const saveTimeSpent = async () => {
         var UpdatedData: any = {}
-         smartTermId = "Task" + item.props.siteType + "Id";
+        smartTermId = "Task" + item.props.siteType + "Id";
 
-    
-    var AddedData: any = []
+
+        var AddedData: any = []
 
         if (checkCategories == undefined && checkCategories == undefined) {
             alert("please select category or Title");
@@ -832,7 +928,7 @@ function TimeEntryPopup(item: any) {
         if (AllTimeSpentDetails == undefined) {
             var AllTimeSpentDetails: any = []
         }
-       
+
         TimeSheet.map((items: any) => {
             if (items.Title == checkCategories) {
                 Category = items.Id
@@ -845,35 +941,35 @@ function TimeEntryPopup(item: any) {
 
 
 
-   
 
-   //-------------Post Method------------------------------------------------------------
-    
-    let folderUri: string = '/Smalsus';
-    let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
-    let itemMetadataAdded = {
-        'Title': checkCategories,
-        [smartTermId]: item.props.Id,
-        'CategoryId': Category,
-    };
-    //First Add item on top
-    let newdata = await web.lists.getByTitle("TaskTimeSheetListNew")
-                  .items
-                  .add({...itemMetadataAdded});
-                  console.log(newdata)
 
-                    let movedata = await web
-                        .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
-                        .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
-                    console.log(movedata);
-                    mainParentId = newdata.data.Id;
-                    mainParentTitle = newdata.data.Title;
-                    createItemMainList();
+        //-------------Post Method------------------------------------------------------------
 
-//--------------------------------End Post----------------------------------------------------------------
+        let folderUri: string = '/Smalsus';
+        let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
+        let itemMetadataAdded = {
+            'Title': checkCategories,
+            [smartTermId]: item.props.Id,
+            'CategoryId': Category,
+        };
+        //First Add item on top
+        let newdata = await web.lists.getByTitle("TaskTimeSheetListNew")
+            .items
+            .add({ ...itemMetadataAdded });
+        console.log(newdata)
+
+        let movedata = await web
+            .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
+            .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
+        console.log(movedata);
+        mainParentId = newdata.data.Id;
+        mainParentTitle = newdata.data.Title;
+        createItemMainList();
+
+        //--------------------------------End Post----------------------------------------------------------------
 
     }
-    const createItemMainList=async ()=>{
+    const createItemMainList = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
 
         let folderUri: string = '/Smalsus/Santosh Kumar';
@@ -885,26 +981,26 @@ function TimeEntryPopup(item: any) {
         };
         //First Add item on top
         let newdata = await web.lists.getByTitle("TaskTimeSheetListNew")
-                      .items
-                      .add({...itemMetadataAdded});
-                      console.log(newdata)
-    
-                        let movedata = await web
-                            .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
-                            .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
-                        console.log(movedata);
-                        NewParentId = newdata.data.Id;
-                        NewParentTitle = newdata.data.Title;
-                        NewCategoryId = newdata.data.CategoryId;
-                 EditData(item.props);
+            .items
+            .add({ ...itemMetadataAdded });
+        console.log(newdata)
+
+        let movedata = await web
+            .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
+            .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
+        console.log(movedata);
+        NewParentId = newdata.data.Id;
+        NewParentTitle = newdata.data.Title;
+        NewCategoryId = newdata.data.CategoryId;
+        EditData(item.props);
     }
 
     const AddTaskTime = async () => {
         var UpdatedData: any = []
         var CurrentUser: any = {}
         var update: any = {};
-        var AddMainParentId:any = ''
-        var AddParentId:any = ''
+        var AddMainParentId: any = ''
+        var AddParentId: any = ''
         var TimeInMinute: any = changeTime / 60
         $.each(AllUsers, function (index: any, taskUser: any) {
             if (taskUser.AssingedToUserId === CurntUserId
@@ -915,95 +1011,98 @@ function TimeEntryPopup(item: any) {
             }
 
         });
+   
+  
+ 
+ 
+        $.each(TaskCate, async function (index: any, items: any) {
+          
+                    if(items.TimesheetTitle.Id != undefined && items.TimesheetTitle.Id==ParentId){
+                     if (items.AdditionalTime.length > 0 && items.AdditionalTime != undefined) {
+                        var timeSpentId = items.AdditionalTime[items.AdditionalTime.length - 1];
+                        $.each(items.AdditionalTime, async function (index: any, NewsubItem: any) {
+                            AddParentId = NewsubItem.ParentID
+                            AddMainParentId = NewsubItem.MainParentId
 
+                        })
+                        
+                        update['AuthorName'] = CurrentUser.AuthorName;
+                        update['AuthorImage'] = CurrentUser.AuthorImage;
+                        update['ID'] = timeSpentId.ID + 1;
+                        update['MainParentId'] = AddMainParentId;
+                        update['ParentID'] = AddParentId;
+                        update['TaskTime'] = TimeInHours;
+                        update['TaskTimeInMinutes'] = TimeInMinutes;
+                        update['TaskDate'] = Moment(changeDates).format('DD/MM/YYYY');
+                        update['Description'] = postData.Description
+                        items.AdditionalTime.push(update)
+                        UpdatedData = items.AdditionalTime
+                     }
+                    if (items.AdditionalTime.length == 0) {
+                        AddParentId=items.Id;
+                        update['AuthorName'] = CurrentUser.AuthorName;
+                        update['AuthorImage'] = CurrentUser.AuthorImage;
+                        update['ID'] = 0;
+                        update['MainParentId'] = items.TimesheetTitle.Id;
+                        update['ParentID'] = items.Id;
+                        update['TaskTime'] = TimeInHours;
+                        update['TaskTimeInMinutes'] = TimeInMinutes;
+                        update['TaskDate'] =  Moment(changeDates).format('DD/MM/YYYY');
+                        update['Description'] = postData.Description
+                        items.AdditionalTime.push(update)
+                        UpdatedData = items.AdditionalTime
 
-        // timeSpentId['ID'] = timeSpentId.ID + 1;
+                    }}
 
-   //var Date:any = moment(changeDates).format("MMMM Do YYYY")
-        $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
-            if (items.Childs.length > 0 && items.Childs != undefined) {
-                $.each(items.Childs, function (index: any, subItem: any) {
-                  
-                        if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
-                            var timeSpentId = subItem.AdditionalTime[subItem.AdditionalTime.length - 1];
-                            $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
-                                 AddParentId = NewsubItem.ParentID
-                                 AddMainParentId = NewsubItem.MainParentId
-
-                            })
-                           
-                            update['AuthorName'] = CurrentUser.AuthorName;
-                            update['AuthorImage'] = CurrentUser.AuthorImage;
-                            update['ID'] = timeSpentId.ID + 1;
-                            update['MainParentId'] = AddMainParentId;
-                            update['ParentID'] = AddParentId;
-                            update['TaskTime'] = TimeInMinute;
-                            update['TaskDate'] = postData.TaskDate != undefined ? postData.TaskDate : changeDates;
-                            update['Description'] = postData.Description
-                            subItem.AdditionalTime.push(update)
-                            UpdatedData = subItem.AdditionalTime
-                        }
-                        if (subItem.AdditionalTime.length == 0 && subItem.AdditionalTime == undefined) {
-                            update['AuthorName'] = CurrentUser.AuthorName;
-                            update['AuthorImage'] = CurrentUser.AuthorImage;
-                            update['ID'] = 0;
-                            update['MainParentId'] = AddMainParentId;
-                            update['ParentID'] = AddParentId;
-                            update['TaskTime'] = TimeInMinute;
-                            update['TaskDate'] = postData.TaskDate != undefined ? postData.TaskDate : Date;
-                            update['Description'] = postData.Description
-                            subItem.AdditionalTime.push(update)
-                            UpdatedData = subItem.AdditionalTime
-
-                        }
-                    
-                })
-            }
+               
+            
         })
+      
 
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-        //let res= await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').select("ID,Title").items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar'").top(4999).getAll()
-
 
         await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
-        .items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/" + UpdatedData.Company + "/" + UpdatedData.Author).getById(AddParentId)
-        .update({
+            .items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/" + UpdatedData.Company + "/" + UpdatedData.Author).getById(AddParentId)
+            .update({
 
 
-           
-            AdditionalTimeEntry: JSON.stringify(UpdatedData),
 
-        }).then((res: any) => {
+                AdditionalTimeEntry: JSON.stringify(UpdatedData),
 
-            console.log(res);
-            closeAddTaskTimepopup();
+            }).then((res: any) => {
 
-        })
+                console.log(res);
+                closeAddTaskTimepopup();
+                setupdateData(updateData + 1)
+                
+
+            })
 
     }
 
-    const deleteCategory = (val: any) => {
+    const deleteCategory = async(val: any) => {
+       
         confirm("Are you sure, you want to delete this?")
-        $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
-            if (items.Childs.length > 0 && items.Childs != undefined) {
-                $.each(items.Childs, function (index: any, subItem: any) {
-                    if (subItem.Id == val.Id) {
-                        items.Childs.splice(index, 1)
-
-                    }
-                })
-                //({...items.Childs})
-            }
-        })
-    }
+        let web =new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        await web.lists.getByTitle("TaskTimeSheetListNew").items.getById(val.Id).delete()
+             .then(i => {
+               console.log(i);
+             });
+             setupdateData2(updateData2 + 1)
+         }
+       
     
+     
+     
+    
+
     const SaveCopytime = async (child: any) => {
         var CurrentUser: any = {}
         var update: any = {};
         var TimeInMinute: any = changeTime / 60
         var UpdatedData: any = []
-        var AddParent:any=''
-        var AddMainParent:any=''
+        var AddParent: any = ''
+        var AddMainParent: any = ''
         $.each(AllUsers, function (index: any, taskUser: any) {
             if (taskUser.AssingedToUserId === CurntUserId
             ) {
@@ -1012,25 +1111,26 @@ function TimeEntryPopup(item: any) {
             }
 
         });
-       // const listPath = `https://hhhhteams.sharepoint.com//sites/HHHH/SP/Lists/TaskTimeSheetListNew"${UpdatedData.AuthorName}UpdatedData.Company`;
+       var date:any = Moment(changeDates).format('LL')
+       console.log(date)
         $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
             if (items.Childs.length > 0 && items.Childs != undefined) {
                 $.each(items.Childs, function (index: any, subItem: any) {
                     if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
                         var timeSpentId = subItem.AdditionalTime[subItem.AdditionalTime.length - 1];
                         $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
-                             AddParent = NewsubItem.ParentID
-                             AddMainParent = NewsubItem.MainParentId
+                            AddParent = NewsubItem.ParentID
+                            AddMainParent = NewsubItem.MainParentId
 
                         })
-                       
+
                         update['AuthorName'] = CurrentUser.AuthorName;
                         update['AuthorImage'] = CurrentUser.AuthorImage;
                         update['ID'] = timeSpentId.ID + 1;
                         update['MainParentId'] = AddMainParent;
                         update['ParentID'] = AddParent;
                         update['TaskTime'] = child.TaskTime;
-                        update['TaskDate'] = child.TaskDate;
+                        update['TaskDate'] = Moment(child.TaskDate).format('DD/MM/YYYY');;
                         update['Description'] = child.Description
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
@@ -1054,7 +1154,16 @@ function TimeEntryPopup(item: any) {
 
         })
     }
-
+const DateFormat=(itemL:any)=>{
+    
+        let Newh = Moment().add('days')
+        //console.log(Newh)
+      let serverDateTime;          
+      let mDateTime = Moment(itemL);
+      serverDateTime = mDateTime.format(itemL); 
+      return serverDateTime;
+    
+}
     return (
         <div>
             <div className="container mt-0 p-0">
@@ -1169,7 +1278,7 @@ function TimeEntryPopup(item: any) {
                                                                                                     <span>{item.Title} - {childitem.Title}</span>
 
                                                                                                     <span className="ml5">
-                                                                                                        <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif' className="button-icon hreflink" title="Edit">
+                                                                                                        <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif' className="button-icon hreflink" title="Edit" onClick={()=>Editcategorypopup(childitem)}>
                                                                                                         </img>
                                                                                                     </span>
                                                                                                     <span className="ml5">
@@ -1410,7 +1519,7 @@ function TimeEntryPopup(item: any) {
                                                                 ng-required="true"
                                                                 placeholder="DD/MM/YYYY"
                                                                 ng-model="AdditionalnewDate"
-                                                                defaultValue={changeDates}
+                                                                value={Moment(changeDates).format("ddd, DD MMM yyyy")}
                                                                 onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
 
                                                         </div>
@@ -1421,32 +1530,32 @@ function TimeEntryPopup(item: any) {
                                                             <div className="col-sm-4 ">
                                                                 <button id="DayPlus"
                                                                     className="top-container plus-button plus-minus"
-                                                                    onClick={() => changeDate('Date')}>
+                                                                    onClick={() => changeDate('Date','AddCategory')}>
                                                                     <i className="fa fa-plus"
-                                                                        aria-hidden="true">+</i>
+                                                                        aria-hidden="true"></i>
                                                                 </button>
                                                                 <span className="min-input">Day</span>
                                                                 <button id="DayMinus"
                                                                     className="top-container minus-button plus-minus"
-                                                                    onClick={() => changeDateDec('Date')}>
+                                                                    onClick={() => changeDateDec('Date','AddCategory')}>
                                                                     <i className="fa fa-minus"
-                                                                        aria-hidden="true">-</i>
+                                                                        aria-hidden="true"></i>
                                                                 </button>
                                                             </div>
 
                                                             <div className="col-sm-4 ">
                                                                 <button id="MonthPlus"
                                                                     className="top-container plus-button plus-minus"
-                                                                    onClick={() => changeDate('month')}>
+                                                                    onClick={() => changeDate('month','AddCategory')}>
                                                                     <i className="fa fa-plus"
-                                                                        aria-hidden="true">+</i>
+                                                                        aria-hidden="true"></i>
                                                                 </button>
                                                                 <span className="min-input">Month</span>
                                                                 <button id="MonthMinus"
                                                                     className="top-container minus-button plus-minus"
-                                                                    onClick={() => changeDateDec('month')}>
+                                                                    onClick={() => changeDateDec('month','AddCategory')}>
                                                                     <i className="fa fa-minus"
-                                                                        aria-hidden="true">-</i>
+                                                                        aria-hidden="true"></i>
                                                                 </button>
                                                             </div>
 
@@ -1454,16 +1563,16 @@ function TimeEntryPopup(item: any) {
                                                                 className="col-sm-4 ">
                                                                 <button id="YearPlus"
                                                                     className="top-container plus-button plus-minus"
-                                                                    onClick={() => changeDate('Year')}>
+                                                                    onClick={() => changeDate('Year','AddCategory')}>
                                                                     <i className="fa fa-plus"
-                                                                        aria-hidden="true">+</i>
+                                                                        aria-hidden="true"></i>
                                                                 </button>
                                                                 <span className="min-input">Year</span>
                                                                 <button id="YearMinus"
                                                                     className="top-container minus-button plus-minus"
-                                                                    onClick={() => changeDateDec('year')}>
+                                                                    onClick={() => changeDateDec('year','AddCategory')}>
                                                                     <i className="fa fa-minus"
-                                                                        aria-hidden="true">-</i>
+                                                                        aria-hidden="true"></i>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -1496,7 +1605,7 @@ function TimeEntryPopup(item: any) {
                                                             <span> 15min </span>
                                                             <button className="btn btn-primary"
                                                                 title="Increase by 15 Min"
-                                                                onClick={() => changeTimes('15','add','AddNewStructure')}>+
+                                                                onClick={() => changeTimes('15', 'add', 'AddNewStructure')}>+
 
                                                             </button>
                                                         </div>
@@ -1511,7 +1620,7 @@ function TimeEntryPopup(item: any) {
                                                             <span> 60min </span>
                                                             <button className="btn btn-primary"
                                                                 title="Increase by 60 Min"
-                                                                onClick={() => changeTimes('60','add','AddNewStructure')}>+
+                                                                onClick={() => changeTimes('60', 'add', 'AddNewStructure')}>+
 
                                                             </button>
                                                         </div>
@@ -1556,7 +1665,7 @@ function TimeEntryPopup(item: any) {
                                                             <input
                                                                 type="radio" className="form-check-input"
                                                                 value={Items.Title}
-                                                               // checked={selectCategories === Items.Title ? true : false}
+                                                                // checked={selectCategories === Items.Title ? true : false}
                                                                 onChange={selectCategories}
 
                                                                 name="taskcategory" />
@@ -1585,6 +1694,8 @@ function TimeEntryPopup(item: any) {
                     </div>
                 </div>
             </Modal>
+
+            {/* ---------------------------------------------------------------------EditTime--------------------------------------------------------------------------------------------------------------------------- */}
             <Modal
                 isOpen={TaskStatuspopup2}
                 onDismiss={closeTaskStatusUpdatePoup2}
@@ -1660,7 +1771,7 @@ function TimeEntryPopup(item: any) {
                                                                                 ng-required="true"
                                                                                 placeholder="DD/MM/YYYY"
                                                                                 ng-model="AdditionalnewDate"
-                                                                                defaultValue={child.TaskDate}
+                                                                                value={editeddata}
                                                                                 onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
 
                                                                         </div>
@@ -1671,16 +1782,16 @@ function TimeEntryPopup(item: any) {
                                                                             <div className="col-sm-4">
                                                                                 <button id="DayPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('Date')}>
+                                                                                    onClick={() => changeDate('Date','EditTime')}>
                                                                                     <i className="fa fa-plus"
-                                                                                        aria-hidden="true">+</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Day</span>
                                                                                 <button id="DayMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('Date')}>
+                                                                                    onClick={() => changeDateDec('Date','EditTime')}>
                                                                                     <i className="fa fa-minus"
-                                                                                        aria-hidden="true">-</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                             </div>
 
@@ -1688,16 +1799,16 @@ function TimeEntryPopup(item: any) {
                                                                                 className="col-sm-4">
                                                                                 <button id="MonthPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('month')}>
+                                                                                    onClick={() => changeDate('month','EditTime')}>
                                                                                     <i className="fa fa-plus"
-                                                                                        aria-hidden="true">+</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Month</span>
                                                                                 <button id="MonthMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('month')}>
+                                                                                    onClick={() => changeDateDec('month','EditTime')}>
                                                                                     <i className="fa fa-minus"
-                                                                                        aria-hidden="true">-</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                             </div>
 
@@ -1705,16 +1816,16 @@ function TimeEntryPopup(item: any) {
                                                                                 className="col-sm-4  ">
                                                                                 <button id="YearPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('Year')}>
+                                                                                    onClick={() => changeDate('Year','EditTime')}>
                                                                                     <i className="fa fa-plus"
-                                                                                        aria-hidden="true">+</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Year</span>
                                                                                 <button id="YearMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('year')}>
+                                                                                    onClick={() => changeDateDec('year','EditTime')}>
                                                                                     <i className="fa fa-minus"
-                                                                                        aria-hidden="true">-</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                             </div>
                                                                         </div>
@@ -1731,7 +1842,7 @@ function TimeEntryPopup(item: any) {
                                                                             ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                                             name="timeSpent"
                                                                             ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                                            defaultValue={TimeInMinutes} />
+                                                                            value={TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMinutes} />
 
                                                                     </div>
                                                                     <div
@@ -1746,7 +1857,7 @@ function TimeEntryPopup(item: any) {
                                                                             <span> 15min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 15 Min"
-                                                                                onClick={() => changeTimes('15',child.TaskTime,'EditTask')}>+
+                                                                                onClick={() => changeTimes('15', child.TaskTime, 'EditTask')}>+
 
                                                                             </button>
                                                                         </div>
@@ -1761,7 +1872,7 @@ function TimeEntryPopup(item: any) {
                                                                             <span> 60min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 60 Min"
-                                                                                onClick={() => changeTimes('60',child.TaskTime,'EditTask')}>+
+                                                                                onClick={() => changeTimes('60', child.TaskTime, 'EditTask')}>+
 
                                                                             </button>
                                                                         </div>
@@ -1770,7 +1881,7 @@ function TimeEntryPopup(item: any) {
                                                                 <div className="row">
                                                                     <div className="col-sm-6 ">
                                                                         <label>Time Spent (in hours)</label>
-                                                                        <input className="form-control" type="text" defaultValue={changeTimeEdit!=0?changeTimeEdit:child.TaskTime}
+                                                                        <input className="form-control" type="text" value={TimeInHours != 0 ? TimeInHours : child.TaskTime}
                                                                             onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
                                                                     </div>
                                                                 </div>
@@ -1842,6 +1953,8 @@ function TimeEntryPopup(item: any) {
                     )
                 })}
             </Modal>
+
+            {/* ----------------------------------------------------------------------------Copy Task------------------------------------------------------------------------------------------------------------ */}
             <Modal
                 isOpen={CopyTaskpopup}
                 onDismiss={closeCopyTaskpopup}
@@ -1917,7 +2030,7 @@ function TimeEntryPopup(item: any) {
 
                                                                                 placeholder="DD/MM/YYYY"
 
-                                                                                defaultValue={child.TaskDate}
+                                                                                value={Moment(child.TaskDate).format('ddd, DD MMM yyyy')}
                                                                                 onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
 
                                                                         </div>
@@ -1930,16 +2043,16 @@ function TimeEntryPopup(item: any) {
                                                                                 className="col-sm-4 ">
                                                                                 <button id="DayPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('Date')}>
+                                                                                    onClick={() => changeDate('Date','CopyTime')}>
                                                                                     <i className="fa fa-plus"
-                                                                                        aria-hidden="true">+</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Day</span>
                                                                                 <button id="DayMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('Date')}>
+                                                                                    onClick={() => changeDateDec('Date','CopyTime')}>
                                                                                     <i className="fa fa-minus"
-                                                                                        aria-hidden="true">-</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                             </div>
 
@@ -1947,32 +2060,32 @@ function TimeEntryPopup(item: any) {
                                                                                 className="col-sm-4">
                                                                                 <button id="MonthPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('month')}>
+                                                                                    onClick={() => changeDate('month','CopyTime')}>
                                                                                     <i className="fa fa-plus"
-                                                                                        aria-hidden="true">+</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Month</span>
                                                                                 <button id="MonthMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('month')}>
+                                                                                    onClick={() => changeDateDec('month','CopyTime')}>
                                                                                     <i className="fa fa-minus"
-                                                                                        aria-hidden="true">-</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                             </div>
 
                                                                             <div className="col-sm-4 ">
                                                                                 <button id="YearPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('Year')}>
+                                                                                    onClick={() => changeDate('Year','CopyTime')}>
                                                                                     <i className="fa fa-plus"
-                                                                                        aria-hidden="true">+</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Year</span>
                                                                                 <button id="YearMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('year')}>
+                                                                                    onClick={() => changeDateDec('year','CopyTime')}>
                                                                                     <i className="fa fa-minus"
-                                                                                        aria-hidden="true">-</i>
+                                                                                        aria-hidden="true"></i>
                                                                                 </button>
                                                                             </div>
                                                                         </div>
@@ -2001,7 +2114,7 @@ function TimeEntryPopup(item: any) {
                                                                             <span> 15min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 15 Min"
-                                                                                onClick={() => changeTimes('15',child.TaskTime,'CopyTask')}>+
+                                                                                onClick={() => changeTimes('15', child.TaskTime, 'CopyTask')}>+
 
                                                                             </button>
                                                                         </div>
@@ -2016,7 +2129,7 @@ function TimeEntryPopup(item: any) {
                                                                             <span> 60min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 60 Min"
-                                                                                onClick={() => changeTimes('60',child.TaskTime,'CopyTask')}>+
+                                                                                onClick={() => changeTimes('60', child.TaskTime, 'CopyTask')}>+
 
                                                                             </button>
                                                                         </div>
@@ -2097,6 +2210,8 @@ function TimeEntryPopup(item: any) {
                     )
                 })}
             </Modal>
+
+            {/* ----------------------------------------Add Time Popup------------------------------------------------------------------------------------------------------------------------------------- */}
             <Modal
                 isOpen={AddTaskTimepopup}
                 onDismiss={closeAddTaskTimepopup}
@@ -2114,9 +2229,9 @@ function TimeEntryPopup(item: any) {
                                     Add Additional Time
                                 </h5>
                                 <button onClick={closeAddTaskTimepopup} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    
-                                    
-                               
+
+
+
                             </div>
                             <div className="modal-body  border m-3 p-3  ">
 
@@ -2163,8 +2278,8 @@ function TimeEntryPopup(item: any) {
                                                         className="form-control"
                                                         ng-required="true"
                                                         placeholder="DD/MM/YYYY"
-                                                        ng-model="AdditionalnewDate"
-                                                        value={changeDates}
+                                                       
+                                                        value={Moment(changeDates).format('ddd, DD MMM yyyy')}
                                                         onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
 
                                                 </div>
@@ -2177,16 +2292,16 @@ function TimeEntryPopup(item: any) {
                                                         className="col-sm-4 ">
                                                         <button id="DayPlus"
                                                             className="top-container plus-button plus-minus"
-                                                            onClick={() => changeDate('Date')}>
+                                                            onClick={() => changeDate('Date','AddTime')}>
                                                             <i className="fa fa-plus"
-                                                                aria-hidden="true">+</i>
+                                                                aria-hidden="true"></i>
                                                         </button>
                                                         <span className="min-input">Day</span>
                                                         <button id="DayMinus"
                                                             className="top-container minus-button plus-minus"
-                                                            onClick={() => changeDateDec('Date')}>
+                                                            onClick={() => changeDateDec('Date','AddTime')}>
                                                             <i className="fa fa-minus"
-                                                                aria-hidden="true">-</i>
+                                                                aria-hidden="true"></i>
                                                         </button>
                                                     </div>
 
@@ -2194,16 +2309,16 @@ function TimeEntryPopup(item: any) {
                                                         className="col-sm-4 ">
                                                         <button id="MonthPlus"
                                                             className="top-container plus-button plus-minus"
-                                                            onClick={() => changeDate('month')}>
+                                                            onClick={() => changeDate('month','AddTime')}>
                                                             <i className="fa fa-plus"
-                                                                aria-hidden="true">+</i>
+                                                                aria-hidden="true"></i>
                                                         </button>
                                                         <span className="min-input">Month</span>
                                                         <button id="MonthMinus"
                                                             className="top-container minus-button plus-minus"
-                                                            onClick={() => changeDateDec('month')}>
+                                                            onClick={() => changeDateDec('month','AddTime')}>
                                                             <i className="fa fa-minus"
-                                                                aria-hidden="true">-</i>
+                                                                aria-hidden="true"></i>
                                                         </button>
                                                     </div>
 
@@ -2211,16 +2326,16 @@ function TimeEntryPopup(item: any) {
                                                         className="col-sm-4">
                                                         <button id="YearPlus"
                                                             className="top-container plus-button plus-minus"
-                                                            onClick={() => changeDate('Year')}>
+                                                            onClick={() => changeDate('Year','AddTime')}>
                                                             <i className="fa fa-plus"
-                                                                aria-hidden="true">+</i>
+                                                                aria-hidden="true"></i>
                                                         </button>
                                                         <span className="min-input">Year</span>
                                                         <button id="YearMinus"
                                                             className="top-container minus-button plus-minus"
-                                                            onClick={() => changeDateDec('year')}>
+                                                            onClick={() => changeDateDec('year','AddTime')}>
                                                             <i className="fa fa-minus"
-                                                                aria-hidden="true">-</i>
+                                                                aria-hidden="true"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -2249,7 +2364,7 @@ function TimeEntryPopup(item: any) {
                                                     <span> 15min </span>
                                                     <button className="btn btn-primary"
                                                         title="Increase by 15 Min"
-                                                        onClick={() => changeTimes('15','add','AddTime')}>+
+                                                        onClick={() => changeTimes('15', 'add', 'AddTime')}>+
 
                                                     </button>
                                                 </div>
@@ -2264,7 +2379,7 @@ function TimeEntryPopup(item: any) {
                                                     <span> 60min </span>
                                                     <button className="btn btn-primary"
                                                         title="Increase by 60 Min"
-                                                        onClick={() => changeTimes('60','add','AddTime')}>+
+                                                        onClick={() => changeTimes('60', 'add', 'AddTime')}>+
 
                                                     </button>
                                                 </div>
@@ -2330,8 +2445,101 @@ function TimeEntryPopup(item: any) {
                 </div>
 
             </Modal>
+
+
+            {/* --------------------------------------------------------------------------Start EDit Category------------------------------------------------------------------------------------------- */}
+            <Modal
+                isOpen={Editcategory}
+                onDismiss={closeEditcategorypopup}
+                isBlocking={false}
+
+            >
+
+                <div id="EditGrueneContactSearch">
+
+                    <div className="modal-dialog" style={{ width: "700px" }}>
+                        <div className="modal-content" ng-cloak>
+                            <div className="modal-header  mt-1 px-3">
+                                <h5 className="modal-title" id="exampleModalLabel">  Add Task Time</h5>
+                                <button onClick={closeEditcategorypopup} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <div className="modal-body  border m-3 p-3  ">
+
+                                <div className='row'>
+                                    <div className="col-sm-9 border-end" >
+                                        <div className='mb-3'>
+                                            <div className=" form-group">
+                                                <label>Selected Category</label>
+                                                <input type="text" autoComplete="off"
+                                                    className="form-control"
+                                                    name="CategoriesTitle"
+                                                    value={Categoryy}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className='mb-3'>
+                                            <div className=" form-group">
+                                                <label>Title</label>
+                                                <input type="text" autoComplete="off"
+                                                    className="form-control" name="TimeTitle"
+                                                    defaultValue={Categoryy}
+                                                    onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
+                                            </div>
+                                        </div>
+                                       
+                                    </div>
+                                    <div className="col-sm-3">
+
+                                        <div className="col mb-2">
+                                            <div>
+                                                <a target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                                    Manage
+                                                    Categories
+                                                </a>
+                                            </div>
+                                            {TimeSheet.map((Items: any) => {
+                                                return (
+                                                    <>
+                                                        <div className="form-check"
+                                                            id="subcategorytasksPriority{{item.Id}}">
+                                                            <input
+                                                                type="radio" className="form-check-input"
+                                                                defaultValue={Items.Title} defaultChecked={Items.Title==Categoryy}
+                                                                onChange={selectCategories}
+
+                                                                name="taskcategory" />
+                                                            <label className='form-check-label'>{Items.Title}</label>
+                                                        </div>
+                                                    </>
+                                                )
+                                            })}
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-primary" onClick={closeEditcategorypopup}>
+                                    Submit
+                                </button>
+
+                            </div>
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 }
 
 export default TimeEntryPopup;
+
+function changeDates(arg0: any): any {
+    throw new Error('Function not implemented.');
+}
