@@ -9,13 +9,14 @@ import Button from 'react-bootstrap/Button';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaFilter, FaRegTimesCircle } from 'react-icons/fa';
 import { MdAdd } from 'react-icons/Md';
-import Tooltip from './Tooltip';
+import Tooltip from '../../../globalComponents/Tooltip';
 import Dropdown from 'react-bootstrap/Dropdown';
 import EditInstituton from '../../EditPopupFiles/EditComponent'
 import { create } from 'lodash';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 // import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryPopup';
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+
 export default function ComponentTable({ props }: any) {
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
     const [maidataBackup, setmaidataBackup] = React.useState([])

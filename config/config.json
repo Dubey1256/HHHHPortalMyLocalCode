@@ -145,6 +145,14 @@
           "manifest": "./src/webparts/hrContactSearch/HrContactSearchWebPart.manifest.json"
         }
       ]
+    },
+    "material-ui-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/materialUi/MaterialUiWebPart.js",
+          "manifest": "./src/webparts/materialUi/MaterialUiWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -183,6 +191,7 @@
     "HRcontractProfileWebPartStrings": "lib/webparts/hRcontractProfile/loc/{locale}.js",
     "ProjectmanagementOverviewToolWebPartStrings": "lib/webparts/projectmanagementOverviewTool/loc/{locale}.js",
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
-    "HrContactSearchWebPartStrings": "lib/webparts/hrContactSearch/loc/{locale}.js"
+    "HrContactSearchWebPartStrings": "lib/webparts/hrContactSearch/loc/{locale}.js",
+    "MaterialUiWebPartStrings": "lib/webparts/materialUi/loc/{locale}.js"
   }
 }
