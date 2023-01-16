@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Popup from 'reactjs-popup';
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../../cssFolder/Style.scss'
 import { FaCommentAlt, FaQuestion, FaBars } from 'react-icons/fa';
 import { BiMenu } from 'react-icons/bi';
 function Tooltip() {

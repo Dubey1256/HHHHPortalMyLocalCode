@@ -14,7 +14,7 @@ import { Web } from 'sp-pnp-js';
 import '../../cssFolder/site_color.scss';
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
-import Tooltip from './Tooltip';
+import Tooltip from '../../../globalComponents/Tooltip';
 import ComponentTable from './TaskWebpart';
 import { FaHome } from 'react-icons/fa';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
