@@ -77,9 +77,9 @@ function TimeEntryPopup(item: any) {
 
 
         if (val === 'Date') {
-            setCount(count + 1)
-
-            change = (Moment().add(count, 'days').format())
+            //setCount(count + 1)
+          var dateeee = change != undefined && change != ''?change:''
+            change = (Moment(dateeee).add(1, 'days').format())
             setchangeDates(change)
 
             if(Type == 'EditTime'){
@@ -92,8 +92,8 @@ function TimeEntryPopup(item: any) {
            
         }
         if (val === 'month') {
-            setMonth(month + 1)
-            change = (Moment().add(month, 'months').format())
+           // setMonth(month + 1)
+            change = (Moment(change).add(1, 'months').format())
             setchangeDates(change)
 
             if(Type == 'EditTime'){
@@ -106,8 +106,8 @@ function TimeEntryPopup(item: any) {
 
            
         if (val === 'Year') {
-            setYear(year + 1)
-            change = (Moment().add(year, 'years').format())
+           // setYear(year + 1)
+            change = (Moment(change).add(1, 'years').format())
             setchangeDates(change)
 
             if(Type == 'EditTime'){
@@ -124,8 +124,9 @@ function TimeEntryPopup(item: any) {
 
 
         if (val === 'Date') {
-            setCount(count - 1)
-            change = (Moment().add(count, 'days').format())
+           // setCount(count - 1)
+           var dateeee = change != undefined && change != ''?change:''
+            change = (Moment(dateeee).add(-1, 'days').format())
             setchangeDates(change)
 
             if(Type == 'EditTime'){
@@ -135,8 +136,8 @@ function TimeEntryPopup(item: any) {
                 }
         }
         if (val === 'month') {
-            setMonth(month - 1)
-            change = (Moment().add(month, 'months').format())
+           // setMonth(month - 1)
+            change = (Moment(change).add(-1, 'months').format())
             setchangeDates(change)
 
             if(Type == 'EditTime'){
@@ -146,9 +147,9 @@ function TimeEntryPopup(item: any) {
     
             }
         }
-        if (val === 'Year') {
-            setYear(year - 1)
-            change = (Moment().add(year, 'years').format())
+        if (val === 'year') {
+            //setYear(year - 1)
+            change = (Moment(change).add(-1, 'years').format())
             setchangeDates(change)
 
             
@@ -266,7 +267,7 @@ function TimeEntryPopup(item: any) {
         setTimeInHours(0)
         setTimeInMinutes(0)
         changeTime = 0;
-        setchangeDates(Moment().format(''))
+        setchangeDates(Moment().format())
         setediteddata(undefined)
     }
     const changeTimesDec = (items: any) => {
@@ -400,7 +401,8 @@ function TimeEntryPopup(item: any) {
                             value.AuthorImage = val.AuthorImage
                             value.show = true;
                             if (val.changeDates != undefined)
-                                value.TaskDate = Moment(val.changeDates).format('DD/MM/YYYY');
+                            var date= new Date(val.changeDates)
+                                value.TaskDate = Moment(date).format('DD/MM/YYYY');
                             if (val.Modified != undefined)
                                 value.Modified = Moment(val.Modified).format('DD/MM/YYYY');
 
@@ -674,6 +676,7 @@ function TimeEntryPopup(item: any) {
                             item.siteName = null
                             item.siteUrl = null;
                             if (NewParentId == item.Id) {
+                                var Datee = new Date(changeDates)
                                 var TimeInH: any = changeTime / 60
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
@@ -685,7 +688,7 @@ function TimeEntryPopup(item: any) {
                                 update['MainParentId'] = mainParentId;
                                 update['ParentID'] = NewParentId;
                                 update['TaskTime'] = TimeInH;
-                                update['TaskDate'] =  Moment(changeDates).format('DD/MM/YYYY');
+                                update['TaskDate'] =  Moment(Datee).format('DD/MM/YYYY');
                                 update['Description'] = newData.Description
                                 item.AdditionalTime.push(update)
                                 let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
@@ -1516,7 +1519,7 @@ const DateFormat=(itemL:any)=>{
                                                                 ng-required="true"
                                                                 placeholder="DD/MM/YYYY"
                                                                 ng-model="AdditionalnewDate"
-                                                                value={Moment(changeDates).format('DD/MM/YYYY')}
+                                                                value={Moment(changeDates).format("ddd, DD MMM yyyy")}
                                                                 onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
 
                                                         </div>
@@ -1529,7 +1532,7 @@ const DateFormat=(itemL:any)=>{
                                                                     className="top-container plus-button plus-minus"
                                                                     onClick={() => changeDate('Date','AddCategory')}>
                                                                     <i className="fa fa-plus"
-                                                                        aria-hidden="true">+</i>
+                                                                        aria-hidden="true"></i>
                                                                 </button>
                                                                 <span className="min-input">Day</span>
                                                                 <button id="DayMinus"
