@@ -9,7 +9,7 @@ import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-
+import TimeEntry from './TimeEntry';
 
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { forEach } from 'lodash';
@@ -25,8 +25,10 @@ export interface ITaskprofileState {
   updateComment: boolean;
   showComposition: boolean;
   isOpenEditPopup : boolean;
+  isTimeEntry:boolean,
   showPopup : any;
   maincollection : any;
+  SharewebTimeComponent:any
 
 }
 
@@ -54,8 +56,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       updateComment : false,
       showComposition: true,
       isOpenEditPopup : false,
+      isTimeEntry: false,
       showPopup : 'none',
-      maincollection : []
+      maincollection : [],
+      SharewebTimeComponent:[]
     }
 
     this.GetResult();
@@ -195,6 +199,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : '',
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
+      siteType:this.state.listName,
       Component:  taskDetails["Component"],
       Services : taskDetails["Services"],
       Creation: taskDetails["Created"],
@@ -295,7 +300,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     if (listName.toLowerCase() == 'small projects')
       siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/small_project.png';
 
-    if (listName.toLowerCase() == 'Offshore tasks')
+    if (listName.toLowerCase() == 'offshore tasks')
       siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png';
     
     if (listName.toLowerCase() == 'kathabeck')
@@ -424,6 +429,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private CallBack(){
     this.setState({
       isOpenEditPopup : false
+    })
+  }
+  private CallBackTimesheet(){
+    this.setState({
+      isTimeEntry : false
     })
   }
 
@@ -624,7 +634,7 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               }
           }
       } else if (self.taskResult.SharewebTaskType.Title == 'Task' || self.taskResult.SharewebTaskType.Title == 'MileStone') {
-          if (self.taskResult.ParentTask.Id != undefined) {
+          if (self.taskResult.ParentTask!=undefined &&self.taskResult.ParentTask.Id != undefined) {
               if (self.taskResult.ParentTask.Id == value.Id && (value.SharewebTaskType.Title == 'Activities' || value.SharewebTaskType.Title == 'Project')) {
                   self.taskResult.isLastNode = true;
                   breadcrumbitem.ParentTask = value;
@@ -658,6 +668,16 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
     breadcrumbitem = {};
       
 }
+
+private EditData = (e: any, item: any) => {
+  this.setState({ 
+    isTimeEntry:true,
+    SharewebTimeComponent: item,
+  
+  });
+ 
+}
+
 
   public render(): React.ReactElement<ITaskprofileProps> {
     const {
@@ -756,7 +776,9 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
               </dl>
               <dl>
                 <dt className='bg-fxdark'>SmartTime Total</dt>
-                <dd className='bg-light'></dd>
+                <dd className='bg-light'>
+                <a onClick={(e) => this.EditData(e, this.state.Result)}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{width: "22px"}}/></a>
+                </dd>
               </dl>
             </div>
             <div className='col-md-4 p-0'>
@@ -978,8 +1000,10 @@ private breadcrumbOtherHierarchy(breadcrumbitem:any) {
       </div>
 
 {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} Call={()=>{this.CallBack()}} />:''}
-  
+ {this.state.isTimeEntry?<TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={()=>{ this.CallBackTimesheet()}}/>:''} 
        </div> 
     );
   }
 }
+
+
