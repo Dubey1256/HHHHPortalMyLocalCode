@@ -16,6 +16,7 @@ import { create } from 'lodash';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 // import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryPopup';
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+
 export default function ComponentTable({ props }: any) {
     const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
     const [maidataBackup, setmaidataBackup] = React.useState([])
