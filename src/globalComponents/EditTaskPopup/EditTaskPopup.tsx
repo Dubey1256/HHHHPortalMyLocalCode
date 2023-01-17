@@ -17,6 +17,7 @@ import CommentCard from "../../globalComponents/Comments/CommentCard";
 import LinkedComponent from './LinkedComponent';
 import { Editor } from "react-draft-wysiwyg";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+
 // import '../../../src/webparts/cssFolder/Style.scss';
 
 var AllMetaData: any = []
@@ -32,7 +33,7 @@ const EditTaskPopup = (Items: any) => {
     const [ImageSection, setImageSection] = React.useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
-            Title: '', PercentCompleteStatus:''
+            Title: '', PercentCompleteStatus: ''
         }
     )
     const [Description, setDescription] = React.useState([]);
@@ -43,23 +44,24 @@ const EditTaskPopup = (Items: any) => {
     const [composition, setComposition] = React.useState(false);
     const [FolderData, SetFolderData] = React.useState([]);
     const [CommentBox, setCommentBox] = React.useState(false);
-    const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('')
+    const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
+    const [taskStatus, setTaskStatus] = React.useState('');
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
     const [itemRank, setItemRank] = React.useState('')
     const [PriorityStatus, setPriorityStatus] = React.useState()
     const StatusArray = [
-        { value: 1, status: "01% For Approval" },
-        { value: 2, status: "02% Follow Up" },
-        { value: 3, status: "03% Approved" },
-        { value: 5, status: "05% Acknowledged" },
-        { value: 10, status: "10% working on it" },
-        { value: 70, status: "70% Re-Open" },
-        { value: 80, status: "80% In QA Review" },
-        { value: 90, status: "90% Task completed" },
-        { value: 93, status: "93% For Review" },
-        { value: 96, status: "96% Follow-up later" },
-        { value: 99, status: "99% Completed" },
-        { value: 100, status: "100% Closed" }
+        { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
+        { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
+        { value: 3, status: "03% Approved", taskStatusComment: "Approved" },
+        { value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged" },
+        { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+        { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+        { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+        { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
+        { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
+        { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
+        { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
+        { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
@@ -125,7 +127,7 @@ const EditTaskPopup = (Items: any) => {
     const ExpandSiteComposition = () => {
         setComposition(!composition)
     }
-  
+
     var count = 0;
     const loadTaskUsers = () => {
         var AllTaskUsers: any = []
@@ -166,7 +168,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -174,9 +176,9 @@ const EditTaskPopup = (Items: any) => {
             }
             else {
                 smartMeta = await web.lists
-                    .getByTitle(Items.Items.siteType)
+                    .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -190,6 +192,7 @@ const EditTaskPopup = (Items: any) => {
                     StatusArray.map((item: any) => {
                         if (statusValue == item.value) {
                             setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
                         }
                     })
                 }
@@ -206,11 +209,12 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                 }
-                if (item.BasicImageInfo != null) {
-                    let saveImgArray = saveImage[0];
-                    item.AssignedUserName = saveImgArray[1].UserName;
-                    item.AssignedUserImage = saveImgArray[1].UserImage;
-                }
+                // if (item.BasicImageInfo != null) {
+                //     let saveImgArray = saveImage[0];
+                //     item.AssignedUserName = saveImgArray[1]?.UserName;
+                //     item.AssignedUserImage = saveImgArray[1]?.UserImage;
+                // }
+                console.log("Task All Data Info =====", item)
                 setEditData(item)
                 setPriorityStatus(item.Priority)
             })
@@ -220,16 +224,18 @@ const EditTaskPopup = (Items: any) => {
     }
     const PercentCompleted = (StatusData: any) => {
         // EditData.PercentComplete = StatusData.value;
-        setUpdateTaskInfo({...UpdateTaskInfo, PercentCompleteStatus:StatusData.value})
+        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
+        setTaskStatus(StatusData.taskStatusComment);
         setPercentCompleteCheck(false);
     }
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
-        setUpdateTaskInfo({...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete?EditData.PercentComplete:null)})
-        StatusArray.map((array:any)=>{
-            if(EditData.PercentComplete == array.value){
+        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete ? EditData.PercentComplete : null) })
+        StatusArray.map((array: any) => {
+            if (EditData.PercentComplete == array.value) {
                 setPercentCompleteStatus(array.status);
+                setTaskStatus(array.taskStatusComment);
             }
         })
         setPercentCompleteCheck(false);
@@ -307,29 +313,31 @@ const EditTaskPopup = (Items: any) => {
             })
         }
 
-       try {
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-        await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
-            IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
-            Priority_x0020_Rank: (itemRank != '' ? itemRank : EditData.Priority_x0020_Rank),
-            Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
-            Priority: PriorityStatus != undefined ? PriorityStatus : EditData.Priority,
-            StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-            PercentComplete: UpdateTaskInfo.PercentCompleteStatus?(Number(UpdateTaskInfo.PercentCompleteStatus)/100): (EditData.PercentComplete ? (EditData.PercentComplete/100) : null),
-            // ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : '' },
-            // Categories: Items.Items.Categories == "" ? EditData.Categories : Items.Items.Categories,
-            // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) ? RelevantPortfolioIds : '' },
-            DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
-            CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
-            // BasicImageInfo: JSON.stringify(UploadImage),
-            Mileage: (EditData.Mileage ? EditData.Mileage : '')
-        }).then((res: any) => {
-            console.log(res);
-            Items.Call();
-        })
-       } catch (error) {
-        console.log("Error:", error.messages)
-       }
+        try {
+            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
+                IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
+                Priority_x0020_Rank: (itemRank != '' ? itemRank : EditData.Priority_x0020_Rank),
+                ItemRank: (itemRank != '' ? itemRank : EditData.Priority_x0020_Rank),
+                Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
+                Priority: PriorityStatus != undefined ? PriorityStatus : EditData.Priority,
+                StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
+                PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
+                // ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : '' },
+                // Categories: Items.Items.Categories == "" ? EditData.Categories : Items.Items.Categories,
+                // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) ? RelevantPortfolioIds : '' },
+                DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
+                CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
+                Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
+                // BasicImageInfo: JSON.stringify(UploadImage),
+                Mileage: (EditData.Mileage ? EditData.Mileage : '')
+            }).then((res: any) => {
+                console.log(res);
+                Items.Call();
+            })
+        } catch (error) {
+            console.log("Error:", error.messages)
+        }
     }
 
     const changeStatus = (e: any) => {
@@ -347,7 +355,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeTaskStatusUpdatePopup}
                 isBlocking={false}
             >
-                <div id="EditGrueneContactSearch">
+                <div >
                     <div className="modal-body">
                         <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
                             <tbody>
@@ -357,7 +365,7 @@ const EditTaskPopup = (Items: any) => {
                                             <td>
                                                 <div className="form-check">
                                                     <input className="form-check-input"
-                                                        type="radio" checked={(PercentCompleteCheck?EditData.PercentComplete:UpdateTaskInfo.PercentCompleteStatus) == item.value}
+                                                        type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
                                                         onClick={() => PercentCompleted(item)} />
                                                     <label className="form-check-label mx-2">{item.status}</label>
                                                 </div>
@@ -382,7 +390,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={setModalIsOpenToFalse}
                 isBlocking={false}
             >
-                <div id="EditGrueneContactSearch">
+                <div >
                     <div className="modal-body ">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
@@ -395,67 +403,79 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="row">
                                     <div className="col-md-5">
                                         <div className="col-12 mb-10">
-                                            <label className="d-flex justify-content-between align-items-center mb-0">Title
-                                                <span className="form-check">
-                                                    <input className="form-check-input" type="checkbox"
-                                                        checked={EditData.IsTodaysTask}
-                                                        value={EditData.IsTodaysTask}
-                                                        onChange={(e) => changeStatus(e)} />
-                                                    <label className="form-check-label">Working Today?</label>
-                                                </span>
-                                            </label>
-                                            <input type="text" className="form-control" placeholder="Task Name"
-                                                ng-required="true" defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+                                            <div className="input-group">
+                                                <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
+                                                    <span className="form-check">
+                                                        <input className="form-check-input" type="checkbox"
+                                                            checked={EditData.IsTodaysTask}
+                                                            value={EditData.IsTodaysTask}
+                                                            onChange={(e) => changeStatus(e)} />
+                                                        <label className="form-check-label">Working Today?</label>
+                                                    </span>
+                                                </label>
+                                                <input type="text" className="form-control" placeholder="Task Name"
+                                                    ng-required="true" defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+
+                                            </div>
                                         </div>
                                         <div className="mx-0 row  mb-10">
-                                            <div className="col ps-0 mt-2">
-                                                <label className="form-label" >Start Date</label>
-                                                <input type="date" className="form-control"
-                                                    defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
-                                                    onChange={(e) => setEditData({
-                                                        ...EditData, StartDate : e.target.value
-                                                    })}
-                                                />
+                                            <div className="col-6 ps-0 mt-2">
+                                                <div className="input-group ">
+                                                    <label className="form-label full-width" >Start Date</label>
+                                                    <input type="date" className="form-control"
+                                                        defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, StartDate: e.target.value
+                                                        })}
+                                                    />
+
+                                                </div>
                                             </div>
-                                            <div className="col pe-0 mt-2">
-                                                <label className="form-label">Due Date</label>
-                                                <span title="Re-occurring Due Date">
-                                                    <input type="checkbox" className="form-check-input ms-2"
-                                                        ng-model="dueDatePopUp"
-                                                        ng-click="OpenDueDatePopup()" />
-                                                </span>
-                                                <input type="date" className="form-control"
-                                                    defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
-                                                    onChange={(e) => setEditData({
-                                                        ...EditData, DueDate: e.target.value
-                                                    })}
-                                                />
+                                            <div className="col-6 ps-0 pe-0 mt-2">
+                                                <div className="input-group ">
+                                                    <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
+                                                        <input type="checkbox" className="form-check-input ms-2"
+                                                            ng-model="dueDatePopUp"
+                                                            ng-click="OpenDueDatePopup()" />
+                                                    </span></label>
+
+                                                    <input type="date" className="form-control"
+                                                        defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, DueDate: e.target.value
+                                                        })}
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="col ps-0 mt-2">
-                                                <label className="form-label"
-                                                >Completed Date</label>
-                                                <input type="date" className="form-control"
-                                                    defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
-                                                    onChange={(e) => setEditData({
-                                                        ...EditData, CompletedDate: e.target.value
-                                                    })}
-                                                />
+                                            <div className="col-6 ps-0 mt-2">
+                                                <div className="input-group ">
+                                                    <label className="form-label full-width"
+                                                    >Completed Date</label>
+                                                    <input type="date" className="form-control"
+                                                        defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, CompletedDate: e.target.value
+                                                        })}
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="col pe-0 mt-2">
-                                                <label className="form-label">Item Rank</label>
-                                                <select className="form-select" defaultValue={EditData.Priority_x0020_Rank} onChange={(e) => setItemRank(e.target.value)}>
-                                                    {currentUsers.map(function (h: any, i: any) {
-                                                        return (
-                                                            <option key={i} selected={EditData.Priority_x0020_Rank == h.rank} value={h.rank} >{h.rankTitle}</option>
-                                                        )
-                                                    })}
-                                                </select>
+                                            <div className="col-6 ps-0 pe-0 mt-2">
+                                                <div className="input-group">
+                                                    <label className="form-label full-width">Item Rank</label>
+                                                    <select className="form-select" defaultValue={EditData.Priority_x0020_Rank} onChange={(e) => setItemRank(e.target.value)}>
+                                                        {currentUsers.map(function (h: any, i: any) {
+                                                            return (
+                                                                <option key={i} selected={EditData.Priority_x0020_Rank == h.rank} value={h.rank} >{h.rankTitle}</option>
+                                                            )
+                                                        })}
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="mx-0 row  mb-10 mt-2">
                                             <div className="col ps-0">
-                                                <div className="input-group mb-10">
-                                                    <label ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
+                                                <div className="input-group  mb-10">
+                                                    <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
                                                         <span className="form-check form-check-inline mb-0">
                                                             <input type="radio" id="Components"
                                                                 name="Portfolios" defaultChecked={true}
@@ -523,7 +543,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </span>
                                                 </div>
                                                 <div className="input-group mb-10">
-                                                    <label className="form-label" ng-hide="item==='TimesheetCategories'"
+                                                    <label className="form-label full-width  " ng-hide="item==='TimesheetCategories'"
                                                         ng-repeat="item in filterGroups">
                                                         Categories
                                                     </label>
@@ -580,15 +600,16 @@ const EditTaskPopup = (Items: any) => {
                                                                 {(EditData.Categories != undefined) &&
                                                                     <div className="block form-control d-flex justify-content-between">
                                                                         <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=123`}>{EditData.Categories}</a>
+
                                                                         <img className="p-1" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
+
                                                                     </div>
                                                                 }
                                                             </>
                                                         }
                                                     </div>
-                                                    <div
-                                                        className="form-check">
-                                                        <label>Approval</label>
+                                                    <div className="form-check ">
+                                                        <label className="full-width">Approval</label>
                                                         <input ng-checked="isMainTermSelected(item)"
                                                             type="checkbox"
                                                             className="form-check-input" />
@@ -617,12 +638,14 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="col">
-                                                <div className="col-12 mb-10">
-                                                    <label ng-bind-html="GetColumnDetails('priority') | trustedHTML"></label>
-                                                    <input type="text" className="form-control"
-                                                        placeholder="Priority" defaultValue={PriorityStatus ? PriorityStatus : ''}
-                                                    />
+                                            <div className="col-6 ps-0 pe-0 pt-4">
+                                                <div>
+                                                    <div className="input-group">
+
+                                                        <input type="text" className="form-control"
+                                                            placeholder="Priority" defaultValue={PriorityStatus ? PriorityStatus : ''}
+                                                        />
+                                                    </div>
                                                     <ul className="p-0 mt-1">
                                                         <li className="form-check">
                                                             <input className="form-check-input"
@@ -650,13 +673,15 @@ const EditTaskPopup = (Items: any) => {
                                                     </ul>
                                                 </div>
                                                 <div className="col-12 mb-10">
-                                                    <label className="form-label">Client Activity</label>
-                                                    <input type="text" className="form-control" ng-required="true"
-                                                        ng-model="Item.ClientActivity" />
+                                                    <div className="input-group ">
+                                                        <label className="form-label full-width">Client Activity</label>
+                                                        <input type="text" className="form-control" ng-required="true"
+                                                            ng-model="Item.ClientActivity" />
+                                                    </div>
                                                 </div>
                                                 <div className="col-12 mb-10">
                                                     <div className="input-group">
-                                                        <label className="form-label">
+                                                        <label className="form-label full-width ">
                                                             Linked Service
                                                         </label>
                                                         <input type="text" readOnly
@@ -735,7 +760,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div> */}
                                                 <div className="col-12" title="Relevant Portfolio Items">
                                                     <div className="input-group">
-                                                        <label className="form-label"> Linked Component Task </label>
+                                                        <label className="form-label full-width "> Linked Component Task </label>
                                                         <input type="text" ng-model="SearchComponent"
                                                             className="form-control "
                                                             id="{{RelevantPortfolioName==='Linked Service'?'txtRelevantServiceShareWebComponent':'txtRelevantShareWebComponent'}}"
@@ -761,15 +786,17 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-10">
                                             <div className="input-group">
-                                                <label className="form-label">Relevant URL</label>
+                                                <label className="form-label full-width ">Relevant URL</label>
                                                 <input type="text" className="form-control" placeholder="Url"
                                                     ng-model="Item.component_x0020_link.Url" />
                                                 <span className="input-group-text">
                                                     <a target="_blank" ng-show="Item.component_x0020_link!=undefined"
                                                         ng-href="{{Item.component_x0020_link.Url}}"
-                                                        ng-bind-html="GetColumnDetails('open') | trustedHTML"><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
+                                                        ng-bind-html="GetColumnDetails('open') | trustedHTML">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3677 13.2672C11.023 13.7134 9.87201 14.4471 8.99831 15.4154C6.25928 18.4508 6.34631 23.1488 9.19578 26.0801C10.6475 27.5735 12.4385 28.3466 14.4466 28.3466H15.4749V27.2499V26.1532H14.8471C12.6381 26.1532 10.4448 24.914 9.60203 23.1898C8.93003 21.8151 8.9251 19.6793 9.5906 18.3208C10.4149 16.6384 11.9076 15.488 13.646 15.1955C14.7953 15.0022 22.5955 14.9933 23.7189 15.184C26.5649 15.6671 28.5593 18.3872 28.258 21.3748C27.9869 24.0644 26.0094 25.839 22.9861 26.1059L21.9635 26.1961V27.2913V28.3866L23.2682 28.3075C27.0127 28.0805 29.7128 25.512 30.295 21.6234C30.8413 17.9725 28.3779 14.1694 24.8492 13.2166C24.1713 13.0335 23.0284 12.9942 18.5838 13.0006C13.785 13.0075 13.0561 13.0388 12.3677 13.2672ZM23.3224 19.8049C18.7512 20.9519 16.3624 26.253 18.4395 30.6405C19.3933 32.6554 20.9948 34.0425 23.1625 34.7311C23.9208 34.9721 24.5664 35 29.3689 35C34.1715 35 34.8171 34.9721 35.5754 34.7311C38.1439 33.9151 39.9013 32.1306 40.6772 29.5502C41 28.4774 41.035 28.1574 40.977 26.806C40.9152 25.3658 40.8763 25.203 40.3137 24.0261C39.0067 21.2919 36.834 19.8097 33.8475 19.6151L32.5427 19.53V20.6267V21.7236L33.5653 21.8132C35.9159 22.0195 37.6393 23.0705 38.4041 24.7641C39.8789 28.0293 38.2035 31.7542 34.8532 32.6588C33.8456 32.9309 25.4951 32.9788 24.1462 32.7205C22.4243 32.3904 21.0539 31.276 20.2416 29.5453C19.8211 28.6492 19.7822 28.448 19.783 27.1768C19.7837 26.0703 19.8454 25.6485 20.0853 25.1039C20.4635 24.2463 21.3756 23.2103 22.1868 22.7175C22.8985 22.2851 24.7121 21.7664 25.5124 21.7664H26.0541V20.6697V19.573L25.102 19.5851C24.5782 19.5919 23.7775 19.6909 23.3224 19.8049Z" fill="#333333" />
-                                                        </svg></a>
+                                                        </svg>
+                                                    </a>
                                                 </span>
                                             </div>
                                         </div>
@@ -887,8 +914,8 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mb-10">
                                             <div className="input-group">
                                                 <label className="form-label">Status</label>
-                                                <input type="text" style={{ width: "200px" }} placeholder="% Complete"
-                                                    defaultValue={PercentCompleteCheck? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null):(UpdateTaskInfo.PercentCompleteStatus?UpdateTaskInfo.PercentCompleteStatus:null)}
+                                                <input type="text" style={{ width: "200px" }} placeholder="% Complete" className="form-control px-2"
+                                                    defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => setEditData({ ...EditData, PercentComplete: e.target.value })} />
                                                 <span className="input-group-text">
                                                     <a onClick={() => openTaskStatusUpdatePopup(EditData)}>
@@ -908,23 +935,16 @@ const EditTaskPopup = (Items: any) => {
                                                         </label>
                                                     </span> : null}
                                             </div>
-                                            {/* {(EditData.PercentComplete != undefined) ?
-                                                    <>
-                                                    <input className="form-check-input mt-4" name="radioCompleted"
-                                                        type="radio" value="For Follow-up later"
-                                                        defaultChecked={true} />{EditData.PercentComplete}
-                                                        </>:
-                                                        <>
-                                                        <input className="form-check-input mt-4" name="radioCompleted"
-                                                        type="radio" value="For Follow-up later"
-                                                        defaultChecked={true}/> {PercentComplete}</>} */}
                                         </div>
                                         <div className="row">
                                             <div className="col mt-2 time-status">
                                                 <div>
-                                                    <label className="form-label" ng-bind-html="GetColumnDetails('time') | trustedHTML">Time</label>
-                                                    <input type="text" className="form-control" placeholder="Time"
-                                                        defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} />
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width " ng-bind-html="GetColumnDetails('time') | trustedHTML">Time</label>
+                                                        <input type="text" className="form-control" placeholder="Time"
+                                                            defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} />
+                                                    </div>
+
                                                     <ul className="p-0 mt-1">
                                                         <li className="form-check">
                                                             <input name="radioTime" className="form-check-input"
@@ -964,12 +984,13 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col mt-2">
                                                 <div className="input-group" ng-if="AssignedToUsers.length>0">
-                                                    <label className="form-label mx-2">Task Users</label>
+                                                    <label className="form-label full-width  mx-2">Task Users</label>
+
                                                     <div className="TaskUsers">
                                                         <a ng-if="image.userImage!=undefined"
                                                             ng-repeat="image in AssignedToUsers"
                                                             target="_blank"
-                                                            href={EditData.AssignedUserImage ? EditData.AssignedUserImage:'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}>
+                                                            href={EditData.AssignedUserImage ? EditData.AssignedUserImage : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
                                                             <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={EditData.AssignedUserName ? EditData.AssignedUserName : ''}
                                                                 on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
                                                                 data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
@@ -977,6 +998,8 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                         </a>
                                                     </div>
+
+
                                                 </div>
                                             </div>
                                         </div>
@@ -1067,17 +1090,10 @@ const EditTaskPopup = (Items: any) => {
                                             </ImageUploading>
                                         </div>
                                     </div>
-                                    <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
-                                        <Editor
-                                            toolbarClassName="toolbarClassName"
-                                            wrapperClassName="wrapperClassName"
-                                            editorClassName="editorClassName"
-                                            wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                        />
+                                    <div>
+                                        <Editor />
                                         <Example />
                                     </div>
-
-
                                     {/* <div className="form-group">
                                                     <div className="col-sm-6">
                                                         <div ng-if="attachments.length > 0"
@@ -1099,7 +1115,6 @@ const EditTaskPopup = (Items: any) => {
                                                 </div> */}
                                     {/* </div>
                                      </div> */}
-
                                 </div>
                             </div>
                             <div className="tab-pane " id="TIMESHEET" role="tabpanel" aria-labelledby="TIMESHEET">
@@ -1108,15 +1123,13 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                             </div>
                         </div>
-
                         {/* </>
                                     )
                                 })} */}
                     </div>
-
                     <footer>
-                        <div className="row p-3">
-                            <div className="col-md-5">
+                        <div className="d-flex justify-content-between py-2">
+                            <div>
                                 <div className="">
                                     Created <span> <b> {EditData.Created ? Moment(EditData.Created).format("YYYY/MM/DD") : ""} </b> </span> by <span className="siteColor mx-1">
                                         <b>
@@ -1152,10 +1165,10 @@ const EditTaskPopup = (Items: any) => {
                                     </span>
                                 </div>
                             </div>
-                            <div className="col">
+                            <div>
                                 <div>
                                     <span>
-                                        <a className="ForAll hreflink" target="_blank" ng-if="Item.siteType!='Master Tasks'"
+                                        <a className="" target="_blank" ng-if="Item.siteType!='Master Tasks'"
                                             href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${Items?.Items.Id}&Site=${Items.Items.siteType}`}>
                                             Go
                                             to
@@ -1163,12 +1176,12 @@ const EditTaskPopup = (Items: any) => {
                                             page
                                         </a>
 
-                                    </span>||
+                                    </span> ||
                                     <span>
-                                        <a className="hreflink" ng-click="EditTimeSheet(Item)">
+                                        <a className="" ng-click="EditTimeSheet(Item)">
                                             Save & Add Timesheet
                                         </a>
-                                    </span>||
+                                    </span> ||
                                     <a
                                         ng-href="mailto:?subject=[{{Item.siteType}}-Tasks] {{Item.Title}}&body={{Descriptiondata}}%0A{{pageContext}}/SitePages/Task-Profile.aspx?taskId={{backupItem.Id}}%26Site={{Allsitetype}}">
                                         <img className="mail-width"
@@ -1194,59 +1207,6 @@ const EditTaskPopup = (Items: any) => {
                             </div>
                         </div>
                     </footer>
-                    {/* <footer>
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div className="text-left">
-                                            Created <span> {EditData.Created ? Moment(EditData.Created).format("YYYY/MM/DD MM:SS") : ""}</span>  by
-                                            <span className="footerUsercolor ps-1">
-                                                {EditData.Author?.Title ? EditData.Author?.Title : ''}
-                                            </span>
-                                        </div>
-                                        <div className="text-left">
-                                            Last modified <span>{EditData.Modified ? Moment(EditData.Modified).format("YYYY/MM/DD MM:SS") : ''}</span> by <span className="footerUsercolor">
-                                                {EditData.Editor?.Title ? EditData.Editor.Title : ''}
-                                            </span>
-                                        </div>
-                                        <div className="text-left">
-                                            <a>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
-                                                </svg> Delete this item
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div>
-                                            <span>
-                                                <a target="_blank"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData.Id}&name=${EditData.Title}`}>
-                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" /> Go to Profile page
-                                                </a>
-                                            </span>
-                                            ||
-                                            <span>
-                                                <a className="hreflink" ng-click="EditTimeSheet(Item)">
-                                                    Save & Add Timesheet
-                                                </a>
-                                            </span>||
-                                            <a
-                                                ng-href="mailto:?subject=[{{Item.siteType}}-Tasks] {{Item.Title}}&body={{Descriptiondata}}%0A{{pageContext}}/SitePages/Task-Profile.aspx?taskId={{backupItem.Id}}%26Site={{Allsitetype}}">
-                                                <img className="mail-width"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />Share
-                                                this
-                                                task
-                                            </a> ||
-                                            <span className="p-1">|</span>
-                                            <a className="p-1" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
-                                                target="_blank">Open out-of-the-box form</a>
-                                            <button type="button" className="btn btn-primary " onClick={UpdateTaskInfo}>Save</button>
-                                            <button type="button" className="btn btn-default" onClick={Items.Call}>Cancel</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </footer> */}
-
                     {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}></ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} Call={Call}></Picker>}
                     {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call}></LinkedComponent>}
