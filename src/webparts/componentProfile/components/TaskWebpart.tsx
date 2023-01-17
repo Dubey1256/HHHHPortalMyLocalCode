@@ -1046,6 +1046,16 @@ export default function ComponentTable({ props }: any) {
                 }
             }
         })
+        var temp: any = {};
+        temp.Title = 'Others';
+        temp.childs = [];
+        temp.flag = true;
+        // ComponetsData['allComponets'][i]['childs']
+        ComponetsData['allUntaggedTasks'].map((task: any) => {
+            if (task.Title != undefined)
+                temp.childs.push(task);
+        })
+        ComponetsData['allComponets'].push(temp);
         bindData();
     }
     const filterDataBasedOnList = function () {
