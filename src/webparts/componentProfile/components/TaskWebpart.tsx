@@ -2,8 +2,6 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import Modal from 'react-bootstrap/Modal';
 import * as Moment from 'moment';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss'
 import Button from 'react-bootstrap/Button';
 // import { Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -2278,12 +2276,12 @@ export default function ComponentTable({ props }: any) {
                     </div>
                     <div className="toolsbox">
                         <button type="button" className="btn btn-primary"
-                            onClick={addModal} title=" Add Structure">
+                            onClick={addModal} title=" Add Structure"  disabled={true}>
                             Add Structure
                         </button>
                         <button type="button"
                             className="btn btn-primary"
-                            onClick={() => setLgShow(true)}>
+                            onClick={() => setLgShow(true)}  disabled={true}>
                             <MdAdd />
                             Add Activity-Task
                         </button>

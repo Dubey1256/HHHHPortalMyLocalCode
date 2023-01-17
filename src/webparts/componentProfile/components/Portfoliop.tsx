@@ -1,8 +1,6 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import Modal from 'react-bootstrap/Modal';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss';
 var TypeSite: string;
 // if(TypeSite=="Service"){
 //     require('../../cssFolder/sitecolorservice.scss');
@@ -11,7 +9,6 @@ var TypeSite: string;
 //     require('../../cssFolder/site_color.scss');
 // }
 import { Web } from 'sp-pnp-js';
-import '../../cssFolder/site_color.scss';
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
 import Tooltip from '../../../globalComponents/Tooltip';
@@ -235,7 +232,8 @@ function Portfolio({ ID }: any) {
             })
         }
         //    const letters = new Set([myarray2]);
-        // console.log(myarray2)
+        console.log(myarray2)
+        console.log(myarray1)
         // myarray.push();
     })
     //    Get Folder data
@@ -574,11 +572,10 @@ function Portfolio({ ID }: any) {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img"   >
-                                                                                                {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
-                                                                                                    <span>
+                                                                                                   <span>
                                                                                                         {client.Title}
                                                                                                     </span>
-                                                                                                }
+                                                                                                
                                                                                             </div>
                                                                                         </div>
                                                                                     )
@@ -591,11 +588,10 @@ function Portfolio({ ID }: any) {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img">
-                                                                                                {(client.Title == "Contact Management") &&
-                                                                                                    <span>
+                                                                                                <span>
                                                                                                         {client.Title}
                                                                                                     </span>
-                                                                                                }
+                                                                                                
                                                                                             </div>
                                                                                         </div>
                                                                                     )

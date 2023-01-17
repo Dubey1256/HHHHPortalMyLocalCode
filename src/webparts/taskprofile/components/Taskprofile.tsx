@@ -10,10 +10,11 @@ import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import TimeEntry from './TimeEntry';
-
+import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { forEach } from 'lodash';
-
+import { Item } from '@pnp/sp/items';
+var smartTime:Number = 0;
 export interface ITaskprofileState {  
   Result : any;
   listName : string;
@@ -28,8 +29,9 @@ export interface ITaskprofileState {
   isTimeEntry:boolean,
   showPopup : any;
   maincollection : any;
-  SharewebTimeComponent:any
-
+  SharewebTimeComponent:any;
+  smartTimeTotalas:any
+  smarttimefunction:boolean;
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
@@ -56,10 +58,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       updateComment : false,
       showComposition: true,
       isOpenEditPopup : false,
+      smartTimeTotalas:0,
       isTimeEntry: false,
       showPopup : 'none',
       maincollection : [],
-      SharewebTimeComponent:[]
+      SharewebTimeComponent:[],
+      smarttimefunction:false
     }
 
     this.GetResult();
@@ -72,6 +76,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private gAllDataMatches:any = [];
   private taskResult:any;
   private async loadOtherDetailsForComponents(task:any){
+
     if(task.Component.length > 0){
       await this.loadComponentsDataForTasks(task);
       await this.getAllTaskData();
@@ -83,7 +88,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       })
     }
   }
-
+ 
   private async loadComponentsDataForTasks(Items:any){
     let DataForQuery = [];
     if (Items.Component != undefined && Items.Component.length > 0) {
@@ -168,7 +173,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .select("ID","Title","DueDate","Categories","Status","StartDate","CompletedDate","Team_x0020_Members/Title","Team_x0020_Members/Id","ItemRank","PercentComplete","Priority","Created","Author/Title","Author/EMail","BasicImageInfo","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","Responsible_x0020_Team/Id","SharewebTaskType/Title","ClientTime","Component/Id","Component/Title","Services/Id","Services/Title","Editor/Title","Modified","Attachments","AttachmentFiles")
       .expand("Team_x0020_Members","Author","Responsible_x0020_Team","SharewebTaskType","Component","Services","Editor","AttachmentFiles")
       .get()
-      
+
+      taskDetails["siteType"] = this.state.listName;
+    taskDetails["siteUrl"] = this.props.siteUrl;
     console.log(taskDetails);
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
@@ -179,13 +186,15 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SiteIcon : this.GetSiteIcon(this.state.listName),
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
+      siteType: taskDetails["siteType"],
+      siteUrl: taskDetails["siteUrl"],
       TaskId : "T"+taskDetails["ID"],
       Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"],
       Categories: taskDetails["Categories"],
       Status: taskDetails["Status"],
-      StartDate: taskDetails["StartDate"] != null ? (new Date(taskDetails["StartDate"])).toLocaleDateString() : '',
-      CompletedDate: taskDetails["CompletedDate"] != null ? (new Date(taskDetails["CompletedDate"])).toLocaleDateString() : '',
+      StartDate: taskDetails["StartDate"] != null ?moment(this.state.Result["StartDate"]).format("DD/MM/YYYY"):"",
+      CompletedDate: taskDetails["CompletedDate"] != null ?moment(this.state.Result["CompletedDate"]).format("DD/MM/YYYY"):"",
       TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
       TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
       ItemRank: taskDetails["ItemRank"],
@@ -199,7 +208,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : '',
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
-      siteType:this.state.listName,
       Component:  taskDetails["Component"],
       Services : taskDetails["Services"],
       Creation: taskDetails["Created"],
@@ -431,11 +439,15 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       isOpenEditPopup : false
     })
   }
+  private CallBackSumSmartTime(item:any){
+   smartTime = item
+  }
   private CallBackTimesheet(){
     this.setState({
       isTimeEntry : false
     })
   }
+
 
   private ConvertLocalTOServerDate(LocalDateTime:any, dtformat:any) {
     if (dtformat == undefined || dtformat == '') 
@@ -474,6 +486,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         if (this.taskResult != undefined) {
             //this.loadOtherDetailsForComponents();
         }
+      
   }
 
   private breadcrumb () {
@@ -678,6 +691,16 @@ private EditData = (e: any, item: any) => {
  
 }
 
+ private getSmartTime=()=>{
+  this.setState({
+   smarttimefunction:true
+  })
+ }
+
+
+ 
+
+ 
 
   public render(): React.ReactElement<ITaskprofileProps> {
     const {
@@ -687,9 +710,10 @@ private EditData = (e: any, item: any) => {
       hasTeamsContext,
       userDisplayName
     } = this.props;
-
     return (
-      <div> 
+    <div> 
+    
+     
         {this.state.maincollection != null && this.state.maincollection.length > 0 &&
           <div className='row'>
           <div className="col-sm-12 p-0 ng-scope" id="Breadcrumb">
@@ -764,37 +788,40 @@ private EditData = (e: any, item: any) => {
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Start Date</dt>
-                <dd className='bg-light'>{this.state.Result["CompletedDate"]!=undefined?moment(this.state.Result["StartDate"]).format("DD/MM/YYYY"):""}</dd>
+                <dd className='bg-light'>{this.state.Result["StartDate"]!=undefined?this.state.Result["StartDate"]:""}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark'>Completion Date</dt>
-                <dd className='bg-light'> {this.state.Result["CompletedDate"]!=undefined?moment(this.state.Result["CompletedDate"]).format("DD/MM/YYYY"):""}</dd>
+                <dd className='bg-light'> {this.state.Result["CompletedDate"]!=undefined?this.state.Result["CompletedDate"]:""}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark' title="Task Id">Categories</dt>
-                <dd className='bg-light'>{this.state.Result["Categories"]}</dd>
+                <dd className='bg-light text-break'>{this.state.Result["Categories"]}</dd>
               </dl>
               <dl>
                 <dt className='bg-fxdark'>SmartTime Total</dt>
-                <dd className='bg-light'>
+                <dd className='bg-light '>
+                <span>{smartTime}</span> 
                 <a onClick={(e) => this.EditData(e, this.state.Result)}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{width: "22px"}}/></a>
                 </dd>
-              </dl>
+              {this.state.Result.Id? <SmartTimeTotal props={this.state.Result} CallBackSumSmartTime={this.CallBackSumSmartTime}/>:null}
+                </dl>
             </div>
+           
             <div className='col-md-4 p-0'>
             <dl>
                 <dt className='bg-fxdark'>Team Members</dt>
                 <dd className='bg-light'>
                 <div className="d-flex align-items-center">
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 && this.state.Result["TeamLeader"].map( (rcData:any,i:any)=> {
-                  return  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={rcData.userImage}></img></a></div>                        
+                  return  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off" title={rcData.Title}><img className="imgAuthor" src={rcData.userImage}></img></a></div>                        
                 })} 
                 {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length>0 &&
                   <div></div>
                 }               
 
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></a></div>                        
+                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></a></div>                        
                 }
                 {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 1 &&
                   <div className="user_Member_img_suffix2" onMouseOver={(e) =>this.handleSuffixHover()} onMouseLeave={(e) =>this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
@@ -805,7 +832,7 @@ private EditData = (e: any, item: any) => {
                             return  <div className="team_Members_Item" style={{padding: '2px'}}>
                               <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
                                 <img className="imgAuthor" src={rcData.userImage}></img></a></div>
-                              <div>{rcData.Title}</div>
+                              <div className='mx-2'>{rcData.Title}</div>
                             </div>
                                                     
                           })
@@ -1001,6 +1028,7 @@ private EditData = (e: any, item: any) => {
 
 {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} Call={()=>{this.CallBack()}} />:''}
  {this.state.isTimeEntry?<TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={()=>{ this.CallBackTimesheet()}}/>:''} 
+ 
        </div> 
     );
   }

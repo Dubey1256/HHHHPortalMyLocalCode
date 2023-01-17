@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
-import '../../webparts/taskDashboard/components/TaskDashboard.scss';
+// import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 import { Web } from "sp-pnp-js";
 import TeamComposition from './TeamComposition';
 import Picker from "./SmartMetaDataPicker";
@@ -23,17 +23,18 @@ var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
 const EditTaskPopup = (Items: any) => {
-    const [ComponentItem, setComponent] = React.useState([]);
     const [images, setImages] = React.useState([]);
-    const [status, setStatus] = React.useState<any>('');
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [taskUser, setTaskUser] = React.useState([]);
     const maxNumber = 69;
-    const [data, setTaskData] = React.useState([]);
     const [ImageSection, setImageSection] = React.useState([]);
-    const [saveData, setSaveData] = React.useState<any>({ Title: '', Created: Number, PercentComplete: '', Rank: Number })
+    const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
+        {
+            Title: '', PercentCompleteStatus:''
+        }
+    )
     const [Description, setDescription] = React.useState([]);
     const [EditData, setEditData] = React.useState<any>({});
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
@@ -43,22 +44,22 @@ const EditTaskPopup = (Items: any) => {
     const [FolderData, SetFolderData] = React.useState([]);
     const [CommentBox, setCommentBox] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('')
-    const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(false)
+    const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
     const [itemRank, setItemRank] = React.useState('')
     const [PriorityStatus, setPriorityStatus] = React.useState()
-    const StatusArray =[
-        {value:1, status:"01% For Approval"},
-        {value:2, status:"02% Follow Up"},
-        {value:3, status:"03% Approved"},
-        {value:5, status:"05% Acknowledged"},
-        {value:10, status:"10% working on it"},
-        {value:70, status:"70% Re-Open"},
-        {value:80, status:"80% In QA Review"},
-        {value:90, status:"90% Task completed"},
-        {value:93, status:"93% For Review"},
-        {value:96, status:"96% Follow-up later"},
-        {value:99, status:"99% Completed"},
-        {value:100, status:"100% Closed"}
+    const StatusArray = [
+        { value: 1, status: "01% For Approval" },
+        { value: 2, status: "02% Follow Up" },
+        { value: 3, status: "03% Approved" },
+        { value: 5, status: "05% Acknowledged" },
+        { value: 10, status: "10% working on it" },
+        { value: 70, status: "70% Re-Open" },
+        { value: 80, status: "80% In QA Review" },
+        { value: 90, status: "90% Task completed" },
+        { value: 93, status: "93% For Review" },
+        { value: 96, status: "96% Follow-up later" },
+        { value: 99, status: "99% Completed" },
+        { value: 100, status: "100% Closed" }
     ]
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
@@ -124,12 +125,10 @@ const EditTaskPopup = (Items: any) => {
     const ExpandSiteComposition = () => {
         setComposition(!composition)
     }
-    const closeTaskStatusUpdatePopup = () => {
-        setTaskStatusPopup(false)
-    }
+  
     var count = 0;
     const loadTaskUsers = () => {
-        var AllTaskusers: any = []
+        var AllTaskUsers: any = []
         axios.get("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$select=Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc")
             .then((response: AxiosResponse) => {
                 taskUsers = response.data.value;
@@ -146,7 +145,7 @@ const EditTaskPopup = (Items: any) => {
                             user['UserManagerName'] = ApproverUserItem;
                             user['UserManagerMail'] = UserApproverMail;
                         }
-                        AllTaskusers.push(user);
+                        AllTaskUsers.push(user);
                     }
                 });
                 if (AllMetaData != undefined && AllMetaData.length > 0) {
@@ -167,7 +166,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -186,10 +185,10 @@ const EditTaskPopup = (Items: any) => {
             smartMeta.map((item: any) => {
                 let saveImage = []
                 if (item.PercentComplete != undefined) {
-                    let statusValue =item.PercentComplete * 100;
+                    let statusValue = item.PercentComplete * 100;
                     item.PercentComplete = statusValue;
-                    StatusArray.map((item:any)=>{
-                        if(statusValue == item.value){
+                    StatusArray.map((item: any) => {
+                        if (statusValue == item.value) {
                             setPercentCompleteStatus(item.status);
                         }
                     })
@@ -203,7 +202,7 @@ const EditTaskPopup = (Items: any) => {
                 if (item.Priority_x0020_Rank != undefined) {
                     currentUsers.map((rank: any) => {
                         if (rank.rank == item.Priority_x0020_Rank) {
-                            item.Priority_x0020_Rank = rank.rankTitle;
+                            item.Priority_x0020_Rank = rank.rank;
                         }
                     })
                 }
@@ -219,29 +218,28 @@ const EditTaskPopup = (Items: any) => {
             console.log("Error :", error.message);
         }
     }
-    const PercentCompleted = (StatusData:any) => {
-        EditData.PercentComplete = StatusData.value;
+    const PercentCompleted = (StatusData: any) => {
+        // EditData.PercentComplete = StatusData.value;
+        setUpdateTaskInfo({...UpdateTaskInfo, PercentCompleteStatus:StatusData.value})
         setPercentCompleteStatus(StatusData.status);
-        setPercentCompleteCheck(true);
-        // if (TaskStatus != undefined) {
-        //     TaskStatus.map((val: any) => {
-        //         if (val.ID == index) {
-        //             setPercentCompleteCheck(true)
-        //             if (val.status != undefined) {
-        //                 val.status = parseInt((val.status).toFixed(2));
-        //             }
-        //             EditData.PercentComplete = val.status
-        //             // setPercentComplete(val.Title);
-        //         }
-        //     })
-        // }
+        setPercentCompleteCheck(false);
+    }
+    const closeTaskStatusUpdatePopup = () => {
+        setTaskStatusPopup(false)
+        setUpdateTaskInfo({...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete?EditData.PercentComplete:null)})
+        StatusArray.map((array:any)=>{
+            if(EditData.PercentComplete == array.value){
+                setPercentCompleteStatus(array.status);
+            }
+        })
+        setPercentCompleteCheck(false);
     }
     const setModalIsOpenToFalse = () => {
         let callBack = Items.Call
         callBack();
         // setModalIsOpen(false)
-
     }
+
     let currentUsers = [
         { rankTitle: 'Select Item Rank', rank: null },
         { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -253,9 +251,8 @@ const EditTaskPopup = (Items: any) => {
         { rankTitle: '(1) Archive', rank: 1 },
         { rankTitle: '(0) No Show', rank: 0 }
     ]
-    var component = ''
     var smartComponentsIds: any = [];
-    const SaveData = async (child: any) => {
+    const UpdateTaskInfoFunction = async (child: any) => {
         var UploadImage: any = []
         var item: any = {}
         images.map((items: any) => {
@@ -310,18 +307,19 @@ const EditTaskPopup = (Items: any) => {
             })
         }
 
+       try {
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-        await web.lists.getById(Items.Items.listId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(Items.Items.ID).update({
+        await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
             IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
-            Priority_x0020_Rank: (itemRank != undefined ? itemRank : EditData.Priority_x0020_Rank),
-            Title: EditData.Title?EditData.Title: null,
+            Priority_x0020_Rank: (itemRank != '' ? itemRank : EditData.Priority_x0020_Rank),
+            Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
             Priority: PriorityStatus != undefined ? PriorityStatus : EditData.Priority,
-            StartDate: EditData.Created? Moment(EditData.Created).format("MM-DD-YYYY") : null,
-            PercentComplete: EditData.PercentComplete?(EditData.PercentComplete/100): null,
-            ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : '' },
-            Categories: Items.Items.Categories == "" ? EditData.Categories : Items.Items.Categories,
-            RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) ? RelevantPortfolioIds : '' },
-            DueDate: EditData.DueDate? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
+            StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
+            PercentComplete: UpdateTaskInfo.PercentCompleteStatus?(Number(UpdateTaskInfo.PercentCompleteStatus)/100): (EditData.PercentComplete ? (EditData.PercentComplete/100) : null),
+            // ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : '' },
+            // Categories: Items.Items.Categories == "" ? EditData.Categories : Items.Items.Categories,
+            // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) ? RelevantPortfolioIds : '' },
+            DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
             CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
             // BasicImageInfo: JSON.stringify(UploadImage),
             Mileage: (EditData.Mileage ? EditData.Mileage : '')
@@ -329,77 +327,11 @@ const EditTaskPopup = (Items: any) => {
             console.log(res);
             Items.Call();
         })
+       } catch (error) {
+        console.log("Error:", error.messages)
+       }
     }
-    const saveItemrank = (e: any) => {
-        var Rank = e.target.value;
-        currentUsers.map((item: any) => {
-            if (item.rankTitle == Rank) {
-                setItemRank(item.rank)
-            }
-        })
-    }
-    let TaskStatus = [
-        {
-            "Title": "01% For Approval",
-            "ID": 0,
-            "status": 1,
-        },
-        {
-            "Title": "  02% Follow up",
-            "ID": 1,
-            "status": 2,
-        },
-        {
-            "Title": "03% Approved",
-            "ID": 2,
-            "status": 3,
-        },
-        {
-            "Title": "05% Acknowledged",
-            "ID": 3,
-            "status": 5,
-        },
-        {
-            "Title": "10% working on it",
-            "ID": 4,
-            "status": 10,
-        },
-        {
-            "Title": " 70% Re-Open",
-            "ID": 5,
-            "status": 70,
-        },
-        {
-            "Title": "80% In QA Review",
-            "ID": 6,
-            "status": 80,
-        },
-        {
-            "Title": "90% Task completed",
-            "ID": 7,
-            "status": 90,
-        },
-        {
-            "Title": "93% For Review",
-            "ID": 8,
-            "status": 93,
-        },
-        {
-            "Title": " 96% Follow-up later",
-            "ID": 9,
-            "status": 96,
-        },
-        {
-            "Title": "99% Completed",
-            "ID": 10,
-            "status": 99,
-        },
-        {
-            "Title": "100% Closed",
-            "ID": 11,
-            "status": 100,
-        }
-    ]
+
     const changeStatus = (e: any) => {
         if (e.target.value === 'true') {
             setEditData({ ...EditData, IsTodaysTask: false })
@@ -425,7 +357,7 @@ const EditTaskPopup = (Items: any) => {
                                             <td>
                                                 <div className="form-check">
                                                     <input className="form-check-input"
-                                                        type="radio" checked={EditData.PercentComplete == item.value}
+                                                        type="radio" checked={(PercentCompleteCheck?EditData.PercentComplete:UpdateTaskInfo.PercentCompleteStatus) == item.value}
                                                         onClick={() => PercentCompleted(item)} />
                                                     <label className="form-check-label mx-2">{item.status}</label>
                                                 </div>
@@ -437,7 +369,7 @@ const EditTaskPopup = (Items: any) => {
                         </table>
                     </div>
                     <footer>
-                        <button type="button" className="btn btn-primary" onClick={closeTaskStatusUpdatePopup}>
+                        <button type="button" className="btn btn-primary" onClick={() => setTaskStatusPopup(false)}>
                             OK
                         </button>
                     </footer>
@@ -466,22 +398,22 @@ const EditTaskPopup = (Items: any) => {
                                             <label className="d-flex justify-content-between align-items-center mb-0">Title
                                                 <span className="form-check">
                                                     <input className="form-check-input" type="checkbox"
-                                                        defaultChecked={EditData.IsTodaysTask}
+                                                        checked={EditData.IsTodaysTask}
                                                         value={EditData.IsTodaysTask}
                                                         onChange={(e) => changeStatus(e)} />
                                                     <label className="form-check-label">Working Today?</label>
                                                 </span>
                                             </label>
                                             <input type="text" className="form-control" placeholder="Task Name"
-                                                ng-required="true" defaultValue={EditData.Title} onChange={(e) => setEditData({ ...EditData, Title: e.target.value })} />
+                                                ng-required="true" defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
                                         </div>
                                         <div className="mx-0 row  mb-10">
                                             <div className="col ps-0 mt-2">
                                                 <label className="form-label" >Start Date</label>
                                                 <input type="date" className="form-control"
-                                                    defaultValue={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ''}
+                                                    defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                     onChange={(e) => setEditData({
-                                                        ...EditData, Created: e.target.value
+                                                        ...EditData, StartDate : e.target.value
                                                     })}
                                                 />
                                             </div>
@@ -511,10 +443,10 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col pe-0 mt-2">
                                                 <label className="form-label">Item Rank</label>
-                                                <select className="form-select" defaultValue={EditData.Priority_x0020_Rank} onClick={(e) => saveItemrank(e)}>
+                                                <select className="form-select" defaultValue={EditData.Priority_x0020_Rank} onChange={(e) => setItemRank(e.target.value)}>
                                                     {currentUsers.map(function (h: any, i: any) {
                                                         return (
-                                                            <option key={i} selected={EditData.Priority_x0020_Rank == h.rankTitle} >{h.rankTitle}</option>
+                                                            <option key={i} selected={EditData.Priority_x0020_Rank == h.rank} value={h.rank} >{h.rankTitle}</option>
                                                         )
                                                     })}
                                                 </select>
@@ -648,9 +580,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 {(EditData.Categories != undefined) &&
                                                                     <div className="block form-control d-flex justify-content-between">
                                                                         <a className="hreflink ng-binding" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=123`}>{EditData.Categories}</a>
-
                                                                         <img className="p-1" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" data-themekey="#" />
-
                                                                     </div>
                                                                 }
                                                             </>
@@ -816,7 +746,6 @@ const EditTaskPopup = (Items: any) => {
                                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
                                                             </svg>
                                                         </span>
-
                                                     </div>
                                                 </div>
                                                 <div className="col-12" title="Connect Service Tasks">
@@ -957,10 +886,10 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col mb-10">
                                             <div className="input-group">
-                                                <label className="form-label">status</label>
-                                                <input type="text" style={{ width: "200px" }} className="form-control" placeholder="% Complete"
-                                                    defaultValue={EditData.PercentComplete != undefined ? EditData.PercentComplete : null}
-                                                    onChange={(e) => setSaveData({ ...saveData, PercentComplete: e.target.value })} />
+                                                <label className="form-label">Status</label>
+                                                <input type="text" style={{ width: "200px" }} placeholder="% Complete"
+                                                    defaultValue={PercentCompleteCheck? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null):(UpdateTaskInfo.PercentCompleteStatus?UpdateTaskInfo.PercentCompleteStatus:null)}
+                                                    onChange={(e) => setEditData({ ...EditData, PercentComplete: e.target.value })} />
                                                 <span className="input-group-text">
                                                     <a onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -971,7 +900,7 @@ const EditTaskPopup = (Items: any) => {
                                                 {/* {(EditData.PercentComplete?.Title)?.length > 0 ? <span style={
                                                             { width: '210px', color: "#fff", background: '#000066', padding: '5px' }
                                                         }> {EditData.PercentComplete ? EditData.PercentComplete.Title : ''}</span> : null} */}
-                                                { EditData.PercentComplete != null?
+                                                {EditData.PercentComplete != null ?
                                                     <span>
                                                         <input type='radio' className="my-2" checked />
                                                         <label className="ps-2">
@@ -1040,7 +969,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <a ng-if="image.userImage!=undefined"
                                                             ng-repeat="image in AssignedToUsers"
                                                             target="_blank"
-                                                            href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages/Santosh%20Kumar.png">
+                                                            href={EditData.AssignedUserImage ? EditData.AssignedUserImage:'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}>
                                                             <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={EditData.AssignedUserName ? EditData.AssignedUserName : ''}
                                                                 on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
                                                                 data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
@@ -1146,7 +1075,6 @@ const EditTaskPopup = (Items: any) => {
                                             wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
                                         />
                                         <Example />
-
                                     </div>
 
 
@@ -1254,7 +1182,7 @@ const EditTaskPopup = (Items: any) => {
                                     </a>
                                     <span className="">
                                         <button ng-show="!IsShowFullViewImage" type="button" className="btn btn-primary mx-2"
-                                            ng-click="IsShowFullViewImage!=true? updateTaskRecords('UpdateTask',Item):CancelShowInFullView()" onClick={SaveData}>
+                                            ng-click="IsShowFullViewImage!=true? updateTaskRecords('UpdateTask',Item):CancelShowInFullView()" onClick={UpdateTaskInfoFunction}>
                                             Save
                                         </button>
                                         <button type="button" className="btn btn-primary" onClick={Items.Call}>
@@ -1312,7 +1240,7 @@ const EditTaskPopup = (Items: any) => {
                                             <span className="p-1">|</span>
                                             <a className="p-1" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
                                                 target="_blank">Open out-of-the-box form</a>
-                                            <button type="button" className="btn btn-primary " onClick={SaveData}>Save</button>
+                                            <button type="button" className="btn btn-primary " onClick={UpdateTaskInfo}>Save</button>
                                             <button type="button" className="btn btn-default" onClick={Items.Call}>Cancel</button>
                                         </div>
                                     </div>
