@@ -277,7 +277,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               <span className="ng-binding"><span  dangerouslySetInnerHTML={{ __html:fbSubData.Title.replace(/<[^>]*>/g, '')}}></span></span>
               <div className="feedbackcomment col-sm-12 PadR0 mt-10">
               {fbSubData.Comments != null && fbSubData.Comments.length > 0 && fbSubData.Comments.map( (fbComment:any,k:any)=> {
-                return <div className="col-sm-12 mb-2 add_cmnt my-1 ng-scope">
+                return <div className="col-sm-12 d-flex mb-2 add_cmnt my-1 ng-scope">
                          
                             <div className="col-sm-1 padL-0 wid35">
                               <img className="AssignUserPhoto1" src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
@@ -317,8 +317,9 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                 <span><h6>Update Comment</h6></span>
                 <div style={{width:'99%', marginTop:'2%', padding:'2%'}}><textarea id="txtUpdateComment" rows={6} onChange={(e)=>this.handleUpdateComment(e)} style={{width: '100%',  marginLeft: '3px'}} >{this.state.CommenttoUpdate}</textarea></div>
                 <div style={{display:'flex', marginTop: '2%',float: 'right', width:'19%', marginBottom:'2%'}}>
-                  <div><button className="btnPrimary" onClick={(e) =>this.updateComment() }>Save</button></div>
-                  <div style={{marginLeft: '5%'}}><button onClick={(e) =>this.CloseModal(e) }>Cancel</button></div>
+                  <div><button className="btn btnPrimary" onClick={(e) =>this.updateComment() }>Save</button>
+                  <button className='btn btn-gray round 0 ms-1' onClick={(e) =>this.CloseModal(e) }>Cancel</button></div>
+                  
                 </div>
             </div>
           </Modal>
