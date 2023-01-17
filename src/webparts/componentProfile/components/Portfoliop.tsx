@@ -542,7 +542,7 @@ function Portfolio({ ID }: any) {
                                     <dl className='Sitecomposition'>
                                         <div className="dropdown">
                                             {data.map(item =>
-                                                <a className="btn btn-secondary  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
+                                                <a className="sitebutton  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
                                                     <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition
                                                 </a>
                                             )}
@@ -572,10 +572,11 @@ function Portfolio({ ID }: any) {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img"   >
+                                                                                            {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
                                                                                                    <span>
                                                                                                         {client.Title}
                                                                                                     </span>
-                                                                                                
+                                                                                             }
                                                                                             </div>
                                                                                         </div>
                                                                                     )
@@ -588,10 +589,11 @@ function Portfolio({ ID }: any) {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img">
+                                                                                            {(client.Title == "Contact Management") &&
                                                                                                 <span>
                                                                                                         {client.Title}
                                                                                                     </span>
-                                                                                                
+                                                                                }
                                                                                             </div>
                                                                                         </div>
                                                                                     )

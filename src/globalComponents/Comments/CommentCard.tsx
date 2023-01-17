@@ -10,6 +10,7 @@ import draftToHtml from 'draftjs-to-html';
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 import { sp } from "@pnp/sp";
+import Tooltip from '../Tooltip';
 import "@pnp/sp/sputilities";
 export interface ICommentCardProps {
   siteUrl? : string;
@@ -503,7 +504,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
          <div className='mb-3 card commentsection'>
                                     <div className='card-header'>
                                         {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
-                                        <div className="mb-0 card-title h5">Comments</div>
+                                        <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip/></span></div>
+
                                     </div>
                                     <div className='card-body'>
                                         <div className="comment-box  mb-2">
@@ -534,7 +536,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                             <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
                                             Comment shouldn't be empty
                                         </p> */}
-                                            <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end">
+                                            <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
                                                 Post
                                             </button>
                                         </div>
