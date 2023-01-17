@@ -1,8 +1,6 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import Modal from 'react-bootstrap/Modal';
-import '../../cssFolder/Style.scss'
-import '../../cssFolder/site_color.scss';
 var TypeSite: string;
 // if(TypeSite=="Service"){
 //     require('../../cssFolder/sitecolorservice.scss');
@@ -11,7 +9,6 @@ var TypeSite: string;
 //     require('../../cssFolder/site_color.scss');
 // }
 import { Web } from 'sp-pnp-js';
-import '../../cssFolder/site_color.scss';
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
 import Tooltip from '../../../globalComponents/Tooltip';
@@ -235,7 +232,8 @@ function Portfolio({ ID }: any) {
             })
         }
         //    const letters = new Set([myarray2]);
-        // console.log(myarray2)
+        console.log(myarray2)
+        console.log(myarray1)
         // myarray.push();
     })
     //    Get Folder data
@@ -395,7 +393,7 @@ function Portfolio({ ID }: any) {
                                             </a>
                                             <div></div>
                                             {AllTeamMember != null && AllTeamMember.length > 0 &&
-                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url}></img></a></div>                        
+                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
                 }
                 {AllTeamMember != null && AllTeamMember.length > 1 &&
                   <div className="user_Member_img_suffix2 multimember" onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
@@ -544,7 +542,7 @@ function Portfolio({ ID }: any) {
                                     <dl className='Sitecomposition'>
                                         <div className="dropdown">
                                             {data.map(item =>
-                                                <a className="btn btn-secondary  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
+                                                <a className="sitebutton  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
                                                     <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition
                                                 </a>
                                             )}
@@ -574,11 +572,11 @@ function Portfolio({ ID }: any) {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img"   >
-                                                                                                {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
-                                                                                                    <span>
+                                                                                            {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
+                                                                                                   <span>
                                                                                                         {client.Title}
                                                                                                     </span>
-                                                                                                }
+                                                                                             }
                                                                                             </div>
                                                                                         </div>
                                                                                     )
@@ -591,11 +589,11 @@ function Portfolio({ ID }: any) {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img">
-                                                                                                {(client.Title == "Contact Management") &&
-                                                                                                    <span>
+                                                                                            {(client.Title == "Contact Management") &&
+                                                                                                <span>
                                                                                                         {client.Title}
                                                                                                     </span>
-                                                                                                }
+                                                                                }
                                                                                             </div>
                                                                                         </div>
                                                                                     )

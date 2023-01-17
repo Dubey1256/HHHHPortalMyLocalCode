@@ -216,7 +216,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               <span  dangerouslySetInnerHTML={{ __html: this.state.fbData['Title'] }}></span>
               <div className="col">
               {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments'].map( (fbComment:any,k:any)=> {
-                return <div className="col add_cmnt my-1">
+                return <div className="col d-flex add_cmnt my-1">
                          
                             <div className="col-1 p-0">
                               <img className="AssignUserPhoto1" src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
@@ -252,7 +252,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               
         {this.state.fbData['Subtext'] != null && this.state.fbData['Subtext'].length > 0 && this.state.fbData['Subtext'].map( (fbSubData:any,j:any)=> {
         return <div className="col-sm-12 p-0" style={{width: '100%'}}>
-            <span className="text-end">
+            <span className="d-block text-end">
             <a  style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBoxOfSubText()}>Add Comment</a>
           </span>
 
