@@ -17,7 +17,9 @@ import CommentCard from "../../globalComponents/Comments/CommentCard";
 import LinkedComponent from './LinkedComponent';
 import { Editor } from "react-draft-wysiwyg";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-
+import {AiOutlineFullscreen} from 'react-icons/ai'
+import {RiDeleteBin6Line} from 'react-icons/ri'
+import {TbReplace} from 'react-icons/tb'
 // import '../../../src/webparts/cssFolder/Style.scss';
 
 var AllMetaData: any = []
@@ -28,7 +30,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
-    const [taskUser, setTaskUser] = React.useState([]);
+    const [TaskUser, setTaskUser] = React.useState([]);
     const maxNumber = 69;
     const [ImageSection, setImageSection] = React.useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
@@ -149,6 +151,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         AllTaskUsers.push(user);
                     }
+
                 });
                 if (AllMetaData != undefined && AllMetaData.length > 0) {
                     GetEditData();
@@ -168,7 +171,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -178,7 +181,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -199,7 +202,7 @@ const EditTaskPopup = (Items: any) => {
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
                 }
-                if (item.BasicImageInfo != undefined) {
+                if (item.BasicImageInfo != undefined && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
                 if (item.Priority_x0020_Rank != undefined) {
@@ -209,14 +212,21 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                 }
-                // if (item.BasicImageInfo != null) {
-                //     let saveImgArray = saveImage[0];
-                //     item.AssignedUserName = saveImgArray[1]?.UserName;
-                //     item.AssignedUserImage = saveImgArray[1]?.UserImage;
-                // }
-                console.log("Task All Data Info =====", item)
+                let AssignedUsers: any = [];
+                taskUsers?.map((userData: any) => {
+                    item.AssignedTo?.map((AssignedUser: any) => {
+                        if (userData?.AssingedToUserId == AssignedUser.Id) {
+                            AssignedUsers.push(userData);
+                        }
+                    })
+                })
+                if (item.Attachments) {
+                    item.UploadedImage = saveImage ? saveImage[0] : '';
+                }
+                item.TaskAssignedUsers = AssignedUsers;
                 setEditData(item)
                 setPriorityStatus(item.Priority)
+                console.log("Task All Data Info =====", item)
             })
         } catch (error) {
             console.log("Error :", error.message);
@@ -402,7 +412,7 @@ const EditTaskPopup = (Items: any) => {
                             <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
                                 <div className="row">
                                     <div className="col-md-5">
-                                        <div className="col-12 mb-10">
+                                        <div className="col-12 ">
                                             <div className="input-group">
                                                 <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
                                                     <span className="form-check">
@@ -418,7 +428,7 @@ const EditTaskPopup = (Items: any) => {
 
                                             </div>
                                         </div>
-                                        <div className="mx-0 row  mb-10">
+                                        <div className="mx-0 row  ">
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
                                                     <label className="form-label full-width" >Start Date</label>
@@ -472,9 +482,9 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="mx-0 row  mb-10 mt-2">
+                                        <div className="mx-0 row   mt-2">
                                             <div className="col ps-0">
-                                                <div className="input-group  mb-10">
+                                                <div className="input-group  mb-2">
                                                     <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
                                                         <span className="form-check form-check-inline mb-0">
                                                             <input type="radio" id="Components"
@@ -542,7 +552,7 @@ const EditTaskPopup = (Items: any) => {
                                                             onClick={(e) => EditComponent(EditData, 'Componet')} />
                                                     </span>
                                                 </div>
-                                                <div className="input-group mb-10">
+                                                <div className="input-group mb-2">
                                                     <label className="form-label full-width  " ng-hide="item==='TimesheetCategories'"
                                                         ng-repeat="item in filterGroups">
                                                         Categories
@@ -672,14 +682,14 @@ const EditTaskPopup = (Items: any) => {
                                                         </li>
                                                     </ul>
                                                 </div>
-                                                <div className="col-12 mb-10">
+                                                <div className="col-12 mb-2">
                                                     <div className="input-group ">
                                                         <label className="form-label full-width">Client Activity</label>
                                                         <input type="text" className="form-control" ng-required="true"
                                                             ng-model="Item.ClientActivity" />
                                                     </div>
                                                 </div>
-                                                <div className="col-12 mb-10">
+                                                <div className="col-12 mb-2">
                                                     <div className="input-group">
                                                         <label className="form-label full-width ">
                                                             Linked Service
@@ -784,7 +794,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-12 mb-10">
+                                        <div className="col-12 mb-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width ">Relevant URL</label>
                                                 <input type="text" className="form-control" placeholder="Url"
@@ -911,10 +921,10 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col mb-10">
+                                        <div className="col">
                                             <div className="input-group">
-                                                <label className="form-label">Status</label>
-                                                <input type="text" style={{ width: "200px" }} placeholder="% Complete" className="form-control px-2"
+                                                <label className="form-label full-width">Status</label>
+                                                <input type="text"  placeholder="% Complete" className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => setEditData({ ...EditData, PercentComplete: e.target.value })} />
                                                 <span className="input-group-text">
@@ -928,7 +938,7 @@ const EditTaskPopup = (Items: any) => {
                                                             { width: '210px', color: "#fff", background: '#000066', padding: '5px' }
                                                         }> {EditData.PercentComplete ? EditData.PercentComplete.Title : ''}</span> : null} */}
                                                 {EditData.PercentComplete != null ?
-                                                    <span>
+                                                    <span className="full-width">
                                                         <input type='radio' className="my-2" checked />
                                                         <label className="ps-2">
                                                             {PercentCompleteStatus}
@@ -944,7 +954,6 @@ const EditTaskPopup = (Items: any) => {
                                                         <input type="text" className="form-control" placeholder="Time"
                                                             defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} />
                                                     </div>
-
                                                     <ul className="p-0 mt-1">
                                                         <li className="form-check">
                                                             <input name="radioTime" className="form-check-input"
@@ -969,7 +978,6 @@ const EditTaskPopup = (Items: any) => {
                                                                 defaultChecked={EditData.Mileage == "240"}
                                                             />
                                                             <label className="form-check-label">Medium</label>
-
                                                         </li>
                                                         <li className="form-check">
                                                             <input name="radioTime" className="form-check-input"
@@ -985,27 +993,28 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col mt-2">
                                                 <div className="input-group" ng-if="AssignedToUsers.length>0">
                                                     <label className="form-label full-width  mx-2">Task Users</label>
-
-                                                    <div className="TaskUsers">
-                                                        <a ng-if="image.userImage!=undefined"
-                                                            ng-repeat="image in AssignedToUsers"
-                                                            target="_blank"
-                                                            href={EditData.AssignedUserImage ? EditData.AssignedUserImage : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
-                                                            <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={EditData.AssignedUserName ? EditData.AssignedUserName : ''}
-                                                                on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
-                                                                src={EditData.AssignedUserImage ? EditData.AssignedUserImage : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                                                            />
-                                                        </a>
-                                                    </div>
-
-
+                                                    {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
+                                                        return (
+                                                            <div className="TaskUsers" key={index}>
+                                                                <a ng-if="image.userImage!=undefined"
+                                                                    ng-repeat="image in AssignedToUsers"
+                                                                    target="_blank"
+                                                                    href={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
+                                                                    <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                        on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
+                                                                        data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                        src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                    />
+                                                                </a>
+                                                            </div>
+                                                        )
+                                                    })}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="col-md-4">
-                                        <div className="full_width mb-10">
+                                        <div className="full_width ">
                                             <CommentCard siteUrl={Items.Items.siteUrl} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                         </div>
                                         <div className="pull-right">
@@ -1061,20 +1070,53 @@ const EditTaskPopup = (Items: any) => {
                                                     dragProps
                                                 }: any) => (
                                                     <div className="upload__image-wrapper">
-                                                        <a
-                                                            style={isDragging ? { color: "red" } : { color: "darkblue" }}
-                                                            onClick={onImageUpload}
-                                                            {...dragProps}
-                                                        >
-                                                            Upload Image
-                                                        </a>
-                                                        &nbsp;
-                                                        <a style={{ color: "darkblue", margin: "3px" }} onClick={onImageRemoveAll}>Remove all images</a>
+                                                        {EditData.Attachments ?
+                                                            <div>{EditData.UploadedImage?.map((ImageDtl: any, index: any) => {
+                                                                return (
+                                                                    <div>
+                                                                        <div className="my-1" style={{ width: "18rem" }}>
+                                                                            <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} className="card-img-top" />
+                                                                            <div className="card-footer d-flex justify-content-between p-1 px-2">
+                                                                                <div>
+                                                                                    <input type="checkbox" />
+                                                                                    <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
+                                                                                    <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
+                                                                                    <span className="mx-1">
+                                                                                        <img style={{ width: "25px"}} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span><AiOutlineFullscreen /></span>
+                                                                                    <span className="mx-2"><TbReplace /></span>
+                                                                                    <span><RiDeleteBin6Line /></span>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                            </div>
+                                                            : null}
+
+                                                        <div className="d-flex justify-content-between">
+                                                            <a
+                                                                style={isDragging ? { color: "red" } : { color: "darkblue" }}
+                                                                onClick={onImageUpload}
+                                                                {...dragProps}
+                                                            >
+                                                                Upload Image
+                                                            </a>
+                                                            &nbsp;
+                                                            <a onClick={onImageRemoveAll}>Remove all images</a>
+                                                        </div>
+
+
                                                         <span className="taskimage border mb-3">
                                                             {imageList.map((image: any, index: any) => (
                                                                 <div key={index} className="image-item">
                                                                     <img src={image.dataURL} alt="" width="100%" className="ImageBox" />
-                                                                    <div className="Footerimg d-flex align-items-center bg-fxdark  p-1 mb-10">
+                                                                    <div className="Footerimg d-flex align-items-center bg-fxdark  p-1 ">
                                                                         <a onClick={() => onImageUpdate(index)}><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
                                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M6.18178 9.10429C6.0131 9.21501 5.97742 11.8728 6.01191 21.808L6.05556 34.3718L17.2248 34.4167L28.3941 34.4615V33.629V32.7963L25.3363 29.6562C23.6546 27.9291 22.2786 26.435 22.2786 26.3356C22.2786 26.1056 24.8625 23.4561 25.0871 23.4561C25.1794 23.4561 26.6292 24.8708 28.3091 26.5998L31.3633 29.7435H32.1721H32.9807V28.9999C32.9807 28.2629 32.946 28.2206 29.1147 24.2843C26.9884 22.0998 25.1739 20.3124 25.0825 20.3124C24.9911 20.3124 23.9403 21.3137 22.7474 22.5373L20.5787 24.7622L16.0787 20.1383L11.5787 15.5143L10.0031 17.1274C9.13641 18.0148 8.36994 18.7406 8.29978 18.7406C8.22962 18.7406 8.19276 17.1097 8.21807 15.1166L8.26393 11.4926L21.7265 11.4479L35.1891 11.4032V18.3029V25.2026H36.2949H37.4008L37.3567 17.1251L37.3125 9.04753L21.8539 9.00596C13.3517 8.98325 6.29916 9.02744 6.18178 9.10429ZM31.1121 14.0251C30.9252 14.2172 30.7723 14.5708 30.7723 14.811C30.7723 15.3389 31.3217 15.9462 31.7992 15.9462C32.2112 15.9462 32.9807 15.2067 32.9807 14.811C32.9807 14.4152 32.2112 13.6758 31.7992 13.6758C31.6081 13.6758 31.2989 13.8329 31.1121 14.0251ZM24.487 32.0585C24.487 32.1319 20.8367 32.1717 16.3754 32.1467L8.26393 32.1013L8.21875 27.2169L8.17356 22.3326L9.91545 20.5355L11.6575 18.7383L18.0723 25.3317C21.6003 28.958 24.487 31.985 24.487 32.0585ZM35.3024 27.5896C35.24 27.6535 35.1891 28.7145 35.1891 29.9474V32.1887H32.9807H30.7723V33.3239V34.4591H32.9807H35.1891V36.7295V39H36.2932H37.3974V36.7346V34.4692L39.6483 34.4205L41.8991 34.3718L41.9496 33.2853L42 32.199L39.7412 32.1501L37.4824 32.1013L37.435 29.7872L37.3876 27.4731H36.4016C35.8592 27.4731 35.3645 27.5255 35.3024 27.5896Z" fill="#333333" />
                                                                         </svg></a>
@@ -1090,8 +1132,13 @@ const EditTaskPopup = (Items: any) => {
                                             </ImageUploading>
                                         </div>
                                     </div>
-                                    <div>
-                                        <Editor />
+                                    <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
+                                        <Editor
+                                            toolbarClassName="toolbarClassName"
+                                            wrapperClassName="wrapperClassName"
+                                            editorClassName="editorClassName"
+                                            wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
+                                        />
                                         <Example />
                                     </div>
                                     {/* <div className="form-group">
@@ -1131,14 +1178,14 @@ const EditTaskPopup = (Items: any) => {
                         <div className="d-flex justify-content-between py-2">
                             <div>
                                 <div className="">
-                                    Created <span> <b> {EditData.Created ? Moment(EditData.Created).format("YYYY/MM/DD") : ""} </b> </span> by <span className="siteColor mx-1">
+                                    Created <span> <b> {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY MM:SS") : ""} </b> </span> by <span className="siteColor mx-1">
                                         <b>
                                             {EditData.Author?.Title ? EditData.Author?.Title : ''}
                                         </b>
                                     </span>
                                 </div>
                                 <div>
-                                    Last modified <span> <b> {EditData.Modified ? Moment(EditData.Modified).format("YYYY/MM/DD") : ''} </b> </span>
+                                    Last modified <span> <b> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY MM:SS") : ''} </b> </span>
                                     by
                                     <span className="siteColor">
                                         <b> {EditData.Editor?.Title ? EditData.Editor.Title : ''} </b>
@@ -1198,7 +1245,7 @@ const EditTaskPopup = (Items: any) => {
                                             ng-click="IsShowFullViewImage!=true? updateTaskRecords('UpdateTask',Item):CancelShowInFullView()" onClick={UpdateTaskInfoFunction}>
                                             Save
                                         </button>
-                                        <button type="button" className="btn btn-primary" onClick={Items.Call}>
+                                        <button type="button" className="btn btn-default" onClick={Items.Call}>
                                             Close
                                         </button>
                                     </span>

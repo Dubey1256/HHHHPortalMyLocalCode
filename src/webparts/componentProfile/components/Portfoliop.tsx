@@ -410,7 +410,7 @@ function Portfolio({ ID }: any) {
                                            
                                             </>
                                     ):""}
-                                     <div>|</div>
+                                     <div className='px-1'>|</div>
                                             {AllTeamMember != null && AllTeamMember.length > 0 &&
                   <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
                 }
