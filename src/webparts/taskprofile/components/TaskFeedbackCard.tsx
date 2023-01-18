@@ -1,6 +1,7 @@
 import * as React from 'react';
 //import styles from './Taskprofile.module.scss';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
+import * as moment from 'moment';
 import {Modal} from '@fluentui/react';
 export interface ITaskFeedbackProps {
     fullfeedback: any;
@@ -72,7 +73,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       let temp = {
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
-        Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        // Created: new Date().toLocaleString('default',{ month: 'short',day:'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        Created:moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm A'),
         Title:txtComment
       };
       //Add object in feedback
@@ -101,7 +103,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       let temp = {
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
-        Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        // Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        Created: moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm A'),
         Title:txtComment
       };
       //Add object in feedback
@@ -170,8 +173,14 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         Title:txtComment
       };
+           if(this.state.updateCommentText.isSubtextComment){
+            this.props.feedback.Subtext[0]['Comments'][this.state.updateCommentText['indexOfUpdateElement']]=temp;
 
-      this.props.feedback["Comments"][this.state.updateCommentText['indexOfUpdateElement']] = temp;
+           }
+           else{
+            this.props.feedback["Comments"][this.state.updateCommentText['indexOfUpdateElement']] = temp;
+           }
+     
       this.props.onPost();
     }
     this.setState({ 
@@ -222,7 +231,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                               <img className="AssignUserPhoto1" src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
                                   fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
                             </div>
-                            <div className="col-10 pe-0">
+                            <div className="col-11 pe-0">
                               <div className='d-flex justify-content-between align-items-center'>
                               {fbComment.AuthorName} - {fbComment.Created}
                               <span>
@@ -243,15 +252,15 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             <textarea id="txtComment" onChange={(e)=>this.handleInputChange(e)}  className="form-control full-width" ></textarea>
           </div>
 
-          <div  className="col-sm-1 pe-0 mt-2  " style={{display: this.state.showcomment}}>
-            <button type="button"  className="post btn btn-primary pull-right ng-binding" onClick={()=>this.PostButtonClick()}>Post</button>
+          <div  className="col-sm-1 pe-0 mt-2 text-end " style={{display: this.state.showcomment}}>
+            <button type="button"  className="post btn btn-primary " onClick={()=>this.PostButtonClick()}>Post</button>
           </div>
           </div>
 
         </div>
               
         {this.state.fbData['Subtext'] != null && this.state.fbData['Subtext'].length > 0 && this.state.fbData['Subtext'].map( (fbSubData:any,j:any)=> {
-        return <div className="col-sm-12 p-0" style={{width: '100%'}}>
+        return <div className="col-sm-12 p-0 mb-2" style={{width: '100%'}}>
             <span className="d-block text-end">
             <a  style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBoxOfSubText()}>Add Comment</a>
           </span>
@@ -284,10 +293,13 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                                   fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
                             </div>
                             <div className="col-sm-11 pad0">
-                              <div className="ng-binding">
+                              <div className="d-flex justify-content-between align-items-center">
                               {fbComment.AuthorName} - {fbComment.Created}
-                                <a className="ps-1" onClick={()=>this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
+                              <span>
+                              <a className="ps-1" onClick={()=>this.openEditModal(fbComment.Title, k, 0, true)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
                                 <a className="ps-1" onClick={()=>this.clearComment(true, k, j)}><img src='/_layouts/images/delete.gif'></img></a>
+                              </span>
+                               
                               </div>
                               <div className="ng-binding"><span  dangerouslySetInnerHTML={{ __html:fbComment.Title}}></span></div>
                             </div>
@@ -302,7 +314,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             <textarea id="txtCommentSubtext" onChange={(e)=>this.handleInputChange(e)} style={{width:'100%'}} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
           </div>
 
-          <div  className="col-sm-1 pe-0 mt-2 " style={{display: this.state.showcomment_subtext}}>
+          <div  className="col-sm-1 pe-0 mt-2 text-end " style={{display: this.state.showcomment_subtext}}>
             <button type="button"  className="post btn btn-primary" onClick={()=>this.SubtextPostButtonClick(j)}>Post</button>
           </div>
           </div>

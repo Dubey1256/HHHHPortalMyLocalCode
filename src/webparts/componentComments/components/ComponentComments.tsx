@@ -3,8 +3,8 @@ import styles from './ComponentComments.module.scss';
 import { IComponentCommentsProps } from './IComponentCommentsProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { Web } from "sp-pnp-js";
-import '../../cssFolder/foundation.scss';
-import '../../cssFolder/foundationmin.scss';
+// import '../../cssFolder/foundation.scss';
+// import '../../cssFolder/foundationmin.scss';
 import './commentCustomStyle.scss'
 import { Modal } from 'office-ui-fabric-react';
 import { Editor } from "react-draft-wysiwyg";

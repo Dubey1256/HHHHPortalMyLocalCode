@@ -4,7 +4,6 @@ import { FaAngleDown, FaAngleUp, FaHome, FaRegTimesCircle } from 'react-icons/fa
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import { Modal } from 'office-ui-fabric-react';
-import '../../cssFolder/Style.scss'
 var siteConfig: any = []
 var AllTaskUsers: any = []
 var Idd: number;

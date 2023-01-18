@@ -12,7 +12,7 @@ import { Web } from 'sp-pnp-js';
 import * as Moment from 'moment';
 //import Groupby from './TaskWebpart';
 import Tooltip from '../../../globalComponents/Tooltip';
-import ComponentTable from './TaskWebpart';
+import ComponentTable from './Taskwebparts';
 import { FaHome } from 'react-icons/fa';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SPComponentLoader } from '@microsoft/sp-loader';
@@ -322,6 +322,18 @@ function Portfolio({ ID }: any) {
                                                 </a>
                                             }
                                         </li>
+                                        {item.Item_x0020_Type=='subcomponent' && 
+                                        <li>
+                                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                                            {item.Parent != undefined &&
+                                                <a target='_blank' data-interception="off"
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}>
+                                                    {item.Parent.Title}
+                                                </a>
+                                            }
+                                        </li>
+                                        }
+
                                         <li><a>{item.Title}</a></li>
                                     </>
                                 )
