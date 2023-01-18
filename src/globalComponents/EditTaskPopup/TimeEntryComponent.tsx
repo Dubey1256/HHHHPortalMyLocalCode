@@ -6,7 +6,7 @@ import * as Moment from 'moment';
 import pnp, { PermissionKind } from "sp-pnp-js";
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
-var changeTime = 0;
+var changeTime:any = 0;
 var ParentId: any = ''
 var Category: any = '';
 var NewCategoryId: any = ''
@@ -42,6 +42,7 @@ function TimeEntryPopup(item: any) {
     const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
     const [add, setAdd] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
     const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState([])
+    const [saveCopyTaskTimeChild, setsaveCopyTaskTimeChild] = React.useState([])
     const [saveCopyTaskTime, setsaveCopyTaskTime] = React.useState([])
     const [AllUser, setAllUser] = React.useState([])
     const [checkCategories, setcheckCategories] = React.useState()
@@ -163,17 +164,89 @@ function TimeEntryPopup(item: any) {
         }
     }
     var newTime:any =''
-    const changeTimes = (val: any, time: any, type: any) => {
+    const changeTimesEdit = (val: any, time: any, type: any) => {
       
-        if (val === '15') {
-           
-            changeTime = changeTime + 15
+        if(type==='EditTask' && val === '15'){
+            if(changeTime == 0){
+            changeTime = time.TaskTimeInMin + 15
+            }
+            else{
+                changeTime = changeTime + 15
+            }
 
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
 
             }
+            setTimeInMinutes(changeTime)
+           
+        }
+        if(type==='EditTask' && val === '60'){
+            if(changeTime == 0){
+                changeTime = time.TaskTimeInMin + 60
+                }
+                else{
+                    changeTime = changeTime + 60
+                }
+
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+               
+            }
+            setTimeInMinutes(changeTime)
+        }
+    }
+    const changeTimesDecEdit = (val: any, time: any, type: any) => {
+      
+        if(type==='EditTask' && val === '15'){
+            if(changeTime == 0){
+            changeTime = time.TaskTimeInMin - 15
+            }
+            else{
+                changeTime = changeTime - 15
+            }
+
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+
+            }
+            setTimeInMinutes(changeTime)
+           
+        }
+        if(type==='EditTask' && val === '60'){
+            if(changeTime == 0){
+                changeTime = time.TaskTimeInMin - 60
+                }
+                else{
+                    changeTime = changeTime - 60
+                }
+
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+               
+            }
+            setTimeInMinutes(changeTime)
+        }
+    }
+
+
+    const changeTimes = (val: any, time: any, type: any) => {
+      
+        if (val === '15') {
+           
+            changeTime = changeTime + 15
+           // changeTime = changeTime > 0
+
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+
+            }
+           
             setTimeInMinutes(changeTime)
            
 
@@ -193,12 +266,15 @@ function TimeEntryPopup(item: any) {
         if (val === '60') {
            
             changeTime = changeTime + 60
+           // changeTime = changeTime > 0
 
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
                
             }
+           
+            
             setTimeInMinutes(changeTime)
             
         }
@@ -234,7 +310,9 @@ function TimeEntryPopup(item: any) {
        var Array: any = []
        var Childitem: any = []
        Array.push(childitem)
+       Childitem.push(childinew)
        setsaveCopyTaskTime(Array)
+       setsaveCopyTaskTimeChild(Childitem)
        console.log(item)
       
     }
@@ -928,7 +1006,7 @@ function TimeEntryPopup(item: any) {
                 UpdatedData.push(updateitem)
             })
         });
-
+        setTaskStatuspopup2(false)
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
         await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(child.ParentID).update({
@@ -940,6 +1018,7 @@ function TimeEntryPopup(item: any) {
         }).then((res: any) => {
 
             console.log(res);
+           
             closeTaskStatusUpdatePoup2();
 
         })
@@ -1110,25 +1189,27 @@ function TimeEntryPopup(item: any) {
             
         })
       
-
+        
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
         await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
             .items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/" + UpdatedData.Company + "/" + UpdatedData.Author).getById(AddParentId)
             .update({
-
+ 
 
 
                 AdditionalTimeEntry: JSON.stringify(UpdatedData),
 
             }).then((res: any) => {
-
                 console.log(res);
+
                 closeAddTaskTimepopup();
-                setupdateData(updateData + 1)
+               setupdateData(updateData + 1)
+                //setAdditionalTime({ ...AdditionalTime })
                 
 
             })
+            
 
     }
 
@@ -1163,8 +1244,8 @@ function TimeEntryPopup(item: any) {
             }
 
         });
-       var date:any = Moment(changeDates).format('LL')
-       console.log(date)
+        var Dateee =Moment(changeEdited).format('DD/MM/YYYY')
+        //var DateFormate = new Date(Eyd)
         $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
             if (items.Childs.length > 0 && items.Childs != undefined) {
                 $.each(items.Childs, function (index: any, subItem: any) {
@@ -1182,8 +1263,8 @@ function TimeEntryPopup(item: any) {
                         update['MainParentId'] = AddMainParent;
                         update['ParentID'] = AddParent;
                         update['TaskTime'] = child.TaskTime;
-                        update['TaskTimeInMinute'] = child.TaskTimeInMinute;
-                        update['TaskDate'] = Moment(child.TaskDate).format('DD/MM/YYYY');;
+                        update['TaskTimeInMinute'] = child.TaskTimeInMin;
+                        update['TaskDate'] = Dateee != 'Invalid date' && Dateee != "" && Dateee != undefined ?Dateee:child.TaskDate;
                         update['Description'] = child.Description
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
@@ -1191,7 +1272,7 @@ function TimeEntryPopup(item: any) {
                 })
             }
         })
-
+        setCopyTaskpopup(false)
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
         await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew" + UpdatedData.AuthorName + "/" + UpdatedData.Company).getById(AddParent).update({
@@ -1203,6 +1284,7 @@ function TimeEntryPopup(item: any) {
         }).then((res: any) => {
 
             console.log(res);
+           
             closeCopyTaskpopup();
 
         })
@@ -1652,13 +1734,17 @@ const DateFormat=(itemL:any)=>{
                                                                 className="full_width"></label>
                                                             <button className="btn btn-primary"
                                                                 title="Decrease by 15 Min"
-                                                                onClick={() => changeTimesDec('15')}>-
+                                                                onClick={() => changeTimesDec('15')}>
+                                                                    <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                             </button>
                                                             <span> 15min </span>
                                                             <button className="btn btn-primary"
                                                                 title="Increase by 15 Min"
-                                                                onClick={() => changeTimes('15', 'add', 'AddNewStructure')}>+
+                                                                onClick={() => changeTimes('15', 'add', 'AddNewStructure')}>
+                                                                    <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                             </button>
                                                         </div>
@@ -1667,13 +1753,17 @@ const DateFormat=(itemL:any)=>{
                                                                 className="full_width"></label>
                                                             <button className="btn btn-primary"
                                                                 title="Decrease by 60 Min"
-                                                                onClick={() => changeTimesDec('60')}>-
+                                                                onClick={() => changeTimesDec('60')}>
+                                                                    <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                             </button>
                                                             <span> 60min </span>
                                                             <button className="btn btn-primary"
                                                                 title="Increase by 60 Min"
-                                                                onClick={() => changeTimes('60', 'add', 'AddNewStructure')}>+
+                                                                onClick={() => changeTimes('60', 'add', 'AddNewStructure')}>
+                                                                    <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                             </button>
                                                         </div>
@@ -1904,13 +1994,16 @@ const DateFormat=(itemL:any)=>{
                                                                             <label className="full_width"></label>
                                                                             <button className="btn btn-primary"
                                                                                 title="Decrease by 15 Min"
-                                                                                onClick={() => changeTimesDec('15')}>-
+                                                                                onClick={() => changeTimesDecEdit('15', child, 'EditTask')}><i className="fa fa-minus"
+                                                                                aria-hidden="true"></i>
 
                                                                             </button>
                                                                             <span> 15min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 15 Min"
-                                                                                onClick={() => changeTimes('15', child, 'EditTask')}>+
+                                                                                onClick={() => changeTimesEdit('15', child, 'EditTask')}>
+                                                                                    <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                         </div>
@@ -1919,13 +2012,17 @@ const DateFormat=(itemL:any)=>{
                                                                                 className="full_width"></label>
                                                                             <button className="btn btn-primary"
                                                                                 title="Decrease by 60 Min"
-                                                                                onClick={() => changeTimesDec('60')}>-
+                                                                                onClick={() => changeTimesDecEdit('60', child, 'EditTask')}>
+                                                                                    <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                             <span> 60min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 60 Min"
-                                                                                onClick={() => changeTimes('60', child, 'EditTask')}>+
+                                                                                onClick={() => changeTimesEdit('60', child, 'EditTask')}>
+                                                                                    <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                         </div>
@@ -2014,7 +2111,7 @@ const DateFormat=(itemL:any)=>{
                 isBlocking={false}
 
             >
-                {saveEditTaskTime.map((item: any) => {
+                {saveCopyTaskTime.map((item: any) => {
                     return (
                         <>
 
@@ -2038,7 +2135,7 @@ const DateFormat=(itemL:any)=>{
                                                         onChange={(e) => setPostData({ ...postData, Title: e.target.value })} />
 
                                                 </div>
-                                                {saveCopyTaskTime.map((child: any, index: any) => {
+                                                {saveCopyTaskTimeChild.map((child: any, index: any) => {
                                                     return (
                                                         <>
 
@@ -2154,7 +2251,7 @@ const DateFormat=(itemL:any)=>{
                                                                             ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                                             name="timeSpent"
                                                                             ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                                            value={TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMinute} />
+                                                                            value={TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin} />
 
                                                                     </div>
                                                                     <div
@@ -2163,13 +2260,17 @@ const DateFormat=(itemL:any)=>{
                                                                             <label className="full_width"></label>
                                                                             <button className="btn btn-primary"
                                                                                 title="Decrease by 15 Min"
-                                                                                onClick={() => changeTimesDec('15')}>-
+                                                                                onClick={() => changeTimesDecEdit('15', child, 'EditTask')}>
+                                                                                    <i className="fa fa-minus"
+                                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                             <span> 15min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 15 Min"
-                                                                                onClick={() => changeTimes('15', child.TaskTime, 'EditTask')}>+
+                                                                                onClick={() => changeTimesEdit('15', child, 'EditTask')}>
+                                                                                    <i className="fa fa-plus"
+                                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                         </div>
@@ -2178,13 +2279,17 @@ const DateFormat=(itemL:any)=>{
                                                                                 className="full_width"></label>
                                                                             <button className="btn btn-primary"
                                                                                 title="Decrease by 60 Min"
-                                                                                onClick={() => changeTimesDec('60')}>-
+                                                                                onClick={() => changeTimesDecEdit('60', child, 'EditTask')}>
+                                                                                    <i className="fa fa-minus"
+                                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                             <span> 60min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 60 Min"
-                                                                                onClick={() => changeTimes('60', child.TaskTime, 'EditTask')}>+
+                                                                                onClick={() => changeTimesEdit('60', child, 'EditTask')}>
+                                                                                    <i className="fa fa-plus"
+                                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                         </div>
@@ -2411,13 +2516,17 @@ const DateFormat=(itemL:any)=>{
                                                         className="full_width"></label>
                                                     <button className="btn btn-primary"
                                                         title="Decrease by 15 Min"
-                                                        onClick={() => changeTimesDec('15')}>-
+                                                        onClick={() => changeTimesDec('15')}>
+                                                            <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                     </button>
                                                     <span> 15min </span>
                                                     <button className="btn btn-primary"
                                                         title="Increase by 15 Min"
-                                                        onClick={() => changeTimes('15', 'add', 'AddTime')}>+
+                                                        onClick={() => changeTimes('15', 'add', 'AddTime')}>
+                                                            <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                     </button>
                                                 </div>
@@ -2426,13 +2535,17 @@ const DateFormat=(itemL:any)=>{
                                                         className="full_width"></label>
                                                     <button className="btn btn-primary"
                                                         title="Decrease by 60 Min"
-                                                        onClick={() => changeTimesDec('60')}>-
+                                                        onClick={() => changeTimesDec('60')}>
+                                                            <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                     </button>
                                                     <span> 60min </span>
                                                     <button className="btn btn-primary"
                                                         title="Increase by 60 Min"
-                                                        onClick={() => changeTimes('60', 'add', 'AddTime')}>+
+                                                        onClick={() => changeTimes('60', 'add', 'AddTime')}>
+                                                            <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                     </button>
                                                 </div>
