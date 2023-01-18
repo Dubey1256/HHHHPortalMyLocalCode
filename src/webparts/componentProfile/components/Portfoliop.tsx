@@ -401,12 +401,16 @@ function Portfolio({ ID }: any) {
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Team Members</dt>
-                                    <dd className='bg-light d-flex'>{AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
+                                    <dd className='bg-light d-flex'>
+                                        {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
                                     <>
                                             <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
                                              <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
                                             </a>
-                                            <div></div>
+                                           
+                                            </>
+                                    ):""}
+                                     <div>|</div>
                                             {AllTeamMember != null && AllTeamMember.length > 0 &&
                   <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
                 }
@@ -439,8 +443,7 @@ function Portfolio({ ID }: any) {
                                             </>
                                             ):""} */}
 
-                                    </>
-                                    ):""}</dd>
+                                  </dd>
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Item Rank</dt>
@@ -482,12 +485,12 @@ function Portfolio({ ID }: any) {
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Categories</dt>
-                                    <dd className='bg-light'>{data.map(item => <a>{item.Categories}</a>)}</dd>
+                                    <dd className='bg-light text-break'>{data.map(item => <a>{item.Categories}</a>)}</dd>
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>% Complete</dt>
                                     <dd className='bg-light'>
-                                        {data.map(item => <a>{item.PercentComplete * 100 }</a>)}
+                                        {data.map(item => <a>{(item.PercentComplete * 100).toFixed(0) }</a>)}
                                         <span className="pull-right">
                                             <span className="pencil_icon">
                                                 <span className="hreflink"
@@ -510,17 +513,17 @@ function Portfolio({ ID }: any) {
                                                         <span className="pull-right">
                                                             <span className="pencil_icon">
                                                                 <span className="hreflink"
-                                                                    title="Edit Inline"
+                                                                    
                                                                 >
                                                                        {item.Portfolio_x0020_Type == 'Component' &&
                                     <>
-                                        <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${ID}`}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />    </a> 
+                                        <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${item.Parent.Id}`}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />    </a> 
                                         
                                     </>
                                 }
                                 {item.Portfolio_x0020_Type == 'Service' &&
                                     <>
-                                       <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${ID}`}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> </a> 
+                                       <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${item.Parent.Id}`}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> </a> 
                                         
 
                                     </>}
