@@ -8,12 +8,14 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
+
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { forEach } from 'lodash';
 import { Item } from '@pnp/sp/items';
+import AncTool from '../../../globalComponents/AncTool/AncTool';
 var smartTime: Number = 0;
 export interface ITaskprofileState {
   Result: any;
@@ -1016,7 +1018,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
             <div className="col-3">
               <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
+              <AncTool siteUrl={this.props.siteUrl} Context={this.props.Context} Task={this.state.Result} PageType='TaskProfile'/>
             </div>
+        
+
           </div>
         </section>
 
