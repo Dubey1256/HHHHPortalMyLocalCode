@@ -16,13 +16,13 @@ const ComponentPortPolioPopup = (item: any) => {
         GetComponents();
     },
         []);
-    function Example(callBack: any) {
+    function Example(callBack: any, type:any) {
 
-        item.Call(callBack.props);
+        item.Call(callBack.props, type);
 
     }
     const setModalIsOpenToFalse = () => {
-        Example(item);
+        Example(item, "SmartComponent");
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
@@ -33,7 +33,7 @@ const ComponentPortPolioPopup = (item: any) => {
             item.props.smartComponent = [];
             item.props.smartComponent = CheckBoxdata;
         }
-        Example(item);
+        Example(item, "SmartComponent");
         setModalIsOpen(false);
     }
 
@@ -610,4 +610,3 @@ const ComponentPortPolioPopup = (item: any) => {
     )
 }
 export default ComponentPortPolioPopup;
-

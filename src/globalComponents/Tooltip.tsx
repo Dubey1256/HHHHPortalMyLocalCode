@@ -8,7 +8,7 @@ function Tooltip() {
   return (
     <Popup
       trigger={
-      <BiMenu />
+      <button type='button'><BiMenu /></button>
       }
       position="left top"
       on="hover"
