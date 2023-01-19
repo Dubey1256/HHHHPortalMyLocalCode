@@ -453,8 +453,8 @@ const ProjectManagementMain = () => {
 
                     <div className='row'>
                         <div className='col-sm-9 p-0' style={{ verticalAlign: "top" }}>
-                            <h2 className='headign'>
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png" />
+                            <h2 className='heading'>
+                                <img className='circularImage rounded-circle ' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png" />
                                 {Masterdata.map(item => <a>{item.Title}</a>)}
                             </h2>
                         </div>
@@ -514,7 +514,7 @@ const ProjectManagementMain = () => {
                                                     <dt className='bg-fxdark'>Assigned To</dt>
                                                     <dd className='bg-light'>
                                                         {item.AssignedUser.map((image: any) =>
-                                                            <span className="headign" title={image.Title}><img src={image.useimageurl} /></span>
+                                                            <span className="headign" title={image.Title}><img className='circularImage rounded-circle' src={image.useimageurl} /></span>
                                                         )}
 
                                                     </dd>
@@ -542,8 +542,6 @@ const ProjectManagementMain = () => {
                                             <div className='col-md-12 p-0'>
                                                 <dl  className='bg-light p-2'>
                                                     
-                                                  
-
                                                         <a>{item.Body != null ? item.Body : ""}</a>
                                                         <span
                                                             className="hreflink pull-right" title="Edit Inline"
@@ -621,7 +619,7 @@ const ProjectManagementMain = () => {
                                             <tr >
                                             <td>
                                                    
-                                                            <img className="icon-sites-img"
+                                                            <img className="circularImage rounded-circle"
                                                             src={item.siteIcon} />
                                                         
                                                  
@@ -662,7 +660,7 @@ const ProjectManagementMain = () => {
                                                         item.AllTeamMember.map((users: any) => {
                                                             return (
                                                                 <>
-                                                                    <span className="headign" title={users.Title}><img src={users.useimageurl} /></span>
+                                                                    <span className="headign" title={users.Title}><img className="circularImage rounded-circle" src={users.useimageurl} /></span>
                                                                 </>
                                                             )
                                                         })
@@ -670,7 +668,7 @@ const ProjectManagementMain = () => {
                                                     }
                                                 </td>
                                                 <td><span className="ml-2">{Moment(item.DueDate).format('DD/MM/YYYY')}</span></td>
-                                                <td onClick={()=>EditPopup(item)}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img></td>
+                                                <td onClick={()=>EditPopup(item)}><img  src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img></td>
 
 
                                             </tr>

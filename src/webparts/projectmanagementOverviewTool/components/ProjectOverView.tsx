@@ -331,7 +331,7 @@ export default function ProjectOverview() {
                                                         item.AssignedUser.map((Userda: any) => {
                                                             return (
                                                                 <span className="headign">
-                                                                    <img src={Userda.useimageurl} title={Userda.Title} />
+                                                                    <img className='circularImage rounded-circle ' src={Userda.useimageurl} title={Userda.Title} />
                                                                 </span>
                                                             )
                                                         })
