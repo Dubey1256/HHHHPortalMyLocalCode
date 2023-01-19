@@ -6,10 +6,13 @@ import * as Moment from 'moment';
 import pnp, { PermissionKind } from "sp-pnp-js";
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
-var changeTime = 0;
+var changeTime:any = 0;
 var ParentId: any = ''
 var Category: any = '';
 var NewCategoryId: any = ''
+var Eyd=''
+var changeEdited ='';
+var Categoryy ='';
 var TaskCate:any=[]
 var AllUsers: any = [];
 var change = Moment().format()
@@ -32,17 +35,23 @@ function TimeEntryPopup(item: any) {
     const [AdditionalTime, setAdditionalTime] = React.useState([])
     const [count, setCount] = React.useState(1)
     const [month, setMonth] = React.useState(1)
+    const [counts, setCounts] = React.useState(1)
+    const [months, setMonths] = React.useState(1)
     const [saveEditTaskTime, setsaveEditTaskTime] = React.useState([])
     const [postData, setPostData] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
     const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
     const [add, setAdd] = React.useState({ Title: '', TaskDate: '', Description: '', TaskTime: '' })
     const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState([])
+    const [saveCopyTaskTimeChild, setsaveCopyTaskTimeChild] = React.useState([])
+    const [saveCopyTaskTime, setsaveCopyTaskTime] = React.useState([])
     const [AllUser, setAllUser] = React.useState([])
     const [checkCategories, setcheckCategories] = React.useState()
     const [updateData, setupdateData] = React.useState(0)
     const [updateData2, setupdateData2] = React.useState(0)
-
+    const [editeddata, setediteddata] = React.useState('')
+    const [editTime, seteditTime] = React.useState('')
     const [year, setYear] = React.useState(1)
+    const [years, setYears] = React.useState(1)
     const [TimeInHours, setTimeInHours] = React.useState(0)
     const [TimeInMinutes, setTimeInMinutes] = React.useState(0)
     var smartTermName = "Task" + item.props.siteType;
@@ -66,98 +75,246 @@ function TimeEntryPopup(item: any) {
 
     });
 
-    const changeDate = (val: any) => {
+    const changeDate = (val: any,Type:any) => {
 
 
         if (val === 'Date') {
             setCount(count + 1)
-
-            change = (Moment().add(count, 'days').format())
+          var dateeee = change != undefined && change != ''?change:''
+            change = (Moment(dateeee).add(1, 'days').format())
             setchangeDates(change)
 
+            if(Type == 'EditTime'){
+             changeEdited = (Moment(editeddata).add(1, 'days').format())
+            var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+            setediteddata(editaskk)
+            }
+           
+
+           
         }
         if (val === 'month') {
             setMonth(month + 1)
-            // setchangeDates(Moment().add(month, 'months').format("MMMM Do YYYY"))
-            change = (Moment().add(month, 'months').format())
+            change = (Moment(change).add(1, 'months').format())
             setchangeDates(change)
 
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(1, 'months').format())
+            var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+           setediteddata(editaskk)
+
         }
+        }
+
+           
         if (val === 'Year') {
             setYear(year + 1)
-            //setchangeDates(Moment().add(year, 'years').format("MMMM Do YYYY"))
-            change = (Moment().add(year, 'years').format())
+            change = (Moment(change).add(1, 'years').format())
             setchangeDates(change)
 
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(1, 'years').format())
+            var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+            setediteddata(editaskk)
+
         }
+        }
+
+       
     }
-    const changeDateDec = (val: any) => {
+    const changeDateDec = (val: any,Type:any) => {
 
 
         if (val === 'Date') {
-            setCount(count - 1)
-            change = (Moment().add(count, 'days').format())
+           // setCount(count - 1)
+           var dateeee = change != undefined && change != ''?change:''
+            change = (Moment(dateeee).add(-1, 'days').format())
             setchangeDates(change)
+
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(-1, 'days').format())
+                var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+                setediteddata(editaskk)
+                }
         }
         if (val === 'month') {
-            setMonth(month - 1)
-            change = (Moment().add(month, 'months').format())
+           // setMonth(month - 1)
+            change = (Moment(change).add(-1, 'months').format())
             setchangeDates(change)
+
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(-1, 'months').format())
+                var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+               setediteddata(editaskk)
+    
+            }
         }
-        if (val === 'Year') {
-            setYear(year - 1)
-            change = (Moment().add(year, 'years').format())
+        if (val === 'year') {
+            //setYear(year - 1)
+            change = (Moment(change).add(-1, 'years').format())
             setchangeDates(change)
+
+            
+            if(Type == 'EditTime'){
+                changeEdited = (Moment(editeddata).add(-1, 'years').format())
+                var editaskk =  Moment(changeEdited).format("ddd, DD MMM yyyy")
+                setediteddata(editaskk)
+    
+            }
+        }
+    }
+    var newTime:any =''
+    const changeTimesEdit = (val: any, time: any, type: any) => {
+      
+        if(type==='EditTask' && val === '15'){
+            if(changeTime == 0){
+            changeTime = time.TaskTimeInMin + 15
+            }
+            else{
+                changeTime = changeTime + 15
+            }
+
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+
+            }
+            setTimeInMinutes(changeTime)
+           
+        }
+        if(type==='EditTask' && val === '60'){
+            if(changeTime == 0){
+                changeTime = time.TaskTimeInMin + 60
+                }
+                else{
+                    changeTime = changeTime + 60
+                }
+
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+               
+            }
+            setTimeInMinutes(changeTime)
+        }
+    }
+    const changeTimesDecEdit = (val: any, time: any, type: any) => {
+      
+        if(type==='EditTask' && val === '15'){
+            if(changeTime == 0){
+            changeTime = time.TaskTimeInMin - 15
+            }
+            else{
+                changeTime = changeTime - 15
+            }
+
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+
+            }
+            setTimeInMinutes(changeTime)
+           
+        }
+        if(type==='EditTask' && val === '60'){
+            if(changeTime == 0){
+                changeTime = time.TaskTimeInMin - 60
+                }
+                else{
+                    changeTime = changeTime - 60
+                }
+
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+               
+            }
+            setTimeInMinutes(changeTime)
         }
     }
 
+
     const changeTimes = (val: any, time: any, type: any) => {
+      
         if (val === '15') {
-            // setchangeTime(changeTime + 15)
+           
             changeTime = changeTime + 15
+           // changeTime = changeTime > 0
 
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
 
             }
+           
             setTimeInMinutes(changeTime)
+           
 
         }
+        // if(type==='EditTask' && val === '15'){
+        //     if(newTime == '' && newTime == undefined){
+        //      newTime = time.TaskTimeInMin + 0.15
+        //      setTimeInMinutes(newTime)
+        //     }
+        //     else{
+        //         newTime = newTime + 0.15
+        //      setTimeInMinutes(newTime)
+        //     }
+           
+        // }
+       
         if (val === '60') {
-            //setchangeTime(changeTime + 60)
+           
             changeTime = changeTime + 60
+           // changeTime = changeTime > 0
 
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
                 setTimeInHours(TimeInHour.toFixed(2))
+               
             }
+           
+            
             setTimeInMinutes(changeTime)
-            // if(type=='EditTask'){
-            //     changeTime = changeTime + 15
-            //    var changeTimeEdi = time + 1
-            //    setTimeInHours(changeTimeEdi)
-            //    setTimeInMinutes(changeTime)
-
-
-            // }
-            setTimeInMinutes(changeTime)
-
+            
         }
+        // if(newTime == '' && newTime == undefined){
+        //     newTime = time.TaskTimeInMin + 1.00
+        //     setTimeInMinutes(newTime)
+        //    }
+        //    else{
+        //        newTime = newTime + 1.00
+        //     setTimeInMinutes(newTime)
+        //    }
 
     }
     const openTaskStatusUpdatePoup = () => {
         setTaskStatuspopup(true)
     }
     const Editcategorypopup = (child:any) => {
+        Categoryy = child.Title
         setEditcategory(true)
     }
+
     const closeEditcategorypopup = (child:any) => {
         setEditcategory(false)
     }
  
-    const openCopyTaskpopup = () => {
+    const openCopyTaskpopup = (childitem: any, childinew: any) => {
         setCopyTaskpopup(true)
+        dateValue = childinew.TaskDate.split("/");
+        dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+         Dateet= new Date(dp)
+        Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
+        setediteddata(Eyd)
+       var Array: any = []
+       var Childitem: any = []
+       Array.push(childitem)
+       Childitem.push(childinew)
+       setsaveCopyTaskTime(Array)
+       setsaveCopyTaskTimeChild(Childitem)
+       console.log(item)
+      
     }
 
     const openAddTasktimepopup = (val: any) => {
@@ -169,15 +326,16 @@ function TimeEntryPopup(item: any) {
         var CategoryTitle = val.Title;
         setAddTaskTimepopup(true)
     }
-    
+    let dateValue  =''
+    var dp = ''
+    var Dateet:any = ''
     const openTaskStatusUpdatePoup2 = (childitem: any, childinew: any) => {
        
-        let dateValue = childinew.TaskDate.split("/");
-        let dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
-         childinew.TaskDate = Moment(dp).format("ddd, DD MMM yyyy")
-        
-
-       
+         dateValue = childinew.TaskDate.split("/");
+         dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+          Dateet= new Date(dp)
+         Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
+         setediteddata(Eyd)
         var Array: any = []
         var Childitem: any = []
         setTaskStatuspopup2(true)
@@ -192,28 +350,53 @@ function TimeEntryPopup(item: any) {
         setTaskStatuspopup(false)
         setTimeInHours(0)
         setTimeInMinutes(0)
+        setchangeDates(undefined)
         changeTime = 0;
+        setCount(1)
+        change= Moment().format()
+        setMonth(1)
+        setYear(1)
         setchangeDates(Moment().format(''))
     }
     const closeCopyTaskpopup = () => {
         setCopyTaskpopup(false)
+        setTimeInMinutes(0)
+        setTimeInHours(0)
+        setCount(1)
+        change= Moment().format()
+        setMonth(1)
+        setYear(1)
+        changeTime = 0;
+        setchangeDates(Moment().format(''))
+        setchangeDates(undefined)
+        setPostData(undefined)
     }
     const closeAddTaskTimepopup = () => {
-        setPostData(undefined)
         setTimeInMinutes(0)
         setAddTaskTimepopup(false)
         setTimeInHours(0)
+        setCount(1)
+        change= Moment().format()
+        setMonth(1)
+        setYear(1)
         changeTime = 0;
         setchangeDates(Moment().format(''))
+        setchangeDates(undefined)
         setPostData(undefined)
     }
     const closeTaskStatusUpdatePoup2 = () => {
         setTaskStatuspopup2(false)
         setTaskStatuspopup(false)
         setTimeInHours(0)
+        setchangeDates(undefined)
+        change= Moment().format()
         setTimeInMinutes(0)
+        setCount(1)
+        setMonth(1)
+        setYear(1)
         changeTime = 0;
-        setchangeDates(Moment().format(''))
+        setchangeDates(Moment().format())
+        setediteddata(undefined)
     }
     const changeTimesDec = (items: any) => {
         if (items === '15') {
@@ -278,10 +461,10 @@ function TimeEntryPopup(item: any) {
         GetSmartMetadata();
     }, [updateData,updateData2])
 
-    React.useEffect(() => {
-        changeDate((e: any) => e);
+    // React.useEffect(() => {
+    //     changeDate((e: any) => e);
 
-    }, [changeDates,TaskCate])
+    // }, [changeDates,TaskCate])
 
     var AllMetadata: [] = [];
     const GetSmartMetadata = async () => {
@@ -345,8 +528,10 @@ function TimeEntryPopup(item: any) {
                             value.EditorTitle = val.Editor.Title;
                             value.AuthorImage = val.AuthorImage
                             value.show = true;
-                            if (val.changeDates != undefined)
-                                value.TaskDate = Moment(val.changeDates).format('DD/MM/YYYY');
+                           // value.TaskDate = true;
+                            if (val.Created != undefined)
+                            var date= new Date(val.Created)
+                                value.Created = Moment(date).format('DD/MM/YYYY');
                             if (val.Modified != undefined)
                                 value.Modified = Moment(val.Modified).format('DD/MM/YYYY');
 
@@ -574,7 +759,7 @@ function TimeEntryPopup(item: any) {
 
                     "Accept": "application/json; odata=verbose"
 
-                }, 
+                },
 
                 success: function (data) {
                     count++;
@@ -620,6 +805,7 @@ function TimeEntryPopup(item: any) {
                             item.siteName = null
                             item.siteUrl = null;
                             if (NewParentId == item.Id) {
+                                var Datee = new Date(changeDates)
                                 var TimeInH: any = changeTime / 60
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
@@ -631,7 +817,8 @@ function TimeEntryPopup(item: any) {
                                 update['MainParentId'] = mainParentId;
                                 update['ParentID'] = NewParentId;
                                 update['TaskTime'] = TimeInH;
-                                update['TaskDate'] =  Moment(changeDates).format('DD/MM/YYYY');
+                                update['TaskTimeInMin'] = TimeInMinutes;
+                                update['TaskDate'] =  Moment(Datee).format('DD/MM/YYYY');
                                 update['Description'] = newData.Description
                                 item.AdditionalTime.push(update)
                                 let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
@@ -800,23 +987,26 @@ function TimeEntryPopup(item: any) {
     }
 
     const UpdateAdditionaltime = async (child: any) => {
+        var Dateee =Moment(changeEdited).format('DD/MM/YYYY')
+        var DateFormate = new Date(Eyd)
         var UpdatedData: any = []
         $.each(saveEditTaskTime, function (index: any, update: any) {
             $.each(update.AdditionalTime, function (index: any, updateitem: any) {
                 if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
 
                     updateitem.Id = child.ID;
-                    updateitem.TaskTime = postData.TaskTime != undefined ? postData.TaskTime : child.TaskTime;
-                    updateitem.TaskDate = postData.TaskDate != undefined ? postData.TaskDate : Moment(child.TaskDate).format('LL');
+                    updateitem.TaskTime = TimeInHours != undefined  ? TimeInHours  : child.TaskTime;
+                    updateitem.TaskTimeInMinute = TimeInMinutes != undefined  ? TimeInMinutes  : child.TaskTimeInMinutes;
+                    updateitem.TaskDate = Dateee != "Invalid date"? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
                     
-                    updateitem.Description = postData.Description != undefined ? postData.Description : child.Description;
+                    updateitem.Description = postData != undefined && postData.Description != undefined && postData.Description != ''  ? postData.Description : child.Description;
 
 
                 }
                 UpdatedData.push(updateitem)
             })
         });
-
+        setTaskStatuspopup2(false)
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
         await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(child.ParentID).update({
@@ -828,6 +1018,7 @@ function TimeEntryPopup(item: any) {
         }).then((res: any) => {
 
             console.log(res);
+           
             closeTaskStatusUpdatePoup2();
 
         })
@@ -972,6 +1163,7 @@ function TimeEntryPopup(item: any) {
                         update['MainParentId'] = AddMainParentId;
                         update['ParentID'] = AddParentId;
                         update['TaskTime'] = TimeInHours;
+                        update['TaskTimeInMin'] = TimeInMinutes;
                         update['TaskDate'] = Moment(changeDates).format('DD/MM/YYYY');
                         update['Description'] = postData.Description
                         items.AdditionalTime.push(update)
@@ -985,6 +1177,7 @@ function TimeEntryPopup(item: any) {
                         update['MainParentId'] = items.TimesheetTitle.Id;
                         update['ParentID'] = items.Id;
                         update['TaskTime'] = TimeInHours;
+                        update['TaskTimeInMin'] = TimeInMinutes;
                         update['TaskDate'] =  Moment(changeDates).format('DD/MM/YYYY');
                         update['Description'] = postData.Description
                         items.AdditionalTime.push(update)
@@ -996,25 +1189,27 @@ function TimeEntryPopup(item: any) {
             
         })
       
-
+        
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
         await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
             .items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/" + UpdatedData.Company + "/" + UpdatedData.Author).getById(AddParentId)
             .update({
-
+ 
 
 
                 AdditionalTimeEntry: JSON.stringify(UpdatedData),
 
             }).then((res: any) => {
-
                 console.log(res);
+
                 closeAddTaskTimepopup();
-                setupdateData(updateData + 1)
+               setupdateData(updateData + 1)
+                //setAdditionalTime({ ...AdditionalTime })
                 
 
             })
+            
 
     }
 
@@ -1049,8 +1244,8 @@ function TimeEntryPopup(item: any) {
             }
 
         });
-       var date:any = Moment(changeDates).format('LL')
-       console.log(date)
+        var Dateee =Moment(changeEdited).format('DD/MM/YYYY')
+        //var DateFormate = new Date(Eyd)
         $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
             if (items.Childs.length > 0 && items.Childs != undefined) {
                 $.each(items.Childs, function (index: any, subItem: any) {
@@ -1068,7 +1263,8 @@ function TimeEntryPopup(item: any) {
                         update['MainParentId'] = AddMainParent;
                         update['ParentID'] = AddParent;
                         update['TaskTime'] = child.TaskTime;
-                        update['TaskDate'] = Moment(child.TaskDate).format('DD/MM/YYYY');;
+                        update['TaskTimeInMinute'] = child.TaskTimeInMin;
+                        update['TaskDate'] = Dateee != 'Invalid date' && Dateee != "" && Dateee != undefined ?Dateee:child.TaskDate;
                         update['Description'] = child.Description
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
@@ -1076,7 +1272,7 @@ function TimeEntryPopup(item: any) {
                 })
             }
         })
-
+        setCopyTaskpopup(false)
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
         await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew" + UpdatedData.AuthorName + "/" + UpdatedData.Company).getById(AddParent).update({
@@ -1088,6 +1284,7 @@ function TimeEntryPopup(item: any) {
         }).then((res: any) => {
 
             console.log(res);
+           
             closeCopyTaskpopup();
 
         })
@@ -1274,7 +1471,7 @@ const DateFormat=(itemL:any)=>{
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
                                                                                                                         <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png" onClick={openCopyTaskpopup}></img>
+                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png" onClick={()=>openCopyTaskpopup(childitem, childinew)}></img>
                                                                                                                     </a></td>
 
                                                                                                                     <td style={{ width: "2%" }}>  <a className="hreflink"
@@ -1457,7 +1654,7 @@ const DateFormat=(itemL:any)=>{
                                                                 ng-required="true"
                                                                 placeholder="DD/MM/YYYY"
                                                                 ng-model="AdditionalnewDate"
-                                                                value={Moment(changeDates).format('DD/MM/YYYY')}
+                                                                value={Moment(changeDates).format("ddd, DD MMM yyyy")}
                                                                 onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
 
                                                         </div>
@@ -1468,14 +1665,14 @@ const DateFormat=(itemL:any)=>{
                                                             <div className="col-sm-4 ">
                                                                 <button id="DayPlus"
                                                                     className="top-container plus-button plus-minus"
-                                                                    onClick={() => changeDate('Date')}>
+                                                                    onClick={() => changeDate('Date','AddCategory')}>
                                                                     <i className="fa fa-plus"
-                                                                        aria-hidden="true">+</i>
+                                                                        aria-hidden="true"></i>
                                                                 </button>
                                                                 <span className="min-input">Day</span>
                                                                 <button id="DayMinus"
                                                                     className="top-container minus-button plus-minus"
-                                                                    onClick={() => changeDateDec('Date')}>
+                                                                    onClick={() => changeDateDec('Date','AddCategory')}>
                                                                     <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
                                                                 </button>
@@ -1484,14 +1681,14 @@ const DateFormat=(itemL:any)=>{
                                                             <div className="col-sm-4 ">
                                                                 <button id="MonthPlus"
                                                                     className="top-container plus-button plus-minus"
-                                                                    onClick={() => changeDate('month')}>
+                                                                    onClick={() => changeDate('month','AddCategory')}>
                                                                     <i className="fa fa-plus"
                                                                         aria-hidden="true"></i>
                                                                 </button>
                                                                 <span className="min-input">Month</span>
                                                                 <button id="MonthMinus"
                                                                     className="top-container minus-button plus-minus"
-                                                                    onClick={() => changeDateDec('month')}>
+                                                                    onClick={() => changeDateDec('month','AddCategory')}>
                                                                     <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
                                                                 </button>
@@ -1501,14 +1698,14 @@ const DateFormat=(itemL:any)=>{
                                                                 className="col-sm-4 ">
                                                                 <button id="YearPlus"
                                                                     className="top-container plus-button plus-minus"
-                                                                    onClick={() => changeDate('Year')}>
+                                                                    onClick={() => changeDate('Year','AddCategory')}>
                                                                     <i className="fa fa-plus"
                                                                         aria-hidden="true"></i>
                                                                 </button>
                                                                 <span className="min-input">Year</span>
                                                                 <button id="YearMinus"
                                                                     className="top-container minus-button plus-minus"
-                                                                    onClick={() => changeDateDec('year')}>
+                                                                    onClick={() => changeDateDec('year','AddCategory')}>
                                                                     <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
                                                                 </button>
@@ -1537,13 +1734,17 @@ const DateFormat=(itemL:any)=>{
                                                                 className="full_width"></label>
                                                             <button className="btn btn-primary"
                                                                 title="Decrease by 15 Min"
-                                                                onClick={() => changeTimesDec('15')}>-
+                                                                onClick={() => changeTimesDec('15')}>
+                                                                    <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                             </button>
                                                             <span> 15min </span>
                                                             <button className="btn btn-primary"
                                                                 title="Increase by 15 Min"
-                                                                onClick={() => changeTimes('15', 'add', 'AddNewStructure')}>+
+                                                                onClick={() => changeTimes('15', 'add', 'AddNewStructure')}>
+                                                                    <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                             </button>
                                                         </div>
@@ -1552,13 +1753,17 @@ const DateFormat=(itemL:any)=>{
                                                                 className="full_width"></label>
                                                             <button className="btn btn-primary"
                                                                 title="Decrease by 60 Min"
-                                                                onClick={() => changeTimesDec('60')}>-
+                                                                onClick={() => changeTimesDec('60')}>
+                                                                    <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                             </button>
                                                             <span> 60min </span>
                                                             <button className="btn btn-primary"
                                                                 title="Increase by 60 Min"
-                                                                onClick={() => changeTimes('60', 'add', 'AddNewStructure')}>+
+                                                                onClick={() => changeTimes('60', 'add', 'AddNewStructure')}>
+                                                                    <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                             </button>
                                                         </div>
@@ -1709,7 +1914,7 @@ const DateFormat=(itemL:any)=>{
                                                                                 ng-required="true"
                                                                                 placeholder="DD/MM/YYYY"
                                                                                 ng-model="AdditionalnewDate"
-                                                                                defaultValue={child.TaskDate}
+                                                                                value={editeddata}
                                                                                 onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
 
                                                                         </div>
@@ -1720,14 +1925,14 @@ const DateFormat=(itemL:any)=>{
                                                                             <div className="col-sm-4">
                                                                                 <button id="DayPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('Date')}>
+                                                                                    onClick={() => changeDate('Date','EditTime')}>
                                                                                     <i className="fa fa-plus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Day</span>
                                                                                 <button id="DayMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('Date')}>
+                                                                                    onClick={() => changeDateDec('Date','EditTime')}>
                                                                                     <i className="fa fa-minus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
@@ -1737,14 +1942,14 @@ const DateFormat=(itemL:any)=>{
                                                                                 className="col-sm-4">
                                                                                 <button id="MonthPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('month')}>
+                                                                                    onClick={() => changeDate('month','EditTime')}>
                                                                                     <i className="fa fa-plus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Month</span>
                                                                                 <button id="MonthMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('month')}>
+                                                                                    onClick={() => changeDateDec('month','EditTime')}>
                                                                                     <i className="fa fa-minus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
@@ -1754,14 +1959,14 @@ const DateFormat=(itemL:any)=>{
                                                                                 className="col-sm-4  ">
                                                                                 <button id="YearPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('Year')}>
+                                                                                    onClick={() => changeDate('Year','EditTime')}>
                                                                                     <i className="fa fa-plus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Year</span>
                                                                                 <button id="YearMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('year')}>
+                                                                                    onClick={() => changeDateDec('year','EditTime')}>
                                                                                     <i className="fa fa-minus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
@@ -1780,7 +1985,7 @@ const DateFormat=(itemL:any)=>{
                                                                             ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                                             name="timeSpent"
                                                                             ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                                            value={TimeInMinutes} />
+                                                                            value={TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin} />
 
                                                                     </div>
                                                                     <div
@@ -1789,13 +1994,16 @@ const DateFormat=(itemL:any)=>{
                                                                             <label className="full_width"></label>
                                                                             <button className="btn btn-primary"
                                                                                 title="Decrease by 15 Min"
-                                                                                onClick={() => changeTimesDec('15')}>-
+                                                                                onClick={() => changeTimesDecEdit('15', child, 'EditTask')}><i className="fa fa-minus"
+                                                                                aria-hidden="true"></i>
 
                                                                             </button>
                                                                             <span> 15min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 15 Min"
-                                                                                onClick={() => changeTimes('15', child.TaskTime, 'EditTask')}>+
+                                                                                onClick={() => changeTimesEdit('15', child, 'EditTask')}>
+                                                                                    <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                         </div>
@@ -1804,13 +2012,17 @@ const DateFormat=(itemL:any)=>{
                                                                                 className="full_width"></label>
                                                                             <button className="btn btn-primary"
                                                                                 title="Decrease by 60 Min"
-                                                                                onClick={() => changeTimesDec('60')}>-
+                                                                                onClick={() => changeTimesDecEdit('60', child, 'EditTask')}>
+                                                                                    <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                             <span> 60min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 60 Min"
-                                                                                onClick={() => changeTimes('60', child.TaskTime, 'EditTask')}>+
+                                                                                onClick={() => changeTimesEdit('60', child, 'EditTask')}>
+                                                                                    <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                         </div>
@@ -1899,23 +2111,23 @@ const DateFormat=(itemL:any)=>{
                 isBlocking={false}
 
             >
-                {saveEditTaskTime.map((item: any) => {
+                {saveCopyTaskTime.map((item: any) => {
                     return (
                         <>
 
-                            <div id="EditGrueneContactSearch">
+                            <div id="CopytaskTime">
 
-                                <div className="modal-dialog" style={{ width: "600px" }}>
-                                    <div className="modal-content" ng-cloak>
-                                        <div className="modal-header  mt-1 px-3">
+                               <div className="modal-dialog" style={{ width: "600px" }} >
+                                    <div className="modal-content" ng-cloak> 
+                                    <div className="modal-header  mt-1 px-3">
                                             <h5 className="modal-title" id="exampleModalLabel">  Copy Task Time</h5>
                                             <button onClick={closeCopyTaskpopup} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
+                                        </div> 
 
-                                        <div className="modal-body  border m-3 p-3  ">
+                                        <div className="modal-body border m-3 p-3">
                                             <div className="col">
 
-                                                <div className="col-md-12 mb-2">
+                                                <div className="form-group mb-2">
                                                     <label>Title</label>
                                                     <input type="text" autoComplete="off"
                                                         className="form-control" name="TimeTitle"
@@ -1923,13 +2135,13 @@ const DateFormat=(itemL:any)=>{
                                                         onChange={(e) => setPostData({ ...postData, Title: e.target.value })} />
 
                                                 </div>
-                                                {saveEditTaskTimeChild.map((child: any, index: any) => {
+                                                {saveCopyTaskTimeChild.map((child: any, index: any) => {
                                                     return (
                                                         <>
 
-                                                            <div className="form-group">
+                                                            <div className="col">
                                                                 <div className='row'>
-                                                                    <div className="col-sm-6">
+                                                                    <div className="col-sm-6 ">
                                                                         <div className="date-div">
                                                                             <div className="Date-Div-BAR">
                                                                                 <span className="href"
@@ -1965,30 +2177,28 @@ const DateFormat=(itemL:any)=>{
                                                                                 autoComplete="off"
                                                                                 id="AdditionalNewDatePicker"
                                                                                 className="form-control"
-
+                                                                                ng-required="true"
                                                                                 placeholder="DD/MM/YYYY"
-
-                                                                                value={Moment(child.TaskDate).format('ddd, DD MMM yyyy')}
+                                                                                ng-model="AdditionalnewDate"
+                                                                                value={editeddata}
                                                                                 onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
 
                                                                         </div>
                                                                     </div>
 
-                                                                    <div
-                                                                        className="col-sm-6 session-control-buttons">
+                                                                    <div className="col-sm-6 session-control-buttons">
                                                                         <div className='row'>
-                                                                            <div
-                                                                                className="col-sm-4 ">
+                                                                            <div className="col-sm-4">
                                                                                 <button id="DayPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('Date')}>
+                                                                                    onClick={() => changeDate('Date','EditTime')}>
                                                                                     <i className="fa fa-plus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Day</span>
                                                                                 <button id="DayMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('Date')}>
+                                                                                    onClick={() => changeDateDec('Date','EditTime')}>
                                                                                     <i className="fa fa-minus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
@@ -1998,30 +2208,31 @@ const DateFormat=(itemL:any)=>{
                                                                                 className="col-sm-4">
                                                                                 <button id="MonthPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('month')}>
+                                                                                    onClick={() => changeDate('month','EditTime')}>
                                                                                     <i className="fa fa-plus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Month</span>
                                                                                 <button id="MonthMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('month')}>
+                                                                                    onClick={() => changeDateDec('month','EditTime')}>
                                                                                     <i className="fa fa-minus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
                                                                             </div>
 
-                                                                            <div className="col-sm-4 ">
+                                                                            <div
+                                                                                className="col-sm-4  ">
                                                                                 <button id="YearPlus"
                                                                                     className="top-container plus-button plus-minus"
-                                                                                    onClick={() => changeDate('Year')}>
+                                                                                    onClick={() => changeDate('Year','EditTime')}>
                                                                                     <i className="fa fa-plus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
                                                                                 <span className="min-input">Year</span>
                                                                                 <button id="YearMinus"
                                                                                     className="top-container minus-button plus-minus"
-                                                                                    onClick={() => changeDateDec('year')}>
+                                                                                    onClick={() => changeDateDec('year','EditTime')}>
                                                                                     <i className="fa fa-minus"
                                                                                         aria-hidden="true"></i>
                                                                                 </button>
@@ -2030,29 +2241,36 @@ const DateFormat=(itemL:any)=>{
                                                                     </div>
                                                                 </div>
                                                                 <div className="row mb-2">
-                                                                    <div className="col-sm-6 ">
+                                                                    <div className="col-sm-6">
                                                                         <label
                                                                             ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
                                                                         <input type="text"
                                                                             autoComplete="off"
                                                                             className="form-control"
-                                                                            defaultValue={changeTime} />
+                                                                            ng-required="true"
+                                                                            ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                                                                            name="timeSpent"
+                                                                            ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
+                                                                            value={TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin} />
 
                                                                     </div>
                                                                     <div
-                                                                        className="col-sm-6 Time-control-buttons">
-                                                                        <div className="pe-0 Quaterly-Time">
-                                                                            <label
-                                                                                className="full_width"></label>
+                                                                        className="col-sm-6 d-flex justify-content-between align-items-center">
+                                                                        <div className="Quaterly-Time">
+                                                                            <label className="full_width"></label>
                                                                             <button className="btn btn-primary"
                                                                                 title="Decrease by 15 Min"
-                                                                                onClick={() => changeTimesDec('15')}>-
+                                                                                onClick={() => changeTimesDecEdit('15', child, 'EditTask')}>
+                                                                                    <i className="fa fa-minus"
+                                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                             <span> 15min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 15 Min"
-                                                                                onClick={() => changeTimes('15', child.TaskTime, 'CopyTask')}>+
+                                                                                onClick={() => changeTimesEdit('15', child, 'EditTask')}>
+                                                                                    <i className="fa fa-plus"
+                                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                         </div>
@@ -2061,22 +2279,26 @@ const DateFormat=(itemL:any)=>{
                                                                                 className="full_width"></label>
                                                                             <button className="btn btn-primary"
                                                                                 title="Decrease by 60 Min"
-                                                                                onClick={() => changeTimesDec('60')}>-
+                                                                                onClick={() => changeTimesDecEdit('60', child, 'EditTask')}>
+                                                                                    <i className="fa fa-minus"
+                                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                             <span> 60min </span>
                                                                             <button className="btn btn-primary"
                                                                                 title="Increase by 60 Min"
-                                                                                onClick={() => changeTimes('60', child.TaskTime, 'CopyTask')}>+
+                                                                                onClick={() => changeTimesEdit('60', child, 'EditTask')}>
+                                                                                    <i className="fa fa-plus"
+                                                                                        aria-hidden="true"></i>
 
                                                                             </button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div className="row mb-2">
-                                                                    <div className="col-sm-6">
+                                                                <div className="row">
+                                                                    <div className="col-sm-6 ">
                                                                         <label>Time Spent (in hours)</label>
-                                                                        <input className="form-control" type="text" defaultValue={child.TaskTime}
+                                                                        <input className="form-control" type="text" value={TimeInHours != 0 ? TimeInHours : child.TaskTime}
                                                                             onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
                                                                     </div>
                                                                 </div>
@@ -2094,7 +2316,7 @@ const DateFormat=(itemL:any)=>{
                                                             </div>
                                                             <footer>
                                                                 <div className='row'>
-                                                                    <div className="col-sm-6 p-0">
+                                                                    <div className="col-sm-6 ">
                                                                         <div className="text-left">
                                                                             Created
                                                                             <span>{child.TaskTimeCreatedDate}</span>
@@ -2122,7 +2344,7 @@ const DateFormat=(itemL:any)=>{
                                                                             form
                                                                         </a>
                                                                         <button type="button" className="btn btn-primary ms-2"
-                                                                            onClick={(e) => SaveCopytime(child)}>
+                                                                           onClick={()=>SaveCopytime(child)}>
                                                                             Save
                                                                         </button>
                                                                     </div>
@@ -2139,9 +2361,7 @@ const DateFormat=(itemL:any)=>{
 
 
 
-
-
-                                    </div>
+                                     </div> 
                                 </div>
                             </div>
                         </>
@@ -2230,14 +2450,14 @@ const DateFormat=(itemL:any)=>{
                                                         className="col-sm-4 ">
                                                         <button id="DayPlus"
                                                             className="top-container plus-button plus-minus"
-                                                            onClick={() => changeDate('Date')}>
+                                                            onClick={() => changeDate('Date','AddTime')}>
                                                             <i className="fa fa-plus"
                                                                 aria-hidden="true"></i>
                                                         </button>
                                                         <span className="min-input">Day</span>
                                                         <button id="DayMinus"
                                                             className="top-container minus-button plus-minus"
-                                                            onClick={() => changeDateDec('Date')}>
+                                                            onClick={() => changeDateDec('Date','AddTime')}>
                                                             <i className="fa fa-minus"
                                                                 aria-hidden="true"></i>
                                                         </button>
@@ -2247,14 +2467,14 @@ const DateFormat=(itemL:any)=>{
                                                         className="col-sm-4 ">
                                                         <button id="MonthPlus"
                                                             className="top-container plus-button plus-minus"
-                                                            onClick={() => changeDate('month')}>
+                                                            onClick={() => changeDate('month','AddTime')}>
                                                             <i className="fa fa-plus"
                                                                 aria-hidden="true"></i>
                                                         </button>
                                                         <span className="min-input">Month</span>
                                                         <button id="MonthMinus"
                                                             className="top-container minus-button plus-minus"
-                                                            onClick={() => changeDateDec('month')}>
+                                                            onClick={() => changeDateDec('month','AddTime')}>
                                                             <i className="fa fa-minus"
                                                                 aria-hidden="true"></i>
                                                         </button>
@@ -2264,14 +2484,14 @@ const DateFormat=(itemL:any)=>{
                                                         className="col-sm-4">
                                                         <button id="YearPlus"
                                                             className="top-container plus-button plus-minus"
-                                                            onClick={() => changeDate('Year')}>
+                                                            onClick={() => changeDate('Year','AddTime')}>
                                                             <i className="fa fa-plus"
                                                                 aria-hidden="true"></i>
                                                         </button>
                                                         <span className="min-input">Year</span>
                                                         <button id="YearMinus"
                                                             className="top-container minus-button plus-minus"
-                                                            onClick={() => changeDateDec('year')}>
+                                                            onClick={() => changeDateDec('year','AddTime')}>
                                                             <i className="fa fa-minus"
                                                                 aria-hidden="true"></i>
                                                         </button>
@@ -2296,13 +2516,17 @@ const DateFormat=(itemL:any)=>{
                                                         className="full_width"></label>
                                                     <button className="btn btn-primary"
                                                         title="Decrease by 15 Min"
-                                                        onClick={() => changeTimesDec('15')}>-
+                                                        onClick={() => changeTimesDec('15')}>
+                                                            <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                     </button>
                                                     <span> 15min </span>
                                                     <button className="btn btn-primary"
                                                         title="Increase by 15 Min"
-                                                        onClick={() => changeTimes('15', 'add', 'AddTime')}>+
+                                                        onClick={() => changeTimes('15', 'add', 'AddTime')}>
+                                                            <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                     </button>
                                                 </div>
@@ -2311,13 +2535,17 @@ const DateFormat=(itemL:any)=>{
                                                         className="full_width"></label>
                                                     <button className="btn btn-primary"
                                                         title="Decrease by 60 Min"
-                                                        onClick={() => changeTimesDec('60')}>-
+                                                        onClick={() => changeTimesDec('60')}>
+                                                            <i className="fa fa-minus"
+                                                                        aria-hidden="true"></i>
 
                                                     </button>
                                                     <span> 60min </span>
                                                     <button className="btn btn-primary"
                                                         title="Increase by 60 Min"
-                                                        onClick={() => changeTimes('60', 'add', 'AddTime')}>+
+                                                        onClick={() => changeTimes('60', 'add', 'AddTime')}>
+                                                            <i className="fa fa-plus"
+                                                                        aria-hidden="true"></i>
 
                                                     </button>
                                                 </div>
@@ -2412,7 +2640,7 @@ const DateFormat=(itemL:any)=>{
                                                 <input type="text" autoComplete="off"
                                                     className="form-control"
                                                     name="CategoriesTitle"
-                                                    value={checkCategories}
+                                                    value={Categoryy}
                                                 />
                                             </div>
                                         </div>
@@ -2421,7 +2649,7 @@ const DateFormat=(itemL:any)=>{
                                                 <label>Title</label>
                                                 <input type="text" autoComplete="off"
                                                     className="form-control" name="TimeTitle"
-                                                    defaultValue={checkCategories}
+                                                    defaultValue={Categoryy}
                                                     onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
                                             </div>
                                         </div>
@@ -2443,7 +2671,7 @@ const DateFormat=(itemL:any)=>{
                                                             id="subcategorytasksPriority{{item.Id}}">
                                                             <input
                                                                 type="radio" className="form-check-input"
-                                                                value={Items.Title} defaultChecked={Items.Title==checkCategories}
+                                                                defaultValue={Items.Title} defaultChecked={Items.Title==Categoryy}
                                                                 onChange={selectCategories}
 
                                                                 name="taskcategory" />

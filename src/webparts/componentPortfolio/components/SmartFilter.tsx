@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as $ from 'jquery';
 //import * as Moment from 'moment';
-import '../../cssFolder/foundation.scss'
+// import '../../cssFolder/foundation.scss'
 //import { update } from "@microsoft/sp-lodash-subset";
 //import './foundationmin.scss'
 //import eventBus from "./EventBus";
