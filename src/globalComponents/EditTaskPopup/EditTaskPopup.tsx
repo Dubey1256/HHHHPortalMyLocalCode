@@ -342,44 +342,44 @@ const EditTaskPopup = (Items: any) => {
             })
         }
 
-        if(TaskAssignedTo != undefined && TaskAssignedTo?.length > 0){
-            TaskAssignedTo.map((taskInfo)=>{
+        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+            TaskAssignedTo.map((taskInfo) => {
                 AssignedToIds.push(taskInfo.Id);
             })
-        }else{
-            if(EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0){
-                EditData.AssignedTo.map((taskInfo:any)=>{
+        } else {
+            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                EditData.AssignedTo.map((taskInfo: any) => {
                     AssignedToIds.push(taskInfo.Id);
                 })
             }
         }
-        if(TaskTeamMembers != undefined && TaskTeamMembers?.length > 0){
-            TaskTeamMembers.map((taskInfo)=>{
+        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+            TaskTeamMembers.map((taskInfo) => {
                 TeamMemberIds.push(taskInfo.Id);
             })
-        }else{
-            if(EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0){
-                EditData.Team_x0020_Members.map((taskInfo:any)=>{
+        } else {
+            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                EditData.Team_x0020_Members.map((taskInfo: any) => {
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
         }
-        if(TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0){
-            TaskResponsibleTeam.map((taskInfo)=>{
+        if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+            TaskResponsibleTeam.map((taskInfo) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
-        }else{
-            if(EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0){
-                EditData.Responsible_x0020_Team.map((taskInfo:any)=>{
+        } else {
+            if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
+                EditData.Responsible_x0020_Team.map((taskInfo: any) => {
                     ResponsibleTeamIds.push(taskInfo.Id);
                 })
             }
         }
-        
 
 
 
-       
+
+
 
         try {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
@@ -399,9 +399,9 @@ const EditTaskPopup = (Items: any) => {
                 Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
                 // BasicImageInfo: JSON.stringify(UploadImage),
                 Mileage: (EditData.Mileage ? EditData.Mileage : ''),
-                AssignedToId:{ "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-                Responsible_x0020_TeamId:{ "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-                Team_x0020_MembersId:{ "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+                AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+                Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
             }).then((res: any) => {
                 console.log(res);
                 Items.Call();
@@ -419,14 +419,43 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
-        if(teamConfigData?.AssignedTo?.length > 0){
-            setTaskAssignedTo(teamConfigData.AssignedTo);
+        if (teamConfigData?.AssignedTo?.length > 0) {
+            let tempArray: any = [];
+            teamConfigData.AssignedTo?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskAssignedTo(tempArray);
+            console.log("Team Config  assigadf=====", tempArray)
         }
-        if(teamConfigData?.TeamMemberUsers?.length > 0){
-            setTaskTeamMembers(teamConfigData.TeamMemberUsers);
+        if (teamConfigData?.TeamMemberUsers?.length > 0) {
+            let tempArray: any = [];
+            teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskTeamMembers(tempArray);
+            console.log("Team Config member=====", tempArray)
+
         }
-        if(teamConfigData?.ResponsibleTeam?.length > 0){
-            setTaskResponsibleTeam(teamConfigData.ResponsibleTeam);
+        if (teamConfigData?.ResponsibleTeam?.length > 0) {
+            let tempArray: any = [];
+            teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskResponsibleTeam(tempArray);
+            console.log("Team Config reasponsible ===== ", tempArray)
+
         }
     }, [])
 
