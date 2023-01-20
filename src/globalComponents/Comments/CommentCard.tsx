@@ -521,7 +521,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 })}
                   </div>
                 
-                <span>
+                <span className='clintlist'>
                 <MentionsInput  placeholder='Recipients Name' value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
                       className="form-control"
                       classNames={mentionClass}>

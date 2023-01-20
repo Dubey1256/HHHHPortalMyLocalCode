@@ -1,6 +1,6 @@
 import * as React from 'react';
 //import "bootstrap/dist/css/bootstrap.min.css";
-import '../../cssFolder/foundation.scss';
+
 import * as $ from 'jquery';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import { FiDelete } from 'react-icons/fi';

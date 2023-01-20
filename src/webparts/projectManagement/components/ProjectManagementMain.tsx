@@ -2,8 +2,7 @@ import * as React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaHome } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
-import '../../cssFolder/Style.scss';
-import '../../cssFolder/site_color.scss';
+
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import * as Moment from 'moment';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
@@ -454,7 +453,7 @@ const ProjectManagementMain = () => {
 
                     <div className='row'>
                         <div className='col-sm-9 p-0' style={{ verticalAlign: "top" }}>
-                            <h2 className='headign'>
+                            <h2 className=''>
                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png" />
                                 {Masterdata.map(item => <a>{item.Title}</a>)}
                             </h2>
@@ -629,7 +628,7 @@ const ProjectManagementMain = () => {
                                                 </td>
                                                 <td>{item.Shareweb_x0020_ID}</td>
                                                 <td>
-                                                    <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
+                                                    <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
 
                                                 </td>
                                                 <td>

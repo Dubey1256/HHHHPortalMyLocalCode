@@ -197,7 +197,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       DueDate: taskDetails["DueDate"],
       Categories: taskDetails["Categories"],
       Status: taskDetails["Status"],
-      StartDate: taskDetails["StartDate"] != null ? moment(this.state.Result["StartDate"]).format("DD/MM/YYYY") : "",
+      StartDate: taskDetails["StartDate"] != null ? moment( taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
       CompletedDate: taskDetails["CompletedDate"] != null ? moment(this.state.Result["CompletedDate"]).format("DD/MM/YYYY") : "",
       TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
       TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
@@ -238,17 +238,30 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         let attachdata = BasicImageInfo.filter(function (ingInfo: any, i: any) {
           return ingInfo.ImageName == Attach.FileName
         });
-        if (attachdata.length == 0) {
-          ImagesInfo.push({
-            ImageName: Attach.FileName,
-            ImageUrl: Attach.ServerRelativeUrl,
-            UploadeDate: '',
-            UserImage: null,
-            UserName: null
+        if (attachdata.length > 0) {
+          BasicImageInfo.forEach(function(item:any){
+            if(item.ImageName==Attach.FileName){
+              ImagesInfo.push({
+                ImageName: Attach.FileName,
+                ImageUrl: Attach.ServerRelativeUrl,
+                UploadeDate: item.UploadeDate,
+                UserImage: item.UserImage,
+                UserName: item.UserName
+              })
+            }
           })
+          
+          // ImagesInfo.push({
+          //   ImageName: Attach.FileName,
+          //   ImageUrl: Attach.ServerRelativeUrl,
+          //   UploadeDate: '',
+          //   UserImage: null,
+          //   UserName: null
+          // })
         }
       });
-      ImagesInfo = ImagesInfo.concat(BasicImageInfo);
+      ImagesInfo = ImagesInfo;
+      // ImagesInfo = ImagesInfo;
     }
     else {
       ImagesInfo = BasicImageInfo
@@ -755,7 +768,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     {breadcrumbitem.ParentTask != undefined &&
                       <span className="ng-scope">
                         <span className="ng-scope">&gt;</span>
-                        <span className="ng-binding">Manual Changes in Adjusted hours approach</span>
+                        <span className="ng-binding">{this.state.Result['Title']}</span>
                       </span>
                     }
                   </>
@@ -805,7 +818,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-fxdark'>SmartTime Total</dt>
                     <dd className='bg-light '>
-                      <span>{smartTime}</span>
+                      <span className="me-1">{smartTime}</span>
                       <a onClick={(e) => this.EditData(e, this.state.Result)}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a>
                     </dd>
                     {this.state.Result.Id ? <SmartTimeTotal props={this.state.Result} CallBackSumSmartTime={this.CallBackSumSmartTime} /> : null}
@@ -902,7 +915,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl className="Sitecomposition">
                     {this.state.Result["ClientTime"] != null && this.state.Result["ClientTime"].length > 0 &&
                       <div className='dropdown'>
-                        <a className="btn btn-secondary bg-fxdark " onClick={() => this.showhideComposition()}>
+                        <a className="sitebutton bg-fxdark " onClick={() => this.showhideComposition()}>
                           <span >{this.state.showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
                         </a>
                         <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
@@ -1025,7 +1038,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           </div>
         </section>
 
-        <div style={{ display: this.state.showPopup }}>
+        <div className='imghover' style={{ display: this.state.showPopup }}>
           <div className="popup">
             <div className="parentDiv">
               <span style={{ color: 'white' }}>{this.state.imageInfo["ImageName"]}</span>

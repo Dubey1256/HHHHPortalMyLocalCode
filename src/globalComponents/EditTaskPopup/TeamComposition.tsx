@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as $ from 'jquery';
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../../webparts/cssFolder/Style.scss';
 import axios, { AxiosResponse } from 'axios';
 import { arraysEqual, Modal } from 'office-ui-fabric-react';
 //import { BiTime, BiCalendar } from 'react-icons/Bi';

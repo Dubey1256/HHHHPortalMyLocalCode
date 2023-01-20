@@ -25,7 +25,7 @@ function TimeEntry(props: any) {
           <Button variant="primary" onClick={handleClose}>
             OK
           </Button>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="btn btn-default ms-2" onClick={handleClose}>
             Cancel
           </Button>
         </footer>
