@@ -1,47 +1,36 @@
+import React, { useState, useCallback } from "react";
+import Button from "react-bootstrap/Button";
 
-import React, { useState,useCallback } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import TimeEntryPopup from '../../../globalComponents/EditTaskPopup/TimeEntryComponent';
-
-
-
-function TimeEntry(props:any) {
-    const [show, setShow] = useState(props.isopen);
-     const [ smartTime,setSmartTime]=useState("");
-    const handleClose = () => {
-      setShow(false);
-     props. CallBackTimesheet();
-
-    }
-    console.log(smartTime);
-    const callaback=useCallback((item)=>{
-      setSmartTime(item);
-    },[])
-  
-    return (
-      <>
-       <Modal
-        size="lg"
-          show={props.isopen}
-          onHide={handleClose}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>All Time Entry -{props.props.Title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-       <TimeEntryPopup props={props.props}callaback={callaback}/>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" >
+import TimeEntryPopup from "../../../globalComponents/EditTaskPopup/TimeEntryComponent";
+import { arraysEqual, Modal, PanelType, Panel } from "office-ui-fabric-react";
+function TimeEntry(props: any) {
+  const [show, setShow] = useState(props.isopen);
+  const handleClose = () => {
+    setShow(false);
+    props.CallBackTimesheet();
+  };
+  return (
+    <>
+      <Panel
+        headerText={`All Time Entry -${props.props.Title}`}
+        isOpen={props.isopen}
+        onDismiss={handleClose}
+        isBlocking={false}
+        type={PanelType.large}
+      >
+        <div className="modal-body">
+          <TimeEntryPopup props={props.props} />
+        </div>
+        <footer>
+          <Button variant="primary" onClick={handleClose}>
             OK
-            </Button>
-            <Button variant="secondary"onClick={handleClose}> Cancel</Button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    )
+          </Button>
+          <Button variant="btn btn-default ms-2" onClick={handleClose}>
+            Cancel
+          </Button>
+        </footer>
+      </Panel>
+    </>
+  );
 }
 export default TimeEntry;

@@ -1,10 +1,8 @@
 import * as React from "react";
-import { arraysEqual, Modal } from 'office-ui-fabric-react';
+import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Version } from '@microsoft/sp-core-library';
-//import '../../webparts/cssFolder/foundation.scss';
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../../webparts/cssFolder/Style.scss';
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
 const LinkedComponent = (item: any) => {
@@ -15,14 +13,11 @@ const LinkedComponent = (item: any) => {
     React.useEffect(() => {
         if (item.smartComponent != undefined && item.smartComponent.length > 0)
             selctedCompo(item.smartComponent[0]);
-
         GetComponents();
     },
         []);
     function Example(callBack: any) {
-
         item.Call(callBack.props);
-
     }
     const setModalIsOpenToFalse = () => {
         Example(item);
@@ -30,7 +25,7 @@ const LinkedComponent = (item: any) => {
     }
     const setModalIsOpenToOK = () => {
 
-        if (item.props.linkedComponent !=undefined && item.props.linkedComponent.length == 0)
+        if (item.props.linkedComponent != undefined && item.props.linkedComponent.length == 0)
             item.props.linkedComponent = CheckBoxdata;
         else {
             item.props.linkedComponent = [];
@@ -70,7 +65,7 @@ const LinkedComponent = (item: any) => {
             .getByTitle('Master Tasks')
             .items
             //.getById(this.state.itemID)
-            .select("ID", "Title", "DueDate", "Status","Portfolio_x0020_Type", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
             .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
             .top(4999)
             .get()
@@ -80,74 +75,74 @@ const LinkedComponent = (item: any) => {
 
         $.each(componentDetails, function (index: any, result: any) {
             result.TeamLeaderUser = []
-            if(result.Portfolio_x0020_Type == "Service"){
-            result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
+            if (result.Portfolio_x0020_Type == "Service") {
+                result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
 
-            if (result.DueDate == 'Invalid date' || '') {
-                result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                if (result.DueDate == 'Invalid date' || '') {
+                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                }
+                if (result.PercentComplete != undefined)
+                    result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                if (result.Short_x0020_Description_x0020_On != undefined) {
+                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                }
+
+                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                    $.each(result.AssignedTo, function (index: any, Assig: any) {
+                        if (Assig.Id != undefined) {
+                            $.each(Response, function (index: any, users: any) {
+
+                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                    users.ItemCover = users.Item_x0020_Cover;
+                                    result.TeamLeaderUser.push(users);
+                                }
+
+                            })
+                        }
+                    })
+                }
+                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                    $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                        if (Assig.Id != undefined) {
+                            $.each(Response, function (index: any, users: any) {
+                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                    users.ItemCover = users.Item_x0020_Cover;
+                                    result.TeamLeaderUser.push(users);
+                                }
+
+                            })
+                        }
+                    })
+                }
+
+                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                        result.ClientCategory.push(catego);
+                    })
+                }
+                if (result.Item_x0020_Type == 'Root Component') {
+                    result['Child'] = [];
+                    RootComponentsData.push(result);
+                }
+                if (result.Item_x0020_Type == 'Component') {
+                    result['Child'] = [];
+                    ComponentsData.push(result);
+
+
+                }
+
+                if (result.Item_x0020_Type == 'SubServices') {
+                    result['Child'] = [];
+                    SubComponentsData.push(result);
+
+
+                }
+                if (result.Item_x0020_Type == 'Feature') {
+                    result['Child'] = [];
+                    FeatureData.push(result);
+                }
             }
-            if (result.PercentComplete != undefined)
-                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-            if (result.Short_x0020_Description_x0020_On != undefined) {
-                result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-            }
-
-            if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                $.each(result.AssignedTo, function (index: any, Assig: any) {
-                    if (Assig.Id != undefined) {
-                        $.each(Response, function (index: any, users: any) {
-
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                users.ItemCover = users.Item_x0020_Cover;
-                                result.TeamLeaderUser.push(users);
-                            }
-
-                        })
-                    }
-                })
-            }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
-                    if (Assig.Id != undefined) {
-                        $.each(Response, function (index: any, users: any) {
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                users.ItemCover = users.Item_x0020_Cover;
-                                result.TeamLeaderUser.push(users);
-                            }
-
-                        })
-                    }
-                })
-            }
-
-            if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                    result.ClientCategory.push(catego);
-                })
-            }
-            if (result.Item_x0020_Type == 'Root Component') {
-                result['Child'] = [];
-                RootComponentsData.push(result);
-            }
-            if (result.Item_x0020_Type == 'Component') {
-                result['Child'] = [];
-                ComponentsData.push(result);
-
-
-            }
-
-            if (result.Item_x0020_Type == 'SubServices') {
-                result['Child'] = [];
-                SubComponentsData.push(result);
-
-
-            }
-            if (result.Item_x0020_Type == 'Feature') {
-                result['Child'] = [];
-                FeatureData.push(result);
-            }
-        }
         });
 
         $.each(SubComponentsData, function (index: any, subcomp: any) {
@@ -180,17 +175,16 @@ const LinkedComponent = (item: any) => {
 
 
     return (
-        <Modal
+        <Panel
+            headerText={`Select Components`}
+            type={PanelType.large}
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
-            isBlocking={false}>
-            <div className="modal-dailog modal-lg">
+            isBlocking={false}
+        >
+            <div className="">
                 <div className="modal-content taskprofilepagegreen">
-                    <div className='modal-header '>
-                        <h3 className='modal-title'>Select Components</h3>
-                        <button type="button" className='close pull-right' onClick={setModalIsOpenToFalse}>x</button>
-                    </div>
-                    <div className="modal-body bg-f5f5 clearfix">
+                    <div className="modal-body">
                         <div className="Alltable mt-10">
                             <div className="col-sm-12 pad0 smart">
                                 <div className="section-event">
@@ -618,7 +612,7 @@ const LinkedComponent = (item: any) => {
                 </div>
 
             </div >
-        </Modal >
+        </Panel >
     )
 
 }; export default LinkedComponent;

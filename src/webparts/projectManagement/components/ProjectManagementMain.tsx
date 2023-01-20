@@ -2,8 +2,7 @@ import * as React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaHome } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
-import '../../cssFolder/Style.scss';
-import '../../cssFolder/site_color.scss';
+
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import * as Moment from 'moment';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';

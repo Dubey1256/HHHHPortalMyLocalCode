@@ -7,7 +7,6 @@ import Clienttask from './ClientTask';
 import { FaAngleDown, FaAngleUp} from 'react-icons/fa';
 import * as Moment from 'moment';
 import { HiOutlineDocumentText } from 'react-icons/Hi';
-import '../../cssFolder/Style.scss';
 //import './TaskDashboard.scss';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 
