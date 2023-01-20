@@ -14,7 +14,7 @@ import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { forEach } from 'lodash';
 import { Item } from '@pnp/sp/items';
-var smartTime: Number = 0;
+var smartTime: Number = 0.0;
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -829,7 +829,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-fxdark'>SmartTime Total</dt>
                     <dd className='bg-light '>
-                      <span className="me-1">{smartTime}</span>
+                      <span className="me-1">{smartTime.toFixed(1)}</span>
                       <a onClick={(e) => this.EditData(e, this.state.Result)}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a>
                     </dd>
                     {this.state.smarttimefunction? <SmartTimeTotal props={this.state.Result} CallBackSumSmartTime={this.CallBackSumSmartTime} /> : null}
