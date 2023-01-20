@@ -311,90 +311,92 @@ function ComponentTable(SelectedProp: any) {
                 console.log(AllTasksMatches);
                 Counter++;
                 console.log(AllTasksMatches.length);
-                $.each(AllTasksMatches, function (index: any, item: any) {
-                    item.isDrafted = false;
-                    item.flag = true;
-                    item.siteType = config.Title;
-                    item.childs = [];
-                    item.listId = config.listId;
-                    item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                    if (item.SharewebCategories.results != undefined) {
-                        if (item.SharewebCategories.results.length > 0) {
-                            $.each(item.SharewebCategories.results, function (ind: any, value: any) {
-                                if (value.Title.toLowerCase() == 'draft') {
-                                    item.isDrafted = true;
-                                }
-                            });
+                if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
+                    $.each(AllTasksMatches, function (index: any, item: any) {
+                        item.isDrafted = false;
+                        item.flag = true;
+                        item.siteType = config.Title;
+                        item.childs = [];
+                        item.listId = config.listId;
+                        item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                        if (item.SharewebCategories.results != undefined) {
+                            if (item.SharewebCategories.results.length > 0) {
+                                $.each(item.SharewebCategories.results, function (ind: any, value: any) {
+                                    if (value.Title.toLowerCase() == 'draft') {
+                                        item.isDrafted = true;
+                                    }
+                                });
+                            }
                         }
+                    })
+                    AllTasks = AllTasks.concat(AllTasksMatches);
+                    AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
+                    if (Counter == 18) {
+                        map(AllTasks, (result: any) => {
+                            result.TeamLeaderUser = []
+                            result.TeamLeaderUserTitle = ''
+                            result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
+
+                            if (result.DueDate == 'Invalid date' || '') {
+                                result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                            }
+                            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                            if (result.Short_x0020_Description_x0020_On != undefined) {
+                                result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                            }
+
+                            if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                                map(result.AssignedTo, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(TaskUsers, (users: any) => {
+
+                                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.TeamLeaderUser.push(users);
+                                                result.TeamLeaderUserTitle += users.Title + ';';
+                                            }
+
+                                        })
+                                    }
+                                })
+                            }
+                            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
+                                map(result.Team_x0020_Members.results, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(TaskUsers, (users: any) => {
+                                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.TeamLeaderUser.push(users);
+                                                result.TeamLeaderUserTitle += users.Title + ';';
+                                            }
+
+                                        })
+                                    }
+                                })
+                            }
+                            result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
+                            if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                                map(result.Team_x0020_Members, (catego: any) => {
+                                    result.ClientCategory.push(catego);
+                                })
+                            }
+                            result['Shareweb_x0020_ID'] = getSharewebId(result);
+                            if (result['Shareweb_x0020_ID'] == undefined) {
+                                result['Shareweb_x0020_ID'] = "";
+                            }
+                            result['Item_x0020_Type'] = 'Task';
+                            TasksItem.push(result);
+                        })
+                        TasksItem = (AllTasks);
+                        console.log(Response);
+                        map(TasksItem, (task: any) => {
+                            if (!isItemExistsNew(CopyTaskData, task)) {
+                                CopyTaskData.push(task);
+                            }
+                        })
+                        filterDataBasedOnList();
                     }
-                })
-                AllTasks = AllTasks.concat(AllTasksMatches);
-                AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
-                if (Counter == 18) {
-                    map(AllTasks, (result: any) => {
-                        result.TeamLeaderUser = []
-                        result.TeamLeaderUserTitle = ''
-                        result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
-
-                        if (result.DueDate == 'Invalid date' || '') {
-                            result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-                        }
-                        result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-                        if (result.Short_x0020_Description_x0020_On != undefined) {
-                            result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-                        }
-
-                        if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                            map(result.AssignedTo, (Assig: any) => {
-                                if (Assig.Id != undefined) {
-                                    map(TaskUsers, (users: any) => {
-
-                                        if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                            users.ItemCover = users.Item_x0020_Cover;
-                                            result.TeamLeaderUser.push(users);
-                                            result.TeamLeaderUserTitle += users.Title + ';';
-                                        }
-
-                                    })
-                                }
-                            })
-                        }
-                        if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
-                            map(result.Team_x0020_Members.results, (Assig: any) => {
-                                if (Assig.Id != undefined) {
-                                    map(TaskUsers, (users: any) => {
-                                        if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                            users.ItemCover = users.Item_x0020_Cover;
-                                            result.TeamLeaderUser.push(users);
-                                            result.TeamLeaderUserTitle += users.Title + ';';
-                                        }
-
-                                    })
-                                }
-                            })
-                        }
-                        result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
-                        if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                            map(result.Team_x0020_Members, (catego: any) => {
-                                result.ClientCategory.push(catego);
-                            })
-                        }
-                        result['Shareweb_x0020_ID'] = getSharewebId(result);
-                        if (result['Shareweb_x0020_ID'] == undefined) {
-                            result['Shareweb_x0020_ID'] = "";
-                        }
-                        result['Item_x0020_Type'] = 'Task';
-                        TasksItem.push(result);
-                    })
-                    TasksItem = (AllTasks);
-                    console.log(Response);
-                    map(TasksItem, (task: any) => {
-                        if (!isItemExistsNew(CopyTaskData, task)) {
-                            CopyTaskData.push(task);
-                        }
-                    })
-                    filterDataBasedOnList();
                 }
 
             } else Counter++;
@@ -1666,7 +1668,7 @@ function ComponentTable(SelectedProp: any) {
                 </div>
             </Modal> */}
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
-           
+
             <div className="col-sm-12 ">
                 <h2 className="alignmentitle ng-binding">
                     <h2 className="alignmentitle ng-binding">

@@ -111,7 +111,7 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
                 // }),
                 PropertyPaneDropdown('dropdownvalue', {
                   label: 'Portfolio type',
-                  selectedKey:'Service Portfolio',
+                  // selectedKey:'Service Portfolio',
                   options: [
                     { key: 'Service Portfolio', text: 'Service Portfolio' },
                     { key: 'Events Portfolio', text: 'Events Portfolio' },
