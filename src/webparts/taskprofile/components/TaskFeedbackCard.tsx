@@ -170,7 +170,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       let temp = {
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
-        Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        Created:moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm A'),
         Title:txtComment
       };
            if(this.state.updateCommentText.isSubtextComment){

@@ -10,4 +10,5 @@ export interface IServicePortfolioProps {
   SmartMetaDataId:string;
   TaskUserlistId:string;
   Context: any;
+  dropdownvalue:any;
 }
