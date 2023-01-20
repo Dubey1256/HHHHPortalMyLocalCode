@@ -2,70 +2,70 @@ import React from 'react';
 import { Web } from "sp-pnp-js";
 
 export interface ITeamConfigurationProps {
-    parentCallback:(dt:any)=>void;
-    ItemInfo : any;
-}
-  
-export interface ITeamConfigurationState {  
-    taskUsers : any;
-    taskDetails : any;
-    ResponsibleTeam : any;
-    AssignedToUsers : any;
-    TeamMemberUsers : any;
-    updateDragState : boolean;
-    TeamConfiguration : any;
+    parentCallback: (dt: any) => void;
+    ItemInfo: any;
 }
 
-const dragItem:any = {};
+export interface ITeamConfigurationState {
+    taskUsers: any;
+    taskDetails: any;
+    ResponsibleTeam: any;
+    AssignedToUsers: any;
+    TeamMemberUsers: any;
+    updateDragState: boolean;
+    TeamConfiguration: any;
+}
+
+const dragItem: any = {};
 
 export class TeamConfigurationCard extends React.Component<ITeamConfigurationProps, ITeamConfigurationState> {
-    constructor(props:ITeamConfigurationProps){
+    constructor(props: ITeamConfigurationProps) {
         super(props);
-        this.state ={
-            taskUsers : [],
-            taskDetails : [],
-            ResponsibleTeam : [],
-            AssignedToUsers : [],
-            TeamMemberUsers : [],
-            updateDragState : false,
-            TeamConfiguration : {}
+        this.state = {
+            taskUsers: [],
+            taskDetails: [],
+            ResponsibleTeam: [],
+            AssignedToUsers: [],
+            TeamMemberUsers: [],
+            updateDragState: false,
+            TeamConfiguration: {}
         }
         this.loadData();
-        
+
     }
 
-    private async loadData(){
-       await this.loadTaskUsers();
-       await this.GetTaskDetails();
-       this.showComposition();
+    private async loadData() {
+        await this.loadTaskUsers();
+        await this.GetTaskDetails();
+        this.showComposition();
     }
-    private AllUsers:any = [];
-    private dragUser:any;
-    private async loadTaskUsers(){
+    private AllUsers: any = [];
+    private dragUser: any;
+    private async loadTaskUsers() {
         let web = new Web(this.props.ItemInfo.siteURL);
-        let results:any = [];   
-        
-        let taskUsers:any = [];
+        let results: any = [];
+
+        let taskUsers: any = [];
         results = await web.lists
-                .getByTitle('Task Users')
-                .items
-                .select('Id','IsActive','UserGroupId','Suffix','Title','Email','SortOrder','Role','Company','ParentID1','TaskStatusNotification','Status','Item_x0020_Cover','AssingedToUserId','isDeleted','AssingedToUser/Title','AssingedToUser/Id','AssingedToUser/EMail','ItemType')
-                .filter('IsActive eq 1')
-                .expand('AssingedToUser')
-                .orderBy('SortOrder', true)
-                .orderBy("Title", true)
-                .get();    
-        
+            .getByTitle('Task Users')
+            .items
+            .select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
+            .filter('IsActive eq 1')
+            .expand('AssingedToUser')
+            .orderBy('SortOrder', true)
+            .orderBy("Title", true)
+            .get();
+
         let self = this;
-        results.forEach(function (item:any) {
+        results.forEach(function (item: any) {
             if (item.ItemType != 'Group') {
                 self.AllUsers.push(item);
             }
-        })    
-        
-        results.forEach(function (item:any) {
+        })
+
+        results.forEach(function (item: any) {
             if (item.UserGroupId == undefined) {
-                self.getChilds(item, results);                
+                self.getChilds(item, results);
                 taskUsers.push(item);
             }
         });
@@ -73,40 +73,40 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         console.log(taskUsers);
 
         this.setState({
-          taskUsers
+            taskUsers
         })
     }
-    private async GetTaskDetails(){
+    private async GetTaskDetails() {
         let web = new Web(this.props.ItemInfo.siteURL);
-        let taskDetails = [];    
+        let taskDetails = [];
         taskDetails = await web.lists
-                .getByTitle(this.props.ItemInfo.listName)
-                .items
-                .getById(this.props.ItemInfo.itemID)
-                .select("ID","Title","AssignedTo/Title","AssignedTo/Id","Team_x0020_Members/Title","Team_x0020_Members/Id","Responsible_x0020_Team/Title","Responsible_x0020_Team/Id","SharewebTaskType/Title","Component/Id","Component/Title","Services/Id","Services/Title")
-                .expand("Team_x0020_Members","AssignedTo","Responsible_x0020_Team","SharewebTaskType","Component","Services")
-                .get()
-      
+            .getByTitle(this.props.ItemInfo.listName)
+            .items
+            .getById(this.props.ItemInfo.itemID)
+            .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
+            .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+            .get()
+
         console.log('Task Details---');
         console.log(taskDetails);
 
-        this.setState({taskDetails})
-    }    
-    private getChilds(item:any, items:any){
-      item.childs = [];
-      for (let index = 0; index < items.length; index++) {
-        let childItem = items[index];
-        if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
-          item.childs.push(childItem);
-          this.getChilds(childItem, items);
-        }      
-      }              
+        this.setState({ taskDetails })
     }
-    private ResponsibleTeam:any = [];
-    private AssignedToUsers:any = [];
-    private TeamMemberUsers:any = [];
-    private NewTeamConfigurations:any = [];
-    private showComposition(){
+    private getChilds(item: any, items: any) {
+        item.childs = [];
+        for (let index = 0; index < items.length; index++) {
+            let childItem = items[index];
+            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
+                item.childs.push(childItem);
+                this.getChilds(childItem, items);
+            }
+        }
+    }
+    private ResponsibleTeam: any = [];
+    private AssignedToUsers: any = [];
+    private TeamMemberUsers: any = [];
+    private NewTeamConfigurations: any = [];
+    private showComposition() {
         let Item = this.state.taskDetails;
         let taskUsers = this.state.taskUsers;
         let self = this;
@@ -114,7 +114,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         if (Item.Responsible_x0020_Team != undefined) {
             if (self.ResponsibleTeam != undefined && self.ResponsibleTeam.length > 0) {
                 let TeamLeaderData = self.getUsersWithImage(Item.Responsible_x0020_Team);
-                TeamLeaderData.forEach(function (item:any) {
+                TeamLeaderData.forEach(function (item: any) {
                     if (!self.isItemExists(self.ResponsibleTeam, item.Id)) {
                         self.ResponsibleTeam.push(item);
                     }
@@ -131,7 +131,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         if (Item.Team_x0020_Members != undefined) {
             if (self.TeamMemberUsers != undefined && self.TeamMemberUsers.length > 0) {
                 let TeamMemberUsersData = self.getUsersWithImage(Item.Team_x0020_Members);
-                TeamMemberUsersData.forEach(function (item:any) {
+                TeamMemberUsersData.forEach(function (item: any) {
                     if (!self.isItemExists(self.TeamMemberUsers, item.Id)) {
                         self.TeamMemberUsers.push(item);
                     }
@@ -148,7 +148,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         if (Item.AssignedTo != undefined) {
             if (self.AssignedToUsers != undefined && self.AssignedToUsers.length > 0) {
                 let AssignedToUsersData = self.getUsersWithImage(Item.AssignedTo);
-                AssignedToUsersData.forEach(function (item:any) {
+                AssignedToUsersData.forEach(function (item: any) {
                     if (!self.isItemExists(self.AssignedToUsers, item.Id)) {
                         self.AssignedToUsers.push(item);
                     }
@@ -161,10 +161,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             //AssignedToUsersDetail = self.AssignedToUsers;
         }
 
-        taskUsers.forEach(function (categoryUser:any) {
+        taskUsers.forEach(function (categoryUser: any) {
             for (var i = 0; i < categoryUser.childs.length; i++) {
                 if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
-                    self.TeamMemberUsers.forEach(function (item:any) {
+                    self.TeamMemberUsers.forEach(function (item: any) {
                         if (categoryUser.childs[i] != undefined && categoryUser.childs[i].AssingedToUserId != undefined && categoryUser.childs[i].AssingedToUserId == item.Id) {
                             categoryUser.childs.splice(i, 1);
                         }
@@ -172,10 +172,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             }
         });
-        taskUsers.forEach(function (categoryUser:any) {
+        taskUsers.forEach(function (categoryUser: any) {
             for (var i = 0; i < categoryUser.childs.length; i++) {
                 if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
-                    self.AssignedToUsers.forEach(function (item:any) {
+                    self.AssignedToUsers.forEach(function (item: any) {
                         if (categoryUser.childs[i] != undefined && categoryUser.childs[i].AssingedToUserId != undefined && categoryUser.childs[i].AssingedToUserId == item.Id) {
                             categoryUser.childs.splice(i, 1);
                         }
@@ -183,10 +183,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             }
         });
-        taskUsers.forEach(function (categoryUser:any) {
+        taskUsers.forEach(function (categoryUser: any) {
             for (var i = 0; i < categoryUser.childs.length; i++) {
                 if (categoryUser.childs[i].Item_x0020_Cover != undefined) {
-                    self.ResponsibleTeam.forEach(function (item:any) {
+                    self.ResponsibleTeam.forEach(function (item: any) {
                         if (categoryUser.childs[i] != undefined && categoryUser.childs[i].AssingedToUserId != undefined && categoryUser.childs[i].AssingedToUserId == item.Id) {
                             categoryUser.childs.splice(i, 1);
                         }
@@ -195,23 +195,23 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             }
         });
         let AllTeamDetails = {
-            Item1: { Title: 'Team Member', Childs: self.TeamMemberUsers }, 
-            Item2: { Title: 'Working Member', Childs:self.AssignedToUsers }, 
+            Item1: { Title: 'Team Member', Childs: self.TeamMemberUsers },
+            Item2: { Title: 'Working Member', Childs: self.AssignedToUsers },
             Item3: { Title: 'Team Leader', Childs: self.ResponsibleTeam }
         };
-        console.log('Task Leader,Team Members','Task Leader','AllTeamDetails');
+        console.log('Task Leader,Team Members', 'Task Leader', 'AllTeamDetails');
         console.log(AllTeamDetails);
         this.setState({
-            taskUsers, 
-            TeamMemberUsers : self.TeamMemberUsers, 
-            AssignedToUsers : self.AssignedToUsers, 
-            ResponsibleTeam : self.ResponsibleTeam
+            taskUsers,
+            TeamMemberUsers: self.TeamMemberUsers,
+            AssignedToUsers: self.AssignedToUsers,
+            ResponsibleTeam: self.ResponsibleTeam
         })
     }
-    
-    private isItemExists = function (arr:any, Id:any) {
+
+    private isItemExists = function (arr: any, Id: any) {
         var isExists = false;
-        arr.forEach(function (item:any) {
+        arr.forEach(function (item: any) {
             if (item.Id == Id) {
                 isExists = true;
                 return false;
@@ -220,13 +220,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         return isExists;
     }
 
-    private getUsersWithImage(items:any) {
-        let users:any = [];
+    private getUsersWithImage(items: any) {
+        let users: any = [];
         let self = this;
         for (let i = 0; i < self.AllUsers.length; i++) {
             //  angular.forEach(categoryUser.childs, function (child, ) {
             if (self.AllUsers[i]) {
-                items.forEach(function(item:any) {
+                items.forEach(function (item: any) {
                     if (self.AllUsers[i] != undefined && self.AllUsers[i].AssingedToUserId != undefined && self.AllUsers[i].AssingedToUserId == item.Id) {
                         if (self.AllUsers[i].Item_x0020_Cover == undefined) {
                             self.AllUsers[i].Item_x0020_Cover = {}
@@ -247,52 +247,52 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                         }
                         if (!self.isItemExists(users, item.Id)) {
                             users.push(item);
-                        }                        
+                        }
                     }
                 });
             }
         }
-      
+
         return users;
     }
 
-    private dragStart = (e:any, position:any, user:any, team:any) => {      
+    private dragStart = (e: any, position: any, user: any, team: any) => {
         dragItem.current = position;
         dragItem.user = user;
         dragItem.userType = team;
-        console.log(dragItem);        
-    }; 
+        console.log(dragItem);
+    };
 
-    private onDropRemoveTeam = (e:any, taskUsers:any) => {
-        e.preventDefault();       
+    private onDropRemoveTeam = (e: any, taskUsers: any) => {
+        e.preventDefault();
         let $data = dragItem.user;
         let self = this;
-        this.state.taskUsers.forEach(function (child:any) {
-            if (child.ID == $data.UserGroupId) {                
+        this.state.taskUsers.forEach(function (child: any) {
+            if (child.ID == $data.UserGroupId) {
                 if (!self.isItemExists(child.childs, $data.Id))
                     child.childs.push($data);
             }
         });
 
-        this.dropSuccessHandler()        
-        
-    }    
+        this.dropSuccessHandler()
 
-    private onDropTeam(e:any, array:any, Team:any, AllUser:any) {
+    }
+
+    private onDropTeam(e: any, array: any, Team: any, AllUser: any) {
         let $data = dragItem.user;
         let self = this;
-        array.forEach(function (user:any, indexParent:any) {
+        array.forEach(function (user: any, indexParent: any) {
             if (user.Title == $data.Company && !self.isItemExists(array, $data.Id)) {
                 user.childs.push($data);
             }
         })
         if (!self.isItemExists(array, $data.Id)) {
-             array.push($data);
+            array.push($data);
         }
         if (Team != undefined) {
-            AllUser.forEach(function (Group:any, index:any) {
+            AllUser.forEach(function (Group: any, index: any) {
                 if (Group.childs != undefined && Group.childs.length > 0) {
-                    Group.childs.forEach(function (user:any, userindex:any) {
+                    Group.childs.forEach(function (user: any, userindex: any) {
                         if ((user.AssingedToUserId != undefined && user.AssingedToUserId == $data.AssingedToUserId) || (user.Id != undefined && user.Id == $data.Id)) {
                             Group.childs.splice(userindex, 1);
                         }
@@ -300,22 +300,22 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
-       
+
         this.dropSuccessHandler();
     }
 
-    private onDropTeam1(e:any, array:any, Team:any, AllUser:any) {        
+    private onDropTeam1(e: any, array: any, Team: any, AllUser: any) {
         let $data = dragItem.user;
         let self = this;
-        array.forEach(function (user:any, indexParent:any) {
+        array.forEach(function (user: any, indexParent: any) {
             if (user.Title == $data.Company && !self.isItemExists(array, $data.Id)) {
                 user.childs.push($data);
             }
         })
         if (Team != undefined) {
-            AllUser.forEach(function (Group:any, index:any) {
+            AllUser.forEach(function (Group: any, index: any) {
                 if (Group.childs != undefined && Group.childs.length > 0) {
-                    Group.childs.forEach(function (user:any, userindex:any) {
+                    Group.childs.forEach(function (user: any, userindex: any) {
                         if ((user.AssingedToUserId != undefined && user.AssingedToUserId == $data.AssingedToUserId) || (user.Id != undefined && user.Id == $data.Id)) {
                             Group.childs.splice(userindex, 1);
                         }
@@ -323,168 +323,154 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
-        
-        if (!self.isItemExists(array, $data.Id)) {           
+
+        if (!self.isItemExists(array, $data.Id)) {
             array.push($data);
         }
 
         this.dropSuccessHandler();
-        
+
     }
 
-    private dropSuccessHandler(){
-        if (dragItem.userType == 'TeamMemberUsers')            
+    private dropSuccessHandler() {
+        if (dragItem.userType == 'TeamMemberUsers')
             this.state.TeamMemberUsers.splice(dragItem.current, 1);
 
         if (dragItem.userType == 'ResponsibleTeam')
             this.state.ResponsibleTeam.splice(dragItem.current, 1);
-        
+
         if (dragItem.userType == 'Assigned User')
             this.state.AssignedToUsers.splice(dragItem.current, 1);
-        
+
         let TeamConfiguration = {
-            TeamMemberUsers : this.state.TeamMemberUsers,
-            ResponsibleTeam : this.state.ResponsibleTeam,
-            AssignedTo : this.state.AssignedToUsers
+            TeamMemberUsers: this.state.TeamMemberUsers,
+            ResponsibleTeam: this.state.ResponsibleTeam,
+            AssignedTo: this.state.AssignedToUsers
         }
         //set state of array element
         this.setState({
-            updateDragState : true,
+            updateDragState: true,
             TeamConfiguration
-        },() =>  this.props.parentCallback(this.state.TeamConfiguration))
+        }, () => this.props.parentCallback(this.state.TeamConfiguration))
 
-       
+
     }
 
     public render(): React.ReactElement<ITeamConfigurationProps> {
         return (
-        <>
-            <div className="col-sm-12 padL-0 PadR0 mb-15">
-                <div className="col-sm-12 pull-left HedaBackclr">
-                    <div ng-if="teamUserExpanded" className="col-sm-11 padL-0 hreflink ng-scope" ng-click="forCollapse()">
-                        <span className="txtSizeClr">Select Team Members</span>
-                    </div>
-                </div>
-
-                <div className="col-sm-12 mb-10 padL-0 BdrBoxBlue" ng-show="teamUserExpanded">
-                    <div className="taskTeamBox pl-10">
-                    {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user:any,index:number)=> {
-                        return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
-                                {user.childs.length >0 &&
-                                <fieldset ng-if="user.childs.length >0" className="team ng-scope">
-                                    <legend className="ng-binding BdrBtm">
-                                        {user.Title}
-                                    </legend>
-                                    {user.childs.map((item:any,i:number)=> {
-                                    return <div className="marginR41 ng-scope">
-                                          {item.Item_x0020_Cover!=undefined && item.AssingedToUser !=undefined &&
-                                            <span>                                              
-                                            <div 
-                                                className="ProirityAssignedUserPhoto" style={{backgroundImage:"url('"+item.Item_x0020_Cover.Url+"')", backgroundSize:"50px 50px"}}
-                                              title={item.AssingedToUser.Title} 
-                                              draggable
-                                              onDragStart={(e) => this.dragStart(e, i, item, 'All')}
-                                              onDragOver={(e) => e.preventDefault()} />
-                                          </span>
-                                          }                                          
-                                        </div>
-                                    })}
-                                </fieldset>
-                                }
-                            </div>
-                    })
-                    }
-                    </div>
-
-                    <div className="col-sm-12 padL-0 PadR0 mb-10 mt-10" style={{marginLeft: "9px!important"}}>
-                        <div className="col-sm-7 padL-0 PadR0">
-                            <h3 className="md2 mb2 fontSize15 bold mt-0">Team Members</h3>
-                            <div className="col-sm-12 padL-0 PadR0 UserTimeTabGray">
-                                <div className="col-sm-5 padL-0 PadR0" style={{borderRight: "1px solid #666363", paddingBottom: "10px"}}>
-                                    <div ng-show="Item_x0020_Type == undefined" className="col-sm-12 PadR0 padL-0" 
-                                        onDrop={(e)=> this.onDropTeam(e,this.state.ResponsibleTeam,'Team Leaders',this.state.taskUsers)}
-                                        onDragOver={(e) => e.preventDefault()}>
-                                        <div className="PtL-5">
-                                            <div style={{width: "100%", display: "inline-flex"}}>
-                                                <div>
-                                                    {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image:any,index:number)=> {
-                                                        return <div 
-                                                        className="ProirityAssignedUserPhoto" style={{backgroundImage:"url('"+ (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) +"')", backgroundSize:"50px 50px"}}
-                                                            title={image.Title} draggable
-                                                            onDragStart={(e) => this.dragStart(e, index, image,'ResponsibleTeam')}
-                                                            onDragOver={(e) => e.preventDefault()} />
-                                                        })
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="col-sm-7 padL-0 PadR0">                       
-                                    <div ng-show="Item_x0020_Type == undefined" className="col-sm-12 padL-0 PadR0" 
-                                        onDrop={(e)=> this.onDropTeam(e,this.state.TeamMemberUsers,'Team Members',this.state.taskUsers)}
-                                        onDragOver={(e) => e.preventDefault()}>
-                                        <div className="PtL-5">
-                                            <div style={{width: "100%", display: "inline-flex"}}>
-                                                <div>
-                                                    {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image:any,index:number)=> {
-                                                        return <div 
-                                                        className="ProirityAssignedUserPhoto" style={{backgroundImage:"url('"+ (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) +"')", backgroundSize:"50px 50px"}}                                                         
-                                                            title={image.Title}
-                                                            draggable 
-                                                            onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
-                                                            onDragOver={(e) => e.preventDefault()} />
-                                                        })
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
+            <>
+                <div className="col">
+                    <div className="col bg-ee p-1">
+                        <div ng-if="teamUserExpanded" className="col-sm-11" ng-click="forCollapse()">
+                            <span className="txtSizeClr">Select Team Members</span>
                         </div>
+                    </div>
 
-                        <div className='col-sm-3 padL-0 PadR0'>
-                            <h3 className="md2 mb2 Ml-13 fontSize15 bold mt-0">Working Members</h3>
-                            <div className="col-sm-12 PadR0" 
-                                onDrop={(e)=>this.onDropTeam1(e,this.state.AssignedToUsers,'Assigned User',this.state.taskUsers)}
-                                onDragOver={(e) => e.preventDefault()}>
-                                <div className="TimeTabBox PtL-5" style={{height: "70px"}}>
-                                    <div style={{width: "100%",display: "inline-flex"}}>
-                                        <div>                                        
-                                        {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image:any,index:number)=> {
-                                            return <div 
-                                                className="ProirityAssignedUserPhoto" 
-                                                style={{backgroundImage:"url('"+ (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) +"')", backgroundSize:"50px 50px"}}
-                                                title={image.Title}
-                                                draggable 
-                                                onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')} 
-                                                onDragOver={(e) => e.preventDefault()} ></div>
+                    <div className="border col p-2" ng-show="teamUserExpanded">
+                        <div className="taskTeamBox">
+                            {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, index: number) => {
+                                return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
+                                    {user.childs.length > 0 &&
+                                        <div ng-if="user.childs.length >0" className="team ng-scope">
+                                            <label className="BdrBtm">
+                                                {user.Title}
+                                            </label>
+                                            <div className='d-flex'>
+                                                {user.childs.map((item: any, i: number) => {
+                                                    return <div className="marginR41 ng-scope">
+                                                        {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
+                                                            <span>
+                                                                <div
+                                                                    className="ProirityAssignedUserPhoto"
+                                                                    style={{ backgroundImage: "url('" + item.Item_x0020_Cover.Url + "')", backgroundSize: "36px 36px" }}
+                                                                    title={item.AssingedToUser.Title}
+                                                                    draggable
+                                                                    onDragStart={(e) => this.dragStart(e, i, item, 'All')}
+                                                                    onDragOver={(e) => e.preventDefault()} />
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                })}
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            })
+                            }
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-7">
+                                <h6>Team Members</h6>
+                                <div className="d-flex p-1  UserTimeTabGray">
+                                    <div className="col-sm-5 border-end p-0" >
+                                        <div ng-show="Item_x0020_Type == undefined" className="col"
+                                            onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers)}
+                                            onDragOver={(e) => e.preventDefault()}>
+                                            <div>
+                                                {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
+                                                    return <div
+                                                        className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                        title={image.Title} draggable
+                                                        onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
+                                                        onDragOver={(e) => e.preventDefault()} />
+                                                })
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-7 ">
+                                        <div ng-show="Item_x0020_Type == undefined" className="col-sm-12"
+                                            onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers)}
+                                            onDragOver={(e) => e.preventDefault()}>
+                                            <div className='d-flex'>
+                                                {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
+                                                    return <div
+                                                        className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                        title={image.Title}
+                                                        draggable
+                                                        onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
+                                                        onDragOver={(e) => e.preventDefault()} />
+                                                })
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='col-sm-3'>
+                                <h6 >Working Members</h6>
+                                <div className="col"
+                                    onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers)}
+                                    onDragOver={(e) => e.preventDefault()}>
+                                    <div className="working-box p-1" >
+                                        <div className='d-flex'>
+                                            {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
+                                                return <div
+                                                    className="ProirityAssignedUserPhoto"
+                                                    style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                    title={image.Title}
+                                                    draggable
+                                                    onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
+                                                    onDragOver={(e) => e.preventDefault()} ></div>
                                             })
-                                        }
+                                            }
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="col-sm-2 padL-0">
-                            <div className="mt-10" style={{float: "right"}}>
-                                <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
-                                onDragOver={(e) => e.preventDefault()}>                                    
-                                    <img title="Drag user here to  remove user from team for this Network Activity." className="height80" 
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
-                                    
+                            <div className="col-sm-2">
+                                <div>
+                                    <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
+                                        onDragOver={(e) => e.preventDefault()}>
+                                        <img title="Drag user here to  remove user from team for this Network Activity." className="full-width"
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                
                 </div>
-            </div>    
-        </>
+            </>
         );
     }
 }

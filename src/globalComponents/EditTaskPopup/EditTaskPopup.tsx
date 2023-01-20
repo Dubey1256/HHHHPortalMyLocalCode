@@ -19,7 +19,7 @@ import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { AiOutlineFullscreen } from 'react-icons/ai'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
-
+import NewTameSheetComponent from "./NewTimeSheet";
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -33,6 +33,9 @@ const EditTaskPopup = (Items: any) => {
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState('');
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
+    const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
+    const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
+    const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const maxNumber = 69;
     const [ImageSection, setImageSection] = React.useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
@@ -51,8 +54,8 @@ const EditTaskPopup = (Items: any) => {
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [taskStatus, setTaskStatus] = React.useState('');
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
-    const [itemRank, setItemRank] = React.useState('')
-    const [PriorityStatus, setPriorityStatus] = React.useState()
+    const [itemRank, setItemRank] = React.useState('');
+    const [PriorityStatus, setPriorityStatus] = React.useState();
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -89,7 +92,6 @@ const EditTaskPopup = (Items: any) => {
                 console.log("Popup component Categories", propsItems.categories)
             }
         }
-
         if (type == "LinkedComponent") {
             if (propsItems?.linkedComponent?.length > 0) {
                 Items.Items.linkedComponent = propsItems.linkedComponent;
@@ -127,25 +129,18 @@ const EditTaskPopup = (Items: any) => {
         imageList: ImageListType,
         addUpdateIndex: number[] | undefined
     ) => {
-        let ImgArray =[{
-            ImageName:'',
-            ImageUrl:'',
-            UploadeDate:'',
-            UserImage:'',
-            UserName:''
-        }];
-        imageList.map((imgItem)=>{
-            if(imgItem.dataURL != undefined && imgItem.file != undefined){
-                let ImgArray =[{
+        imageList.map((imgItem) => {
+            if (imgItem.dataURL != undefined && imgItem.file != undefined) {
+                let ImgArray = [{
                     ImageName: imgItem.file.name,
                     ImageUrl: EditData?.siteUrl + '/Lists/' + EditData?.siteType + '/Attachments/' + EditData?.Id + '/' + imgItem.file.name,
                     UploadeDate: new Date(),
-                    UserImage:EditData.Author?.Title,
-                    UserName:EditData.Author?.Title
+                    UserImage: EditData.Author?.Title,
+                    UserName: EditData.Author?.Title
                 }];
                 TaskImages.push(ImgArray);
 
-            }else{
+            } else {
                 TaskImages.push(imgItem);
             }
         })
@@ -178,6 +173,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         AllTaskUsers.push(user);
                     }
+
                 });
                 if (AllMetaData != undefined && AllMetaData.length > 0) {
                     GetEditData();
@@ -250,7 +246,6 @@ const EditTaskPopup = (Items: any) => {
                     let tempData = []
                     tempData = saveImage[0];
                     item.UploadedImage = saveImage ? saveImage[0] : '';
-                    TaskImages.push(tempData);
                     uploadImageFunction(tempData, tempData.length);
                 }
 
@@ -306,13 +301,16 @@ const EditTaskPopup = (Items: any) => {
     ]
     var smartComponentsIds: any = [];
     var RelevantPortfolioIds: any = [];
+    var AssignedToIds: any = [];
+    var ResponsibleTeamIds: any = [];
+    var TeamMemberIds: any = [];
     const UpdateTaskInfoFunction = async (child: any) => {
         var UploadImage: any = []
         var item: any = {}
         images.map((imgDtl: any) => {
             if (imgDtl.dataURL != undefined) {
                 var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
-            } 
+            }
             // else {
             //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
             // }
@@ -343,6 +341,46 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
+
+        if(TaskAssignedTo != undefined && TaskAssignedTo?.length > 0){
+            TaskAssignedTo.map((taskInfo)=>{
+                AssignedToIds.push(taskInfo.Id);
+            })
+        }else{
+            if(EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0){
+                EditData.AssignedTo.map((taskInfo:any)=>{
+                    AssignedToIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if(TaskTeamMembers != undefined && TaskTeamMembers?.length > 0){
+            TaskTeamMembers.map((taskInfo)=>{
+                TeamMemberIds.push(taskInfo.Id);
+            })
+        }else{
+            if(EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0){
+                EditData.Team_x0020_Members.map((taskInfo:any)=>{
+                    TeamMemberIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if(TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0){
+            TaskResponsibleTeam.map((taskInfo)=>{
+                ResponsibleTeamIds.push(taskInfo.Id);
+            })
+        }else{
+            if(EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0){
+                EditData.Responsible_x0020_Team.map((taskInfo:any)=>{
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                })
+            }
+        }
+        
+
+
+
+       
+
         try {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
@@ -354,13 +392,16 @@ const EditTaskPopup = (Items: any) => {
                 StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
                 PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
                 ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
-                Categories: CategoriesData? CategoriesData :null,
+                Categories: CategoriesData ? CategoriesData : null,
                 RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) ? RelevantPortfolioIds : [] },
                 DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
                 CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
                 Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
                 // BasicImageInfo: JSON.stringify(UploadImage),
-                Mileage: (EditData.Mileage ? EditData.Mileage : '')
+                Mileage: (EditData.Mileage ? EditData.Mileage : ''),
+                AssignedToId:{ "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+                Responsible_x0020_TeamId:{ "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+                Team_x0020_MembersId:{ "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
             }).then((res: any) => {
                 console.log(res);
                 Items.Call();
@@ -376,6 +417,19 @@ const EditTaskPopup = (Items: any) => {
             setEditData({ ...EditData, IsTodaysTask: true })
         }
     }
+
+    const getTeamConfigData = React.useCallback((teamConfigData: any) => {
+        if(teamConfigData?.AssignedTo?.length > 0){
+            setTaskAssignedTo(teamConfigData.AssignedTo);
+        }
+        if(teamConfigData?.TeamMemberUsers?.length > 0){
+            setTaskTeamMembers(teamConfigData.TeamMemberUsers);
+        }
+        if(teamConfigData?.ResponsibleTeam?.length > 0){
+            setTaskResponsibleTeam(teamConfigData.ResponsibleTeam);
+        }
+    }, [])
+
     return (
         <>
             <Panel
@@ -421,12 +475,12 @@ const EditTaskPopup = (Items: any) => {
             >
                 <div >
                     <div className="modal-body ">
-                        {console.log("Task Images  =====", TaskImages)}
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
                                 BASIC INFORMATION
                             </button>
-                            <button className="nav-link" id="TIME-SHEET" data-bs-toggle="tab" data-bs-target="#TIMESHEET" type="button" role="tab" aria-controls="TIMESHEET" aria-selected="false">TIMESHEET</button>
+                            {/* <button className="nav-link" id="TIME-SHEET" data-bs-toggle="tab" data-bs-target="#TIMESHEET" type="button" role="tab" aria-controls="TIMESHEET" aria-selected="false">TIMESHEET</button> */}
+                            <button className="nav-link" id="NEW-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#NEWTIMESHEET" type="button" role="tab" aria-controls="nEWTIMESHEET" aria-selected="false">TIMESHEET</button>
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                             <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
@@ -715,9 +769,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-12" title="Connect Service Tasks">
-
                                                     <div className="col-sm-11 pad0 taskprofilepagegreen text-right">
-
                                                     </div>
                                                     <div className="row taskprofilepagegreen">
                                                     </div>
@@ -1011,7 +1063,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <div>
                                                                                     <span><AiOutlineFullscreen /></span>
                                                                                     <span className="mx-1" onClick={() => onImageUpdate(index)}>| <TbReplace /> |</span>
-                                                                                    <span><RiDeleteBin6Line onClick={()=>onImageRemove(index)} /></span>
+                                                                                    <span><RiDeleteBin6Line onClick={() => onImageRemove(index)} /></span>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -1083,9 +1135,16 @@ const EditTaskPopup = (Items: any) => {
                                      </div> */}
                                 </div>
                             </div>
-                            <div className="tab-pane " id="TIMESHEET" role="tabpanel" aria-labelledby="TIMESHEET">
+                            {/* <div className="tab-pane " id="TIMESHEET" role="tabpanel" aria-labelledby="TIMESHEET">
                                 <div>
                                     <TeamComposition props={Items} />
+                                </div>
+                            </div> */}
+                            <div className="tab-pane " id="NEWTIMESHEET" role="tabpanel" aria-labelledby="NEWTIMESHEET">
+                                <div>
+                                    <NewTameSheetComponent props={Items}
+                                        TeamConfigDataCallBack={getTeamConfigData}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -1097,14 +1156,14 @@ const EditTaskPopup = (Items: any) => {
                         <div className="d-flex justify-content-between py-2">
                             <div>
                                 <div className="">
-                                    Created <span> <b> {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY MM:SS") : ""} </b> </span> by <span className="siteColor mx-1">
+                                    Created <span> <b> {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""} </b> </span> by <span className="siteColor mx-1">
                                         <b>
                                             {EditData.Author?.Title ? EditData.Author?.Title : ''}
                                         </b>
                                     </span>
                                 </div>
                                 <div>
-                                    Last modified <span> <b> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY MM:SS") : ''} </b> </span>
+                                    Last modified <span> <b> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''} </b> </span>
                                     by
                                     <span className="siteColor">
                                         <b> {EditData.Editor?.Title ? EditData.Editor.Title : ''} </b>
@@ -1117,17 +1176,16 @@ const EditTaskPopup = (Items: any) => {
                                         </svg> Delete this item
                                     </a>
                                     <span> |</span>
-                                    <a className="hreflink" >
+                                    <a className="hreflink">
                                         Copy
                                         Task
                                     </a>
-                                    <span > |</span>
-                                    <a className="hreflink"
-                                    > Move Task</a> |
+                                    <span > | </span>
+                                    <a className="hreflink"> Move Task</a> |
                                     <span>
                                         <img className="hreflink" title="Version History"
-
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Version_HG.png" />
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Version_HG.png"
+                                        />
                                     </span>
                                 </div>
                             </div>
@@ -1147,12 +1205,10 @@ const EditTaskPopup = (Items: any) => {
                                             Save & Add Timesheet
                                         </a>
                                     </span> ||
-                                    <a
-                                    >
+                                    <a>
                                         <img className="mail-width mx-2"
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />Share
-                                        this
-                                        task
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                                        Share this task
                                     </a> ||
                                     <a target="_blank" className="mx-2"
                                         href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/SharewebQA/EditForm.aspx?ID=${Items.Items.Id}`}>

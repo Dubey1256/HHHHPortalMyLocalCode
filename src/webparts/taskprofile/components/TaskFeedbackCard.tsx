@@ -174,7 +174,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         Title:txtComment
       };
            if(this.state.updateCommentText.isSubtextComment){
-            this.props.feedback.Subtext[0]['Comments'][this.state.updateCommentText['indexOfUpdateElement']]=temp;
+            this.props.feedback.Subtext[this.state.updateCommentText['indexOfSubtext']]['Comments'][this.state.updateCommentText['indexOfUpdateElement']]=temp;
 
            }
            else{
@@ -231,7 +231,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                               <img className="AssignUserPhoto1" src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
                                   fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
                             </div>
-                            <div className="col-11 pe-0">
+                            <div className="col-11 pe-0" >
                               <div className='d-flex justify-content-between align-items-center'>
                               {fbComment.AuthorName} - {fbComment.Created}
                               <span>
@@ -247,7 +247,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
             </div>
           </div>
-<div className='d-flex'>
+          <div className='d-flex'>
           <div  className="col-sm-11 mt-2 p-0" style={{display: this.state.showcomment}}>
             <textarea id="txtComment" onChange={(e)=>this.handleInputChange(e)}  className="form-control full-width" ></textarea>
           </div>
@@ -292,11 +292,11 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                               <img className="AssignUserPhoto1" src={fbComment.AuthorImage!= undefined && fbComment.AuthorImage != '' ? 
                                   fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}/>
                             </div>
-                            <div className="col-sm-11 pad0">
+                            <div className="col-sm-11 pad0"key={k}>
                               <div className="d-flex justify-content-between align-items-center">
                               {fbComment.AuthorName} - {fbComment.Created}
                               <span>
-                              <a className="ps-1" onClick={()=>this.openEditModal(fbComment.Title, k, 0, true)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
+                              <a className="ps-1" onClick={()=>this.openEditModal(fbComment.Title, k, j, true)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
                                 <a className="ps-1" onClick={()=>this.clearComment(true, k, j)}><img src='/_layouts/images/delete.gif'></img></a>
                               </span>
                                
@@ -309,7 +309,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
             </div>
           </div>
-<div className='d-flex '>
+         <div className='d-flex '>
           <div  className="col-sm-11 mt-2 p-0 " style={{display: this.state.showcomment_subtext}}>
             <textarea id="txtCommentSubtext" onChange={(e)=>this.handleInputChange(e)} style={{width:'100%'}} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
           </div>

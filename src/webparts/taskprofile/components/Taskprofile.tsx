@@ -30,13 +30,13 @@ export interface ITaskprofileState {
   showPopup: any;
   maincollection: any;
   SharewebTimeComponent: any;
-  smartTimeTotalas: any
+  
   smarttimefunction: boolean;
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
-
   private taskUsers: any = [];
+  private smartMetaData: any = [];
   private currentUser: any;
   private oldTaskLink: any;
   private site: any;
@@ -59,7 +59,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       updateComment: false,
       showComposition: true,
       isOpenEditPopup: false,
-      smartTimeTotalas: 0,
+  
       isTimeEntry: false,
       showPopup: 'none',
       maincollection: [],
@@ -69,7 +69,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     this.GetResult();
   }
-
+  // smartTime= smartTime.toFixed(1)
   public async componentDidMount() {
     //this.GetRes ult()
     smartTime
@@ -186,6 +186,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
 
+
     this.currentUser = this.GetUserObject(this.props.userDisplayName);
 
     let tempTask = {
@@ -290,8 +291,22 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .get();
     this.taskUsers = taskUsers;
     console.log(this.taskUsers);
-
+    // await  this.GetSmartMetaData();
   }
+  // private async GetSmartMetaData() {
+  //   let web = new Web(this.props.siteUrl);
+  //   let smartMetaData = [];
+  //   smartMetaData = await web.lists
+  //     .getByTitle('SmartMetadata')
+  //     .items
+  //     .select('Id', 'IsVisible', 'Parent/Id', 'Parent/Title', 'siteName', 'siteUrl', 'SmartSuggestions',"SmartFilters",)
+      
+  //     .expand('Parent')
+  //     .get();
+  //   this.smartMetaData = smartMetaData;
+  //   console.log(this.smartMetaData);
+
+  // }
 
   private GetSiteIcon(listName: string) {
     let siteicon = '';
