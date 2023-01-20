@@ -28,8 +28,7 @@ const Picker = (item: any) => {
         title.Title = select;
         item.props.smartCategories.push(title);
         item.props.categories = select;
-        Example(item);
-
+        Example(item, 'Category');
     }
     var SmartTaxonomyName = "Categories";
     const loadGmBHTaskUsers = function () {
@@ -117,13 +116,10 @@ const Picker = (item: any) => {
         //Example(item);
 
     }
-    function Example(callBack: any) {
-
-        item.Call(callBack.props);
-
+    function Example(callBack: any, type:any) {
+        item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
-
         setPopupSmartTaxanomy(false)
     }
     return (
