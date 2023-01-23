@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import * as React from 'react';
-import '../components/TagTaskToProjectPopup.css';
+// import '../components/TagTaskToProjectPopup.css';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useEffect, useState } from 'react';
@@ -97,26 +97,29 @@ const CreateTaskFromProject = (props: any) => {
                     <div className="">
                         <div className="row">
                             <div className="col-sm-6">
-                                <input id="searchinput "  type="text" value={taskTitle} onChange={(e)=>{setTaskTitle(e.target.value)}} placeholder="Enter Task Name.. " className="searchhbox_height form-control searchbox_height searchTaskTag " />
+                                <input id="searchinput "  type="text" value={taskTitle} onChange={(e)=>{setTaskTitle(e.target.value)}} placeholder="Enter Task Name.. " className="searchhbox_height full_width searchTaskTag " />
                             </div>
                         </div>
                         <div className="row">
 
                             <div id="ShareWeb">
                                 <div className="col-md-12 form-group">
-                                    <fieldset className="fieldsett"     ng-hide="SitesTypes.length == 1">
-                                        <legend className="activity">Sites</legend>
-                                        <span className="pull-right clear">
-                                            <a onClick={()=>{setSelectedSite({Title:undefined,listId:undefined,siteUrl:undefined})}} className=" hreflink">
-                                                Clear Selection<img src="/_layouts/images/delete.gif" />
-                                            </a>
-                                        </span>
-                                        <ul className="quick-actions">
+                                    {/* <fieldset className="fieldsett"     ng-hide="SitesTypes.length == 1">
+                                        <legend className="activity">Sites</legend> */}
+                                         <label className="full_width">Sites 
+                                            <span className="mx-auto clear">
+                                                <a onClick={()=>{setSelectedSite({Title:undefined,listId:undefined,siteUrl:undefined})}} className=" hreflink">
+                                                    Clear Selection <img src="/_layouts/images/delete.gif" />
+                                                </a>
+                                            </span>
+                                        </label>
+                                    <div className="border p-2">
+                                        <ul className="quick-actions d-flex p-0">
                                             {
                                                 allMetadataSites.map((item: any, index: any) => {
                                                     return (
-                                                        <li onClick={()=>{setSelectedSite(item)}} className="bg_lb" id='{{TaskListId(item)}}' >
-                                                            <a ng-click="SiteDetail(item);">
+                                                        <li onClick={()=>{setSelectedSite(item)}} className="bg-siteColor" id='{{TaskListId(item)}}' >
+                                                            <a ng-click="SiteDetail(item);" className=''>
                                                                 <span className="icon-sites">
                                                                     <img className="icon-sites"
                                                                         src={item?.Item_x005F_x0020_Cover?.Url} />
@@ -128,12 +131,7 @@ const CreateTaskFromProject = (props: any) => {
 
 
                                         </ul>
-                                        {/* <div className="col-sm-12 text-right">
-                                <a ng-click="OpenOtherSitesPopup()" className=" hreflink">
-                                    Select Other Sites
-                                </a>
-                            </div> */}
-                                    </fieldset>
+                                    </div>
                                 </div>
 
                             </div>

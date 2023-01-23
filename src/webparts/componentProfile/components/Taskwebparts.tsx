@@ -2517,18 +2517,24 @@ export default function ComponentTable({ props }: any) {
                                                                         >{item.Title}
                                                                         </a>}
                                                                         {item.childs != undefined &&
-                                                                            <span>{item.childs.length == 0 ? "" : <span>({item.childs.length})</span>}</span>
+                                                                            <span>{item.childs.length == 0 ? "" : <span className='ms-1'>({item.childs.length})</span>}</span>
                                                                         }
                                                                         {item.Short_x0020_Description_x0020_On != null &&
-                                                                            <span className="project-tool"><img
-                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                    <span className="tooltiptext">
-                                                                                        <div className="tooltip_Desc">
-                                                                                            <span>{item.Short_x0020_Description_x0020_On}</span>
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </span>
-                                                                            </span>
+                                                                            // <span className="project-tool"><img
+                                                                            //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                            //         <span className="tooltiptext">
+                                                                            //             <div className="tooltip_Desc">
+                                                                            //                 <span>{item.Short_x0020_Description_x0020_On}</span>
+                                                                            //             </div>
+                                                                            //         </span>
+                                                                            //     </span>
+                                                                            // </span>
+                                                                            <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                <div className="popover__content">
+                                                                                    {item.Short_x0020_Description_x0020_On}
+                                                                                </div>
+                                                                            </div>
                                                                         }
                                                                     </td>
                                                                     <td style={{ width: "7%" }}>
@@ -2629,25 +2635,31 @@ export default function ComponentTable({ props }: any) {
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined &&
-                                                                                                    <span>({childitem.childs.length})</span>
+                                                                                                    <span className='ms-1'>({childitem.childs.length})</span>
                                                                                                 }
                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
-                                                                                                    <span className="project-tool"><img
-                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                            <span className="tooltiptext">
-                                                                                                                <div className="tooltip_Desc">
-                                                                                                                    <span>{childitem.Short_x0020_Description_x0020_On}</span>
-                                                                                                                </div>
-                                                                                                            </span>
-                                                                                                        </span>
-                                                                                                    </span>
+                                                                                                    // <span className="project-tool"><img
+                                                                                                    //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                    //         <span className="tooltiptext">
+                                                                                                    //             <div className="tooltip_Desc">
+                                                                                                    //                 <span>{childitem.Short_x0020_Description_x0020_On}</span>
+                                                                                                    //             </div>
+                                                                                                    //         </span>
+                                                                                                    //     </span>
+                                                                                                    // </span>
+                                                                                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                        <div className="popover__content">
+                                                                                                        {childitem.Short_x0020_Description_x0020_On}
+                                                                                                        </div>
+                                                                                                    </div>
                                                                                                 }
                                                                                             </td>
                                                                                             <td style={{ width: "7%" }}>
                                                                                                 <div>
                                                                                                     {childitem.ClientCategory != undefined && childitem.ClientCategory.length > 0 && childitem.ClientCategory.map(function (client: { Title: string; }) {
                                                                                                         return (
-                                                                                                            <span className="AssignUserPhoto"
+                                                                                                            <span className="ClientCategory-Usericon"
                                                                                                                 title={client.Title}>
                                                                                                                 <a>{client.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                             </span>
@@ -2724,25 +2736,31 @@ export default function ComponentTable({ props }: any) {
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.childs != undefined &&
-                                                                                                                            <span>({childinew.childs.length})</span>
+                                                                                                                            <span className='ms-1'>({childinew.childs.length})</span>
                                                                                                                         }
                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
-                                                                                                                            <span className="project-tool"><img
-                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                                                    <span className="tooltiptext">
-                                                                                                                                        <div className="tooltip_Desc">
-                                                                                                                                            <span>{childinew.Short_x0020_Description_x0020_On}</span>
-                                                                                                                                        </div>
-                                                                                                                                    </span>
-                                                                                                                                </span>
-                                                                                                                            </span>
+                                                                                                                            // <span className="project-tool"><img
+                                                                                                                            //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                                            //         <span className="tooltiptext">
+                                                                                                                            //             <div className="tooltip_Desc">
+                                                                                                                            //                 <span>{childinew.Short_x0020_Description_x0020_On}</span>
+                                                                                                                            //             </div>
+                                                                                                                            //         </span>
+                                                                                                                            //     </span>
+                                                                                                                            // </span>
+                                                                                                                            <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                <div className="popover__content">
+                                                                                                                                {childinew.Short_x0020_Description_x0020_On}
+                                                                                                                                </div>
+                                                                                                                            </div>
                                                                                                                         }
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "7%" }}>
                                                                                                                         {/* <div>
                                                                                                                                             {childinew.ClientCategory != undefined  && childinew.ClientCategory.map(function (client: any) {
                                                                                                                                                 return (
-                                                                                                                                                    <span className="AssignUserPhoto"
+                                                                                                                                                    <span className="ClientCategory-Usericon"
                                                                                                                                                         title={client.Title}>
                                                                                                                                                         <a>{client.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                                                     </span>
@@ -2813,18 +2831,24 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined &&
-                                                                                                                                                <span>({subchilditem.childs.length})</span>
+                                                                                                                                                <span className='ms-1'>({subchilditem.childs.length})</span>
                                                                                                                                             }
                                                                                                                                             {subchilditem.Short_x0020_Description_x0020_On != null &&
-                                                                                                                                                <span className="project-tool"><img
-                                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                                                                        <span className="tooltiptext">
-                                                                                                                                                            <div className="tooltip_Desc">
-                                                                                                                                                                <span>{subchilditem.Short_x0020_Description_x0020_On}</span>
-                                                                                                                                                            </div>
-                                                                                                                                                        </span>
-                                                                                                                                                    </span>
-                                                                                                                                                </span>
+                                                                                                                                                // <span className="project-tool"><img
+                                                                                                                                                //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                                                                //         <span className="tooltiptext">
+                                                                                                                                                //             <div className="tooltip_Desc">
+                                                                                                                                                //                 <span>{subchilditem.Short_x0020_Description_x0020_On}</span>
+                                                                                                                                                //             </div>
+                                                                                                                                                //         </span>
+                                                                                                                                                //     </span>
+                                                                                                                                                // </span>
+                                                                                                                                                <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                                    <div className="popover__content">
+                                                                                                                                                    {subchilditem.Short_x0020_Description_x0020_On}
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
                                                                                                                                             }
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "7%" }}>
