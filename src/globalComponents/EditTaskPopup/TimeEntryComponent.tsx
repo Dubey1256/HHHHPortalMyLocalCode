@@ -13,6 +13,7 @@ var NewCategoryId: any = ''
 var Eyd=''
 var changeEdited ='';
 var Categoryy ='';
+var CategoryyID:any =''
 var TaskCate:any=[]
 var AllUsers: any = [];
 var change = Moment().format()
@@ -22,6 +23,7 @@ function TimeEntryPopup(item: any) {
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
     // const [AllMetadata, setMetadata] = React.useState([]);
     const [EditTaskItemitle, setEditItem] = React.useState('');
+    const [disabled, setDisabled] = React.useState(false);
     const [collapseItem, setcollapseItem] = React.useState(true);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(false);
@@ -243,6 +245,7 @@ function TimeEntryPopup(item: any) {
 
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
+                
                 setTimeInHours(TimeInHour.toFixed(2))
 
             }
@@ -270,6 +273,7 @@ function TimeEntryPopup(item: any) {
 
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
+                
                 setTimeInHours(TimeInHour.toFixed(2))
                
             }
@@ -293,6 +297,7 @@ function TimeEntryPopup(item: any) {
     }
     const Editcategorypopup = (child:any) => {
         Categoryy = child.Title
+        CategoryyID = child.ID
         setEditcategory(true)
     }
 
@@ -347,6 +352,7 @@ function TimeEntryPopup(item: any) {
 
     }
     const closeTaskStatusUpdatePoup = () => {
+        setcheckCategories(undefined)
         setTaskStatuspopup(false)
         setTimeInHours(0)
         setTimeInMinutes(0)
@@ -405,6 +411,7 @@ function TimeEntryPopup(item: any) {
             setTimeInMinutes(changeTime)
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
+               
                 setTimeInHours(TimeInHour.toFixed(2))
             }
 
@@ -414,6 +421,7 @@ function TimeEntryPopup(item: any) {
             changeTime = changeTime - 60
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
+                
                 setTimeInHours(TimeInHour.toFixed(2))
             }
             // if(type=='EditTask'){
@@ -421,7 +429,7 @@ function TimeEntryPopup(item: any) {
             //     setTimeInHours(changeTimeEdi)
 
             //  }
-            //  setTimeInMinutes(changeTime)
+              setTimeInMinutes(changeTime)
 
 
         }
@@ -436,17 +444,26 @@ function TimeEntryPopup(item: any) {
 
         const res = await web.lists.getById('01A34938-8C7E-4EA6-A003-CEE649E8C67A').items
             .select("Id,Title,TaxType").top(4999).get();
-        res.map((item: any) => {
-            if (item.TaxType === "TimesheetCategories") {
-                TimeSheets.push(item)
+            console.log(res)
+        // res.map((item: any) => {
+        //     if (item.TaxType === "TimesheetCategories") {
+        //         TimeSheets.push(item)
 
-            }
-            res.map((val: any,index:any) => {
-                if (val.Id == item.Id) {
-                    res.splice(index, 1)
-                }
-            })
-        })
+        //     }
+           
+        // })
+        //  TimeSheets.map((val: any,index:any) => {
+        //     TimeSheets.map((ite: any,index:any) => {
+           
+        //         if (val.Title == ite.Title) {
+        //             TimeSheets.splice(index, 1)
+        //         }
+                    
+        //     })
+        //     })
+            TimeSheets.push({ "TaxType": "TimesheetCategories", "Title": "Design", "Id": 300},{"TaxType": "TimesheetCategories", "Title": "Development", "Id": 299}, { "TaxType": "TimesheetCategories", "Title": "Coordination", "Id": 298},
+            { "TaxType": "TimesheetCategories", "Title": "QA", "Id": 301},{ "TaxType": "TimesheetCategories", "Title": "Support", "Id": 310},{ "TaxType": "TimesheetCategories", "Title": "Verification", "Id": 297},{"TaxType": "TimesheetCategories", "Title": "Coordination", "Id": 298},
+             { "TaxType": "TimesheetCategories", "Title": "Implementation", "Id": 302},{ "TaxType": "TimesheetCategories", "Title": "Conception", "Id": 335},{ "TaxType": "TimesheetCategories", "Title": "Preparation", "Id": 315});
         setTimeSheets(TimeSheets)
 
     }
@@ -526,7 +543,7 @@ function TimeEntryPopup(item: any) {
                             value.MainParentId = items.Id;
                             value.AuthorTitle = val.Author.Title;
                             value.EditorTitle = val.Editor.Title;
-                            value.AuthorImage = val.AuthorImage
+                            //value.AuthorImage = val.AuthorImage
                             value.show = true;
                            // value.TaskDate = true;
                             if (val.Created != undefined)
@@ -990,7 +1007,7 @@ function TimeEntryPopup(item: any) {
 
 
         })
-        setupdateData(updateData + 1)
+        setupdateData(updateData + 5)
 
     }
 
@@ -1003,8 +1020,8 @@ function TimeEntryPopup(item: any) {
                 if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
 
                     updateitem.Id = child.ID;
-                    updateitem.TaskTime = TimeInHours != undefined  ? TimeInHours  : child.TaskTime;
-                    updateitem.TaskTimeInMinute = TimeInMinutes != undefined  ? TimeInMinutes  : child.TaskTimeInMinutes;
+                    updateitem.TaskTime = TimeInHours != undefined && TimeInHours != 0  ? TimeInHours  : child.TaskTime;
+                    updateitem.TaskTimeInMinute = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes  : child.TaskTimeInMinutes;
                     updateitem.TaskDate = Dateee != "Invalid date"? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
                     
                     updateitem.Description = postData != undefined && postData.Description != undefined && postData.Description != ''  ? postData.Description : child.Description;
@@ -1229,7 +1246,7 @@ function TimeEntryPopup(item: any) {
              .then(i => {
                console.log(i);
              });
-             setupdateData2(updateData2 + 1)
+             setupdateData(updateData)
          }
        
     
@@ -1306,6 +1323,29 @@ const DateFormat=(itemL:any)=>{
       serverDateTime = mDateTime.format(itemL); 
       return serverDateTime;
     
+}
+const updateCategory=async ()=>{
+    TimeSheet.map((items: any) => {
+        if (items.Title == checkCategories) {
+            Category = items.Id
+        }
+    })
+    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+
+    await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.getById(CategoryyID).update({
+
+
+        Title: checkCategories,
+        CategoryId: Category
+
+    }).then((res: any) => {
+
+        console.log(res);
+       
+       closeEditcategorypopup((e:any)=>e);
+       setupdateData(updateData + 3 )
+
+    })
 }
     return (
         <div>
@@ -1460,7 +1500,7 @@ const DateFormat=(itemL:any)=>{
 
                                                                                                                     <td colSpan={2} style={{ width: "22%" }}>
                                                                                                                         <img className="AssignUserPhoto1 wid29 bdrbox"
-                                                                                                                            title="{subchild.AuthorName}"
+                                                                                                                            title={childinew.AuthorName}
                                                                                                                             data-toggle="popover"
                                                                                                                             data-trigger="hover"
                                                                                                                             src={childinew.AuthorImage}></img>
@@ -1741,7 +1781,7 @@ const DateFormat=(itemL:any)=>{
                                                             <label
                                                                 className="full_width"></label>
                                                             <button className="btn btn-primary"
-                                                                title="Decrease by 15 Min"
+                                                                title="Decrease by 15 Min" disabled={TimeInMinutes<=0?true:false}
                                                                 onClick={() => changeTimesDec('15')}>
                                                                     <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
@@ -1760,7 +1800,7 @@ const DateFormat=(itemL:any)=>{
                                                             <label
                                                                 className="full_width"></label>
                                                             <button className="btn btn-primary"
-                                                                title="Decrease by 60 Min"
+                                                                title="Decrease by 60 Min" disabled={TimeInMinutes<=0?true:false}
                                                                 onClick={() => changeTimesDec('60')}>
                                                                     <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
@@ -2001,7 +2041,7 @@ const DateFormat=(itemL:any)=>{
                                                                         <div className="Quaterly-Time">
                                                                             <label className="full_width"></label>
                                                                             <button className="btn btn-primary"
-                                                                                title="Decrease by 15 Min"
+                                                                                title="Decrease by 15 Min" disabled={TimeInMinutes<=0?true:false}
                                                                                 onClick={() => changeTimesDecEdit('15', child, 'EditTask')}><i className="fa fa-minus"
                                                                                 aria-hidden="true"></i>
 
@@ -2267,7 +2307,7 @@ const DateFormat=(itemL:any)=>{
                                                                         <div className="Quaterly-Time">
                                                                             <label className="full_width"></label>
                                                                             <button className="btn btn-primary"
-                                                                                title="Decrease by 15 Min"
+                                                                                title="Decrease by 15 Min" disabled={TimeInMinutes<=0?true:false}
                                                                                 onClick={() => changeTimesDecEdit('15', child, 'EditTask')}>
                                                                                     <i className="fa fa-minus"
                                                                                         aria-hidden="true"></i>
@@ -2523,7 +2563,7 @@ const DateFormat=(itemL:any)=>{
                                                     <label
                                                         className="full_width"></label>
                                                     <button className="btn btn-primary"
-                                                        title="Decrease by 15 Min"
+                                                        title="Decrease by 15 Min" disabled={TimeInMinutes<=0?true:false}
                                                         onClick={() => changeTimesDec('15')}>
                                                             <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
@@ -2542,7 +2582,7 @@ const DateFormat=(itemL:any)=>{
                                                     <label
                                                         className="full_width"></label>
                                                     <button className="btn btn-primary"
-                                                        title="Decrease by 60 Min"
+                                                        title="Decrease by 60 Min" disabled={TimeInMinutes<=0?true:false}
                                                         onClick={() => changeTimesDec('60')}>
                                                             <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
@@ -2648,7 +2688,7 @@ const DateFormat=(itemL:any)=>{
                                                 <input type="text" autoComplete="off"
                                                     className="form-control"
                                                     name="CategoriesTitle"
-                                                    value={Categoryy}
+                                                    value={checkCategories!=undefined?checkCategories:Categoryy}
                                                 />
                                             </div>
                                         </div>
@@ -2657,7 +2697,7 @@ const DateFormat=(itemL:any)=>{
                                                 <label>Title</label>
                                                 <input type="text" autoComplete="off"
                                                     className="form-control" name="TimeTitle"
-                                                    defaultValue={Categoryy}
+                                                    value={checkCategories!=undefined?checkCategories:Categoryy}
                                                     onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
                                             </div>
                                         </div>
@@ -2679,9 +2719,8 @@ const DateFormat=(itemL:any)=>{
                                                             id="subcategorytasksPriority{{item.Id}}">
                                                             <input
                                                                 type="radio" className="form-check-input"
-                                                                defaultValue={Items.Title} defaultChecked={Items.Title==Categoryy}
-                                                                onChange={selectCategories}
-
+                                                                value={Items.Title} defaultChecked={Items.Title==Categoryy}
+                                                                onChange={()=>setcheckCategories(Items.Title)}
                                                                 name="taskcategory" />
                                                             <label className='form-check-label'>{Items.Title}</label>
                                                         </div>
@@ -2695,7 +2734,7 @@ const DateFormat=(itemL:any)=>{
 
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={closeEditcategorypopup}>
+                                <button type="button" className="btn btn-primary" onClick={updateCategory}>
                                     Submit
                                 </button>
 

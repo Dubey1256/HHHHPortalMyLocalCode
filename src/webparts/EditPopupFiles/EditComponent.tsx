@@ -26,13 +26,10 @@ function EditInstitution(item: any) {
     const [CompoenetItem, setComponent] = React.useState([]);
     const [EditData, setEditData] = React.useState<any>({});
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const [useeffectdata, setuseeffectdata] = React.useState(false);
-    const [selectedOption, setselectedOption] = React.useState('');
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebCategory, setSharewebCategory] = React.useState('');
-    const [AllComponents, setComponentsData] = React.useState([]);
     const [CollapseExpend, setCollapseExpend] = React.useState(false);
     const [date, setDate] = React.useState(undefined);
     const [Startdate, setStartdate] = React.useState(undefined);
@@ -147,25 +144,7 @@ function EditInstitution(item: any) {
         }
         return IconUrl;
     }
-
-    // var SelectPriority = function (Item:any) {
-    //     switch (Item.Priority) {
-    //         case '(3) Low':
-    //             setselectedOption(PriorityRank = '1';
-    //             break;
-    //         case '(2) Normal':
-    //             PriorityRank = '4';
-    //             break;
-    //         case '(1) High':
-    //             $scope.PriorityRank = '8';
-    //             break;
-    //     }
-    // }
-    const handleChange = (newValue: any) => {
-        console.log("newValue: ", newValue);
-        // setStartdate(newValue);
-        //  props.setDate( newValue );
-    };
+    
     const getpriority = function (item: any) {
         if (item.Priority_x0020_Rank >= 0 && item.Priority_x0020_Rank <= 3) {
             item.Priority = '(3) Low';
@@ -338,9 +317,9 @@ function EditInstitution(item: any) {
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
                 TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
                 setSharewebItemRank(TaskItemRank[0]);
-                if (useeffectdata == false)
-                    setuseeffectdata(true);
-                else setuseeffectdata(false);
+                // if (useeffectdata == false)
+                //     setuseeffectdata(true);
+                // else setuseeffectdata(false);
                 //loadColumnDetails();
             }
         }
