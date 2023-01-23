@@ -8,13 +8,14 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
+
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { forEach } from 'lodash';
 import { Item } from '@pnp/sp/items';
-var smartTime: Number = 0;
+var smartTime: Number = 0.0;
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -30,13 +31,13 @@ export interface ITaskprofileState {
   showPopup: any;
   maincollection: any;
   SharewebTimeComponent: any;
-  smartTimeTotalas: any
+  
   smarttimefunction: boolean;
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
-
   private taskUsers: any = [];
+  private smartMetaData: any = [];
   private currentUser: any;
   private oldTaskLink: any;
   private site: any;
@@ -59,7 +60,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       updateComment: false,
       showComposition: true,
       isOpenEditPopup: false,
-      smartTimeTotalas: 0,
+  
       isTimeEntry: false,
       showPopup: 'none',
       maincollection: [],
@@ -69,7 +70,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     this.GetResult();
   }
-
+  // smartTime= smartTime.toFixed(1)
   public async componentDidMount() {
     //this.GetRes ult()
     smartTime
@@ -186,6 +187,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
 
+
     this.currentUser = this.GetUserObject(this.props.userDisplayName);
 
     let tempTask = {
@@ -290,8 +292,22 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .get();
     this.taskUsers = taskUsers;
     console.log(this.taskUsers);
-
+    // await  this.GetSmartMetaData();
   }
+  // private async GetSmartMetaData() {
+  //   let web = new Web(this.props.siteUrl);
+  //   let smartMetaData = [];
+  //   smartMetaData = await web.lists
+  //     .getByTitle('SmartMetadata')
+  //     .items
+  //     .select('Id', 'IsVisible', 'Parent/Id', 'Parent/Title', 'siteName', 'siteUrl', 'SmartSuggestions',"SmartFilters",)
+      
+  //     .expand('Parent')
+  //     .get();
+  //   this.smartMetaData = smartMetaData;
+  //   console.log(this.smartMetaData);
+
+  // }
 
   private GetSiteIcon(listName: string) {
     let siteicon = '';
@@ -829,7 +845,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-fxdark'>SmartTime Total</dt>
                     <dd className='bg-light '>
-                      <span className="me-1">{smartTime}</span>
+                      <span className="me-1">{smartTime.toFixed(1)}</span>
                       <a onClick={(e) => this.EditData(e, this.state.Result)}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a>
                     </dd>
                     {this.state.smarttimefunction? <SmartTimeTotal props={this.state.Result} CallBackSumSmartTime={this.CallBackSumSmartTime} /> : null}
@@ -1042,7 +1058,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
             <div className="col-3">
               <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
+              {/* <AncTool siteUrl={this.props.siteUrl} Context={this.props.Context} Task={this.state.Result} PageType='TaskProfile'/> */}
             </div>
+        
+
           </div>
         </section>
 

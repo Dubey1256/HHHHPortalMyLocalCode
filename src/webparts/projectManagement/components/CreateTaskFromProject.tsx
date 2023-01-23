@@ -71,6 +71,8 @@ const CreateTaskFromProject = (props: any) => {
                     ProjectId:props?.projectId!=undefined?props?.projectId:''
                 }).then((data) => {
                     data.data.listId=selectedSite?.listId;
+                    data.data.siteType=selectedSite?.Title;
+                    data.data.siteUrl=selectedSite?.siteUrl?.Url;
                     EditPopup(data.data)
                     console.log(data,"Task Created")
                     props.callBack();
