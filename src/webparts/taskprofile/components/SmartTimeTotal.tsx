@@ -88,8 +88,13 @@ const SmartTimeTotalFunction=(item:any)=>{
         var filteres = "Task" + items.siteType + "/Id eq " + items.Id;
         var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
         var count = 0;
-        var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
-        { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }]
+         if(items.siteType=="Migration"||items.siteType=="ALAKDigital"){
+            var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
+         }
+         else{ var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
+         { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }]}
+
+       
         $.each(allurls, async function (index: any, item: any) {
             await $.ajax({
 
@@ -300,15 +305,35 @@ const SmartTimeTotalFunction=(item:any)=>{
                 })
             }
         })
-        var TotalTime =0;
+        var TotalTime =0.0;
+
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { 
             if(type.AdditionalTime!=undefined&&type.AdditionalTime.length>0){
+
                 $.each(type.AdditionalTime,function(index:any,time:any){
-                    var Time = parseInt(time.TaskTime)
-                    TotalTime =  TotalTime + Time
-                    console.log(TotalTime)
+
+                    if(time.TaskTime.includes('.')){
+
+                       var Time=parseInt(time.TaskTime.split('.')[0])+(parseInt(time.TaskTime.split('.')[1]))/100 ;
+
+                       TotalTime =  TotalTime + Time;
+
+                       console.log("SMARTTIMETOTALDECIMAL",TotalTime)
+
+                    }
+
+                    else{var Time = parseInt(time.TaskTime)
+
+                        TotalTime =  TotalTime + Time
+
+                        console.log("SMARTTIMETOTALNormal",TotalTime)}
+
+                   
+
                 })
+
                 setsmartTimeTotal(TotalTime);
+
             }
              return type.isShifted === false });
         

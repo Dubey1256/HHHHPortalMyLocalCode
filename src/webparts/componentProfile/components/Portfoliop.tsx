@@ -10,9 +10,9 @@ var TypeSite: string;
 // }
 import { Web } from 'sp-pnp-js';
 import * as Moment from 'moment';
-//import Groupby from './TaskWebpart';
+// import Groupby from './TaskWebpart';
 import Tooltip from '../../../globalComponents/Tooltip';
-import ComponentTable from './TaskWebpart';
+
 import { FaHome } from 'react-icons/fa';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SPComponentLoader } from '@microsoft/sp-loader';
@@ -20,6 +20,8 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
 import EditInstituton from '../../EditPopupFiles/EditComponent'
+import ComponentTable from './NexttaskWeb';
+
 
 var TeamMembers: any = [];
 var AssigntoMembers: any = [];
@@ -167,6 +169,7 @@ function Portfolio({ ID }: any) {
     var myarray: any = [];
     var myarray1: any = [];
     var myarray2: any = [];
+    var myarray3: any = [];
     var FolderID: any = '';
     data.map(item => {
         if (item.Portfolio_x0020_Type != undefined) {
@@ -231,8 +234,22 @@ function Portfolio({ ID }: any) {
                 myarray2.push(terms);
             })
         }
+
+         
+        myarray3 = myarray2.reduce(function(previous:any, current:any){
+        var alredyExists = previous.filter(function(item:any){
+            return item.Id === current.Id
+        }).length > 0
+        if(!alredyExists){
+            previous.push(current)
+        }
+        return previous
+    }, [])
+
+
+    myarray3.sort((a:any, b:any) => a.Id - b.Id);
         //    const letters = new Set([myarray2]);
-        console.log(myarray2)
+        console.log(myarray3)
         console.log(myarray1)
         // myarray.push();
     })
@@ -291,7 +308,7 @@ function Portfolio({ ID }: any) {
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
             {/* breadcrumb & title */}
             <section>
-                <div className='row'>
+                <div className='col'>
                     <div className='d-flex justify-content-between p-0' >
                         <ul className="spfxbreadcrumb m-0 p-0">
                             <li><a href='#'><FaHome /> </a></li>
@@ -307,6 +324,18 @@ function Portfolio({ ID }: any) {
                                                 </a>
                                             }
                                         </li>
+                                        {item.Item_x0020_Type=='subcomponent' && 
+                                        <li>
+                                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                                            {item.Parent != undefined &&
+                                                <a target='_blank' data-interception="off"
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}>
+                                                    {item.Parent.Title}
+                                                </a>
+                                            }
+                                        </li>
+                                        }
+
                                         <li><a>{item.Title}</a></li>
                                     </>
                                 )
@@ -315,7 +344,7 @@ function Portfolio({ ID }: any) {
                         <span className="text-end"><a target='_blank' data-interception="off"  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                     </div>
                 </div>
-                <div className='row'>
+                <div className='col'>
                     <div className='p-0' style={{ verticalAlign: "top" }}>
                         {data.map(item =>
                         <>
@@ -349,7 +378,7 @@ function Portfolio({ ID }: any) {
                 <div className='row'>
                     <div className='col-md-9 bg-white'>
                         <div className='team_member row  py-2'>
-                            <div className='col-md-4 p-0'>
+                            <div className='col-md-4 pe-0'>
                                 <dl>
                                     <dt className='bg-fxdark'>Due Date</dt>
                                     <dd className='bg-light'>
@@ -360,11 +389,7 @@ function Portfolio({ ID }: any) {
                                             )}
                                             {/* {data.map(item =>  <i>{item.DueDate}</i>)} */}
                                         </span>
-                                        <span
-                                            className="pull-right" title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                                 <dl>
@@ -373,11 +398,7 @@ function Portfolio({ ID }: any) {
                                         {data.map(item =>
                                             <a>{item.StartDate != null ? Moment(item.StartDate).format('DD/MM/YYYY') : ""}</a>
                                         )}
-                                        <span
-                                            className="hreflink pull-right" title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                                 <dl>
@@ -386,12 +407,16 @@ function Portfolio({ ID }: any) {
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Team Members</dt>
-                                    <dd className='bg-light d-flex'>{AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
+                                    <dd className='bg-light d-flex'>
+                                        {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
                                     <>
                                             <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
                                              <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
                                             </a>
-                                            <div></div>
+                                           
+                                            </>
+                                    ):""}
+                                     <div className='px-1'>|</div>
                                             {AllTeamMember != null && AllTeamMember.length > 0 &&
                   <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
                 }
@@ -424,19 +449,13 @@ function Portfolio({ ID }: any) {
                                             </>
                                             ):""} */}
 
-                                    </>
-                                    ):""}</dd>
+                                  </dd>
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Item Rank</dt>
                                     <dd className='bg-light'>
                                         {data.map(item => <a>{item.ItemRank}</a>)}
-                                        <span className="hreflink"
-                                            title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor"
-                                                aria-hidden="true"></i>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                             </div>
@@ -446,11 +465,7 @@ function Portfolio({ ID }: any) {
                                     <dd className='bg-light'>
                                         {data.map(item =>
                                             <a>{item.Priority != null ? item.Priority : ""}</a>)}
-                                        <span
-                                            className="hreflink pull-right" title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                                 <dl>
@@ -458,30 +473,18 @@ function Portfolio({ ID }: any) {
                                     <dd className='bg-light'>
                                         {data.map(item =>
                                             <a>{item.CompletedDate != null ? Moment(item.CompletedDate).format('DD/MM/YYYY') : ""}</a>)}
-                                        <span
-                                            className="hreflink pull-right" title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                        </span>
+                                      
                                     </dd>
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>Categories</dt>
-                                    <dd className='bg-light'>{data.map(item => <a>{item.Categories}</a>)}</dd>
+                                    <dd className='bg-light text-break'>{data.map(item => <a>{item.Categories}</a>)}</dd>
                                 </dl>
                                 <dl>
                                     <dt className='bg-fxdark'>% Complete</dt>
                                     <dd className='bg-light'>
-                                        {data.map(item => <a>{item.PercentComplete * 100 }</a>)}
-                                        <span className="pull-right">
-                                            <span className="pencil_icon">
-                                                <span className="hreflink"
-                                                    title="Edit Inline"
-                                                >
-                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
-                                                </span>
-                                            </span>
-                                        </span>
+                                        {data.map(item => <a>{(item.PercentComplete * 100).toFixed(0) }</a>)}
+                                       
                                     </dd>
                                 </dl>
                                 {data.map((item: any) => {
@@ -495,17 +498,17 @@ function Portfolio({ ID }: any) {
                                                         <span className="pull-right">
                                                             <span className="pencil_icon">
                                                                 <span className="hreflink"
-                                                                    title="Edit Inline"
+                                                                    
                                                                 >
                                                                        {item.Portfolio_x0020_Type == 'Component' &&
                                     <>
-                                        <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${ID}`}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />    </a> 
+                                        <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${item.Parent.Id}`}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />    </a> 
                                         
                                     </>
                                 }
                                 {item.Portfolio_x0020_Type == 'Service' &&
                                     <>
-                                       <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${ID}`}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> </a> 
+                                       <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${item.Parent.Id}`}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> </a> 
                                         
 
                                     </>}
@@ -568,11 +571,11 @@ function Portfolio({ ID }: any) {
                                                                         </span>
                                                                         {item.Title == 'EPS' &&
                                                                             <span>
-                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
+                                                                                {myarray3.length != 0 ? myarray3.map((client: any) => {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img"   >
-                                                                                            {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
+                                                                                            {(client.Id>340 && client.Id<420 ) &&
                                                                                                    <span>
                                                                                                         {client.Title}
                                                                                                     </span>
@@ -585,11 +588,11 @@ function Portfolio({ ID }: any) {
                                                                         }
                                                                         {item.Title == 'Education' &&
                                                                             <span>
-                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
+                                                                                {myarray3.length != 0 ? myarray3.map((client: any) => {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img">
-                                                                                            {(client.Title == "Contact Management") &&
+                                                                                            {(client.Id>609 && client.Id<631 ) &&
                                                                                                 <span>
                                                                                                         {client.Title}
                                                                                                     </span>
@@ -602,12 +605,30 @@ function Portfolio({ ID }: any) {
                                                                         }
                                                                         {item.Title == 'EI' &&
                                                                             <span  >
-                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
+                                                                                {myarray3.length != 0 ? myarray3.map((client: any) => {
                                                                                     return (
                                                                                         <div className="Members-Item">
                                                                                             <div className="user-Member-img"
                                                                                             >
-                                                                                                {(client.Title == "Nutzer Verwaltung" || client.Title == "Shareweb Maintenance" || client.Title == "EI fachspezifische Aufgaben" || client.Title == "EI Projekt-Übersicht" || client.Title == "Mithilfe Zugriffsrechte-Konzepts") &&
+                                                                                                {(client.Id>419 && client.Id<435 ) &&
+                                                                                                    <span>
+                                                                                                        {client.Title}
+                                                                                                    </span>
+                                                                                                }
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    )
+                                                                                }) : ""}
+                                                                            </span>
+                                                                        }
+                                                                          {item.Title == 'Migration' &&
+                                                                            <span  >
+                                                                                {myarray3.length != 0 ? myarray3.map((client: any) => {
+                                                                                    return (
+                                                                                        <div className="Members-Item">
+                                                                                            <div className="user-Member-img"
+                                                                                            >
+                                                                                                {(client.Id>630 && client.Id<640 ) &&
                                                                                                     <span>
                                                                                                         {client.Title}
                                                                                                     </span>
@@ -630,7 +651,7 @@ function Portfolio({ ID }: any) {
                             </div>
                         </div>
                         <section className='row  accordionbox'>
-                            <div className="accordion p-0  overflow-hidden">
+                            <div className="accordion   overflow-hidden">
                                   {/* description */}
                                 {data.map(item =>
                                     <>

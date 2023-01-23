@@ -5,8 +5,6 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import { Web } from "sp-pnp-js";
 import { ThemeSettingName } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react';
-import '../../cssFolder/foundation.scss';
-import '../../cssFolder/foundationmin.scss';
 
 export interface ITaskStepsState {  
   Result : any;

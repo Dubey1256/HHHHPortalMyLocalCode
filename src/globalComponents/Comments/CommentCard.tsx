@@ -1,17 +1,21 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
+/*
 import 'setimmediate'; 
 import { Editor } from "react-draft-wysiwyg";
-//import { EditorState, ContentState, convertFromHTML, convertToRaw } from 'draft-js'
 import { EditorState, convertToRaw,Modifier, ContentState, convertFromHTML } from 'draft-js';  
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from 'draftjs-to-html'; 
+*/
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 import { sp } from "@pnp/sp";
 import Tooltip from '../Tooltip';
 import "@pnp/sp/sputilities";
+
+import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
+
 export interface ICommentCardProps {
   siteUrl? : string;
   userDisplayName? : string;
@@ -30,9 +34,11 @@ export interface ICommentCardState {
   isModalOpen: boolean;
   AllCommentModal: boolean;
   mentionValue: string;
-  editorState : EditorState;
+  //editorState : EditorState;
   htmlContent : any;
   updateCommentPost : any;
+  editorValue : string;
+  editorChangeValue : string;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -61,9 +67,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           convertFromHTML('').contentBlocks
         )
       ),*/
-      editorState:EditorState.createEmpty(),
+      //editorState:EditorState.createEmpty(),
       htmlContent : '',
-      updateCommentPost : null
+      updateCommentPost : null,
+      editorValue : '',
+      editorChangeValue : ''
     }
     this.GetResult();    
     console.log(this.props.Context);
@@ -241,7 +249,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private async updateComment(){
     let updateCommentPost = this.state.updateCommentPost;
-    let txtComment = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
+    //let txtComment = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
+    let txtComment = this.state.editorChangeValue;
     
     if (txtComment != ''){
       let temp = {
@@ -378,11 +387,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private openEditModal(cmdData:any , indexOfDeleteElement:any){
     this.setState({
       isModalOpen : true,
-      editorState : EditorState.createWithContent(
+      editorValue : cmdData.Description,
+      /*editorState : EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('<p>'+cmdData.Description+'</p>').contentBlocks
         )
-      ),
+      ),*/
       updateCommentPost : cmdData
     })
   }
@@ -410,7 +420,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           convertFromHTML('').contentBlocks
         )
       )*/
-      editorState: EditorState.createEmpty()
+      //editorState: EditorState.createEmpty()
     });
   }
 
@@ -490,15 +500,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       });
   }
 
-  private onEditorStateChange = (editorState:EditorState):void => { 
+  /*private onEditorStateChange = (editorState:EditorState):void => { 
     console.log('set as HTML:', draftToHtml(convertToRaw(editorState.getCurrentContent()))); 
     this.setState({  
       editorState,  
     });  
+  }*/
+
+  HtmlEditorStateChange = (value:any) =>{
+    this.setState({  
+      editorChangeValue : value,  
+    }, ()=>console.log(console.log('set as HTML:', value)));
   }
 
   public render(): React.ReactElement<ICommentCardProps> {
-    const { editorState } = this.state;
+    //const { editorState } = this.state;
     return (
       <div>
          <div className='mb-3 card commentsection'>
@@ -521,7 +537,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 })}
                   </div>
                 
-                <span>
+                <span className='clintlist'>
                 <MentionsInput  placeholder='Recipients Name' value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
                       className="form-control"
                       classNames={mentionClass}>
@@ -601,14 +617,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       <button type="button" className='close' style={{minWidth: "10px"}} onClick={(e) =>this.CloseModal(e) }>x</button>
                   </div>
                   <div className='modal-body'>
-                  <Editor
+                    <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
+                  {/*<Editor
                       editorState={editorState}
                       onEditorStateChange={this.onEditorStateChange}                     
                       toolbarClassName="toolbarClassName"
                       wrapperClassName="wrapperClassName"
                       editorClassName="editorClassName"
                       wrapperStyle={{ width: '100%', border: "2px solid black", height:'60%' }}
-                  />
+                  />*/}
                   </div>
                   <div className="modal-footer">
                     <button type="button" className="btn btn-primary" onClick={(e) =>this.updateComment() } >Save</button>

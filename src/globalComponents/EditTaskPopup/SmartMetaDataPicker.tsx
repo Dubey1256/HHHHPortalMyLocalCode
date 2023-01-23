@@ -3,7 +3,6 @@ import * as $ from 'jquery';
 //import '../../webparts/taskDashboard/components/foundation.scss';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../../webparts/cssFolder/Style.scss';
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 const Picker = (item: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(false);
@@ -29,8 +28,7 @@ const Picker = (item: any) => {
         title.Title = select;
         item.props.smartCategories.push(title);
         item.props.categories = select;
-        Example(item);
-
+        Example(item, 'Category');
     }
     var SmartTaxonomyName = "Categories";
     const loadGmBHTaskUsers = function () {
@@ -118,13 +116,10 @@ const Picker = (item: any) => {
         //Example(item);
 
     }
-    function Example(callBack: any) {
-
-        item.Call(callBack.props);
-
+    function Example(callBack: any, type:any) {
+        item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
-
         setPopupSmartTaxanomy(false)
     }
     return (

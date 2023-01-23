@@ -1,6 +1,6 @@
 
 import * as moment from 'moment';
-import { Modal } from 'office-ui-fabric-react';
+import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
@@ -419,17 +419,16 @@ function DisplayTimeEntry(item: any) {
     return (
         <div>
 
-            <Modal
+            <Panel
+               headerText={`  All Time Entry -  ${EditTaskItemitle}`}
                 isOpen={modalTimeIsOpen}
                 onDismiss={setModalTimmeIsOpenToFalse}
-                isBlocking={false} >
-                <div className='modal-dialog modal-lg'>
-                    <div className='modal-content'>
-                        <div className='modal-header'>
-                            <h3 className='modal-title'>All Time Entry -  {EditTaskItemitle}</h3>
-                            <button className='close pull-right' onClick={setModalTimmeIsOpenToFalse}>x</button>
-                        </div>
-                        <div className='modal-body clearfix bg-f5f5'>
+                isBlocking={false} 
+                type={PanelType.large}
+                >
+                <div className=''>
+                    <div className=''>
+                        <div className='modal-body clearfix'>
                             <TimeEntryPopup props={item.props}></TimeEntryPopup>
                         </div>
                         <div className='modal-footer '>
@@ -437,7 +436,7 @@ function DisplayTimeEntry(item: any) {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </Panel>
 
         </div>
     )

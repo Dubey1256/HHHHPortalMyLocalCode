@@ -347,8 +347,10 @@ export default function ComponentTable({ props }: any) {
     var showProgressHide = () => {
         $(' #SpfxProgressbar').hide();
     }
+    var pageType =''
     React.useEffect(() => {
         console.log("Use effect is running")
+        pageType = props.Portfolio_x0020_Type;
         showProgressBar();
         function RetrieveSPData() {
             //--------------------------task user--------------------------------------------------------------------------------------------------
@@ -899,8 +901,55 @@ export default function ComponentTable({ props }: any) {
                 }
             });
         }
+        if (pageType === 'Service-Portfolio') {
+            $.each(task['Services']['results'], function (index: any, componentItem: any) {
+                for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
+                    let crntItem = ComponetsData['allComponets'][i];
+                    if (componentItem.Id == crntItem.Id) {
+                        if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
+                            task.PortfolioStructureID = crntItem.PortfolioStructureID;
+                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
+                        }
+                        if (crntItem.Portfolio_x0020_Type == 'Service') {
+                            task.isService = true;
+                            task.Portfolio_x0020_Type = 'Service';
+                        }
+                        if (ComponetsData['allComponets'][i]['childs'] === undefined)
+                            ComponetsData['allComponets'][i]['childs'] = [];
+                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
+                            ComponetsData['allComponets'][i]['childs'].push(task);
+                            if (ComponetsData['allComponets'][i].Id === 413)
+                                console.log(ComponetsData['allComponets'][i]['childs'].length)
+                        }
+                        break;
+                    }
+                }
+            });
+        }
+        if (pageType === 'Event-Portfolio') {
+            $.each(task['Events']['results'], function (index: any, componentItem: any) {
+                for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
+                    let crntItem = ComponetsData['allComponets'][i];
+                    if (componentItem.Id == crntItem.Id) {
+                        if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
+                            task.PortfolioStructureID = crntItem.PortfolioStructureID;
+                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
+                        }
+                        if (crntItem.Portfolio_x0020_Type == 'Events') {
+                            task.isService = true;
+                            task.Portfolio_x0020_Type = 'Events';
+                        }
+                        if (ComponetsData['allComponets'][i]['childs'] == undefined)
+                            ComponetsData['allComponets'][i]['childs'] = [];
+                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task))
+                            ComponetsData['allComponets'][i]['childs'].push(task);
+                        break;
+                    }
+                }
+            });
+        }
     }
-    var pageType = 'Component-Portfolio';
+    
     var ComponetsData: any = {};
     ComponetsData.allUntaggedTasks = []
     const bindData = function () {
@@ -1045,7 +1094,39 @@ export default function ComponentTable({ props }: any) {
                     ComponetsData['allUntaggedTasks'].push(task);
                 }
             }
+            if (pageType === 'Service-Portfolio') {
+                if (task['Services'] != undefined && task['Services']['results'].length > 0) {
+                    task.Portfolio_x0020_Type = 'Service';
+                    findTaggedComponents(task);
+                }
+                else if (task['Component'] != undefined && task['Component']['results'].length === 0 && task['Events'] != undefined && task['Events']['results'].length === 0) {
+                    // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                    ComponetsData['allUntaggedTasks'].push(task);
+                }
+
+            }
+            if (pageType === 'Event-Portfolio') {
+                if (task['Events'] != undefined && task['Events']['results'].length > 0) {
+                    task.Portfolio_x0020_Type = 'Events';
+                    findTaggedComponents(task);
+                }
+                else if (task['Component'] != undefined && task['Component']['results'].length == 0 && task['Services'] != undefined && task['Services']['results'].length == 0) {
+                    // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
+                    ComponetsData['allUntaggedTasks'].push(task);
+                }
+
+            }
         })
+        var temp: any = {};
+        temp.Title = 'Others';
+        temp.childs = [];
+        temp.flag = true;
+        // ComponetsData['allComponets'][i]['childs']
+        ComponetsData['allUntaggedTasks'].map((task: any) => {
+            if (task.Title != undefined)
+                temp.childs.push(task);
+        })
+        ComponetsData['allComponets'].push(temp);
         bindData();
     }
     const filterDataBasedOnList = function () {

@@ -16,9 +16,12 @@ export default class ServicePortfolio extends React.Component<IServicePortfolioP
         hasTeamsContext,
         userDisplayName,
         Context,
+        dropdownvalue,
       } = this.props;
     return (
-    <div><ComponentTable ></ComponentTable></div> 
+    <div>
+      {/* {escape(this.props.dropdownvalue)} */}
+      <ComponentTable SelectedProp={this.props.dropdownvalue}></ComponentTable></div> 
     );
   }
 }
