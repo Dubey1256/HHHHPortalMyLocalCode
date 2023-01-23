@@ -13,6 +13,7 @@ var NewCategoryId: any = ''
 var Eyd=''
 var changeEdited ='';
 var Categoryy ='';
+var CategoryyID:any =''
 var TaskCate:any=[]
 var AllUsers: any = [];
 var change = Moment().format()
@@ -296,6 +297,7 @@ function TimeEntryPopup(item: any) {
     }
     const Editcategorypopup = (child:any) => {
         Categoryy = child.Title
+        CategoryyID = child.ID
         setEditcategory(true)
     }
 
@@ -541,7 +543,7 @@ function TimeEntryPopup(item: any) {
                             value.MainParentId = items.Id;
                             value.AuthorTitle = val.Author.Title;
                             value.EditorTitle = val.Editor.Title;
-                            value.AuthorImage = val.AuthorImage
+                            //value.AuthorImage = val.AuthorImage
                             value.show = true;
                            // value.TaskDate = true;
                             if (val.Created != undefined)
@@ -1005,7 +1007,7 @@ function TimeEntryPopup(item: any) {
 
 
         })
-        setupdateData(updateData + 1)
+        setupdateData(updateData + 5)
 
     }
 
@@ -1322,6 +1324,29 @@ const DateFormat=(itemL:any)=>{
       return serverDateTime;
     
 }
+const updateCategory=async ()=>{
+    TimeSheet.map((items: any) => {
+        if (items.Title == checkCategories) {
+            Category = items.Id
+        }
+    })
+    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+
+    await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.getById(CategoryyID).update({
+
+
+        Title: checkCategories,
+        CategoryId: Category
+
+    }).then((res: any) => {
+
+        console.log(res);
+       
+       closeEditcategorypopup((e:any)=>e);
+       setupdateData(updateData + 3 )
+
+    })
+}
     return (
         <div>
             <div className="container mt-0 p-0">
@@ -1475,7 +1500,7 @@ const DateFormat=(itemL:any)=>{
 
                                                                                                                     <td colSpan={2} style={{ width: "22%" }}>
                                                                                                                         <img className="AssignUserPhoto1 wid29 bdrbox"
-                                                                                                                            title="{subchild.AuthorName}"
+                                                                                                                            title={childinew.AuthorName}
                                                                                                                             data-toggle="popover"
                                                                                                                             data-trigger="hover"
                                                                                                                             src={childinew.AuthorImage}></img>
@@ -2663,7 +2688,7 @@ const DateFormat=(itemL:any)=>{
                                                 <input type="text" autoComplete="off"
                                                     className="form-control"
                                                     name="CategoriesTitle"
-                                                    value={Categoryy}
+                                                    value={checkCategories!=undefined?checkCategories:Categoryy}
                                                 />
                                             </div>
                                         </div>
@@ -2672,7 +2697,7 @@ const DateFormat=(itemL:any)=>{
                                                 <label>Title</label>
                                                 <input type="text" autoComplete="off"
                                                     className="form-control" name="TimeTitle"
-                                                    defaultValue={Categoryy}
+                                                    value={checkCategories!=undefined?checkCategories:Categoryy}
                                                     onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
                                             </div>
                                         </div>
@@ -2694,9 +2719,8 @@ const DateFormat=(itemL:any)=>{
                                                             id="subcategorytasksPriority{{item.Id}}">
                                                             <input
                                                                 type="radio" className="form-check-input"
-                                                                defaultValue={Items.Title} defaultChecked={Items.Title==Categoryy}
-                                                                onChange={selectCategories}
-
+                                                                value={Items.Title} defaultChecked={Items.Title==Categoryy}
+                                                                onChange={()=>setcheckCategories(Items.Title)}
                                                                 name="taskcategory" />
                                                             <label className='form-check-label'>{Items.Title}</label>
                                                         </div>
@@ -2710,7 +2734,7 @@ const DateFormat=(itemL:any)=>{
 
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={closeEditcategorypopup}>
+                                <button type="button" className="btn btn-primary" onClick={updateCategory}>
                                     Submit
                                 </button>
 
