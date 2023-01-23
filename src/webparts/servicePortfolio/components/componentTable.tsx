@@ -2075,19 +2075,13 @@ function ComponentTable(SelectedProp: any) {
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
-                                                                                            <span>({item.childs.length})</span>
+                                                                                            <span className='ms-1'>({item.childs.length})</span>
                                                                                         }
 
                                                                                         {item.Short_x0020_Description_x0020_On != null &&
                                                                                             <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                {/* <span className="tooltipte">
-                                                                                                    <span className="tooltiptext">
-                                                                                                        <div className="tooltip_Desc">
-                                                                                                            <span>{item.Short_x0020_Description_x0020_On}</span>
-                                                                                                        </div>
-                                                                                                    </span>
-                                                                                                </span> */}
+                                                                                               
                                                                                                 <div className="popover__content">
                                                                                                     {item.Short_x0020_Description_x0020_On}
                                                                                                 </div>
@@ -2179,7 +2173,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 &&
-                                                                                                                    <span>({childitem.childs.length})</span>
+                                                                                                                    <span className='ms-1'>({childitem.childs.length})</span>
                                                                                                                 }
 
                                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -2283,7 +2277,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.childs.length > 0 &&
-                                                                                                                                            <span className="me-1">({childinew.childs.length})</span>
+                                                                                                                                            <span className='ms-1'>({childinew.childs.length})</span>
                                                                                                                                         }
 
                                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
@@ -2382,7 +2376,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&
-                                                                                                                                                                <span>({subchilditem.childs.length})</span>
+                                                                                                                                                                <span className='ms-1'>({subchilditem.childs.length})</span>
                                                                                                                                                             }
 
                                                                                                                                                             {subchilditem.Short_x0020_Description_x0020_On != null &&

@@ -305,15 +305,35 @@ const SmartTimeTotalFunction=(item:any)=>{
                 })
             }
         })
-        var TotalTime =0;
+        var TotalTime =0.0;
+
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { 
             if(type.AdditionalTime!=undefined&&type.AdditionalTime.length>0){
+
                 $.each(type.AdditionalTime,function(index:any,time:any){
-                    var Time = parseInt(time.TaskTime)
-                    TotalTime =  TotalTime + Time
-                    console.log(TotalTime)
+
+                    if(time.TaskTime.includes('.')){
+
+                       var Time=parseInt(time.TaskTime.split('.')[0])+(parseInt(time.TaskTime.split('.')[1]))/100 ;
+
+                       TotalTime =  TotalTime + Time;
+
+                       console.log("SMARTTIMETOTALDECIMAL",TotalTime)
+
+                    }
+
+                    else{var Time = parseInt(time.TaskTime)
+
+                        TotalTime =  TotalTime + Time
+
+                        console.log("SMARTTIMETOTALNormal",TotalTime)}
+
+                   
+
                 })
+
                 setsmartTimeTotal(TotalTime);
+
             }
              return type.isShifted === false });
         

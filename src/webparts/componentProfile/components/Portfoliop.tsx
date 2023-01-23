@@ -10,9 +10,9 @@ var TypeSite: string;
 // }
 import { Web } from 'sp-pnp-js';
 import * as Moment from 'moment';
-//import Groupby from './TaskWebpart';
+// import Groupby from './TaskWebpart';
 import Tooltip from '../../../globalComponents/Tooltip';
-import ComponentTable from './Taskwebparts';
+
 import { FaHome } from 'react-icons/fa';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SPComponentLoader } from '@microsoft/sp-loader';
@@ -20,6 +20,8 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
 import EditInstituton from '../../EditPopupFiles/EditComponent'
+import ComponentTable from './NexttaskWeb';
+
 
 var TeamMembers: any = [];
 var AssigntoMembers: any = [];
@@ -387,11 +389,7 @@ function Portfolio({ ID }: any) {
                                             )}
                                             {/* {data.map(item =>  <i>{item.DueDate}</i>)} */}
                                         </span>
-                                        <span
-                                            className="pull-right" title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                                 <dl>
@@ -400,11 +398,7 @@ function Portfolio({ ID }: any) {
                                         {data.map(item =>
                                             <a>{item.StartDate != null ? Moment(item.StartDate).format('DD/MM/YYYY') : ""}</a>
                                         )}
-                                        <span
-                                            className="hreflink pull-right" title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                                 <dl>
@@ -461,12 +455,7 @@ function Portfolio({ ID }: any) {
                                     <dt className='bg-fxdark'>Item Rank</dt>
                                     <dd className='bg-light'>
                                         {data.map(item => <a>{item.ItemRank}</a>)}
-                                        <span className="hreflink"
-                                            title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor"
-                                                aria-hidden="true"></i>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                             </div>
@@ -476,11 +465,7 @@ function Portfolio({ ID }: any) {
                                     <dd className='bg-light'>
                                         {data.map(item =>
                                             <a>{item.Priority != null ? item.Priority : ""}</a>)}
-                                        <span
-                                            className="hreflink pull-right" title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                                 <dl>
@@ -488,11 +473,7 @@ function Portfolio({ ID }: any) {
                                     <dd className='bg-light'>
                                         {data.map(item =>
                                             <a>{item.CompletedDate != null ? Moment(item.CompletedDate).format('DD/MM/YYYY') : ""}</a>)}
-                                        <span
-                                            className="hreflink pull-right" title="Edit Inline"
-                                        >
-                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                        </span>
+                                      
                                     </dd>
                                 </dl>
                                 <dl>
@@ -503,15 +484,7 @@ function Portfolio({ ID }: any) {
                                     <dt className='bg-fxdark'>% Complete</dt>
                                     <dd className='bg-light'>
                                         {data.map(item => <a>{(item.PercentComplete * 100).toFixed(0) }</a>)}
-                                        <span className="pull-right">
-                                            <span className="pencil_icon">
-                                                <span className="hreflink"
-                                                    title="Edit Inline"
-                                                >
-                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
-                                                </span>
-                                            </span>
-                                        </span>
+                                       
                                     </dd>
                                 </dl>
                                 {data.map((item: any) => {
