@@ -420,6 +420,7 @@ function DisplayTimeEntry(item: any) {
         <div>
 
             <Panel
+               headerText={`  All Time Entry -  ${EditTaskItemitle}`}
                 isOpen={modalTimeIsOpen}
                 onDismiss={setModalTimmeIsOpenToFalse}
                 isBlocking={false} 
@@ -427,11 +428,7 @@ function DisplayTimeEntry(item: any) {
                 >
                 <div className=''>
                     <div className=''>
-                        <div className=''>
-                            <h3 className='modal-title'>All Time Entry -  {EditTaskItemitle}</h3>
-                            <button className='close pull-right' onClick={setModalTimmeIsOpenToFalse}>x</button>
-                        </div>
-                        <div className='modal-body clearfix bg-f5f5'>
+                        <div className='modal-body clearfix'>
                             <TimeEntryPopup props={item.props}></TimeEntryPopup>
                         </div>
                         <div className='modal-footer '>
