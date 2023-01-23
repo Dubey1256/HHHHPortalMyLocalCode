@@ -1,0 +1,775 @@
+div#workbenchPageContent {
+    width: 100% !important;
+    max-width: 1900px !important;
+    margin: 0 auto !important;
+}
+a.btn.btn-primary {
+    color: #fff;
+}
+.padL-0{
+    padding-left: 0px;
+}
+
+a.btn.btn-outline.btn-primary {
+    color: #000069;
+    font-weight: 700;
+}
+
+#contentRow {
+    padding-top: 0px;
+}
+.taskprofilepagegreen a:active, .taskprofilepagegreen a:hover, .taskprofilepagegreen a:link, .taskprofilepagegreen a:visited {
+    color: #228b22 !important;
+    text-decoration: none;
+}
+.taskprofilepagegreen .comment_header, .taskprofilepagegreen a, .taskprofilepagegreen td {
+    color: #228b22 !important;
+}
+#pageTitle {
+    display: none;
+}
+.Contact_Info{
+    justify-content: space-between;
+    display: flex;
+}
+.Phone_Email{
+    margin-top: 10px;
+    margin-left: 0px;
+}
+.Phone_EmailClild{
+    margin: 0px 21px;
+    color: #000069;
+    width: 100%;
+}
+.PersonalInformation{
+    margin: 0px -13px;
+}.infoblock.Address.col-sm-6.form-group.padR-0 {
+    flex: 0 0 auto;
+    width: 49%;
+}
+.ContactInfo{
+    margin-left: 35px;
+}
+.infoblock.Address.col-sm-6.form-group.padL-0 {
+    flex: 0 0 auto;
+    width: 47%;
+}
+div#Information {
+    margin-left: -30px;
+}
+.TabChild{
+    width: 14%;
+}
+.flex-column{
+    border: none;
+    color: #444;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 0;
+    margin-left: 10px;
+    /* margin-right: 6px; */
+}
+.InformationFullContainer{
+    margin: 0px 0px 0px 20px;
+}
+.InformationContainer{
+    margin: 0px 0px 0px 9px;
+}
+/* .a#left-tabs-example-tab-third {
+    border: 1px solid #ddd;
+    background: 0 0;
+    border-radius: 0;
+} */
+.nav-pills .nav-link {
+    background: 0 0;
+    border: 1px solid #ddd;
+    border-radius: 0;
+}
+.ItemNav{
+    background: #000069;
+    border-radius: 0px;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: var(--bs-nav-pills-link-active-color);
+    background: #000069;
+    border-radius: 0px;
+}
+select#SalViewYear {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    height: 27px;
+    margin-bottom: 11px;
+    display: block;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+}
+.SalViewYear{
+    width: 79%;
+}
+button.btn.btn-primary.btn-sm {
+    height: 30px;
+    padding-top: 2px;
+}
+.Salaryheading{
+    color: #000b5c;
+    border-bottom: 1px solid #000b5c;
+    width: 100%;
+}
+.CreateSalarySlip {
+    color: #fff;
+    background-color: #006!important;
+    border-radius: 0!important;
+    padding: 5px 0px!important;
+    font-size: 12px!important;
+    line-height: 1.5!important;
+    font-weight: 500!important;
+    min-width: 10rem!important;
+}
+.infoblock .label {
+    background: #f8f8f8;
+    float: left;
+    margin-right: 3px;
+    margin-top: 0!important;
+    text-align: left;
+    padding: 8px;
+    color: #000;
+    font-size: 13px;
+    border-radius: 0;
+    height: 40px;
+    line-height: 23px;
+    font-weight: 700;
+    font-family: Segoe UI,sans-serif;
+}
+.infoblock{
+    margin: 0px 12px;
+}
+.padR-0{
+    padding-right: 0px;
+}
+.padb-10{
+    padding-bottom: 10px;
+}
+.tableLeft{
+    width: 25%;
+}
+.tableRight{
+    width: 75%;
+}
+.tableHeading{
+    display: flex;
+}
+.HeaderTitle{
+    display: flex;
+    justify-content: space-between;
+}
+
+.label {
+    text-transform: none !important;
+    
+}
+
+.Personal img,
+.Address img {
+    width: 30px;
+}
+
+.infoblock .labeltext {
+    background: #f8f8f8;
+    text-align: left;
+    color: #000;
+    font-family: arial;
+    height: 39px;
+    margin-bottom: 2px;
+    line-height: 41px;
+    padding-left: 5px;
+}
+
+.infoblock h2 {
+    font-size: 16px;
+    margin-bottom: 7px;
+    margin-top: 12px;
+    border-bottom: 2px #000069 solid;
+}
+
+.Personal .labeltext,
+.Address .labeltext {
+    height: 38px;
+    margin-bottom: 2px;
+    width: 47%;
+    margin-left: 5px;
+    margin-right: 2px;
+}
+
+.Personal .label,
+.Address .label {
+    /* float: left; */
+    width: 36px !important;
+    padding: 2px 1px;
+    margin: 2px;
+    background: none;
+    height: 36px;
+}
+
+.social-Media-Icons.Address .labeltext {
+    margin-left: 4px;
+}
+
+.social-label-linkedin.label {
+    background: #5a5a5a;
+    padding: 0px !important;
+    width: 40px !important;
+    margin-right: 0;
+    height: 38px !important;
+}
+
+shareweb-breadcrumb-item .Breadcrumb {
+    display: none;
+}
+
+.social-Media-Icons i.fa {
+    color: #fff;
+    margin: 0 auto;
+    line-height: 36px;
+    text-align: center;
+    width: 100%;
+    font-size: 16px;
+}
+
+.selectmonth {
+    width: 145px;
+    height: 30px;
+    font-size: 13px;
+    border-radius: 0px;
+    padding: 0px 5px;
+    border: 1px solid #000;
+}
+
+.emp-tab .nav-tabs>li>a {
+    margin-right: 0 !important;
+}
+
+.nav-tabs>li>a:hover {
+    line-height: 1.42857143;
+    /* border: 1px solid transparent !important; */
+    border-radius: 0;
+}
+
+/*KKI CSS*/
+img.user-dp {
+    border-radius: 25rem;
+    width: 170px;
+    height: 170px;
+    object-fit: cover;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.EmplyoeeName {
+    font-size: 22px;
+    color: #000069;
+    font-weight: 600;
+    width: 59%;
+    margin-left: 11px;
+}
+
+table.table thead tr th {
+    background: #F8F8F8;
+}
+
+#ContractsTAB:checked~section .ContractsTAB .table thead tr th:last-child {
+    background: transparent;
+}
+
+.btn {
+    min-width: 13rem;
+}
+
+.btn-primary {
+    border: 2px solid #000069 !important;
+}
+
+.btn-outline.btn-primary {
+    background: transparent !important;
+    border-color: #000069;
+    color: #000069;
+}
+
+.btn-outline.btn-primary:hover,
+.btn-outline.btn-primary:focus,
+.btn-outline.btn-sticky-primary:focus {
+    border-color: #00004e;
+    background-color: #000069 !important;
+    color: #ffffff !important;
+}
+
+.btn-outline {
+    border-width: 2px;
+    border-radius: 0px;
+}
+
+/* Emp tabs */
+
+#InformationTAB:checked~section .InformationTAB,
+#ContractsTAB:checked~section .ContractsTAB,
+#PaymentsTAB:checked~section .PaymentsTAB,
+#DocumentsTAB:checked~section .DocumentsTAB,
+#LeavesTAB:checked~section .LeavesTAB {
+    display: block;
+}
+
+#InformationTAB:checked~nav .InformationTAB,
+#ContractsTAB:checked~nav .ContractsTAB,
+#PaymentsTAB:checked~nav .PaymentsTAB,
+#DocumentsTAB:checked~nav .DocumentsTAB,
+#LeavesTAB:checked~nav .LeavesTAB {
+    color: #000069;
+}
+
+#InformationTAB:checked~nav .InformationTAB label,
+#ContractsTAB:checked~nav .ContractsTAB label,
+#PaymentsTAB:checked~nav .PaymentsTAB label,
+#DocumentsTAB:checked~nav .DocumentsTAB label,
+#LeavesTAB:checked~nav .LeavesTAB label {
+    background: white;
+    color: #000069;
+    position: relative;
+}
+
+#InformationTAB:checked~nav .InformationTAB label:before,
+#ContractsTAB:checked~nav .ContractsTAB label:before,
+#PaymentsTAB:checked~nav .PaymentsTAB label:before,
+#DocumentsTAB:checked~nav .DocumentsTAB label:before,
+#LeavesTAB:checked~nav .LeavesTAB label:before {
+    border-top: 3px solid #000069;
+    content: "";
+    display: block;
+    position: absolute;
+    height: 2px;
+    top: -1px;
+    width: 100%;
+    left: 0;
+}
+
+#InformationTAB:checked~nav .InformationTAB label:after,
+#ContractsTAB:checked~nav .ContractsTAB label:after,
+#PaymentsTAB:checked~nav .PaymentsTAB label:after,
+#DocumentsTAB:checked~nav .DocumentsTAB label:after,
+#LeavesTAB:checked~nav .LeavesTAB label:after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: #ffffff;
+    left: 0;
+    bottom: -1px;
+}
+
+.tab-content>#Information .infoblock .labeltext {
+    margin-right: 2px;
+}
+
+.SocialSecurityInsuranceSection .CustomLabelWidthRow>.col-lg-3 {
+    width: 24%;
+}
+
+.SocialSecurityInsuranceSection .CustomLabelWidthRow>.col-lg-9 {
+    width: 75.5%;
+}
+.rounded-0 {
+border-radius: 0;
+}
+
+
+/* taxInformation Css */
+
+
+
+.heading {
+    color: #000b5c;
+    border-bottom: 2px solid #000b5c;
+    font-size: 20px;
+    margin: 20px 0 10px 10px;
+  }
+  
+  .item-container {
+    display: flex;
+  }
+  
+  .item {
+    display: flex;
+    width: 100%;
+    margin: 0 5px;
+  }
+  
+  .item-left,
+  .item-right {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .item-left {
+    width: 60%;
+  }
+  
+  .item-right {
+    width: 40%;
+  }
+  
+  .item-label{
+    background: #f1f3f4;
+    margin: 2px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    color: #000;
+    font-size: 13px;
+    border-radius: 0;
+    height: 34px;
+    line-height: 21px;
+    font-weight: 700;
+  }
+  .label-value{
+    background: #f1f3f4;
+    margin: 2px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    height: 34px;
+    color: #000;
+    border-radius: 0;
+    font-size: 13px;
+    line-height: 21px;
+  }
+  
+
+
+  /* PayrollComponentsCss */
+
+  table.table {
+    width: 100%;
+}
+.TableColor{
+    background: #f2f2f2;
+}
+.TableTdSize{
+    width: 50%;
+}
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+    border: none;
+}
+
+table.payRoll-TopTable tbody tr>td {
+    font-family: 'Calibri', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    border-spacing: 0px;
+    vertical-align: initial;
+    padding: 6px 3px;
+}
+
+table.payRoll-TopTable tbody tr>td:first-child {
+    font-weight: 800;
+}
+
+table.payRoll-TopTable tbody tr>td:last-child {
+    font-weight: normal;
+}
+
+table.payRoll-TopTable tbody tr>td.padL-0 {
+    padding-left: 0px !important;
+}
+
+table.payRoll-TopTable tbody tr>td.padR-0 {
+    padding-right: 0px !important;
+}
+
+table.payRollTable.table,
+table.payRoll-TopTable,
+table.payRoll-TopTable tbody tr>td table.table {
+    border-spacing: 0px;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd),
+table.payRollTable>tbody>tr:nth-of-type(even) {
+    background-color: #f2f2f2 !important;
+}
+
+table.payRollTable thead tr>td {
+    background: #acb9c9 !important;
+    font-weight: 700;
+    font-size: 11px;
+    font-family: 'Calibri', Helvetica, Arial, sans-serif;
+    padding: 7px;
+    border-spacing: 0px;
+    color: #000;
+}
+
+table.payRollTable tbody tr>td {
+    font-size: 11px;
+    font-family: 'Calibri', Helvetica, Arial, sans-serif;
+    padding: 7px;
+    border-spacing: 0px;
+}
+
+table.payRollTable tbody tr.table-label {
+    background: #acb9c9 !important;
+    font-weight: 700;
+    font-size: 11px;
+    font-family: 'Calibri', Helvetica, Arial, sans-serif;
+}
+
+table.payRollTable thead tr>td:first-child,
+table.payRollTable tbody tr>td:first-child {
+    border-right: 1px solid #5e5e5e;
+}
+
+tr.bdr-bottom {
+    border-bottom: 1px solid #5e5e5e;
+}
+
+tr.bdr-top {
+    border-top: 1px solid #5e5e5e;
+}
+
+.refresh {
+    clear: both;
+}
+
+.forflag {
+    position: relative;
+    top: -41px;
+    left: -74px;
+}
+/******************* HTAB *********************/
+.tabs-left {
+    border-bottom: none;
+}
+
+
+.tabs-left>li {
+    float: none;
+}
+
+.tabs-left>li.active>a,
+.tabs-left>li.active>a:hover,
+.tabs-left>li.active>a:focus {
+    border-bottom-color: #ddd;
+    border-right-color: transparent;
+    background: #000069;
+    border: none;
+    border-radius: 0px;
+    margin: 0px;
+    color: #fff;
+}
+ul.nav.nav-tabs.tabs-left.sideways li {
+    border: 1px solid #ddd;
+    width: 100%;
+    margin: 0px !important;
+}
+
+ul.nav.nav-tabs.tabs-left.sideways li.active, ul.nav.nav-tabs.tabs-left.sideways li.active:focus, ul.nav.nav-tabs.tabs-left.sideways li.active:hover {
+    background: #000069;
+    border: 1px solid #000069;
+}
+ul.nav.nav-tabs.tabs-left.sideways li:focus, ul.nav.nav-tabs.tabs-left.sideways li:hover {
+    background: #eee;
+}
+.emp-tab .nav-tabs>li>a {
+    margin-right: 0 !important;
+    border: none;
+    color: #444;
+font-size: 13px;
+font-weight: 500;
+border-radius: 0;
+}
+.emp-tab .nav-tabs>li.active>a {
+color: #fff;
+}
+.emp-tab>input,
+    .emp-tab section>div {
+        display: none;
+    }
+
+.emp-tab {
+    width: 100%;
+    margin-top: 20px;
+    clear: both;
+}
+
+.emp-tab ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.emp-tab ul li label {
+    float: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-bottom: 0;
+    background: #F8F8F8;
+    color: #444;
+    text-transform: uppercase;
+}
+
+.emp-tab ul li label:hover {
+    background: #ececec;
+}
+
+.emp-tab ul li label:active {
+    background: #ffffff;
+}
+
+.emp-tab ul li:not(:last-child) label {
+    border-right-width: 0;
+}
+
+.emp-tab section {
+    clear: both;
+}
+
+.emp-tab section>div {
+    padding: 15px 8px;
+    width: 100%;
+    border: 1px solid #ddd;
+    background: #fff;
+    line-height: 1.5em;
+    letter-spacing: 0.3px;
+    color: #444;
+}
+    #HTAB1:checked~section .TAB1, #HTAB2:checked~section .TAB2 , #HTAB3:checked~section .TAB3, #HTAB4:checked~section .TAB4, #HTAB5:checked~section .TAB5, #HTAB6:checked~section .TAB6, #HTAB7:checked~section .TAB7, #HTAB8:checked~section .TAB8
+    {
+        display: block;
+    }
+
+    #HTAB1:checked~nav .TAB1, #HTAB2:checked~nav .TAB2, #HTAB3:checked~nav .TAB3, #HTAB4:checked~nav .TAB4, #HTAB5:checked~nav .TAB5, #HTAB6:checked~nav .TAB6, #HTAB7:checked~nav .TAB7, #HTAB8:checked~nav .TAB8
+    {
+        color: #000069;
+    }
+
+    #HTAB1:checked~nav .TAB1 label, #HTAB2:checked~nav .TAB2 label, #HTAB3:checked~nav .TAB3 label, #HTAB4:checked~nav .TAB4 label, #HTAB5:checked~nav .TAB5 label, #HTAB6:checked~nav .TAB6 label, #HTAB7:checked~nav .TAB7 label, #HTAB8:checked~nav .TAB8 label
+    {
+        background: white;
+        color: #000069;
+        position: relative;
+    }
+
+
+    #HTAB1:checked~nav .TAB1 label:before, #HTAB2:checked~nav .TAB2 label:before, #HTAB3:checked~nav .TAB3 label:before, #HTAB4:checked~nav .TAB4 label:before, #HTAB5:checked~nav .TAB5 label:before, #HTAB6:checked~nav .TAB6 label:before, #HTAB7:checked~nav .TAB7 label:before, #HTAB8:checked~nav .TAB8 label:before
+    {
+        border-top: 3px solid #000069;
+        content: "";
+        display: block;
+        position: absolute;
+        height: 2px;
+        top: -1px;
+        width: 100%;
+        left: 0;
+    }
+
+    #HTAB1:checked~nav .TAB1 label:after, #HTAB2:checked~nav .TAB2 label:after, #HTAB3:checked~nav .TAB3 label:after, #HTAB4:checked~nav .TAB4 label:after, #HTAB5:checked~nav .TAB5 label:after, #HTAB6:checked~nav .TAB6 label:after, #HTAB7:checked~nav .TAB7 label:after, #HTAB8:checked~nav .TAB8 label:after
+    {
+        content: "";
+        display: block;
+        position: absolute;
+        height: 2px;
+        width: 100%;
+        background: #ffffff;
+        left: 0;
+        bottom: -1px;
+    }
+    .CanvasComponent.LCS .row {
+        margin: 0px 0px;
+        box-sizing: border-box;
+        zoom: 1;
+    }
+
+ /*************** HTAB ENDS *************/
+
+
+
+/*************** Edit EmployeeInfo Popup Start *************/
+
+ /* #BASICINFORMATION:checked~section .BASICINFORMATION,
+#IMAGEINFORMATION:checked~section .IMAGEINFORMATION,
+#BANKINFORMATION:checked~section .BANKINFORMATION,
+#TAXINFORMATION:checked~section .TAXINFORMATION,
+#SOCIALSECURITYINFORMATION:checked~section .SOCIALSECURITYINFORMATION,
+#EDITQUALIFICATIONS:checked~section .EDITQUALIFICATIONS {
+    display: block;
+}
+
+#BASICINFORMATION:checked~nav .BASICINFORMATION,
+#IMAGEINFORMATION:checked~nav .IMAGEINFORMATION,
+#BANKINFORMATION:checked~nav .BANKINFORMATION,
+#TAXINFORMATION:checked~nav .TAXINFORMATION,
+#SOCIALSECURITYINFORMATION:checked~nav .SOCIALSECURITYINFORMATION,
+#EDITQUALIFICATIONS:checked~nav .EDITQUALIFICATIONS {
+    color: #000069;
+}
+
+#BASICINFORMATION:checked~nav .BASICINFORMATION label,
+#IMAGEINFORMATION:checked~nav .IMAGEINFORMATION label,
+#BANKINFORMATION:checked~nav .BANKINFORMATION label,
+#TAXINFORMATION:checked~nav .TAXINFORMATION label,
+#SOCIALSECURITYINFORMATION:checked~nav .SOCIALSECURITYINFORMATION label,
+#EDITQUALIFICATIONS:checked~nav .EDITQUALIFICATIONS label {
+    background: white;
+    color: #000069;
+    position: relative;
+}
+
+#BASICINFORMATION:checked~nav .BASICINFORMATION label:before,
+#IMAGEINFORMATION:checked~nav .IMAGEINFORMATION label:before,
+#BANKINFORMATION:checked~nav .BANKINFORMATION label:before,
+#TAXINFORMATION:checked~nav .TAXINFORMATION label:before,
+#SOCIALSECURITYINFORMATION:checked~nav .SOCIALSECURITYINFORMATION label:before,
+#EDITQUALIFICATIONS:checked~nav .EDITQUALIFICATIONS label:before {
+    border-top: 3px solid #000069;
+    content: "";
+    display: block;
+    position: absolute;
+    height: 2px;
+    top: -1px;
+    width: 100%;
+    left: 0;
+}
+
+#BASICINFORMATION:checked~nav .BASICINFORMATION label:after,
+#IMAGEINFORMATION:checked~nav .IMAGEINFORMATION label:after,
+#BANKINFORMATION:checked~nav .BANKINFORMATION label:after,
+#TAXINFORMATION:checked~nav .TAXINFORMATION label:after,
+#SOCIALSECURITYINFORMATION:checked~nav .SOCIALSECURITYINFORMATION label:after,
+#EDITQUALIFICATIONS:checked~nav .EDITQUALIFICATIONS label:after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: #ffffff;
+    left: 0;
+    bottom: -1px;
+}
+.emp-tab ul li label {
+    float: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-bottom: 0;
+    background: #f8f8f8;
+    color: #444;
+    text-transform: uppercase;
+    font-size: 13px;
+} */
+

@@ -1,0 +1,407 @@
+.contact-section {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.contact-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.section-event {
+    position: relative;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, .03);
+}
+
+.section-event .table-container .table .table-head {
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.575);
+    background: #fff;
+}
+
+.table-container {
+    overflow-y: auto;
+    max-height: 550px;
+    overflow-x: hidden;
+    border: 1px solid #ccc;
+}
+
+.contact-heading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    color: rgb(17, 17, 104);
+}
+
+.t_e_8474018e {
+    max-width: 1400px !important;
+}
+
+.userImg {
+    width: 40px;
+    border-radius: 50px;
+    margin-right: 5px;
+    border: none;
+}
+
+.popup-section {
+    width: 100%;
+    height: 100%;
+}
+
+.card-box {
+    height: 80vh;
+    overflow: auto;
+}
+
+.popup-container {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    padding: 5%;
+    justify-content: center;
+    /* backdrop-filter: blur(10px); */
+}
+
+.popup-container-org {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1200px;
+    height: 100vh;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    padding: 10%;
+    justify-content: center;
+}
+
+.popup-container-country {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1200px;
+    height: 100vh;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    padding: 10%;
+    justify-content: center;
+}
+
+shareweb-breadcrumb-item .Breadcrumb {
+    display: none;
+}
+
+.popup-header {
+    width: 100%;
+}
+
+/* .links-and-buttons button {
+    border: none;
+    outline: none;
+} */
+
+.CanvasComponent.LCS .CanvasZone,
+.f_a_8474018e {
+    width: 1400px !important;
+
+}
+
+.row>* {
+    max-width: 1400px !important;
+}
+
+.e_a_8474018 {
+    padding: 0px 0px !important;
+}
+
+.badge {
+    background-color: #000066;
+}
+
+.tr {
+    border-color: black !important;
+}
+
+
+
+/* this is for main component styling  */
+
+.component-section .main-search {
+    border-radius: 25px 0px 0 25px;
+    padding: 3px 10px;
+    outline: none;
+}
+
+.search-button {
+    padding: 4px 15px;
+    border-radius: 0 25px 25px 0;
+    border: 1px solid black;
+    background-color: #000066;
+    color: #fff;
+    font-weight: 400;
+}
+
+.table-buttons .function-btns {
+    background: #000066;
+    font-weight: 500;
+    color: #fff;
+    border: none;
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.full-name {
+    color: #000066;
+    font-weight: 600;
+}
+
+.full-name a {
+    color: #000066;
+    text-decoration: none;
+}
+
+.edit-btn {
+    border: none;
+    outline: none;
+    font-size: 25px;
+    background: none;
+    color: #000066;
+}
+
+.search-input {
+    border-radius: 5px;
+    padding: 3px 10px;
+}
+
+.contact-navigation button {
+    background-color: #fff;
+    color: #006;
+    font-weight: 600;
+    padding: 5px 50px;
+    font-size: 18px;
+}
+
+.contact-navigation .institute-nav-button-active,
+.contact-navigation .contact-nav-button-active {
+    background-color: #000066;
+    color: #fff;
+    font-size: 500;
+    transition: all ease-in-out 0.1s;
+}
+
+.tab-btn {
+    /* border: 1px solid #000066; */
+    padding: 10px;
+    color: #726e6ed9;
+    font-weight: 600;
+    padding: 5px 25px;
+    font-size: 15px;
+    border: none;
+    background: none;
+    transition: all linear 0.1s ease-in-out;
+
+}
+
+.tab-btn:hover {
+    background-color: #d9d9d9;
+    transition: all linear 0.1s;
+    border-radius: 30px;
+    transition: all linear 0.1s ease-in-out;
+}
+
+.tab-btn-active {
+    border: none;
+    padding: 10px;
+    color: #fff;
+    background: #000066;
+    font-weight: 600;
+    padding: 5px 25px;
+    font-size: 15px;
+    border-radius: 30px;
+}
+
+.hr-tab-btn {
+    /* border: 1px solid #000066; */
+    padding: 10px;
+    color: #726e6ed9;
+    font-weight: 600;
+    padding: 5px 25px;
+    font-size: 12px;
+    border: none;
+    background: none;
+    transition: all linear 0.1s ease-in-out;
+
+}
+
+.hr-tab-btn:hover {
+    background-color: #d9d9d9;
+    transition: all linear 0.1s;
+    border-radius: 30px;
+    transition: all linear 0.1s ease-in-out;
+}
+
+.hr-tab-btn-active {
+    /* border: 1px solid #000066; */
+    border: none;
+    padding: 10px;
+    color: #fff;
+    background: #000066;
+    font-weight: 600;
+    padding: 5px 25px;
+    font-size: 12px;
+    border-radius: 30px;
+}
+
+
+.country-popup-header button {
+    border: none;
+    color: #000066;
+    background: none;
+    outline: none;
+}
+
+.country-popup-header-button {
+    background: #000066;
+}
+
+.tag-section {
+    padding: 40px;
+}
+
+/******************** this is for edit from popup section styling  **************************/
+
+/********* this is for basic information section styling  ************/
+.header-btn {
+    border: none;
+    background: none;
+    outline: none;
+}
+
+.user-form-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-form-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-form-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-form-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.col {
+    display: inherit;
+}
+
+.input-field-label {
+    font-size: 15px;
+    padding: 3px 0px;
+    font-weight: 500;
+}
+
+.input-field {
+    border: 2px solid #d9d9d9;
+    padding: 4px 10px;
+    border-radius: 5px;
+}
+
+.org-section {
+    border-radius: 5px;
+    background-color: #000066;
+    color: #fff;
+    font-weight: 500;
+    justify-content: space-between;
+}
+
+.org-section span {
+    padding: 6px 10px;
+}
+
+.popup-btn {
+    background: #fff;
+    color: #006;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.card-footer .card-body {
+    padding: 5px 15px !important;
+}
+
+.card-body {
+    padding: 10px !important;
+}
+
+.card-header {
+    padding: 3px 10px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+}
+
+.delete-btn {
+    border: none;
+    background: none;
+    outline: none;
+    color: #000066;
+    font-weight: 700;
+}
+
+.save-btn {
+    padding: 5px 25px;
+    background-color: #000066;
+    color: #fff;
+    font-size: 500;
+    border: none;
+    margin-right: 5px;
+}
+
+.cancel-btn {
+    padding: 5px 15px;
+    background-color: #fff;
+    color: #000066;
+    font-size: 500;
+    border: 2px solid #000066;
+}
+
+
+/* this is for create section styling  */
+
+.list-group li:hover {
+    background-color: #000066;
+    color: #fff;
+    transition: all linear 0.1s;
+}

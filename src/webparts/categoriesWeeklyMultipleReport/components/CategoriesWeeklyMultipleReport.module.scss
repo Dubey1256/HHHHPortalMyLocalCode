@@ -1,0 +1,104 @@
+@import '~office-ui-fabric-react/dist/sass/References.scss';
+
+.categoriesWeeklyMultipleReport {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+.welcome {
+  text-align: center;
+}
+
+.welcomeImage {
+  width: 100%;
+  max-width: 420px;
+}
+
+.links {
+  a {
+    text-decoration: none;
+    color: "[theme:link, default:#03787c]";
+    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+
+    &:hover {
+      text-decoration: underline;
+      color: "[theme:linkHovered, default: #014446]";
+      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+    }
+  }
+}
+
+
+#pageTitle {
+  display: none !important;
+}
+
+.filter-iconfil .fa.fa-filter {
+  font-size: 20px;
+  color: #ccc;
+  top: 0px;
+  left: -13px;
+}
+
+#contentRow {
+  padding-top: 0px !important;
+  margin-top: -15px;
+}
+
+.dropdown {
+  position: relative;
+  /* display: inline-block; */
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {
+  background-color: #ddd;
+}
+
+.dropdown-content {
+  /*display: none;*/
+  position: absolute;
+  background-color: #f6f6f6;
+  max-width: 210px;
+  border: 1px solid #ddd;
+  z-index: 1;
+  margin-left: 5px;
+  top: 40px;
+}
+
+.dataoverflow {
+  height: 262px;
+  overflow: auto;
+}
+
+.HedaBackclr {
+  background-color: #cccccc87;
+  padding: 5px;
+}
+
+.width-45 {
+  width: 45%;
+}
+
+.Weekly-TimeReportDays {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  text-align: center;
+  padding: 3px 0;
+}
+
+.leftsec label {
+  display: inline-block !important;
+}
