@@ -1658,18 +1658,17 @@ function ComponentTable(SelectedProp: any) {
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
 
             <div className="col-sm-12 ">
-                <h2 className="alignmentitle ng-binding">
-                    <h2 className="alignmentitle ng-binding">
+                    <h2 className="alignmentitle ng-binding d-flex">
 
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <span>Service Portfolio</span>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <span>Event Portfolio</span>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <span>Component Portfolio</span>}
-                        <span className="icontype display_hide padLR">
-                        </span>
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div> }
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div> }
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div> }
+                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) &&  <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div> } 
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) &&  <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio-SPFx.aspx"} >Old Component Portfolio</a></div>}
+                        
 
                     </h2>
-
-                </h2>
             </div>
             <section className="ContentSection">
                 <div className="bg-wihite border p-2">
