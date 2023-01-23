@@ -793,8 +793,10 @@ function ComponentTable(SelectedProp: any) {
         return json;
     };
     var getSharewebId = function (item: any) {
+        if(item.Title =='links not working'|| item.Title =='Projects not showing')
+         console.log(item);
         var Shareweb_x0020_ID = undefined;
-        if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title == undefined) {
+        if (item != undefined && item.SharewebTaskType == undefined) {
             Shareweb_x0020_ID = 'T' + item.Id;
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
@@ -803,18 +805,18 @@ function ComponentTable(SelectedProp: any) {
                 Shareweb_x0020_ID = 'M' + item.Id;
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
-            if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+            if (item.Component != undefined ) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
                 }
             }
@@ -836,17 +838,17 @@ function ComponentTable(SelectedProp: any) {
                 // }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
@@ -864,17 +866,17 @@ function ComponentTable(SelectedProp: any) {
                 //  }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
@@ -892,17 +894,17 @@ function ComponentTable(SelectedProp: any) {
                 // }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
