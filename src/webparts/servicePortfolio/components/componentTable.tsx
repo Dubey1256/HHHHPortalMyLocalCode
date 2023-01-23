@@ -1666,7 +1666,7 @@ function ComponentTable(SelectedProp: any) {
                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div> }
                          {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) &&  <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div> } 
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) &&  <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio-SPFx.aspx"} >Old Component Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) &&  <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
                         
 
                     </h2>
