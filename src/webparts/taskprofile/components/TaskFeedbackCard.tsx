@@ -226,6 +226,11 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                 <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
               }
               </li>
+              <li>
+              {this.state.fbData['Phone'] != null && this.state.fbData['Phone'] &&
+                <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+              }
+              </li>
               </ul>
             </div>
 

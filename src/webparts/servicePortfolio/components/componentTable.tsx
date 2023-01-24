@@ -17,6 +17,7 @@ import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryCompone
 import { any, number } from 'prop-types';
 import CheckboxTree from 'react-checkbox-tree';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
+import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 
 
 
@@ -50,6 +51,7 @@ function ComponentTable(SelectedProp: any) {
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
     const [IsUpdated, setIsUpdated] = React.useState('');
+    const [tablecontiner, settablecontiner]:any = React.useState("hundred");
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
     var IsExitSmartfilter = function (array: any, Item: any) {
@@ -1423,6 +1425,13 @@ function ComponentTable(SelectedProp: any) {
     }
 
 
+// Expand Table 
+const expndpopup = (e: any) => {
+    
+    settablecontiner(e);
+  };
+
+
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1899,6 +1908,9 @@ function ComponentTable(SelectedProp: any) {
                                         </button>
                                         <a onClick={clearSearch}>
                                             <i className="brush"><FaPaintBrush /></i>
+                                        </a>
+                                        <a className=''>
+                                            <i><ExpndTable prop={expndpopup} prop1={tablecontiner} /> </i>
                                         </a>
                                         <a onClick={Prints}>
                                             <i className="print"><FaPrint /></i>

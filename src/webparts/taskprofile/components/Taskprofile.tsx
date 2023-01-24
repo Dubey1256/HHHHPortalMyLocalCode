@@ -266,12 +266,20 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
     let ImagesInfo: any = [];
     if (Attachments) {
+    
       AttachmentFiles.forEach(function (Attach: any) {
-        let attachdata = BasicImageInfo.filter(function (ingInfo: any, i: any) {
-          return ingInfo.ImageName == Attach.FileName
-        });
+        let attachdata :any=[];
+        if(BasicImageInfo!=null ||BasicImageInfo!=undefined){
+          attachdata = BasicImageInfo.filter(function (ingInfo: any, i: any) {
+            return ingInfo.ImageName == Attach.FileName
+          });
+        }
         if (attachdata.length > 0) {
           BasicImageInfo.forEach(function(item:any){
+          if(item.ImageUrl!=undefined && item.ImageUrl.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+            var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+              item.ImageUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
+          }
             if(item.ImageName==Attach.FileName){
               ImagesInfo.push({
                 ImageName: Attach.FileName,
@@ -321,8 +329,20 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
   private async GetSmartMetaData(ClientCategory:any,ClientTime:any) {
      let array2:any=[];
-          ClientTimeArray= JSON.parse(ClientTime);
-    console.log(ClientTimeArray);
+     if(ClientTime==null||ClientTimeArray==undefined){
+     var siteComp :any= {};
+      siteComp.SiteName=this.state.listName,
+      siteComp.ClienTimeDescription = 100,
+      siteComp.SiteIcon=this.state.listName
+      ClientTimeArray.push(siteComp);
+     }
+    
+     else{
+      ClientTimeArray= JSON.parse(ClientTime);
+      console.log(ClientTimeArray);
+     }
+
+    
     let web = new Web(this.props.siteUrl);
      var smartMetaData = await web.lists
       .getByTitle('SmartMetadata')
@@ -349,6 +369,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         })
       })
     }
+    
    
       
       
@@ -360,6 +381,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       let siteicon = '';
       if (listName.toLowerCase() == 'migration') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png';
+      }
+      if (listName.toLowerCase() == 'health') {
+        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_health.png';
       }
       if (listName.toLowerCase() == 'eps') {
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_eps.png';
@@ -802,8 +826,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       userDisplayName
     } = this.props;
     return (
-      <div>
-{console.log(ClientTimeArray)}
+      <div className={this.state.Result["Services"] !=undefined && this.state.Result["Services"].length >0  ? 'app component serviepannelgreena' : "app component"}>
+
 
         {this.state.maincollection != null && this.state.maincollection.length > 0 &&
           <div className='row'>
@@ -814,29 +838,29 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                     <li>
                       {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
-                        <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">Component Portfolio</a>
+                        <a   target="_blank" data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">Component Portfolio</a>
                       }
                       {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
-                        <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Service-Portfolio.aspx">Service Portfolio</a>
+                        <a   target="_blank" data-interception="off"  href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Service-Portfolio.aspx">Service Portfolio</a>
                       }
                     </li>
 
                     {breadcrumbitem.Parentitem != undefined &&
                       <li>
                       
-                        <a className="ng-binding" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + breadcrumbitem.Parentitem.Id}>{breadcrumbitem.Parentitem.Title}</a>
+                        <a   target="_blank" data-interception="off" className="ng-binding" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + breadcrumbitem.Parentitem.Id}>{breadcrumbitem.Parentitem.Title}</a>
                       </li>
                     }
                     {breadcrumbitem.Child != undefined &&
                       <li>
                        
-                        <a className="ng-binding" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + breadcrumbitem.Child.Id}>{breadcrumbitem.Child.Title}</a>
+                        <a   target="_blank" data-interception="off"  className="ng-binding" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + breadcrumbitem.Child.Id}>{breadcrumbitem.Child.Title}</a>
                       </li>
                     }
                     {breadcrumbitem.Subchild != undefined &&
                       <li className="ng-scope" ng-if="breadcrumbitem.Subchild!=undefined">
                       
-                        <a className="ng-binding" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + breadcrumbitem.Subchild.Id}>{breadcrumbitem.Subchild.Title}</a>
+                        <a   target="_blank" data-interception="off" className="ng-binding" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + breadcrumbitem.Subchild.Id}>{breadcrumbitem.Subchild.Title}</a>
                       </li>
                     }
                     {breadcrumbitem.ParentTask != undefined &&
@@ -863,7 +887,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             <a className="hreflink ng-scope ps-2" onClick={() => this.OpenEditPopUp()}>
               <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
             </a>
-            <span className="pull-right"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer" }}>Old Task Profile</a></span>
+            <span className="pull-right"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
           </h2>
         </section>
         <section>
@@ -982,7 +1006,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     <dd className='bg-light full-width'>
                       {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 && this.state.Result["Component"].map((componentdt: any, i: any) => {
                         return (
-                          <a className="hreflink ng-binding" target="_blank" href={("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + componentdt.Id)}>{componentdt.Title}</a>
+                          <a className="hreflink ng-binding" target="_blank" data-interception="off" href={("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + componentdt.Id)}>{componentdt.Title}</a>
+
+                        )
+                      })}
+                        {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 && this.state.Result["Services"].map((Servicesdt: any, i: any) => {
+                        return (
+                          <a className="hreflink ng-binding" target="_blank" data-interception="off" href={("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + Servicesdt.Id)}>{Servicesdt.Title}</a>
 
                         )
                       })}
@@ -1049,7 +1079,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <div className='bg-fxdark p-2'><label>Url</label></div>
                   <div className='bg-light p-2 text-break full-width'>
                     {this.state.Result["component_url"] != null &&
-                      <a href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
+                      <a  target="_blank" data-interception="off"  href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
                     }
                   </div>
 
@@ -1064,7 +1094,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                           return <div className="taskimage border mb-3">
                             {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
 
-                            <a className='images' target="_blank" href={imgData.ImageUrl}>
+                            <a className='images' target="_blank" data-interception="off" href={imgData.ImageUrl}>
                               <img alt={imgData.ImageName} src={imgData.ImageUrl}
                                 onMouseOver={(e) => this.OpenModal(e, imgData)}
                                 onMouseOut={(e) => this.CloseModal(e)} ></img>

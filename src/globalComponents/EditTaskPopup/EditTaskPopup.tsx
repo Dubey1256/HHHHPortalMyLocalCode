@@ -420,7 +420,7 @@ const EditTaskPopup = (Items: any) => {
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                 Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-                Body: TaskDescription != undefined ? TaskDescription : null
+                // Body: TaskDescription != undefined ? TaskDescription : null
             }).then((res: any) => {
                 console.log(res);
                 Items.Call();

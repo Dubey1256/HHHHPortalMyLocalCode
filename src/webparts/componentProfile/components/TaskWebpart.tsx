@@ -1191,7 +1191,21 @@ export default function ComponentTable({ props }: any) {
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
         setComponentsData(ComponentsData);
         setmaidataBackup(ComponentsData)
-        setData(arrys[0]);
+        // if(arrys[0].length != 0){
+        //     setData(arrys[0]); 
+        // }else if(arrys[1] != 0){
+        //     setData(arrys[1]); 
+        // }else{
+        //     setData(arrys[0]); 
+        // }
+        if(arrys.length!=0 && arrys[0].length != 0){
+            setData(arrys[0]); 
+        }else if(arrys.length != 0 && arrys[0].length == 0 && arrys[1] != 0){
+            setData(arrys[1]); 
+        }
+        else{
+            setData(arrys[0]); 
+        }
         showProgressHide();
     }
     var makeFinalgrouping = function () {
@@ -1893,15 +1907,58 @@ export default function ComponentTable({ props }: any) {
                 <div className="tbl-headings">
                     <span className="leftsec">
                         <span className=''>
-                            {props.Portfolio_x0020_Type == 'Component' &&
+                            {props.Portfolio_x0020_Type == 'Component' &&  props.Item_x0020_Type!='SubComponent' && props.Item_x0020_Type!='Feature' &&
                                 <>
                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{props.Title}</a>
                                 </>
                             }
-                            {props.Portfolio_x0020_Type == 'Service' &&
+                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type!='SubComponent' && props.Item_x0020_Type!='Feature' &&
                                 <>
                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{props.Title}</a>
                                 </>}
+                                {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type=='SubComponent'&&
+                                <>
+                                     {props.Parent != undefined &&
+                                                <a target='_blank' data-interception="off"
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                                    <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                                </a>
+                                            } {'>'} <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />    <a>{props.Title}</a>   
+                                  </>   
+                                }
+                                 {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type=='SubComponent'&&
+                                <>
+                                {props.Parent != undefined &&
+                                                <a target='_blank' data-interception="off"
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+                                                </a>
+                                            } {'>'}
+                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />    <a>{props.Title}</a>   
+                                  </>   
+                                }
+
+{props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type=='Feature'&& 
+                                <>
+
+                                    {props.Parent != undefined &&
+                                                <a target='_blank' data-interception="off"
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                                    <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                                </a>
+                                            } {'>'}    <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{props.Title}</a>  
+                                  </>   
+                                }
+                                 {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type=='Feature'&&
+                                <>
+                                    {props.Parent != undefined &&
+                                                <a target='_blank' data-interception="off"
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+                                                </a>
+                                            } {'>'}   <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" />    <a>{props.Title}</a>   
+                                  </>   
+                                }
                         </span>
                          <span className="g-search">
                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all"
@@ -1935,7 +1992,7 @@ export default function ComponentTable({ props }: any) {
                         </a>
                     </span>
                 </div>
-                <div className="col-sm-12 pad0 smart">
+                <div className="col-sm-12 pad0 smart" >
                     <div className="section-event">
                         <div className="wrapper">
                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
@@ -2161,7 +2218,7 @@ export default function ComponentTable({ props }: any) {
                                     <div id="SpfxProgressbar" style={{ display: "none" }}>
                                         <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
                                     </div>
-                                    {data.length > 0 && data && data.map(function (item, index) {
+                                    {data != undefined && data.length > 0 && data && data.map(function (item, index) {
                                         item.ClientCategory != undefined
                                         if (item.flag == true) {
                                             return (
@@ -2171,16 +2228,19 @@ export default function ComponentTable({ props }: any) {
                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                 <tr className="bold for-c0l">
                                                                     <td style={{ width: "2%" }}>
-                                                                        {item.childs != undefined && item.childs.length > 0 &&
-                                                                            <div className="accordian-header" >
-                                                                                <a className='hreflink'
-                                                                                    title="Tap to expand the childs">
-                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
-                                                                                    </div>
-                                                                                </a>
-                                                                            </div>
-                                                                        }
+                                                                     
+
+                                                                          <div className="accordian-header" >
+                                                                          {item.childs != undefined && item.childs.length > 0 &&
+                                                                              <a className='hreflink'
+                                                                                  title="Tap to expand the childs">
+                                                                                  <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
+                                                                                      : <img src={item.RightArrowIcon} />}
+                                                                                  </div>
+                                                                              </a>
+                                                                          }
+                                                                      </div>
+                                                                        
                                                                     </td>
                                                                     <td style={{ width: "6%" }}>
                                                                         <div className="d-flex">

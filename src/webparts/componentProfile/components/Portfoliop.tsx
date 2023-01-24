@@ -325,12 +325,12 @@ function Portfolio({ ID }: any) {
                                                 </a>
                                             }
                                         </li>
-                                        {item.Item_x0020_Type=='SubComponent' && 
+                                        {(item.Item_x0020_Type=='SubComponent' || item.Item_x0020_Type=='Feature') && 
                                         <li>
                                             {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                                             {item.Parent != undefined &&
                                                 <a target='_blank' data-interception="off"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}>
+                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Parent.Id}`}>
                                                     {item.Parent.Title}
                                                 </a>
                                             }
@@ -364,7 +364,22 @@ function Portfolio({ ID }: any) {
                                      </span>
                                   </>   
                                 }
-                                {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type!='SubComponent' &&
+
+{item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type=='Feature'&& 
+                                <>
+                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                  
+                                     </span>
+                                  </>   
+                                }
+                                 {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type=='Feature'&&
+                                <>
+                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                  
+                                     </span>
+                                  </>   
+                                }
+                                {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type!='SubComponent' && item.Item_x0020_Type!='Feature'&&
                                     <>
                                         <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
                   
@@ -372,7 +387,7 @@ function Portfolio({ ID }: any) {
                                         
                                     </>
                                 }
-                                {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type!='SubComponent' && 
+                                {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type!='SubComponent' && item.Item_x0020_Type!='Feature' && 
                                     <>
                                         <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
                   
@@ -705,7 +720,16 @@ function Portfolio({ ID }: any) {
                                                                             {(item.ClienTimeDescription != undefined) &&
                                                                                 <span className="ng-binding">
                                                                                     {/* {item.ClienTimeDescription}% */}
-                                                                                    {parseInt(item.ClienTimeDescription)}%
+                                                                                    {item.ClienTimeDescription.length ===  undefined &&
+                                                                                      <>
+                                                                                         {(item.ClienTimeDescription).toFixed(2)}%
+                                                                                      </>
+                                                                                    }
+                                                                                     {item.ClienTimeDescription.length <= 2 &&
+                                                                                      <>
+                                                                                      {parseInt(item.ClienTimeDescription).toFixed(2)}%
+                                                                                   </>}
+                                                                                    
                                                                                 </span>
                                                                             }
                                                                         </span>

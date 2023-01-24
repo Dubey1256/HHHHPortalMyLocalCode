@@ -1,0 +1,111 @@
+import * as React from "react";
+import "./Expandtable.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.min.js";
+
+const ExpndTable = (props: any) => {
+ 
+  
+
+  return (
+    <div >
+      
+      <span data-bs-toggle="modal" data-bs-target="#exampleModal" className="border">
+        <svg
+          width="25"
+          height="25"
+          viewBox="0 0 49 48"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M28.7008 8.11474C28.6373 8.17769 28.5854 8.68085 28.5854 9.23285V10.2362H32.1885C34.1703 10.2362 35.8467 10.2909 35.9139 10.3579C36.0353 10.4786 10.629 35.8669 10.3865 35.8669C10.3168 35.8669 10.2388 34.2221 10.2132 32.2115L10.1665 28.5562H9.12883H8.09114L8.04566 34.2782L8 40L13.6665 39.9548L19.3327 39.9093V38.8205V37.7318L15.8447 37.7517C13.3782 37.7658 12.3204 37.7135 12.2334 37.5733C12.1172 37.3864 37.3188 12.1284 37.6215 12.1284C37.6931 12.1284 37.7517 13.754 37.7517 15.7408V19.3532H38.8758H40V13.6766V8H34.4081C31.3324 8 28.7641 8.05161 28.7008 8.11474Z"
+            fill="#333333"
+          />
+        </svg>
+      </span>
+      <div
+        className="modal fade"
+        id="exampleModal"
+        tabIndex={-1}
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1
+                className="modal-title fs-5"
+                id="exampleModalLabel"
+                style={{ color: "#0000bc" }}
+              >
+                Expand Search Result
+              </h1>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              />
+            </div>
+            <div className="modal-body" style={{ backgroundColor: "#F2EDED" }}>
+              <div className="row d-flex justify-content-between">
+                <div
+                  data-bs-dismiss="modal"
+                  role={"button"}
+                  onClick={() => props.prop("fifty")}
+                  className="card p-5 text-light fw-bold col-2 m-2 d-flex align-items-center justify-content-center"
+                  id={props.prop1 == "fifty" ? "boxtrue" : "boxfalse"}
+                >
+                  50%
+                </div>
+                <div
+                  data-bs-dismiss="modal"
+                  role={"button"}
+                  onClick={() => props.prop("sixty")}
+                  className="card p-5 text-light fw-bold col-2 m-2 d-flex align-items-center justify-content-center"
+                  id={props.prop1 == "sixty" ? "boxtrue" : "boxfalse"}
+                >
+                  60%
+                </div>
+                <div
+                  data-bs-dismiss="modal"
+                  role={"button"}
+                  onClick={() => props.prop("seventyfive")}
+                  className="card p-5 text-light fw-bold col-2 m-2 d-flex align-items-center justify-content-center"
+                  id={props.prop1 == "seventyfive" ? "boxtrue" : "boxfalse"}
+                >
+                  75%
+                </div>
+                <div
+                  data-bs-dismiss="modal"
+                  role={"button"}
+                  onClick={() => props.prop("hundred")}
+                  className="card p-5 text-light fw-bold col-2 m-2 d-flex align-items-center justify-content-center"
+                  id={props.prop1 == "hundred" ? "boxtrue" : "boxfalse"}
+                >
+                  100%
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-light px-3 border"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  );
+};
+export default ExpndTable;

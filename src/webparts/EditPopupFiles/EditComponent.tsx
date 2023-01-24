@@ -17,6 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import { EditorState } from 'draft-js'
+import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 
 
 
@@ -144,7 +145,7 @@ function EditInstitution(item: any) {
         }
         return IconUrl;
     }
-    
+
     const getpriority = function (item: any) {
         if (item.Priority_x0020_Rank >= 0 && item.Priority_x0020_Rank <= 3) {
             item.Priority = '(3) Low';
@@ -692,6 +693,22 @@ function EditInstitution(item: any) {
         item.Mileage = e.target.value;
         setComponent(EditData => ([...EditData]));
     }
+    const HtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
+        let message: any = Editorvalue; EditData.Body = message;
+        console.log("Editor Data call back ====", Editorvalue)
+    }, [])
+    const SortHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
+        let message: any = Editorvalue; EditData.Short_x0020_Description_x0020_On = message;
+        console.log("Editor Data call back ====", Editorvalue)
+    }, [])
+    const DeliverablesHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
+        let message: any = Editorvalue; EditData.Deliverables = message;
+        console.log("Editor Data call back ====", Editorvalue)
+    }, [])
+    const TechnicalExplanationsHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
+        let message: any = Editorvalue; EditData.TechnicalExplanations = message;
+        console.log("Editor Data call back ====", Editorvalue)
+    }, [])
     return (
         <>
             {/* <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
@@ -1085,14 +1102,16 @@ function EditInstitution(item: any) {
                                                                         <input type="checkbox" defaultChecked={EditData.descriptionVerified === true}></input>
                                                                         <span className="ps-1">Verified</span>
                                                                     </span>
-                                                                    <Editor
+                                                                    {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
+                                                                    <HtmlEditorCard editorValue={EditData.Body != undefined ? EditData.Body : ''} HtmlEditorStateChange={HtmlEditorCallBack}></HtmlEditorCard>
+                                                                    {/* <Editor
                                                                         editorState={editorState}
                                                                         toolbarClassName="toolbarClassName"
                                                                         wrapperClassName="wrapperClassName"
                                                                         editorClassName="editorClassName"
                                                                         wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
                                                                         onChange={onEditorStateChange}
-                                                                    />
+                                                                    /> */}
                                                                 </div>
                                                             }
 
@@ -1113,12 +1132,7 @@ function EditInstitution(item: any) {
                                                                         <span className="ps-1">Verified</span>
                                                                     </span>
 
-                                                                    <Editor
-                                                                        toolbarClassName="toolbarClassName"
-                                                                        wrapperClassName="wrapperClassName"
-                                                                        editorClassName="editorClassName"
-                                                                        wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                    />
+                                                                    <HtmlEditorCard editorValue={EditData.Short_x0020_Description_x0020_On != undefined ? EditData.Short_x0020_Description_x0020_On : ''} HtmlEditorStateChange={SortHtmlEditorCallBack}></HtmlEditorCard>
                                                                 </div>
                                                             }
 
@@ -1223,12 +1237,7 @@ function EditInstitution(item: any) {
                                                                         <input type="checkbox" defaultChecked={EditData.DeliverablesVerified === true}></input>
                                                                         <span className="ps-1">Verified</span>
                                                                     </span>
-                                                                    <Editor
-                                                                        toolbarClassName="toolbarClassName"
-                                                                        wrapperClassName="wrapperClassName"
-                                                                        editorClassName="editorClassName"
-                                                                        wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                    />
+                                                                    <HtmlEditorCard editorValue={EditData.Deliverables != undefined ? EditData.Deliverables : ''} HtmlEditorStateChange={DeliverablesHtmlEditorCallBack}></HtmlEditorCard>
                                                                 </div>
                                                             }
 
@@ -1269,12 +1278,7 @@ function EditInstitution(item: any) {
                                                                 <span className="ps-1">Verified</span>
                                                             </span>
 
-                                                            <Editor
-                                                                toolbarClassName="toolbarClassName"
-                                                                wrapperClassName="wrapperClassName"
-                                                                editorClassName="editorClassName"
-                                                                wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                            />
+                                                            <HtmlEditorCard editorValue={EditData.TechnicalExplanations != undefined ? EditData.TechnicalExplanations : ''} HtmlEditorStateChange={TechnicalExplanationsHtmlEditorCallBack}></HtmlEditorCard>
 
                                                         </div>
                                                     }
