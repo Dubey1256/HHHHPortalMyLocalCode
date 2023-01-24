@@ -190,26 +190,41 @@ const EditTaskPopup = (Items: any) => {
         try {
             let web = new Web(Items.Items.siteUrl);
             let smartMeta;
-            if (Items.Items.listId != undefined) {
-                smartMeta = await web.lists
-                    .getById(Items.Items.listId)
-                    .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                    .top(5000)
-                    .filter(`Id eq ${Items.Items.ID}`)
-                    .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
-                    .get();
+            if (Items.Items.siteType == "Gender") {
+                if (Items.Items.listId != undefined) {
+                    smartMeta = await web.lists
+                        .getById(Items.Items.listId)
+                        .items.top(5000)
+                        .filter(`Id eq ${Items.Items.ID}`).get()
+                } else {
+                    smartMeta = await web.lists
+                        .getByTitle(Items.Items.listName)
+                        .items.top(5000)
+                        .filter(`Id eq ${Items.Items.ID}`).get()
+                }
+            } else {
+                if (Items.Items.listId != undefined) {
+                    smartMeta = await web.lists
+                        .getById(Items.Items.listId)
+                        .items
+                        .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                        .top(5000)
+                        .filter(`Id eq ${Items.Items.ID}`)
+                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                        .get();
+                }
+                else {
+                    smartMeta = await web.lists
+                        .getByTitle(Items.Items.listName)
+                        .items
+                        .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                        .top(5000)
+                        .filter(`Id eq ${Items.Items.ID}`)
+                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                        .get();
+                }
             }
-            else {
-                smartMeta = await web.lists
-                    .getByTitle(Items.Items.listName)
-                    .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                    .top(5000)
-                    .filter(`Id eq ${Items.Items.ID}`)
-                    .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
-                    .get();
-            }
+
             smartMeta.map((item: any) => {
                 let saveImage = []
                 if (item.PercentComplete != undefined) {
@@ -1212,7 +1227,7 @@ const EditTaskPopup = (Items: any) => {
                                             </HtmlEditorCard>
                                             <Example textItems={EditData.FeedBackArray} />
                                         </>
-                                            : null} 
+                                            : null}
 
                                     </div>
                                     {/* <div className="form-group">
