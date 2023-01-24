@@ -340,7 +340,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                 <div style={{width:'99%', marginTop:'2%', padding:'2%'}}><textarea id="txtUpdateComment" rows={6} onChange={(e)=>this.handleUpdateComment(e)} style={{width: '100%',  marginLeft: '3px'}} >{this.state.CommenttoUpdate}</textarea></div>
                 <div style={{display:'flex', marginTop: '2%',float: 'right', width:'19%', marginBottom:'2%'}}>
                   <div><button className="btn btnPrimary" onClick={(e) =>this.updateComment() }>Save</button>
-                  <button className='btn btn-gray round 0 ms-1' onClick={(e) =>this.CloseModal(e) }>Cancel</button></div>
+                  <button className='btn btn-default round 0 ms-1' onClick={(e) =>this.CloseModal(e) }>Cancel</button></div>
                   
                 </div>
             </div>

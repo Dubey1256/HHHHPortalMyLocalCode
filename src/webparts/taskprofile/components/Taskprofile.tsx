@@ -16,6 +16,7 @@ import { forEach } from 'lodash';
 import { Item } from '@pnp/sp/items';
 var smartTime: Number = 0.0;
 var ClientTimeArray:any=[];
+
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -48,7 +49,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
     this.site = params.get('Site');
-    this.oldTaskLink = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + params.get('taskId') + "&Site=" + params.get('Site');
+    this.oldTaskLink = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-Old.aspx?taskId=" + params.get('taskId') + "&Site=" + params.get('Site');
     this.state = {
       Result: {},
       listName: params.get('Site'),
@@ -93,12 +94,28 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         maincollection: this.maincollection
       })
     }
+    else if(task.Services.length>0){
+      await this.loadComponentsDataForTasks(task);
+      await this.getAllTaskData();
+      if(this.count == 0){
+        this.breadcrumb();
+        this.count++;
+      }
+      console.log('Array for Breadcrumb');
+      console.log(this.maincollection);
+      this.setState({
+        maincollection: this.maincollection
+      })
+    }
   }
 
   private async loadComponentsDataForTasks(Items: any) {
     let DataForQuery = [];
     if (Items.Component != undefined && Items.Component.length > 0) {
       DataForQuery = Items.Component;
+    }
+    if (Items.Services != undefined && Items.Services.length > 0) {
+      DataForQuery = Items.Services;
     }
 
     if (DataForQuery.length > 0) {
@@ -176,14 +193,20 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "DueDate", "ClientCategory/Id","ClientCategory/Title","Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("Team_x0020_Members", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "DueDate","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("Team_x0020_Members","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
 
     taskDetails["listName"] = this.state.listName;
     taskDetails["siteType"] = this.state.listName;
     taskDetails["siteUrl"] = this.props.siteUrl;
     console.log(taskDetails);
+    var category=""
+    taskDetails["SharewebCategories"].map((item:any,index:any)=>{
+      category=category+item.Title+";"
+    })
+    console.log(category);
+    taskDetails["Categories"]=category;
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
     await  this.GetSmartMetaData(taskDetails.ClientCategory,taskDetails.ClientTime);
@@ -317,14 +340,16 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           }
         })
      })
-
-    ClientTimeArray.map((item:any)=>{
-      array2.map((items:any)=>{
-        if(item.SiteName==items.SiteName){
-          item.ClientCategory=items.Title;
-        }
+    if (ClientTimeArray!=undefined&&ClientTimeArray!=null){
+      ClientTimeArray.map((item:any)=>{
+        array2.map((items:any)=>{
+          if(item.SiteName==items.SiteName){
+            item.ClientCategory=items.Title;
+          }
+        })
       })
-    })
+    }
+   
       
       
   }
@@ -864,6 +889,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-fxdark' title="Task Id">Categories</dt>
+                   
                     <dd className='bg-light text-break'>{this.state.Result["Categories"]}</dd>
                   </dl>
                   <dl>

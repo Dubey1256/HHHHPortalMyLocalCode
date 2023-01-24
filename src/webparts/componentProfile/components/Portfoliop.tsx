@@ -19,9 +19,9 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 // import { NavItem } from 'react-bootstrap';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
-import EditInstituton from '../../EditPopupFiles/EditComponent'
-import ComponentTable from './Taskwebparts';
-// import ComponentTable from './NexttaskWeb';
+import EditInstituton from '../../EditPopupFiles/EditComponent';
+import ComponentTable from './Taskwebpart';
+
 
 
 var TeamMembers: any = [];
