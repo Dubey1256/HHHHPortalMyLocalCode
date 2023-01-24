@@ -393,7 +393,9 @@ function Portfolio({ ID }: any) {
                 <div className='row'>
                     <div className='col-md-9 bg-white'>
                         <div className='team_member row  py-2'>
-                            <div className='col-md-4 pe-0'>
+                            <div className='col-md-8'>
+                                <div className='row'>
+                            <div className='col-md-6 pe-0'>
                                 <dl>
                                     <dt className='bg-fxdark'>Due Date</dt>
                                     <dd className='bg-light'>
@@ -474,7 +476,7 @@ function Portfolio({ ID }: any) {
                                     </dd>
                                 </dl>
                             </div>
-                            <div className='col-md-4 p-0'>
+                            <div className='col-md-6 p-0'>
                                 <dl>
                                     <dt className='bg-fxdark'>Priority</dt>
                                     <dd className='bg-light'>
@@ -536,6 +538,129 @@ function Portfolio({ ID }: any) {
                                             }
                                         </>)
                                 })}
+                            </div>
+                            </div>
+                            <section className='row  accordionbox'>
+                            <div className="accordion   overflow-hidden">
+                                  {/* description */}
+                                {data.map(item =>
+                                    <>
+                                        {item.Body !== null &&
+                                            <div className="card shadow-none  mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen6(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showb ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>   Description</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.showb &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                {data.map(item =>
+                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
+                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                    </p>)}
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        } </>)}
+
+                                {/* Short description */}
+                                {data.map(item =>
+                                    <>
+                                        {item.Short_x0020_Description_x0020_On !== null &&
+                                            <div className="card shadow-none  mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.show &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                {data.map(item =>
+                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Short_x0020_Description_x0020_On }}>
+                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                    </p>)}
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        } </>)}
+                                {/* Background */}
+                                {data.map(item =>
+                                    <>
+                                        {item.Background !== null &&
+                                            <div className="card shadow-none  mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen1(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="sign">{item.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
+                                                    <div className="accordion-collapse collapse show" >
+                                                        {item.showl &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" >{data.map(item => <a>{item.Background}</a>)}</p>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }</>)}
+                                {/* Idea */}
+                                {data.map(item =>
+                                    <>
+                                        {item.Idea !== null &&
+                                            <div className="card shadow-none mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Idea</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.shows &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Idea }}></p>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }</>)}
+                                {/* Value Added */}
+                                {data.map(item =>
+                                    <>
+                                        {item.ValueAdded !== null &&
+                                            <div className="card shadow-none mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen4(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="sign">{item.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.showj &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.ValueAdded }}></p>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }</>)}
+                                {/* Deliverables */}
+                                {data.map(item =>
+                                    <>
+                                        {item.Deliverables !== null &&
+                                            <div className="card shadow-none mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen5(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="sign">{item.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.showm &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Deliverables }}></p>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }</>)}
+                            </div>
+                        </section>
                             </div>
                             <div className='col-md-4 p-0'>
                                 {data.map((item: any) => {
@@ -665,127 +790,7 @@ function Portfolio({ ID }: any) {
                                 }
                             </div>
                         </div>
-                        <section className='row  accordionbox'>
-                            <div className="accordion   overflow-hidden">
-                                  {/* description */}
-                                {data.map(item =>
-                                    <>
-                                        {item.Body !== null &&
-                                            <div className="card shadow-none  mb-2">
-                                                <div className="accordion-item border-0" id="t_draggable1">
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen6(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showb ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>   Description</span></button></div>
-                                                    <div className="accordion-collapse collapse show"  >
-                                                        {item.showb &&
-                                                            <div className="accordion-body pt-1" id="testDiv1">
-                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
-                                                                {data.map(item =>
-                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
-                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
-                                                                    </p>)}
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        } </>)}
-
-                                {/* Short description */}
-                                {data.map(item =>
-                                    <>
-                                        {item.Short_x0020_Description_x0020_On !== null &&
-                                            <div className="card shadow-none  mb-2">
-                                                <div className="accordion-item border-0" id="t_draggable1">
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
-                                                    <div className="accordion-collapse collapse show"  >
-                                                        {item.show &&
-                                                            <div className="accordion-body pt-1" id="testDiv1">
-                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
-                                                                {data.map(item =>
-                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Short_x0020_Description_x0020_On }}>
-                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
-                                                                    </p>)}
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        } </>)}
-                                {/* Background */}
-                                {data.map(item =>
-                                    <>
-                                        {item.Background !== null &&
-                                            <div className="card shadow-none  mb-2">
-                                                <div className="accordion-item border-0" id="t_draggable1">
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen1(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="sign">{item.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
-                                                    <div className="accordion-collapse collapse show" >
-                                                        {item.showl &&
-                                                            <div className="accordion-body pt-1" id="testDiv1">
-                                                                <p className="m-0" >{data.map(item => <a>{item.Background}</a>)}</p>
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }</>)}
-                                {/* Idea */}
-                                {data.map(item =>
-                                    <>
-                                        {item.Idea !== null &&
-                                            <div className="card shadow-none mb-2">
-                                                <div className="accordion-item border-0" id="t_draggable1">
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Idea</span></button></div>
-                                                    <div className="accordion-collapse collapse show"  >
-                                                        {item.shows &&
-                                                            <div className="accordion-body pt-1" id="testDiv1">
-                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Idea }}></p>
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }</>)}
-                                {/* Value Added */}
-                                {data.map(item =>
-                                    <>
-                                        {item.ValueAdded !== null &&
-                                            <div className="card shadow-none mb-2">
-                                                <div className="accordion-item border-0" id="t_draggable1">
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen4(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="sign">{item.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
-                                                    <div className="accordion-collapse collapse show"  >
-                                                        {item.showj &&
-                                                            <div className="accordion-body pt-1" id="testDiv1">
-                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.ValueAdded }}></p>
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }</>)}
-                                {/* Deliverables */}
-                                {data.map(item =>
-                                    <>
-                                        {item.Deliverables !== null &&
-                                            <div className="card shadow-none mb-2">
-                                                <div className="accordion-item border-0" id="t_draggable1">
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen5(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="sign">{item.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
-                                                    <div className="accordion-collapse collapse show"  >
-                                                        {item.showm &&
-                                                            <div className="accordion-body pt-1" id="testDiv1">
-                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Deliverables }}></p>
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }</>)}
-                            </div>
-                        </section>
+                      
                     </div>
                     <div className='col-md-3'>
                         <aside>

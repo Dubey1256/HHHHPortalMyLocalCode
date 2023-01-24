@@ -863,7 +863,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             <a className="hreflink ng-scope ps-2" onClick={() => this.OpenEditPopUp()}>
               <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
             </a>
-            <span className="pull-right"> <a target='_blank' href={this.oldTaskLink} style={{ cursor: "pointer" }}>Old Task Profile</a></span>
+            <span className="pull-right"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer" }}>Old Task Profile</a></span>
           </h2>
         </section>
         <section>

@@ -793,8 +793,8 @@ function ComponentTable(SelectedProp: any) {
         return json;
     };
     var getSharewebId = function (item: any) {
-        if(item.Title =='links not working'|| item.Title =='Projects not showing')
-         console.log(item);
+        if (item.Title == 'links not working' || item.Title == 'Projects not showing')
+            console.log(item);
         var Shareweb_x0020_ID = undefined;
         if (item != undefined && item.SharewebTaskType == undefined) {
             Shareweb_x0020_ID = 'T' + item.Id;
@@ -805,7 +805,7 @@ function ComponentTable(SelectedProp: any) {
                 Shareweb_x0020_ID = 'M' + item.Id;
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
-            if (item.Component != undefined ) {
+            if (item.Component != undefined) {
                 if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
                 }
@@ -1156,9 +1156,11 @@ function ComponentTable(SelectedProp: any) {
         var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
+        
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
+            result.childsLength =0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -1245,11 +1247,10 @@ function ComponentTable(SelectedProp: any) {
             if (subcomp.Title != undefined) {
                 $.each(FeatureData, function (index: any, featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
-                        // subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-                        subcomp['childs'].push(featurecomp);;
+                        subcomp.childsLength++;
+                        subcomp['childs'].unshift(featurecomp);;
                     }
                 })
             }
@@ -1263,35 +1264,21 @@ function ComponentTable(SelectedProp: any) {
                         //  subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-
-                        subcomp['childs'].push(featurecomp);;
+                        subcomp.childsLength++;
+                        subcomp['childs'].unshift(featurecomp);;
                     }
                 })
             }
         })
 
-        map(ComponentsData, (comp)=> {
+        map(ComponentsData, (comp) => {
             if (comp.Title != undefined) {
-                map(FeatureData,  (featurecomp) =>{
+                map(FeatureData, (featurecomp) => {
                     if (featurecomp.Parent != undefined && comp.Id === featurecomp.Parent.Id) {
-                        // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
-                        //  subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
-                        comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                          comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-                        comp['childs'].push(featurecomp);;
-                    }
-                })
-            }
-        })
-        map(ComponentsData, (comp)=> {
-            if (comp.Title != undefined) {
-                map(FeatureData,  (featurecomp) =>{
-                    if (featurecomp.Parent != undefined && comp.Id === featurecomp.Parent.Id) {
-                        // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
-                        //  subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
-                        comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                        comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-                        comp['childs'].push(featurecomp);;
+                        comp.childsLength++;
+                        comp['childs'].unshift(featurecomp);;
                     }
                 })
             }
@@ -1363,7 +1350,7 @@ function ComponentTable(SelectedProp: any) {
     }
     const filterDataBasedOnList = function () {
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
-        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTas kData));
 
         //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
@@ -1556,8 +1543,6 @@ function ComponentTable(SelectedProp: any) {
                                                     <option value="2">2</option>
                                                     <option value="3">3</option>
                                                 </select>
-
-
                                             </div>
                                             <div className="col-4 mb-10">
                                                 <label>Item Type</label>
@@ -1569,7 +1554,6 @@ function ComponentTable(SelectedProp: any) {
                                             </div>
                                         </div>
                                         <div className="row">
-
                                             <div className="col-sm-6 p-0">
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Service'"
                                                     className="col-sm-12 mb-10 Doc-align padL-0">
@@ -1581,9 +1565,7 @@ function ComponentTable(SelectedProp: any) {
                                                                 data-content="Click to activate auto suggest for components/services"
                                                                 data-original-title="Click to activate auto suggest for components/services"
                                                                 title="Click to activate auto suggest for components/services">
-
                                                             </span>
-
                                                         </label>
                                                         <input type="text" className="form-control ui-autocomplete-input"
                                                             id="txtSharewebComponent" ng-model="SearchComponent"
@@ -1595,12 +1577,10 @@ function ComponentTable(SelectedProp: any) {
                                                         <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/edititem.gif"
                                                             ng-click="EditComponent('Components',item)" />
                                                     </div>
-
                                                 </div>
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Component'"
                                                     className="col-sm-12 padL-0">
                                                     <div className="col-sm-11 p-0 Doc-align">
-
                                                         <label>
                                                             Service Portfolio
                                                             <span data-toggle="popover" data-placement="right"
@@ -1608,9 +1588,7 @@ function ComponentTable(SelectedProp: any) {
                                                                 data-content="Click to activate auto suggest for components/services"
                                                                 data-original-title="Click to activate auto suggest for components/services"
                                                                 title="Click to activate auto suggest for components/services">
-
                                                             </span>
-
                                                         </label>
                                                         <input type="text" className="form-control ui-autocomplete-input"
                                                             id="txtServiceSharewebComponent" ng-model="SearchService"
@@ -1619,11 +1597,8 @@ function ComponentTable(SelectedProp: any) {
                                                     </div>
                                                     <div className="col-sm-1 no-padding">
                                                         <label className="full_width">&nbsp;</label>
-
                                                     </div>
-
                                                 </div>
-
                                             </div>
                                             <div className="col-sm-6 padR0">
                                                 <label>Deliverable-Synonyms </label>
@@ -1672,19 +1647,17 @@ function ComponentTable(SelectedProp: any) {
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
 
             <div className="col-sm-12 ">
-                    <h2 className="alignmentitle ng-binding d-flex">
-                    <h2 className="alignmentitle ng-binding d-flex">
+                <h2 className="alignmentitle ng-binding d-flex">
 
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div> }
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div> }
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div> }
-                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) &&  <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div> } 
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) &&  <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"  href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
-                        
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} ><small style={{fontSize:"14px"}}>Old Service Portfolio</small></a></div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} ><small style={{fontSize:"14px"}}>Old Event Portfolio</small></a></div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} ><small style={{fontSize:"14px"}}>Old Component Portfolio</small></a></div>}
 
-                    </h2>
-                    </h2>
+
+                </h2>
             </div>
             <section className="ContentSection">
                 <div className="bg-wihite border p-2">
@@ -2086,17 +2059,17 @@ function ComponentTable(SelectedProp: any) {
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
-                                                                                            <span className='ms-1'>({item.childs.length})</span>
+                                                                                            <span className='ms-1'>({item.childsLength})</span>
                                                                                         }
 
                                                                                         {item.Short_x0020_Description_x0020_On != null &&
                                                                                             <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                               
+
                                                                                                 <div className="popover__content">
                                                                                                     {item.Short_x0020_Description_x0020_On}
                                                                                                 </div>
@@ -2184,11 +2157,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 &&
-                                                                                                                    <span className='ms-1'>({childitem.childs.length})</span>
+                                                                                                                    <span className='ms-1'>({childitem.childsLength})</span>
                                                                                                                 }
 
                                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -2288,11 +2261,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.childs.length > 0 &&
-                                                                                                                                            <span className='ms-1'>({childinew.childs.length})</span>
+                                                                                                                                            <span className='ms-1'>({childinew.childsLength})</span>
                                                                                                                                         }
 
                                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
@@ -2387,7 +2360,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&
@@ -2489,10 +2462,3 @@ function ComponentTable(SelectedProp: any) {
     );
 }
 export default ComponentTable;
-
-
-
-
-
-
-
