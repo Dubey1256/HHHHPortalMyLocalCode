@@ -830,14 +830,23 @@ function TimeEntryPopup(item: any) {
                             item.siteName = null
                             item.siteUrl = null;
                             if (NewParentId == item.Id) {
+                                var UpdatedData:any={}
+                                $.each(AllUsers, function (index: any, taskUser: any) {
+                                    if (taskUser.AssingedToUserId == CurntUserId) {
+                                        UpdatedData['AuthorName'] = taskUser.Title;
+                                        UpdatedData['Company'] = taskUser.Company;
+                                        UpdatedData['AuthorImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+                                    }
+                        
+                                });
                                 var Datee = new Date(changeDates)
                                 var TimeInH: any = changeTime / 60
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
                                 item.AdditionalTime = []
                                 var update: any = {};
-                                update['AuthorName'] = item.Author.Title;
-                                update['AuthorImage'] = item.AuthorImage;
+                                update['AuthorName'] = UpdatedData.AuthorName;
+                                update['AuthorImage'] = UpdatedData.AuthorImage;
                                 update['ID'] = 0;
                                 update['MainParentId'] = mainParentId;
                                 update['ParentID'] = NewParentId;
@@ -893,7 +902,7 @@ function TimeEntryPopup(item: any) {
                                 if (item.TaskTime != undefined) {
                                     var TimeInHours = item.TaskTime / 60;
                                     // item.IntegerTaskTime = item.TaskTime / 60;
-                                    item.TaskTime = TimeInHours.toFixed(2);
+                                    item.TaskTime = TimeInHours;
                                 }
                             } else {
                                 AllAvailableTitle.push(item);
@@ -939,8 +948,13 @@ function TimeEntryPopup(item: any) {
         setcollapseItem(false)
     }
     let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
+        if(titleName =='Date' || titleName =='Time'){
+            setSearch(e.target.value);
+        }
+        else{
         setSearch(e.target.value.toLowerCase());
         var Title = titleName;
+        }
     };
     const handleTimeOpen = (item: any) => {
 
@@ -1246,7 +1260,7 @@ function TimeEntryPopup(item: any) {
              .then(i => {
                console.log(i);
              });
-             setupdateData(updateData)
+             setupdateData(updateData+5)
          }
        
     
@@ -1383,7 +1397,8 @@ const updateCategory=async ()=>{
                                                 </th>
                                                 <th style={{ width: "20%" }}>
                                                     <div style={{ width: "19%" }} className="smart-relative">
-                                                        <input type="search" placeholder="AuthorName" className="full_width searchbox_height" />
+                                                        <input type="search" placeholder="AuthorName" className="full_width searchbox_height" aria-label="Search" aria-describedby="search-addon" 
+                                                         onChange={event => handleChange(event, 'Time')}/>
 
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -1394,7 +1409,7 @@ const updateCategory=async ()=>{
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "15%" }}>
-                                                    <div style={{ width: "16%" }} className="smart-relative">
+                                                    <div style={{ width: "14%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Date"
                                                             title="Client Category" className="full_width searchbox_height"
                                                             onChange={event => handleChange(event, 'Date')} />
@@ -1436,6 +1451,7 @@ const updateCategory=async ()=>{
                                         <tbody>
                                             {AllTimeSheetDataNew != undefined && AllTimeSheetDataNew.length > 0 && AllTimeSheetDataNew.map(function (item, index) {
                                                 if (item.Childs != undefined && item.Childs.length > 0) {
+                                                  
                                                     return (
                                                         <>
 
@@ -1460,11 +1476,11 @@ const updateCategory=async ()=>{
                                                                                                 <td colSpan={6} style={{ width: "90%" }}>
                                                                                                     <span>{item.Title} - {childitem.Title}</span>
 
-                                                                                                    <span className="ml5">
+                                                                                                    <span className="mx-2">
                                                                                                         <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif' className="button-icon hreflink" title="Edit" onClick={()=>Editcategorypopup(childitem)}>
                                                                                                         </img>
                                                                                                     </span>
-                                                                                                    <span className="ml5">
+                                                                                                    <span className="mx-2">
                                                                                                         <a
                                                                                                             className="hreflink" title="Delete" onClick={() => deleteCategory(childitem)}>
                                                                                                             <img
@@ -1491,6 +1507,8 @@ const updateCategory=async ()=>{
                                                                                 {childitem.AdditionalTime != undefined && childitem.show && childitem.AdditionalTime.length > 0 && (
                                                                                     <>
                                                                                         {childitem.AdditionalTime.map(function (childinew: any) {
+                                                                                              if ((search == "" || childinew.AuthorName.toLowerCase().includes(search.toLowerCase())) || (search == "" || childinew.Description.toLowerCase().includes(search.toLowerCase()))
+                                                                                               || (search == "" || childinew.TaskDate.includes(search)) || (search == "" || childinew.TaskTime.includes(search))) {
                                                                                             return (
                                                                                                 <>
                                                                                                     <tr >
@@ -1596,6 +1614,7 @@ const updateCategory=async ()=>{
 
                                                                                                 </>
                                                                                             )
+                                                                                                        }
                                                                                         })}</>
                                                                                 )}</>
                                                                         )
@@ -1606,7 +1625,8 @@ const updateCategory=async ()=>{
 
 
                                                     )
-                                                }
+                                                 }
+                                                
                                             })}
                                         </tbody>
                                     </table>
@@ -2620,7 +2640,7 @@ const updateCategory=async ()=>{
                                     </div>
                                     <footer>
                                         <div className='row'>
-                                            <div className="col-sm-6 ">
+                                            {/* <div className="col-sm-6 ">
                                                 <div className="text-left">
                                                     Created
                                                     <span></span>
@@ -2633,8 +2653,8 @@ const updateCategory=async ()=>{
                                                     by <span
                                                         className="siteColor"></span>
                                                 </div>
-                                            </div>
-                                            <div className="col-sm-6 text-end">
+                                            </div> */}
+                                            <div className="col-sm-12 text-end">
 
                                                 <button type="button" className="btn btn-primary ms-2"
                                                     onClick={AddTaskTime}>
