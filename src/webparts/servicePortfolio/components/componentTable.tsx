@@ -1156,6 +1156,7 @@ function ComponentTable(SelectedProp: any) {
         var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
+        
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
@@ -1249,7 +1250,7 @@ function ComponentTable(SelectedProp: any) {
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         subcomp.childsLength++;
-                        subcomp['childs'].push(featurecomp);;
+                        subcomp['childs'].unshift(featurecomp);;
                     }
                 })
             }
@@ -1264,7 +1265,7 @@ function ComponentTable(SelectedProp: any) {
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         subcomp.childsLength++;
-                        subcomp['childs'].push(featurecomp);;
+                        subcomp['childs'].unshift(featurecomp);;
                     }
                 })
             }
@@ -1277,7 +1278,7 @@ function ComponentTable(SelectedProp: any) {
                           comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         comp.childsLength++;
-                        comp['childs'].push(featurecomp);;
+                        comp['childs'].unshift(featurecomp);;
                     }
                 })
             }
@@ -1349,7 +1350,7 @@ function ComponentTable(SelectedProp: any) {
     }
     const filterDataBasedOnList = function () {
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
-        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTas kData));
 
         //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
@@ -2070,7 +2071,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
@@ -2168,7 +2169,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 &&
@@ -2272,7 +2273,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.childs.length > 0 &&
@@ -2371,7 +2372,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&
