@@ -1005,27 +1005,27 @@ function TimeEntryPopup(item: any) {
         var UpdatedData: any = []
         var deleteConfirmation = confirm("Are you sure, you want to delete this?")
         if (deleteConfirmation) {
-            $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
-
-                if (items.Childs.length > 0 && items.Childs != undefined) {
-                    $.each(items.Childs, function (index: any, subItem: any) {
+           
+                    $.each(TaskCate, function (index: any, subItem: any) {
+                        if(subItem.Id == childinew.ParentID){
                         if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
                             $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
                                 if (NewsubItem.ParentID == childinew.ParentID) {
                                     if (NewsubItem.ID === childinew.ID)
                                         subItem.AdditionalTime.splice(index, 1)
+                                        
                                 }
+                               
                             })
                             UpdatedData = subItem.AdditionalTime
+                            
                         }
+                    }
 
                     })
                 }
-            })
-        }
-        setAdditionalTime({ ...AdditionalTime })
-        //  setTimeSheet(AllTimeSheetDataNew)
-        
+           
+       
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
             var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
@@ -1545,7 +1545,7 @@ function TimeEntryPopup(item: any) {
                                                                             <>
                                                                                 <tr >
                                                                                     <td className="p-0" colSpan={9}>
-                                                                                        <table className="table" style={{ width: "100%" }}>
+                                                                                        <table className="table m-0" style={{ width: "100%" }}>
                                                                                             <tr className="for-c02">
                                                                                                 <td style={{ width: "2%" }}>
 
@@ -1594,7 +1594,7 @@ function TimeEntryPopup(item: any) {
                                                                                                     <>
                                                                                                         <tr >
                                                                                                             <td className="p-0" colSpan={10}>
-                                                                                                                <table className="table" style={{ width: "100%" }}>
+                                                                                                                <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                     <tr className="tdrow">
 
                                                                                                                         <td colSpan={2} style={{ width: "22%" }}>
@@ -1643,7 +1643,7 @@ function TimeEntryPopup(item: any) {
                                                                                                                         <>
                                                                                                                             <tr >
                                                                                                                                 <td className="p-0" colSpan={9}>
-                                                                                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                                                                                    <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                         <tr className="for-c02">
 
                                                                                                                                             <td colSpan={2} style={{ width: "22%" }}>
@@ -1731,7 +1731,7 @@ function TimeEntryPopup(item: any) {
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
             >
-                <div className="modal-body  border m-3 p-3  ">
+                <div className="modal-body border p-3  ">
 
                     <div className='row'>
                         <div className="col-sm-9 border-end" >
@@ -1937,10 +1937,12 @@ function TimeEntryPopup(item: any) {
 
                             <div className="col mb-2">
                                 <div>
-                                    <a target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                   <b>
+                                   <a target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
                                         Manage
                                         Categories
                                     </a>
+                                   </b>
                                 </div>
                                 {TimeSheet.map((Items: any) => {
                                     return (
