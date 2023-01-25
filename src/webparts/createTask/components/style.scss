@@ -22,35 +22,49 @@
     background-color: #0000BC;
     color: white;
 }
-// .taskprofilepagegreen .selectedTaskList {
-//     background: #60cf60;
-//     background-color: #60cf60;
-// }
+.sitecolor:hover {
+    text-align: center!important;
+    background-color: #1e90ff;
+    color: white;
+}
+.taskprofilepagegreen .selectedTaskList {
+    background: #60cf60 !important;
 
-// .taskprofilepagegreen .sitecolor:hover {
-//     background: #60cf60;
-//     background-color: #60cf60;
-// }
-// .taskprofilepagegreen .sitecolor {
-//     background-color: #228b22;
-//     background: #228b22;
-// }
-// .taskprofilepagegreen .subcategoryTasks .subcategoryTask, .taskprofilepagegreen .tasks .task{
-//     background-color: #228b22;
-//     background: #228b22;
-// }
-// .taskprofilepagegreen .subcategoryTasks .subcategoryTask .selectedTaskList, .taskprofilepagegreen .tasks .task .selectedTaskList{
-//     background-color: #60cf60;
-//     background: #60cf60;
-// }
-// .taskprofilepagegreen .subcategoryTasks .subcategoryTask:hover, .taskprofilepagegreen .tasks .task:hover{
-//     background-color: #60cf60;
-//     background: #60cf60;
-// }
+}
+.taskprofilepagegreen a  {
+    color: #228b22 !important;
+
+}
+.taskprofilepagegreen .sitecolor:hover {
+    background: #60cf60;
+
+}
+.tasks .task {
+    color: white !important;
+}
+.taskprofilepagegreen .sitecolor {
+
+    background: #228b22 ;
+}
+.taskprofilepagegreen .subcategoryTasks .subcategoryTask, .taskprofilepagegreen .tasks .task{
+
+    background: #228b22;
+}
+.taskprofilepagegreen .subcategoryTasks .subcategoryTask .selectedTaskList, .taskprofilepagegreen .tasks .task .selectedTaskList{
+
+    background: #60cf60 !important;
+}
+.taskprofilepagegreen .subcategoryTasks .subcategoryTask:hover, .taskprofilepagegreen .tasks .task:hover{
+ 
+    background: #60cf60 !important;
+}
 .kind_task .subcategoryTask {
     width: 11% !important;
 }
-
+.taskprofilepagegreen .sitecolor a {
+    color: #fff !important;
+    font-weight: 600;
+}
 .icon-box {
     height: 40px;
     display: block;

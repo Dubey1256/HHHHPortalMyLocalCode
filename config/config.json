@@ -153,6 +153,14 @@
           "manifest": "./src/webparts/materialUi/MaterialUiWebPart.manifest.json"
         }
       ]
+    },
+    "create-task-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/createTask/CreateTaskWebPart.js",
+          "manifest": "./src/webparts/createTask/CreateTaskWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -192,6 +200,7 @@
     "ProjectmanagementOverviewToolWebPartStrings": "lib/webparts/projectmanagementOverviewTool/loc/{locale}.js",
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
     "HrContactSearchWebPartStrings": "lib/webparts/hrContactSearch/loc/{locale}.js",
-    "MaterialUiWebPartStrings": "lib/webparts/materialUi/loc/{locale}.js"
+    "MaterialUiWebPartStrings": "lib/webparts/materialUi/loc/{locale}.js",
+    "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js"
   }
 }
