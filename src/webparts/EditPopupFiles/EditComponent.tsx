@@ -17,6 +17,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import { EditorState } from 'draft-js'
+import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
+import TeamConfigurationCard from "../../globalComponents/TeamConfiguration/TeamConfiguration";
 
 
 
@@ -31,6 +33,8 @@ function EditInstitution(item: any) {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [CollapseExpend, setCollapseExpend] = React.useState(false);
+    const TeamConfigInfo = item.props;
+    const [TeamConfig, setTeamConfig] = React.useState()
     const [date, setDate] = React.useState(undefined);
     const [Startdate, setStartdate] = React.useState(undefined);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
@@ -144,7 +148,7 @@ function EditInstitution(item: any) {
         }
         return IconUrl;
     }
-    
+
     const getpriority = function (item: any) {
         if (item.Priority_x0020_Rank >= 0 && item.Priority_x0020_Rank <= 3) {
             item.Priority = '(3) Low';
@@ -692,10 +696,35 @@ function EditInstitution(item: any) {
         item.Mileage = e.target.value;
         setComponent(EditData => ([...EditData]));
     }
+    const HtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
+        let message: any = Editorvalue; EditData.Body = message;
+        console.log("Editor Data call back ====", Editorvalue)
+    }, [])
+    const SortHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
+        let message: any = Editorvalue; EditData.Short_x0020_Description_x0020_On = message;
+        console.log("Editor Data call back ====", Editorvalue)
+    }, [])
+    const DeliverablesHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
+        let message: any = Editorvalue; EditData.Deliverables = message;
+        console.log("Editor Data call back ====", Editorvalue)
+    }, [])
+    const TechnicalExplanationsHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
+        let message: any = Editorvalue; EditData.TechnicalExplanations = message;
+        console.log("Editor Data call back ====", Editorvalue)
+    }, [])
+    const DDComponentCallBack = (dt: any) => {
+        setTeamConfig(dt)
+        console.log(TeamConfig)
+        //item.props?.TeamConfigDataCallBack(dt);
+    }
+    var itemInfo = {
+        siteURL: TeamConfigInfo?TeamConfigInfo.siteUrl:'',
+        listName: TeamConfigInfo?TeamConfigInfo.siteType:'',
+        itemID: TeamConfigInfo?TeamConfigInfo.Id:''
+    }
     return (
         <>
-            {/* <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
-                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> */}
+            
             {console.log("Done")}
             <Panel
                 headerText={`  Service-Portfolio > ${EditData.Title}`}
@@ -720,20 +749,21 @@ function EditInstitution(item: any) {
                             </ul>
                             <div className="tab-content border border-top-0 clearfix " id="myTabContent">
                                 <div className="tab-pane  show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                    <div className="col  p-2">
-                                        <div className="row">
+                              
+                                        <div className="row  px-3 py-2">
                                             <div className="col-sm-5 ">
-                                                <div className="row mb-2">
-                                                    <div className="col-sm-8 ">
+                                                <div className="col-12">                                            
                                                         <div className="input-group">
-                                                            <label className="form-label">Title</label>
+                                                            <label className="form-label  full-width">Title</label>
                                                             <input type="text" className="form-control"
                                                                 defaultValue={EditData.Title != undefined ? EditData.Title : ""} onChange={(e) => EditData.Title = e.target.value} />
                                                         </div>
-                                                    </div>
-                                                    <div className="col-sm-4 " title="Email">
-                                                        <div className="input-group">
-                                                            <label className="form-label">Item Rank</label>
+                                                </div>
+                                                
+                                                <div className="mx-0 row ">
+                                                <div className="col-4 ps-0 mt-2">
+                                                    <div className="input-group">
+                                                            <label className="form-label full-width">Item Rank</label>
                                                             <select className="full_width searchbox_height" defaultValue={EditData.ItemRankTitle} onChange={(e) => EditData.ItemRankTitle = e.target.value}>
                                                                 <option>{EditData.ItemRankTitle == undefined ? 'select Item Rank' : EditData.ItemRankTitle}</option>
                                                                 {SharewebItemRank && SharewebItemRank.map(function (h: any, i: any) {
@@ -743,12 +773,18 @@ function EditInstitution(item: any) {
                                                                 })}
                                                             </select>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div className="row  mb-2">
-                                                    <div className="col-sm-6 ">
+                                                    </div>                                                   
+                                                    <div className="col-4 ps-0  mt-2">
                                                         <div className="input-group">
-                                                            <label className="form-label">
+                                                            <label className="form-label full-width">Deliverable-Synonyms</label>
+
+                                                            <input type="text" className="form-control"
+                                                                defaultValue={EditData.Deliverable_x002d_Synonyms != undefined ? EditData.Deliverable_x002d_Synonyms : ""} onChange={(e) => EditData.Deliverable_x002d_Synonyms = e.target.value} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-4 ps-0 pe-0 mt-2 ">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">
                                                                 Component Portfolio
                                                             </label>
                                                             <input type="text"
@@ -781,19 +817,12 @@ function EditInstitution(item: any) {
                                                         </div>
 
                                                     </div>
-                                                    <div className="col-sm-6">
-                                                        <div className="input-group">
-                                                            <label className="form-label">Deliverable-Synonyms</label>
-
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.Deliverable_x002d_Synonyms != undefined ? EditData.Deliverable_x002d_Synonyms : ""} onChange={(e) => EditData.Deliverable_x002d_Synonyms = e.target.value} />
-                                                        </div>
-                                                    </div>
+                                                 
                                                 </div>
-                                                <div className="row mb-2 ">
-                                                    <div className="col-sm-4 ">
+                                                <div className="mx-0 row mt-2">
+                                                    <div className="col-sm-4 ps-0 ">
                                                         <div className="input-group">
-                                                            <label className="form-label">Start Date</label>
+                                                            <label className="form-label  full-width">Start Date</label>
                                                             <DatePicker className="form-control"
                                                                 selected={Startdate}
                                                                 value={EditData.StartDate}
@@ -805,7 +834,7 @@ function EditInstitution(item: any) {
                                                     </div>
                                                     <div className="col-sm-4 ">
                                                         <div className="input-group">
-                                                            <label className="form-label">Due Date</label>
+                                                            <label className="form-label  full-width">Due Date</label>
                                                             <DatePicker className="form-control"
                                                                 selected={date}
                                                                 value={EditData.DueDate}
@@ -815,11 +844,9 @@ function EditInstitution(item: any) {
                                                             />
                                                         </div>
                                                     </div>
-
                                                     <div className="col-sm-4 pe-0">
                                                         <div className="input-group">
-                                                            <label className="form-label">
-                                                                Completion Date </label>
+                                                            <label className="form-label  full-width"> Completion Date </label>
                                                             <DatePicker className="form-control"
                                                                 name="CompletionDate"
                                                                 selected={Completiondate}
@@ -831,17 +858,19 @@ function EditInstitution(item: any) {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="row mb-2 ">
-                                                    <div className="col-sm-4 ">
+                                                <div className="mx-0 row mt-2 ">
+                                                    <div className="col-sm-4 ps-0 ">
                                                         <div className="input-group">
-                                                            <label className="form-label">Synonyms </label>
+                                                            <label className="form-label  full-width">Synonyms </label>
                                                             <input type="text" className="form-control"
                                                                 defaultValue={EditData.SynonymsTitle} onChange={(e) => EditData.SynonymsTitle = e.target.value} />
                                                             <span className="input-group-text" onClick={(e) => createSynonyms(EditData)}> <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span>
+                                                            </div>
+                                                            <div className="">
                                                             {EditData["Synonyms"] != undefined && EditData["Synonyms"].length > 0 && map(EditData["Synonyms"], (obj, index) => {
                                                                 return (
                                                                     <>
-                                                                        <div className="block full_width">
+                                                                        <div className="block ">
                                                                             {
                                                                                 obj.Title
                                                                             }
@@ -853,12 +882,12 @@ function EditInstitution(item: any) {
                                                                 )
                                                             })
                                                             }
-                                                        </div>
+                                                    </div>
                                                     </div>
 
                                                     <div className="col-sm-4">
                                                         <div className="input-group">
-                                                            <label className="form-label">Client Activity </label>
+                                                            <label className="form-label  full-width">Client Activity </label>
                                                             <input type="text" className="form-control"
                                                                 defaultValue={EditData.Twitter != null ? EditData.Twitter.Description : ""} />
                                                         </div>
@@ -866,16 +895,16 @@ function EditInstitution(item: any) {
 
                                                     <div className="col-sm-4 pe-0">
                                                         <div className="input-group">
-                                                            <label className="form-label">Package</label>
+                                                            <label className="form-label  full-width">Package</label>
                                                             <input type="text" className="form-control"
                                                                 defaultValue={EditData.Package != null ? EditData.Package : ""} onChange={(e) => EditData.Package = e.target.value} />
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="row mb-2 ">
+                                                <div className="row mb-2 mt-2 ">
                                                     <div className="col-sm-6">
                                                         <div className="input-group mb-2">
-                                                            <label className="form-label">Status</label>
+                                                            <label className="form-label  full-width">Status</label>
                                                             <input type="text" className="form-control"
                                                                 value={EditData.AdminStatus} onChange={(e) => ChangeStatus(e, EditData)} />
 
@@ -925,9 +954,9 @@ function EditInstitution(item: any) {
                                                             <label className="form-check-label">Archived </label>
                                                         </div>
                                                     </div>
-                                                    <div className="col-sm-6 pe-0">
+                                                    <div className="col-sm-6">
                                                         <div className="input-group mb-2">
-                                                            <label className="form-label">Time </label>
+                                                            <label className="form-label  full-width">Time </label>
                                                             <input type="text" className="form-control"
                                                                 value={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e => changeTime(e, EditData))} />
                                                         </div>
@@ -963,7 +992,7 @@ function EditInstitution(item: any) {
                                             <div className="col-sm-3 ">
                                                 <div className="col" title="Priority">
                                                     <div className="input-group mb-2">
-                                                        <label className="form-label">Priority</label>
+                                                        <label className="form-label  full-width">Priority</label>
                                                         <input type="text" className="form-control"
                                                             value={EditData.Priority_x0020_Rank} onChange={(e) => setPriorityNew(e, EditData)} />
                                                     </div>
@@ -990,23 +1019,24 @@ function EditInstitution(item: any) {
                                                         <label> Low</label>
                                                     </div>
                                                 </div>
-                                                <div className="col position-relative ">
-                                                    <div className="input-group">
-                                                        <label className="form-label">Categories </label>
+                                                <div className="col">
+                                                    <div className="input-group position-relative">
+                                                        <label className="form-label  full-width">Categories </label>
                                                         <input type="text" className="form-control"
                                                             defaultValue={EditData.Facebook != null ? EditData.Facebook.Description : ""} />
+                                                            
+                                                    <span className="input-group-text"  >
+
+<svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+
+</svg>
+
+</span>
                                                     </div>
 
 
-                                                    <span className="input-group-text"  >
-
-                                                        <svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
-
-                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
-
-                                                        </svg>
-
-                                                    </span>
                                                     <div className="col-sm-11  inner-tabb">
                                                         <div>
 
@@ -1035,7 +1065,7 @@ function EditInstitution(item: any) {
                                             </div>
                                             <div className="col-sm-8">
                                                 <div className="input-group mb-2">
-                                                    <label className="form-label">Url</label>
+                                                    <label className="form-label  full-width">Url</label>
                                                     <input type="text" className="form-control" placeholder="Url"></input>
                                                 </div>
                                             </div>
@@ -1043,10 +1073,11 @@ function EditInstitution(item: any) {
                                     </div>
 
 
-                                </div>
                                 <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
-
-                                    <div className="col  p-2">
+                                    <div className="col-sm-7">
+                                 <TeamConfigurationCard ItemInfo={itemInfo} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                </div>
+                                    <div className="col-sm-7">
 
                                         <section className='accordionbox'>
 
@@ -1085,14 +1116,16 @@ function EditInstitution(item: any) {
                                                                         <input type="checkbox" defaultChecked={EditData.descriptionVerified === true}></input>
                                                                         <span className="ps-1">Verified</span>
                                                                     </span>
-                                                                    <Editor
+                                                                    {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
+                                                                    <HtmlEditorCard editorValue={EditData.Body != undefined ? EditData.Body : ''} HtmlEditorStateChange={HtmlEditorCallBack}></HtmlEditorCard>
+                                                                    {/* <Editor
                                                                         editorState={editorState}
                                                                         toolbarClassName="toolbarClassName"
                                                                         wrapperClassName="wrapperClassName"
                                                                         editorClassName="editorClassName"
                                                                         wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
                                                                         onChange={onEditorStateChange}
-                                                                    />
+                                                                    /> */}
                                                                 </div>
                                                             }
 
@@ -1113,12 +1146,7 @@ function EditInstitution(item: any) {
                                                                         <span className="ps-1">Verified</span>
                                                                     </span>
 
-                                                                    <Editor
-                                                                        toolbarClassName="toolbarClassName"
-                                                                        wrapperClassName="wrapperClassName"
-                                                                        editorClassName="editorClassName"
-                                                                        wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                    />
+                                                                    <HtmlEditorCard editorValue={EditData.Short_x0020_Description_x0020_On != undefined ? EditData.Short_x0020_Description_x0020_On : ''} HtmlEditorStateChange={SortHtmlEditorCallBack}></HtmlEditorCard>
                                                                 </div>
                                                             }
 
@@ -1223,12 +1251,7 @@ function EditInstitution(item: any) {
                                                                         <input type="checkbox" defaultChecked={EditData.DeliverablesVerified === true}></input>
                                                                         <span className="ps-1">Verified</span>
                                                                     </span>
-                                                                    <Editor
-                                                                        toolbarClassName="toolbarClassName"
-                                                                        wrapperClassName="wrapperClassName"
-                                                                        editorClassName="editorClassName"
-                                                                        wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                    />
+                                                                    <HtmlEditorCard editorValue={EditData.Deliverables != undefined ? EditData.Deliverables : ''} HtmlEditorStateChange={DeliverablesHtmlEditorCallBack}></HtmlEditorCard>
                                                                 </div>
                                                             }
 
@@ -1269,12 +1292,7 @@ function EditInstitution(item: any) {
                                                                 <span className="ps-1">Verified</span>
                                                             </span>
 
-                                                            <Editor
-                                                                toolbarClassName="toolbarClassName"
-                                                                wrapperClassName="wrapperClassName"
-                                                                editorClassName="editorClassName"
-                                                                wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                            />
+                                                            <HtmlEditorCard editorValue={EditData.TechnicalExplanations != undefined ? EditData.TechnicalExplanations : ''} HtmlEditorStateChange={TechnicalExplanationsHtmlEditorCallBack}></HtmlEditorCard>
 
                                                         </div>
                                                     }
@@ -1338,613 +1356,6 @@ function EditInstitution(item: any) {
                         {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
 
                     </div>
-                    // <div id="EditGrueneContactSearch" >
-
-                    //     <div className="modal-dialog modal-lg modal-fixed ">
-
-                    //         <div className="modal-content">
-
-                    //             <div className="modal-header">
-
-
-
-                    //                 <h5 className="modal-title" id="exampleModalLabel">
-                    //                     Service-Portfolio<span > {">"} </span>
-                    //                     {EditData.Title}
-                    //                     <span className="text-end">
-                    //                     </span>
-                    //                 </h5>
-
-                    //                 <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={setModalIsOpenToFalse} aria-label="Close"></button>
-
-                    //             </div>
-                    //             <div className="modal-body">
-                    //                 <ul className="nav nav-tabs" id="myTab" role="tablist">
-                    //                     <li className="nav-item" role="presentation">
-                    //                         <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
-                    //                     </li>
-                    //                     <li className="nav-item" role="presentation">
-                    //                         <button className="nav-link" id="cncept-tab" data-bs-toggle="tab" data-bs-target="#concept" type="button" role="tab" aria-controls="concept" aria-selected="false">Concept</button>
-                    //                     </li>
-                    //                     <li className="nav-item" role="presentation">
-                    //                         <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Architecture & Technologies</button>
-                    //                     </li>
-                    //                 </ul>
-                    //                 <div className="tab-content border border-top-0 clearfix " id="myTabContent">
-                    //                     <div className="tab-pane  show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    //                         <div className="col  p-2">
-                    //                             <div>
-                    //                                 <div className="col-sm-5 ">
-                    //                                     <div className="row ">
-                    //                                         <div className="col-sm-6 ps-0">
-                    //                                             <label className="form-label">Title</label>
-                    //                                             <input type="text" className="form-control"
-                    //                                                 defaultValue={EditData.Title != undefined ? EditData.Title : ""} onChange={(e) => EditData.Title = e.target.value} />
-                    //                                         </div>
-                    //                                         <div className="col-sm-6 " title="Email">
-                    //                                             <label className="form-label">Item Rank</label>
-                    //                                             <select className="full_width searchbox_height" defaultValue={EditData.ItemRankTitle} onChange={(e) => EditData.ItemRankTitle = e.target.value}>
-                    //                                                 <option>{EditData.ItemRankTitle == undefined ? 'select Item Rank' : EditData.ItemRankTitle}</option>
-                    //                                                 {SharewebItemRank && SharewebItemRank.map(function (h: any, i: any) {
-                    //                                                     return (
-                    //                                                         <option key={i} defaultValue={EditData.ItemRankTitle} >{EditData.ItemRankTitle == h.rankTitle ? EditData.ItemRankTitle : h.rankTitle}</option>
-                    //                                                     )
-                    //                                                 })}
-                    //                                                             </select>
-                    //                                                         </div>
-                    //                                     </div>
-                    //                                     <div className="row ">
-                    //                                         <div className="col-sm-6 ps-0">
-                    //                                             <div className="col-sm-11 0 ">
-                    //                                                 <label className="form-label">
-                    //                                                     Component Portfolio
-                    //                                                 </label>
-                    //                                                 <input type="text"
-                    //                                                     className="form-control" />
-                    //                                                 <span className="input-group-text">
-                    //                                                     <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                    //                                                         onClick={(e) => EditComponent(EditData, 'Componet')} />
-                    //                                                 </span>
-                    //                                             </div>
-
-                    //                                             <div className="col-sm-11  inner-tabb">
-                    //                                                 <div>
-
-                    //                                                     {EditData != undefined && EditData.smartComponent != undefined && EditData.smartComponent.map((childinew: any) =>
-                    //                                                         < div className="block bgsiteColor"
-
-                    //                                                         >
-                    //                                                             <a className="hreflink" target="_blank"
-                    //                                                                 href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData.Id}}&amp;Site={{EditData.siteType}}">{childinew.Title}</a>
-                    //                                                             <a className="hreflink"
-                    //                                                             >
-                    //                                                                 <img src="/_layouts/images/delete.gif"></img>
-                    //                                                             </a>
-                    //                                                         </div>
-                    //                                                     )}
-
-                    //                                                 </div>
-                    //                                             </div>
-
-                    //                                         </div>
-                    //                                         <div className="col-sm-6 0">
-                    //                                             <label className="form-label">Deliverable-Synonyms</label>
-
-                    //                                             <input type="text" className="form-control"
-                    //                                                 defaultValue={EditData.Deliverable_x002d_Synonyms != undefined ? EditData.Deliverable_x002d_Synonyms : ""} onChange={(e) => EditData.Deliverable_x002d_Synonyms = e.target.value} />
-                    //                                         </div>
-                    //                                     </div>
-                    //                                     <div className="row ">
-                    //                                         <div className="col-sm-4 ps-0">
-                    //                                             <label className="form-label">Start Date</label>
-                    //                                             <DatePicker className="form-control"
-                    //                                                 selected={Startdate}
-                    //                                                 value={EditData.StartDate}
-                    //                                                 onChange={handleDatestart}
-                    //                                                 dateFormat="dd/MM/yyyy"
-                    //                                                 locale="es"
-                    //                                             />
-                    //                                         </div>
-                    //                                         <div className="col-sm-4 ">
-                    //                                             <label className="form-label">Due Date</label>
-                    //                                             <DatePicker className="form-control"
-                    //                                                 selected={date}
-                    //                                                 value={EditData.DueDate}
-                    //                                                 onChange={handleDatedue}
-                    //                                                 dateFormat="dd/MM/yyyy"
-                    //                                                 locale="es"
-                    //                                             />
-                    //                                         </div>
-
-                    //                                         <div className="col-sm-4 pe-0">
-                    //                                             <label className="form-label">
-                    //                                                 Completion Date </label>
-                    //                                             <DatePicker className="form-control"
-                    //                                                 name="CompletionDate"
-                    //                                                 selected={Completiondate}
-                    //                                                 dateFormat="dd/MM/yyyy"
-                    //                                                 value={EditData.CompletedDate}
-                    //                                                 onChange={handleDate}
-                    //                                                 locale="es"
-                    //                                             />
-                    //                                         </div>
-                    //                                     </div>
-                    //                                     <div className="row ">
-                    //                                         <div className="col-sm-4 ps-0">
-                    //                                             <label className="form-label">Synonyms <a className="hreflink" target="_blank"><span className=""><i className="fa fa-instagram"></i></span></a></label>
-                    //                                             <input type="text" className="form-control"
-                    //                                                 defaultValue={EditData.SynonymsTitle} onChange={(e) => EditData.SynonymsTitle = e.target.value} />
-                    //                                             <span className="input-group-text" onClick={(e) => createSynonyms(EditData)}> <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span>
-                    //                                             {EditData["Synonyms"] != undefined && EditData["Synonyms"].length > 0 && map(EditData["Synonyms"], (obj, index) => {
-                    //                                                 return (
-                    //                                                     <>
-                    //                                                         <div className="block full_width">
-                    //                                                             {
-                    //                                                                 obj.Title
-                    //                                                             }
-                    //                                                             <a className="input-group-text" onClick={(e) => deleteItem(EditData)}>
-                    //                                                                 <img src="/_layouts/images/delete.gif"></img>
-                    //                                                             </a>
-                    //                                                         </div>
-                    //                                                     </>
-                    //                                                 )
-                    //                                             })
-                    //                                             }
-                    //                                         </div>
-
-                    //                                         <div className="col-sm-4">
-                    //                                             <label className="form-label">Client Activity <a className="hreflink" href={EditData.Twitter != null ? EditData.Twitter.Url : ""} target="_blank"><span className=""><i className="fa fa-twitter"></i></span></a></label>
-                    //                                             <input type="text" className="form-control"
-                    //                                                 defaultValue={EditData.Twitter != null ? EditData.Twitter.Description : ""} />
-                    //                                         </div>
-
-                    //                                         <div className="col-sm-4 pe-0">
-                    //                                             <label className="form-label">Package</label>
-                    //                                             <input type="text" className="form-control"
-                    //                                                 defaultValue={EditData.Package != null ? EditData.Package : ""} onChange={(e) => EditData.Package = e.target.value} />
-                    //                                         </div>
-                    //                                     </div>
-                    //                                     <div className="row ">
-                    //                                         <div className="col-sm-6 ps-0">
-                    //                                             <label className="form-label">Status</label>
-                    //                                             <input type="text" className="form-control"
-                    //                                                 value={EditData.AdminStatus} onChange={(e) => ChangeStatus(e, EditData)} />
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input className="form-check-input"
-                    //                                                         name="NotStarted" type="radio" value="Not Started"
-                    //                                                         checked={EditData.AdminStatus === "Not Started" ? true : false}
-                    //                                                         onChange={(e) => setStatus(EditData, 'Not Started')}
-                    //                                                     ></input> Not Started
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input className="form-check-input"
-                    //                                                         name="NotStarted" type="radio"
-                    //                                                         value="In Preparation"
-                    //                                                         onChange={(e) => setStatus(EditData, 'In Preparation')}
-                    //                                                         checked={EditData.AdminStatus === "In Preparation" ? true : false}></input> In Preparation
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input className="form-check-input"
-                    //                                                         name="NotStarted" type="radio"
-                    //                                                         value="In Development"
-                    //                                                         onChange={(e) => setStatus(EditData, 'In Development')}
-                    //                                                         checked={EditData.AdminStatus === "In Development" ? true : false}></input> In Development
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input className="form-check-input" name="NotStarted"
-                    //                                                         type="radio" value="Active"
-                    //                                                         onChange={(e) => setStatus(EditData, 'Active')}
-                    //                                                         checked={EditData.AdminStatus === "Active" ? true : false}></input> Active
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input className="form-check-input"
-                    //                                                         name="NotStarted" type="radio" value="Archived"
-                    //                                                         onChange={(e) => setStatus(EditData, 'Archived')}
-                    //                                                         checked={EditData.AdminStatus === "Archived" ? true : false}></input> Archived
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                         </div>
-                    //                                         <div className="col-sm-6 pe-0">
-                    //                                             <label className="form-label">Time <a className="hreflink" href={EditData.Twitter != null ? EditData.Twitter.Url : ""} target="_blank"><span className=""><i className="fa fa-twitter"></i></span></a></label>
-                    //                                             <input type="text" className="form-control"
-                    //                                                 value={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e => changeTime(e, EditData))} />
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input name="radioTime" onChange={(e) => setTime(EditData, '05')} checked={EditData.Mileage === "05" ? true : false}
-                    //                                                         type="radio"></input>Very Quick
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input name="radioTime" onChange={(e) => setTime(EditData, '15')} checked={EditData.Mileage === "15" ? true : false}
-                    //                                                         type="radio" ></input>Quick
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input name="radioTime" onChange={(e) => setTime(EditData, '60')} checked={EditData.Mileage === "60" ? true : false}
-                    //                                                         type="radio" ></input>Medium
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                             <div className="radio">
-                    //                                                 <label>
-                    //                                                     <input name="radioTime" onChange={(e) => setTime(EditData, "240")} checked={EditData.Mileage === "240" ? true : false}
-                    //                                                         type="radio" ></input>Long
-                    //                                                 </label>
-                    //                                             </div>
-                    //                                         </div>
-                    //                                     </div>
-                    //                                 </div>
-                    //                                 <div className="col-sm-3 ">
-                    //                                     <div className="col" title="Priority">
-                    //                                         <label className="form-label">Priority</label>
-                    //                                         <input type="text" className="form-control"
-                    //                                             value={EditData.Priority_x0020_Rank} onChange={(e) => setPriorityNew(e, EditData)} />
-                    //                                         <div className="radio">
-                    //                                             <label>
-                    //                                                 <input className="form-check-input" name="radioPriority"
-                    //                                                     type="radio" value="(1) High" onChange={(e) => setPriority(EditData, 8)}
-                    //                                                     checked={EditData.Priority === "(1) High" ? true : false}></input>High
-                    //                                             </label>
-                    //                                         </div>
-                    //                                         <div className="radio">
-                    //                                             <label>
-                    //                                                 <input className="form-check-input" name="radioPriority"
-                    //                                                     type="radio" value="(2) Normal" onChange={(e) => setPriority(EditData, 4)}
-                    //                                                     checked={EditData.Priority === "(2) Normal" ? true : false}></input>Normal
-                    //                                             </label>
-                    //                                         </div>
-                    //                                         <div className="radio">
-                    //                                             <label>
-                    //                                                 <input className="form-check-input" name="radioPriority"
-                    //                                                     type="radio" value="(3) Low" onChange={(e) => setPriority(EditData, 1)}
-                    //                                                     checked={EditData.Priority === "(3) Low" ? true : false}></input>Low
-                    //                                             </label>
-                    //                                         </div>
-                    //                                     </div>
-                    //                                     <div className="col position-relative ">
-                    //                                         <label className="form-label">Categories </label>
-                    //                                         <input type="text" className="form-control"
-                    //                                             defaultValue={EditData.Facebook != null ? EditData.Facebook.Description : ""} />
-                    //                                         <span className="input-group-text"  >
-                    //                                             <img src="https://hhhhteams.sharepoint.com/_layouts/images/editEditData.gif"
-                    //                                                 onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
-
-                    //                                         </span>
-                    //                                         <div className="col-sm-11  inner-tabb">
-                    //                                             <div>
-
-                    //                                                 {EditData != undefined && EditData.smartCategories != undefined && EditData.smartCategories.map((childi: any) =>
-                    //                                                     < div className="block bgsiteColor"
-
-                    //                                                     >
-                    //                                                         <a className="hreflink" target="_blank"  >{childi.Title}</a>
-                    //                                                         <a className="hreflink"
-                    //                                                         >
-                    //                                                             <img src="/_layouts/images/delete.gif"></img>
-                    //                                                         </a>
-                    //                                                     </div>
-                    //                                                 )}
-
-
-                    //                                             </div>
-                    //                                         </div>
-                    //                                     </div>
-
-                    //                                 </div>
-                    //                                 <div className="col-sm-4  ">
-                    //                                     <CommentCard siteUrl={EditData.siteUrl} userDisplayName={EditData.userDisplayName} listName={EditData.siteType} itemID={EditData.Id}></CommentCard>
-
-
-                    //                                 </div>
-                    //                                 <div className="col-sm-8 ps-0 ">
-                    //                                     <label className="form-label">Url</label>
-                    //                                     <input type="text" className="form-control" placeholder="Url"></input>
-
-                    //                                 </div>
-                    //                             </div>
-                    //                         </div>
-
-
-                    //                     </div>
-                    //                     <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
-
-                    //                         <div className="col  p-2">
-                    //                             <div className="container">
-                    //                                 <section className='accordionbox'>
-
-                    //                                     <div className="accordion p-0  overflow-hidden">
-                    //                                         <div className="card shadow-none mb-2">
-
-                    //                                             <div className="accordion-item border-0" id="t_draggable1">
-                    //                                                 <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showsAdmin')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                    //                                                     <span className="sign">{EditData.showsAdmin ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Admin Notes</span></button></div>
-                    //                                                 <div className="accordion-collapse collapse show"  >
-
-                    //                                                     {EditData.showsAdmin &&
-                    //                                                         <div className="accordion-body pt-1" id="testDiv1">
-                    //                                                             <textarea defaultValue={EditData.Admin_x0020_Notes} onChange={(e) => EditData.Admin_x0020_Notes = e.target.value}>
-
-                    //                                                             </textarea>
-                    //                                                         </div>
-
-
-                    //                                                     }
-
-
-                    //                                                 </div>
-                    //                                             </div>
-
-                    //                                         </div>
-                    //                                         <div className="card shadow-none  mb-2">
-                    //                                             <div className="accordion-item border-0" id="t_draggable1">
-                    //                                                 <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showdes')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                    //                                                     <span className="fw-medium font-sans-serif text-900"><span className="sign">{EditData.showdes ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span> Description</span></button></div>
-                    //                                                 <div className="accordion-collapse collapse show"  >
-
-                    //                                                     {EditData.showdes &&
-                    //                                                         <div className="accordion-body pt-1" id="testDiv1">
-                    //                                                             <span className="">
-                    //                                                                 <input type="checkbox" defaultChecked={EditData.descriptionVerified === true}></input>
-                    //                                                                 <span>Verified</span>
-                    //                                                             </span>
-                    //                                                             <Editor
-                    //                                                                 editorState={editorState}
-                    //                                                                 toolbarClassName="toolbarClassName"
-                    //                                                                 wrapperClassName="wrapperClassName"
-                    //                                                                 editorClassName="editorClassName"
-                    //                                                                 wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                    //                                                                 onChange={onEditorStateChange}
-                    //                                                             />
-                    //                                                         </div>
-                    //                                                     }
-
-                    //                                                 </div>
-                    //                                             </div>
-
-                    //                                         </div>
-                    //                                         <div className="card shadow-none  mb-2">
-                    //                                             <div className="accordion-item border-0" id="t_draggable1">
-                    //                                                 <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'show')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                    //                                                     <span className="fw-medium font-sans-serif text-900"><span className="sign">{EditData.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
-                    //                                                 <div className="accordion-collapse collapse show"  >
-
-                    //                                                     {EditData.show &&
-                    //                                                         <div className="accordion-body pt-1" id="testDiv1">
-                    //                                                             <span className="">
-                    //                                                                 <input type="checkbox" defaultChecked={EditData.ShortDescriptionVerified === true}></input>
-                    //                                                                 <span>Verified</span>
-                    //                                                             </span>
-                    //                                                             <Editor
-                    //                                                                 toolbarClassName="toolbarClassName"
-                    //                                                                 wrapperClassName="wrapperClassName"
-                    //                                                                 editorClassName="editorClassName"
-                    //                                                                 wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                    //                                                             />
-                    //                                                         </div>
-                    //                                                     }
-
-                    //                                                 </div>
-                    //                                             </div>
-
-                    //                                         </div>
-
-
-
-                    //                                         <div className="card shadow-none  mb-2">
-
-                    //                                             <div className="accordion-item border-0" id="t_draggable1">
-                    //                                                 <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showl')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                    //                                                     <span className="sign">{EditData.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
-                    //                                                 <div className="accordion-collapse collapse show" >
-
-
-                    //                                                     {EditData.showl &&
-                    //                                                         <div className="accordion-body pt-1" id="testDiv1">
-                    //                                                             <span className="">
-                    //                                                                 <input type="checkbox" defaultChecked={EditData.BackgroundVerified === true} onChange={(e) => EditData.BackgroundVerified = e.target.value}></input>
-                    //                                                                 <span>Verified</span>
-                    //                                                             </span>
-                    //                                                             <textarea defaultValue={EditData.Background} onChange={(e) => EditData.Background = e.target.value}>
-
-                    //                                                             </textarea>
-                    //                                                         </div>
-                    //                                                     }
-
-
-                    //                                                 </div>
-                    //                                             </div>
-
-                    //                                         </div>
-
-                    //                                         <div className="card shadow-none mb-2">
-
-                    //                                             <div className="accordion-item border-0" id="t_draggable1">
-                    //                                                 <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'shows')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                    //                                                     <span className="sign">{EditData.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Idea</span></button></div>
-                    //                                                 <div className="accordion-collapse collapse show"  >
-
-                    //                                                     {EditData.shows &&
-                    //                                                         <div className="accordion-body pt-1" id="testDiv1">
-                    //                                                             <span className="">
-                    //                                                                 <input type="checkbox" defaultChecked={EditData.IdeaVerified === true} onChange={(e) => EditData.BackgroundVerified = e.target.value}></input>
-                    //                                                                 <span>Verified</span>
-                    //                                                             </span>
-                    //                                                             <textarea defaultValue={EditData.Idea} onChange={(e) => EditData.Idea = e.target.value}>
-
-                    //                                                             </textarea>
-                    //                                                         </div>
-
-                    //                                                     }
-
-
-                    //                                                 </div>
-                    //                                             </div>
-
-                    //                                         </div>
-
-
-
-
-
-                    //                                         <div className="card shadow-none mb-2">
-
-                    //                                             <div className="accordion-item border-0" id="t_draggable1">
-                    //                                                 <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showj')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                    //                                                     <span className="sign">{EditData.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
-                    //                                                 <div className="accordion-collapse collapse show"  >
-
-                    //                                                     {EditData.showj &&
-                    //                                                         <div className="accordion-body pt-1" id="testDiv1">
-                    //                                                             <span className="">
-                    //                                                                 <input type="checkbox" defaultChecked={EditData.ValueAddedVerified === true} onChange={(e) => EditData.ValueAddedVerified = e.target.value}></input>
-                    //                                                                 <span>Verified</span>
-                    //                                                             </span>
-                    //                                                             <textarea defaultValue={EditData.ValueAdded} onChange={(e) => EditData.ValueAdded = e.target.value}>
-
-                    //                                                             </textarea>
-                    //                                                         </div>
-                    //                                                     }
-
-
-                    //                                                 </div>
-                    //                                             </div>
-
-                    //                                         </div>
-
-                    //                                         <div className="card shadow-none mb-2">
-
-                    //                                             <div className="accordion-item border-0" id="t_draggable1">
-                    //                                                 <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showm')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                    //                                                     <span className="sign">{EditData.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
-                    //                                                 <div className="accordion-collapse collapse show"  >
-
-                    //                                                     {EditData.showm &&
-                    //                                                         <div className="accordion-body pt-1" id="testDiv1">
-                    //                                                             <span className="">
-                    //                                                                 <input type="checkbox" defaultChecked={EditData.DeliverablesVerified === true}></input>
-                    //                                                                 <span>Verified</span>
-                    //                                                             </span>
-                    //                                                             <Editor
-                    //                                                                 toolbarClassName="toolbarClassName"
-                    //                                                                 wrapperClassName="wrapperClassName"
-                    //                                                                 editorClassName="editorClassName"
-                    //                                                                 wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                    //                                                             />
-                    //                                                         </div>
-                    //                                                     }
-
-
-                    //                                                 </div>
-                    //                                             </div>
-
-                    //                                         </div>
-
-                    //                                     </div>
-
-
-
-
-                    //                                 </section>
-                    //                             </div>
-                    //                         </div>
-                    //                     </div>
-                    //                     <div className="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-
-                    //                         <div className="col  p-2">
-                    //                             <div className="container">
-                    //                                 <dl className='Sitecomposition'>
-                    //                                     <div className="dropdown">
-
-                    //                                         <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} >
-
-                    //                                             <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Technical Concept
-
-                    //                                         </a>
-
-                    //                                         {CollapseExpend &&
-                    //                                             <div className='spxdropdown-menu'>
-                    //                                                 <span className="">
-                    //                                                     <input type="checkbox"
-                    //                                                         defaultValue={EditData.TechnicalExplanationsVerified} />
-                    //                                                     <span>Verified</span>
-                    //                                                 </span>
-
-                    //                                                 <Editor
-                    //                                                     toolbarClassName="toolbarClassName"
-                    //                                                     wrapperClassName="wrapperClassName"
-                    //                                                     editorClassName="editorClassName"
-                    //                                                     wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                    //                                                 />
-
-                    //                                             </div>
-                    //                                         }
-                    //                                     </div>
-                    //                                 </dl>
-                    //                             </div>
-                    //                         </div>
-                    //                     </div>
-                    //                 </div>
-                    //             </div>
-                    //             <div className="modal-footer">
-                    //                 <div className="col-sm-12">
-                    //                     <div className="row">
-                    //                         <div className="ItemInfo col-sm-6">
-                    //                             <div className="text-left">
-                    //                                 Created <span ng-bind="EditData.Created | date:'dd/MM/yyyy'">{EditData.Created != null ? moment(EditData.Created).format('DD/MM/YYYY MM:SS') : ""}</span> by
-                    //                                 <span className="card-title">
-                    //                                     {EditData.Author?.Title != undefined ? EditData.Author?.Title : ""}
-                    //                                 </span>
-                    //                             </div>
-                    //                             <div className="text-left">
-                    //                                 Last modified <span>{EditData.Modified != null ? moment(EditData.Modified).format('DD/MM/YYYY MM:SS') : ""}</span> by <span className="card-title">
-
-                    //                                     {EditData.Editor.Title != undefined ? EditData.Editor.Title : ""}
-                    //                                 </span>
-                    //                             </div>
-                    //                             <div className="text-left">
-                    //                                 <a className="hreflink">
-                    //                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/images/delete.gif" /> Delete this item
-                    //                                 </a>
-                    //                             </div>
-                    //                         </div>
-                    //                         <div className="col-sm-6  ItemInfo-right">
-                    //                             <div className="">
-                    //                                 <span>
-                    //                                     <a className="ForAll hreflink" target="_blank"
-                    //                                         href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData.Id}&name=${EditData.Title}`}>
-                    //                                         <img className="mb-3 icon_siz19" style={{ marginRight: "3px" }}
-                    //                                             src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />Go to Profile page
-                    //                                     </a>
-                    //                                 </span>
-                    //                                 <span className="ml5">|</span>
-                    //                                 <a className="ml5" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
-                    //                                     target="_blank">Open out-of-the-box form</a>
-                    //                                 <button type="button" className="btn btn-primary ml5" onClick={(e) => SaveData()}>Save</button>
-                    //                                 <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
-                    //                             </div>
-                    //                         </div>
-                    //                     </div>
-                    //                 </div>
-                    //             </div>
-
-                    //         </div>
-
-                    //     </div>
-
-                    //     {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
-                    //     {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
-
-                    // </div>
                 }
             </Panel>
         </>
