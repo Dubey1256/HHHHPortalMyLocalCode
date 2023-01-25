@@ -1118,8 +1118,12 @@ function ComponentTable(SelectedProp: any) {
                         }
                         if (ComponetsData['allComponets'][i]['childs'] == undefined)
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task))
+                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
+                            ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Events Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png';
+                            ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Events Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png';
+
                             ComponetsData['allComponets'][i]['childs'].push(task);
+                        }
                         break;
                     }
                 }
@@ -1140,8 +1144,12 @@ function ComponentTable(SelectedProp: any) {
                         }
                         if (ComponetsData['allComponets'][i]['childs'] == undefined)
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task))
+                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
+                            ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Component Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png';
+                            ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Component Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png';
+
                             ComponetsData['allComponets'][i]['childs'].push(task);
+                        }
                         break;
                     }
                 }
@@ -1151,16 +1159,25 @@ function ComponentTable(SelectedProp: any) {
     //var pageType = 'Service-Portfolio';
     var ComponetsData: any = {};
     ComponetsData.allUntaggedTasks = []
+
+    const DynamicSort = function (items: any, column: any) {
+        items.sort(function (a: any, b: any) {
+            // return   a[column] - b[column];
+            var aID = a[column];
+            var bID = b[column];
+            return (aID == bID) ? 0 : (aID > bID) ? 1 : -1;
+        })
+    }
     const bindData = function () {
         var RootComponentsData: any[] = [];
         var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
-        
+
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
-            result.childsLength =0;
+            result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -1253,6 +1270,7 @@ function ComponentTable(SelectedProp: any) {
                         subcomp['childs'].unshift(featurecomp);;
                     }
                 })
+             DynamicSort(subcomp.childs,'Shareweb_x0020_ID');
             }
         })
 
@@ -1268,22 +1286,35 @@ function ComponentTable(SelectedProp: any) {
                         subcomp['childs'].unshift(featurecomp);;
                     }
                 })
+                 DynamicSort(subcomp.childs,'Shareweb_x0020_ID')
             }
         })
 
-        map(ComponentsData, (comp) => {
+        map(ComponentsData, (comp, index) => {
             if (comp.Title != undefined) {
                 map(FeatureData, (featurecomp) => {
                     if (featurecomp.Parent != undefined && comp.Id === featurecomp.Parent.Id) {
-                          comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         comp.childsLength++;
                         comp['childs'].unshift(featurecomp);;
                     }
                 })
+                 DynamicSort(comp.childs, 'Shareweb_x0020_ID')
             }
         })
         //maidataBackup.push(ComponentsData)
+        // map(ComponentsData, (comp, index) => {
+        //     if (comp.childs != undefined && comp.childs.length > 0) {
+        //         DynamicSort(comp.childs, 'Shareweb_x0020_ID')
+        //         if (comp.childs != undefined && comp.childs.length > 0) {
+        //             map(comp.childs, (chil, index) => {
+        //                 if (chil.childs != undefined && chil.childs.length > 0)
+        //                     DynamicSort(chil.childs, 'Shareweb_x0020_ID')
+        //             })
+        //         }
+        //     }
+        // })
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
         setComponentsData(ComponentsData);
         setmaidataBackup(ComponentsData)
