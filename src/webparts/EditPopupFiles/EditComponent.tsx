@@ -18,6 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import { EditorState } from 'draft-js'
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
+import TeamConfigurationCard from "../../globalComponents/TeamConfiguration/TeamConfiguration";
 
 
 
@@ -32,6 +33,8 @@ function EditInstitution(item: any) {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [CollapseExpend, setCollapseExpend] = React.useState(false);
+    const TeamConfigInfo = item.props;
+    const [TeamConfig, setTeamConfig] = React.useState()
     const [date, setDate] = React.useState(undefined);
     const [Startdate, setStartdate] = React.useState(undefined);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
@@ -709,10 +712,19 @@ function EditInstitution(item: any) {
         let message: any = Editorvalue; EditData.TechnicalExplanations = message;
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
+    const DDComponentCallBack = (dt: any) => {
+        setTeamConfig(dt)
+        console.log(TeamConfig)
+        //item.props?.TeamConfigDataCallBack(dt);
+    }
+    var itemInfo = {
+        siteURL: TeamConfigInfo?TeamConfigInfo.siteUrl:'',
+        listName: TeamConfigInfo?TeamConfigInfo.siteType:'',
+        itemID: TeamConfigInfo?TeamConfigInfo.Id:''
+    }
     return (
         <>
-            {/* <img title="Edit Details" className="wid22" onClick={(e) => setModalIsOpenToTrue(e)}
-                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> */}
+            
             {console.log("Done")}
             <Panel
                 headerText={`  Service-Portfolio > ${EditData.Title}`}
@@ -1062,8 +1074,10 @@ function EditInstitution(item: any) {
 
 
                                 <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
-
-                                    <div className="col  p-2">
+                                    <div className="col-sm-7">
+                                 <TeamConfigurationCard ItemInfo={itemInfo} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                </div>
+                                    <div className="col-sm-7">
 
                                         <section className='accordionbox'>
 
