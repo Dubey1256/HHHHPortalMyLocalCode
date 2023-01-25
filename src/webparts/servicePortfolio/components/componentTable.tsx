@@ -1528,6 +1528,7 @@ function ComponentTable(SelectedProp: any) {
         setIsTimeEntry(false);
     }, []);
     const EditComponentPopup = (item: any) => {
+        item['siteUrl']='https://hhhhteams.sharepoint.com/sites/HHHH/SP';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
         setSharewebComponent(item);
