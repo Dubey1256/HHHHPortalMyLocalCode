@@ -205,7 +205,7 @@ setIsComponent(true);
     //Test = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx'
     var vars = query.split("&");
      Href =  window.location.href.toLowerCase().split('?')[0]
-     Href =  Test.toLowerCase().split('?')[0]
+     Href =  Href.toLowerCase().split('?')[0]
     Href = Href.split('#')[0];
      PageUrl = Href.split(currentUrl.toLowerCase())[1];
 
