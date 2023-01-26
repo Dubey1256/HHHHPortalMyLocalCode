@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 
 const ExpndTable = (props: any) => {
- 
+//  Must include id in the table section
   
 
   return (

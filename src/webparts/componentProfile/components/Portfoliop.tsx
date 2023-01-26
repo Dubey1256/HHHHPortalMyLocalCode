@@ -20,7 +20,8 @@ import { SPComponentLoader } from '@microsoft/sp-loader';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import Smartinfo from './NextSmart';
 import EditInstituton from '../../EditPopupFiles/EditComponent';
-import ComponentTable from './Taskwebpart';
+import ComponentTable from './Taskwebparts';
+
 
 
 
@@ -709,31 +710,34 @@ function Portfolio({ ID }: any) {
                                                     {item.showk &&
                                                         <div className='spxdropdown-menu'>
                                                             <ul>
-                                                                {myarray1.map((item: any) =>
+                                                                {myarray1.map((items: any) =>
                                                                     <li className="dropdown-item">
                                                                         <span>
-                                                                            <img style={{ width: "22px" }} src={item.SiteImages} data-themekey="#" />
+                                                                            <img style={{ width: "22px" }} src={items.SiteImages} data-themekey="#" />
                                                                         </span>
                                                                         <span >
                                                                             {/* {{item.ClienTimeDescription.substring(0,2)}}% */}
                                                                             {/* {data.map(item =><i>{item.ClienTimeDescription.substring(0,2)}%</i>)} */}
-                                                                            {(item.ClienTimeDescription != undefined) &&
+                                                                            {(items.ClienTimeDescription != undefined) &&
                                                                                 <span className="ng-binding">
                                                                                     {/* {item.ClienTimeDescription}% */}
-                                                                                    {item.ClienTimeDescription.length ===  undefined &&
+                                                                                    <>
+                                                                                      {parseInt(items.ClienTimeDescription).toFixed(2)}%
+                                                                                   </>
+                                                                                   {/* {items.ClienTimeDescription.length ===  undefined  &&
                                                                                       <>
-                                                                                         {(item.ClienTimeDescription).toFixed(2)}%
+                                                                                         {(items.ClienTimeDescription).toFixed(2)}%
                                                                                       </>
                                                                                     }
-                                                                                     {item.ClienTimeDescription.length <= 2 &&
+                                                                                     {(items.ClienTimeDescription.length <= 2 || items.ClienTimeDescription.length > 2) &&
                                                                                       <>
-                                                                                      {parseInt(item.ClienTimeDescription).toFixed(2)}%
-                                                                                   </>}
+                                                                                      {parseInt(items.ClienTimeDescription).toFixed(2)}%
+                                                                                   </>} */}
                                                                                     
                                                                                 </span>
                                                                             }
                                                                         </span>
-                                                                        {item.Title == 'EPS' &&
+                                                                        {items.Title == 'EPS' &&
                                                                             <span>
                                                                                 {myarray3.length != 0 ? myarray3.map((client: any) => {
                                                                                     return (
@@ -750,7 +754,7 @@ function Portfolio({ ID }: any) {
                                                                                 }) : ""}
                                                                             </span>
                                                                         }
-                                                                        {item.Title == 'Education' &&
+                                                                        {items.Title == 'Education' &&
                                                                             <span>
                                                                                 {myarray3.length != 0 ? myarray3.map((client: any) => {
                                                                                     return (
@@ -767,7 +771,7 @@ function Portfolio({ ID }: any) {
                                                                                 }) : ""}
                                                                             </span>
                                                                         }
-                                                                        {item.Title == 'EI' &&
+                                                                        {items.Title == 'EI' &&
                                                                             <span  >
                                                                                 {myarray3.length != 0 ? myarray3.map((client: any) => {
                                                                                     return (
@@ -785,7 +789,7 @@ function Portfolio({ ID }: any) {
                                                                                 }) : ""}
                                                                             </span>
                                                                         }
-                                                                          {item.Title == 'Migration' &&
+                                                                          {items.Title == 'Migration' &&
                                                                             <span  >
                                                                                 {myarray3.length != 0 ? myarray3.map((client: any) => {
                                                                                     return (

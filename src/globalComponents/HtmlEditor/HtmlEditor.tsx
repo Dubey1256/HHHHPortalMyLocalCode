@@ -44,7 +44,7 @@ export interface IHtmlEditorProps {
                       toolbarClassName="toolbarClassName"
                       wrapperClassName="wrapperClassName"
                       editorClassName="editorClassName"
-                      wrapperStyle={{ width: '100%', border: "2px solid black"}}
+                      wrapperStyle={{ width: '100%', border: "2px solid #ccc"}}
                   />
                 );
         }

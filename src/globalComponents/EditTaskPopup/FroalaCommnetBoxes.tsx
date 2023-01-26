@@ -4,14 +4,22 @@ const { useState, useEffect } = React;
 
 export default function FroalaCommnetBoxes(textItems: any) {
     let TextItems = textItems.textItems;
-    const [backupArray, setBackupArray] = useState([])
-    const [state, setState] = useState([]);
+    const callBack = textItems.callBack
+    const [State, setState] = useState([]);
     const [Texts, setTexts] = useState(false);
     const addRow = () => {
-        let testTaskIndex = state?.length + 1
-        const object = { Completed: "", Id: "", Title: "", text: "", taskIndex: testTaskIndex };
-        state.push(object);
-        // backupArray.push(object);
+        let testTaskIndex = State?.length + 1
+        const object = {
+            Completed: "",
+            Title: "",
+            text: "",
+            taskIndex: testTaskIndex,
+            SeeAbove: '',
+            Phone: '',
+            LowImportance: '',
+            HighImportance: ''
+        };
+        State.push(object);
         setTexts(!Texts)
     }
     useEffect(() => {
@@ -19,82 +27,84 @@ export default function FroalaCommnetBoxes(textItems: any) {
             TextItems.map((item: any, index: any) => {
                 if (index > 0) {
                     item.taskIndex = index;
-                    state.push(item);
+                    State.push(item);
                     setTexts(!Texts);
-                    backupArray.push(item)
                 }
             })
         }
     }, [])
     const RemoveItem = (dltItem: any) => {
         let tempArray: any = []
-        backupArray.map((array: any) => {
+        State.map((array: any) => {
             if (dltItem.taskIndex != array.taskIndex) {
                 tempArray.push(array);
             }
         })
         setState(tempArray);
-        setBackupArray(tempArray);
     }
-    function handleChange(e: any, taskData: any, valueType: any) {
-        console.log("e target value in sub comment =====", e.target.value)
-        console.log("e target value in sub comment scacd data  =====", taskData)
-        console.log("e target value in sub comment scacd value type  =====", valueType)
-        // Check to see if the element that's changed
-        // is an input
-        // if (e.target.matches('input')) {
-        //     // Get the id from the div dataset
-        //     const { id } = e.currentTarget.dataset;
-        //     // Get the name and value from the changed element
-        //     const { name, value } = e.target;
-        //     // Copy the state
-        //     const copy = [...state];
-        //     // Create a new object using the object in state
-        //     // at index === id, and update the correct property
-        //     const obj = { ...state[id], [name]: value };
-        //     // Add that object to the state copy
-        //     copy[id] = obj;
-        //     // Finally update the state
-        //     setState(copy);
-        // }
+    function handleChange(e: any) {
+        
+        if (e.target.matches("textarea")) {
+            const { id } = e.currentTarget.dataset;
+            const { name, value } = e.target;
+            const copy = [...State];
+            const obj = { ...State[id], [name]: value };
+            copy[id] = obj;
+            setState(copy);
+        }
+        if (e.target.matches("input")) {
+            const { id } = e.currentTarget.dataset;
+            const { name, value } = e.target;
+            const copy = [...State];
+            const obj = { ...State[id], [name]: value == "true" ? false : true };
+            copy[id] = obj;
+            setState(copy);
+        }
+        setTimeout(() => {
+            callBack(State);
+        }, 1000);
+       
     }
-    // We now create some rows by mapping
-    // over the data and returning an array
-    // of components which have an id based
-    // on their position in the state array, some
-    // data contained in the object, and the handler
     function createRows(state: any[]) {
         return (
             <div className="add-text-box">
-                {state.map((obj, i) => {
+                {state?.map((obj, i) => {
                     return (
                         <div className="row">
                             <div
                                 data-id={i}
                                 className="col"
-                            // onChange={(e)=>handleChange(e, obj)}
+                                onChange={handleChange}
                             >
                                 <div className="Task-panel d-flex  justify-content-end ">
                                     <span className="form-check">
-                                        <input className="form-check-input" type="checkbox" id=""
-                                            name="chkCompleted"
-                                            
-                                            ng-click="checkCompleted(Completed,'Phone',item.Phone)" />
+                                        <input className="form-check-input" type="checkbox"
+                                            checked={obj.SeeAbove}
+                                            value={obj.SeeAbove}
+                                            name='SeeAbove'
+                                        />
+                                        <label>See Above</label>
+                                    </span>
+                                    <span className="form-check">
+                                        <input className="form-check-input" type="checkbox"
+                                            checked={obj.Phone}
+                                            value={obj.Phone}
+                                            name='Phone'
+                                        />
                                         <label>Phone</label>
                                     </span>
                                     <span className="form-check">
-                                        <input type="checkbox" id="" className="form-check-input"
-                                            name="chkCompleted" ng-model="item.LowImportance"
-                                            ng-click="checkCompleted(Completed)" />
+                                        <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input"
+                                        />
                                         <label>
                                             Low Importance
                                         </label>
                                     </span>
                                     <span>|</span>
                                     <span className="form-check">
-                                        <input type="checkbox" id="" className="form-check-input"
-                                            name="chkCompleted" ng-model="item.HighImportance"
-                                            ng-click="checkCompleted(Completed)" />
+                                        <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
+                                            value={obj.HighImportance} className="form-check-input"
+                                        />
                                         <label>
                                             High Importance
                                         </label>
@@ -102,8 +112,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                     <span>|</span>
                                     <span className="form-check">
                                         <input type="checkbox" id="" className="form-check-input"
-                                            name="chkCompleted" ng-model="item.HighImportance"
-                                            ng-click="checkCompleted(Completed)" />
+                                            name='Completed' checked={obj.Completed} value={obj.Completed} />
                                         <label>
                                             Mark As Completed
                                         </label>
@@ -125,12 +134,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                     </span>
                                 </div>
                                 <div className="d-flex">
-                                    <span className="border rounded p-1 me-1">{obj.taskIndex + 1}</span>
+                                    <span className="border p-1 me-1">{obj.taskIndex + 1}</span>
                                     <textarea
                                         style={{ width: "100%" }}
                                         className="form-control"
-                                        ng-model="item.Title"
                                         defaultValue={obj.Title}
+                                        name='Title'
                                     ></textarea>
                                     {/* <button onClick={addRow}>Add New Box</button> */}
                                     {/* {state.length==1 || 2 || 3 ?<button className="btn btn-primary" onClick={addRow}>Add New Box</button>:""} */}
@@ -151,7 +160,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
         <div className="col mt-2">
             {<button className="btn btn-primary" onClick={addRow}>Add New Box</button>}
             {/* <button onClick={showState}>Show state</button> */}
-            {state.length ? createRows(state) : null}
+            {State.length ? createRows(State) : null}
         </div>
     );
 }

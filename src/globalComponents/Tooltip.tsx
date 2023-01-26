@@ -61,7 +61,7 @@ if(itemType === 'HHHH Bug'){
 
         }
         if(componentID != undefined){
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Bug.aspx?ComponentID=${componentID}` + "&ComponentTitle="  +  componentTitle + "&Siteurl=" + Test);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Bug.aspx?ComponentID=${componentID}` + "&ComponentTitle="  +  componentTitle + "&Siteurl=" + Href);
         }
         else{
           window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Bug.aspx?ComponentTitle=${componentTitle}`);
@@ -91,7 +91,7 @@ if(itemType === 'HHHH Design'){
 
         }
         if(componentID != undefined){
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Design.aspx?ComponentID=${componentID}` + "&ComponentTitle=" + componentTitle + "&Siteurl=" + Test);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Design.aspx?ComponentID=${componentID}` + "&ComponentTitle=" + componentTitle + "&Siteurl=" + Href);
         }
         else{
           window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Design.aspx?ComponentTitle=${componentTitle}`);
@@ -121,7 +121,7 @@ if(itemType === 'HHHH Quick'){
 
         }
         if(componentID != undefined){
-          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateQuickTask.aspx?ComponentID=${componentID}=` + componentID + "&ComponentTitle="  + componentTitle + "&Siteurl=" + Test);
+          window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateQuickTask.aspx?ComponentID=${componentID}=` + componentID + "&ComponentTitle="  + componentTitle + "&Siteurl=" + Href);
         }
         else{
           alert('Component not exist for this relevant page');
@@ -205,7 +205,7 @@ setIsComponent(true);
     //Test = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx'
     var vars = query.split("&");
      Href =  window.location.href.toLowerCase().split('?')[0]
-     Href =  Test.toLowerCase().split('?')[0]
+     Href =  Href.toLowerCase().split('?')[0]
     Href = Href.split('#')[0];
      PageUrl = Href.split(currentUrl.toLowerCase())[1];
 

@@ -12,9 +12,10 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import RelevantDocuments from './RelevantDocuments'
 import { forEach } from 'lodash';
 import { Item } from '@pnp/sp/items';
-var smartTime: Number = 0.0;
+var smartTime: Number = 0                                   ;
 var ClientTimeArray:any=[];
 
 export interface ITaskprofileState {
@@ -276,10 +277,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }
         if (attachdata.length > 0) {
           BasicImageInfo.forEach(function(item:any){
-          if(item.ImageUrl!=undefined && item.ImageUrl.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
-            var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
-              item.ImageUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
-          }
+          // if(item.ImageUrl!=undefined && item.ImageUrl.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+          //   var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+          //     item.ImageUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
+          // }
             if(item.ImageName==Attach.FileName){
               ImagesInfo.push({
                 ImageName: Attach.FileName,
@@ -1161,8 +1162,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
             </div>
             <div className="col-3">
+              <div>
               <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
+              </div>
+               <div>  <RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID}siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments></div>
+            
             </div>
+            
           </div>
         </section>
 

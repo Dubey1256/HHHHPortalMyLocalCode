@@ -21,6 +21,7 @@ import { AiOutlineFullscreen } from 'react-icons/ai'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
 import NewTameSheetComponent from "./NewTimeSheet";
+import CommentBoxComponent from "./CommentBoxComponent";
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -51,7 +52,8 @@ const EditTaskPopup = (Items: any) => {
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [composition, setComposition] = React.useState(false);
     const [FolderData, SetFolderData] = React.useState([]);
-    const [CommentBox, setCommentBox] = React.useState(false);
+    const [CommentBoxData, setCommentBoxData] = React.useState("");
+    const [subCommentBoxData, setSubCommentBoxData] = React.useState([]);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [taskStatus, setTaskStatus] = React.useState('');
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
@@ -130,7 +132,7 @@ const EditTaskPopup = (Items: any) => {
         imageList: ImageListType,
         addUpdateIndex: number[] | undefined
     ) => {
-        imageList.map((imgItem) => {
+        imageList?.map((imgItem) => {
             if (imgItem.dataURL != undefined && imgItem.file != undefined) {
                 let ImgArray = [{
                     ImageName: imgItem.file.name,
@@ -166,7 +168,7 @@ const EditTaskPopup = (Items: any) => {
                     if (user.Title != undefined && user.IsShowTeamLeader === true) {
                         if (user.Approver != undefined) {
                             $.each(user.Approver.results, function (ApproverUser: any, index) {
-                                ApproverUserItem += ApproverUser.Title + (index === user.Approver.results.length - 1 ? '' : ',');
+                                ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
                                 UserApproverMail.push(ApproverUser.Name.split('|')[2]);
                             })
                             user['UserManagerName'] = ApproverUserItem;
@@ -176,61 +178,45 @@ const EditTaskPopup = (Items: any) => {
                     }
 
                 });
-                if (AllMetaData != undefined && AllMetaData.length > 0) {
+                if (AllMetaData != undefined && AllMetaData?.length > 0) {
                     GetEditData();
                 }
             },
                 function (data) {
                 });
     }
-    const DeleteSubColumn = () => {
-        setCommentBox(false)
-    }
+   
     const GetEditData = async () => {
         try {
             let web = new Web(Items.Items.siteUrl);
             let smartMeta;
-            if (Items.Items.siteType == "Gender") {
-                if (Items.Items.listId != undefined) {
-                    smartMeta = await web.lists
-                        .getById(Items.Items.listId)
-                        .items.top(5000)
-                        .filter(`Id eq ${Items.Items.ID}`).get()
-                } else {
-                    smartMeta = await web.lists
-                        .getByTitle(Items.Items.listName)
-                        .items.top(5000)
-                        .filter(`Id eq ${Items.Items.ID}`).get()
-                }
-            } else {
-                if (Items.Items.listId != undefined) {
-                    smartMeta = await web.lists
-                        .getById(Items.Items.listId)
-                        .items
-                        .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                        .top(5000)
-                        .filter(`Id eq ${Items.Items.ID}`)
-                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
-                        .get();
-                }
-                else {
-                    smartMeta = await web.lists
-                        .getByTitle(Items.Items.listName)
-                        .items
-                        .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                        .top(5000)
-                        .filter(`Id eq ${Items.Items.ID}`)
-                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
-                        .get();
-                }
+            if (Items.Items.listId != undefined) {
+                smartMeta = await web.lists
+                    .getById(Items.Items.listId)
+                    .items
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .top(5000)
+                    .filter(`Id eq ${Items.Items.ID}`)
+                    .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                    .get();
+            }
+            else {
+                smartMeta = await web.lists
+                    .getByTitle(Items.Items.listName)
+                    .items
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .top(5000)
+                    .filter(`Id eq ${Items.Items.ID}`)
+                    .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                    .get();
             }
 
-            smartMeta.map((item: any) => {
+            smartMeta?.map((item: any) => {
                 let saveImage = []
                 if (item.PercentComplete != undefined) {
                     let statusValue = item.PercentComplete * 100;
                     item.PercentComplete = statusValue;
-                    StatusArray.map((item: any) => {
+                    StatusArray?.map((item: any) => {
                         if (statusValue == item.value) {
                             setPercentCompleteStatus(item.status);
                             setTaskStatus(item.taskStatusComment);
@@ -240,29 +226,35 @@ const EditTaskPopup = (Items: any) => {
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
                 }
-                if (item.BasicImageInfo != undefined && item.Attachments) {
+                if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
                 if (item.Priority_x0020_Rank != undefined) {
-                    currentUsers.map((rank: any) => {
-                        if (rank.rank == item.Priority_x0020_Rank) {
-                            item.Priority_x0020_Rank = rank.rank;
-                        }
-                    })
+                    if(currentUsers != undefined){
+                        currentUsers?.map((rank: any) => {
+                            if (rank.rank == item.Priority_x0020_Rank) {
+                                item.Priority_x0020_Rank = rank.rank;
+                            }
+                        })
+                    }
+                   
                 }
                 let AssignedUsers: any = [];
-                taskUsers?.map((userData: any) => {
-                    item.AssignedTo?.map((AssignedUser: any) => {
-                        if (userData?.AssingedToUserId == AssignedUser.Id) {
-                            AssignedUsers.push(userData);
-                        }
+                if (taskUsers != undefined) {
+                    taskUsers?.map((userData: any) => {
+                        item.AssignedTo?.map((AssignedUser: any) => {
+                            if (userData?.AssingedToUserId == AssignedUser.Id) {
+                                AssignedUsers.push(userData);
+                            }
+                        })
                     })
-                })
+                }
+
                 if (item.Attachments) {
                     let tempData = []
                     tempData = saveImage[0];
                     item.UploadedImage = saveImage ? saveImage[0] : '';
-                    uploadImageFunction(tempData, tempData.length);
+                    uploadImageFunction(tempData, tempData?.length);
                 }
 
                 if (item.Categories != null) {
@@ -299,7 +291,7 @@ const EditTaskPopup = (Items: any) => {
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete ? EditData.PercentComplete : null) })
-        StatusArray.map((array: any) => {
+        StatusArray?.map((array: any) => {
             if (EditData.PercentComplete == array.value) {
                 setPercentCompleteStatus(array.status);
                 setTaskStatus(array.taskStatusComment);
@@ -330,7 +322,7 @@ const EditTaskPopup = (Items: any) => {
     const UpdateTaskInfoFunction = async (child: any) => {
         var UploadImage: any = []
         var item: any = {}
-        images.map((imgDtl: any) => {
+        images?.map((imgDtl: any) => {
             if (imgDtl.dataURL != undefined) {
                 var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
             }
@@ -346,18 +338,18 @@ const EditTaskPopup = (Items: any) => {
             }
             UploadImage.push(item)
         })
-        if (smartComponentData != undefined && smartComponentData.length > 0) {
-            smartComponentData.map((com: any) => {
-                if (smartComponentData != undefined && smartComponentData.length >= 0) {
+        if (smartComponentData != undefined && smartComponentData?.length > 0) {
+            smartComponentData?.map((com: any) => {
+                if (smartComponentData != undefined && smartComponentData?.length >= 0) {
                     $.each(smartComponentData, function (index: any, smart: any) {
                         smartComponentsIds.push(smart.Id);
                     })
                 }
             })
         }
-        if (linkedComponentData != undefined && linkedComponentData.length > 0) {
-            linkedComponentData.map((com: any) => {
-                if (linkedComponentData != undefined && linkedComponentData.length >= 0) {
+        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            linkedComponentData?.map((com: any) => {
+                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
                     $.each(linkedComponentData, function (index: any, smart: any) {
                         RelevantPortfolioIds.push(smart.Id);
                     })
@@ -366,34 +358,34 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-            TaskAssignedTo.map((taskInfo) => {
+            TaskAssignedTo?.map((taskInfo) => {
                 AssignedToIds.push(taskInfo.Id);
             })
         } else {
             if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                EditData.AssignedTo.map((taskInfo: any) => {
+                EditData.AssignedTo?.map((taskInfo: any) => {
                     AssignedToIds.push(taskInfo.Id);
                 })
             }
         }
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-            TaskTeamMembers.map((taskInfo) => {
+            TaskTeamMembers?.map((taskInfo) => {
                 TeamMemberIds.push(taskInfo.Id);
             })
         } else {
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                EditData.Team_x0020_Members.map((taskInfo: any) => {
+                EditData.Team_x0020_Members?.map((taskInfo: any) => {
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
         }
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-            TaskResponsibleTeam.map((taskInfo) => {
+            TaskResponsibleTeam?.map((taskInfo) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
         } else {
             if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
-                EditData.Responsible_x0020_Team.map((taskInfo: any) => {
+                EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
                     ResponsibleTeamIds.push(taskInfo.Id);
                 })
             }
@@ -409,9 +401,9 @@ const EditTaskPopup = (Items: any) => {
                 Priority: PriorityStatus != undefined ? PriorityStatus : EditData.Priority,
                 StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
                 PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
-                ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
+                ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds?.length > 0) ? smartComponentsIds : [] },
                 Categories: CategoriesData ? CategoriesData : null,
-                RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds.length > 0) ? RelevantPortfolioIds : [] },
+                RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
                 DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
                 CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
                 Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
@@ -495,12 +487,16 @@ const EditTaskPopup = (Items: any) => {
             console.log("Error:", error.message);
         }
     }
-    const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
-        let message: any = EditorData;
-        TaskDescription[0] = message;
-        console.log("Editor Data call back  ====", EditorData)
+    const CommentSectionCallBack = React.useCallback((EditorData: any) => {
+        setCommentBoxData(EditorData);
+        console.log("Editor Data call back  ====", CommentBoxData)
     }, [])
 
+    const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
+        setSubCommentBoxData(feedBackData);
+        console.log("Feedback Array in Edit comp=====", feedBackData)
+        console.log("Feedback Array in Edit comp all =====", subCommentBoxData)
+    }, [])
     return (
         <>
             <Panel
@@ -511,9 +507,10 @@ const EditTaskPopup = (Items: any) => {
             >
                 <div >
                     <div className="modal-body">
+
                         <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
                             <tbody>
-                                {StatusArray.map((item: any, index) => {
+                                {StatusArray?.map((item: any, index) => {
                                     return (
                                         <tr key={index}>
                                             <td>
@@ -545,13 +542,15 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
             >
                 <div >
+
                     <div className="modal-body ">
+                        { console.log("Feedback All  Array=====", TaskDescription)}
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
                                 BASIC INFORMATION
                             </button>
                             {/* <button className="nav-link" id="TIME-SHEET" data-bs-toggle="tab" data-bs-target="#TIMESHEET" type="button" role="tab" aria-controls="TIMESHEET" aria-selected="false">TIMESHEET</button> */}
-                            <button className="nav-link" id="NEW-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#NEWTIMESHEET" type="button" role="tab" aria-controls="nEWTIMESHEET" aria-selected="false">TIMESHEET</button>
+                            <button className="nav-link" id="NEW-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#NEWTIMESHEET" type="button" role="tab" aria-controls="NEWTIMESHEET" aria-selected="false">TIMESHEET</button>
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                             <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
@@ -658,7 +657,7 @@ const EditTaskPopup = (Items: any) => {
                                                         return (
                                                             <>
                                                                 <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
                                                                         <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                     </a>
@@ -712,10 +711,10 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         {CategoriesData != "" ?
                                                             <div>
-                                                                {(CategoriesData.split(";")).map((type: any, index: number) => {
+                                                                {(CategoriesData.split(";"))?.map((type: any, index: number) => {
                                                                     return (
                                                                         <div className="Component-container-edit-task d-flex my-1 justify-content-between">
-                                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                 {type}
                                                                             </a>
                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setCategoriesData('')} className="p-1" />
@@ -836,7 +835,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <>
                                                                             <div className="d-flex Component-container-edit-task">
                                                                                 <div>
-                                                                                    <a className="hreflink " target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                         {com.Title}
                                                                                     </a>
                                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
@@ -897,7 +896,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <input type="text" className="form-control" placeholder="Url"
                                                 />
                                                 <span className="input-group-text">
-                                                    <a target="_blank"
+                                                    <a target="_blank" data-interception="off"
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3677 13.2672C11.023 13.7134 9.87201 14.4471 8.99831 15.4154C6.25928 18.4508 6.34631 23.1488 9.19578 26.0801C10.6475 27.5735 12.4385 28.3466 14.4466 28.3466H15.4749V27.2499V26.1532H14.8471C12.6381 26.1532 10.4448 24.914 9.60203 23.1898C8.93003 21.8151 8.9251 19.6793 9.5906 18.3208C10.4149 16.6384 11.9076 15.488 13.646 15.1955C14.7953 15.0022 22.5955 14.9933 23.7189 15.184C26.5649 15.6671 28.5593 18.3872 28.258 21.3748C27.9869 24.0644 26.0094 25.839 22.9861 26.1059L21.9635 26.1961V27.2913V28.3866L23.2682 28.3075C27.0127 28.0805 29.7128 25.512 30.295 21.6234C30.8413 17.9725 28.3779 14.1694 24.8492 13.2166C24.1713 13.0335 23.0284 12.9942 18.5838 13.0006C13.785 13.0075 13.0561 13.0388 12.3677 13.2672ZM23.3224 19.8049C18.7512 20.9519 16.3624 26.253 18.4395 30.6405C19.3933 32.6554 20.9948 34.0425 23.1625 34.7311C23.9208 34.9721 24.5664 35 29.3689 35C34.1715 35 34.8171 34.9721 35.5754 34.7311C38.1439 33.9151 39.9013 32.1306 40.6772 29.5502C41 28.4774 41.035 28.1574 40.977 26.806C40.9152 25.3658 40.8763 25.203 40.3137 24.0261C39.0067 21.2919 36.834 19.8097 33.8475 19.6151L32.5427 19.53V20.6267V21.7236L33.5653 21.8132C35.9159 22.0195 37.6393 23.0705 38.4041 24.7641C39.8789 28.0293 38.2035 31.7542 34.8532 32.6588C33.8456 32.9309 25.4951 32.9788 24.1462 32.7205C22.4243 32.3904 21.0539 31.276 20.2416 29.5453C19.8211 28.6492 19.7822 28.448 19.783 27.1768C19.7837 26.0703 19.8454 25.6485 20.0853 25.1039C20.4635 24.2463 21.3756 23.2103 22.1868 22.7175C22.8985 22.2851 24.7121 21.7664 25.5124 21.7664H26.0541V20.6697V19.573L25.102 19.5851C24.5782 19.5919 23.7775 19.6909 23.3224 19.8049Z" fill="#333333" />
@@ -1091,6 +1090,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="TaskUsers" key={index}>
                                                                 <a
                                                                     target="_blank"
+                                                                    data-interception="off"
                                                                     href={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
                                                                     <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                         on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
@@ -1220,15 +1220,10 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Id ? <>
-                                            <HtmlEditorCard
-                                                editorValue={EditData.CommentBoxText != undefined ? EditData.CommentBoxText : ''}
-                                                HtmlEditorStateChange={HtmlEditorCallBack}
-                                            >
-                                            </HtmlEditorCard>
-                                            <Example textItems={EditData.FeedBackArray} />
+                                            <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} />
+                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} />
                                         </>
                                             : null}
-
                                     </div>
                                     {/* <div className="form-group">
                                                     <div className="col-sm-6">
@@ -1311,7 +1306,7 @@ const EditTaskPopup = (Items: any) => {
                             <div>
                                 <div>
                                     <span>
-                                        <a className="mx-2" target="_blank"
+                                        <a className="mx-2" target="_blank" data-interception="off"
                                             href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
                                             Go to profile page
                                         </a>
@@ -1327,7 +1322,7 @@ const EditTaskPopup = (Items: any) => {
                                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
                                         Share this task
                                     </span> ||
-                                    <a target="_blank" className="mx-2"
+                                    <a target="_blank" className="mx-2" data-interception="off"
                                         href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/HHHH/EditForm.aspx?ID=${EditData.ID}`}>
                                         Open out-of-the-box form
                                     </a>
