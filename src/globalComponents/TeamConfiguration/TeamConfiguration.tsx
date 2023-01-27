@@ -106,7 +106,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         for (let index = 0; index < items.length; index++) {
             let childItem = items[index];
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
-                if (this.props.ItemInfo.Services.length > 0){
+                if (this.props.ItemInfo.Portfolio_x0020_Type == 'Service'){
                     if (childItem.Role != null && childItem.Role.length > 0 && childItem.Role.join(';').indexOf('Service Teams')>-1){
                         item.childs.push(childItem);
                     }
@@ -115,6 +115,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }                
                 this.getChilds(childItem, items);
             }
+           
         }
     }
     private ResponsibleTeam: any = [];

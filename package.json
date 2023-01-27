@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "gulp bundle",
-    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=8096\" gulp bundle",
+    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=9096\" gulp bundle",
     "clean": "gulp clean",
     "test": "gulp test"
   },

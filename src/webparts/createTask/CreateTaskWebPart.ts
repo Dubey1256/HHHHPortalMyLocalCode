@@ -47,7 +47,7 @@ export default class CreateTaskWebPart extends BaseClientSideWebPart<ICreateTask
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then(context => {
+        .then((context: { app: { host: { name: any; }; }; }) => {
           let environmentMessage: string = '';
           switch (context.app.host.name) {
             case 'Office': // running in Office
@@ -70,23 +70,23 @@ export default class CreateTaskWebPart extends BaseClientSideWebPart<ICreateTask
     return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
   }
 
-  protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
-    if (!currentTheme) {
-      return;
-    }
+  // protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
+  //   if (!currentTheme) {
+  //     return;
+  //   }
 
-    this._isDarkTheme = !!currentTheme.isInverted;
-    const {
-      semanticColors
-    } = currentTheme;
+  //   this._isDarkTheme = !!currentTheme.isInverted;
+  //   const {
+  //     semanticColors
+  //   } = currentTheme;
 
-    if (semanticColors) {
-      this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
-      this.domElement.style.setProperty('--link', semanticColors.link || null);
-      this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
-    }
+  //   if (semanticColors) {
+  //     this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
+  //     this.domElement.style.setProperty('--link', semanticColors.link || null);
+  //     this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
+  //   }
 
-  }
+  // }
 
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
