@@ -19,6 +19,7 @@ import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import { EditorState } from 'draft-js'
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "../../globalComponents/TeamConfiguration/TeamConfiguration";
+import ImagesC from "./Image";
 
 
 
@@ -746,6 +747,9 @@ function EditInstitution(item: any) {
                                 <li className="nav-item" role="presentation">
                                     <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Architecture & Technologies</button>
                                 </li>
+                                <li className="nav-item" role="presentation">
+                                    <button className="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button" role="tab" aria-controls="image" aria-selected="false">IMAGE INFORMATION</button>
+                                </li>
                             </ul>
                             <div className="tab-content border border-top-0 clearfix " id="myTabContent">
                                 <div className="tab-pane  show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -1118,14 +1122,7 @@ function EditInstitution(item: any) {
                                                                     </span>
                                                                     {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
                                                                     <HtmlEditorCard editorValue={EditData.Body != undefined ? EditData.Body : ''} HtmlEditorStateChange={HtmlEditorCallBack}></HtmlEditorCard>
-                                                                    {/* <Editor
-                                                                        editorState={editorState}
-                                                                        toolbarClassName="toolbarClassName"
-                                                                        wrapperClassName="wrapperClassName"
-                                                                        editorClassName="editorClassName"
-                                                                        wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                        onChange={onEditorStateChange}
-                                                                    /> */}
+                        
                                                                 </div>
                                                             }
 
@@ -1299,6 +1296,14 @@ function EditInstitution(item: any) {
                                                 </div>
                                             </div>
                                         </section>
+
+                                    </div>
+                                </div>
+                                <div className="tab-pane" id="image" role="tabpanel" aria-labelledby="image-tab">
+
+                                    <div className="col-sm-12">
+
+                                      <ImagesC/>
 
                                     </div>
                                 </div>
