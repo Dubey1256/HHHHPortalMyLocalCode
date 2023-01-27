@@ -87,8 +87,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "Status", "Team_x0020_Members/Title", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "Editor/Title", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "SharewebTaskType/Title", "Comments", "Modified")
-      .expand("Team_x0020_Members", "Author", "Editor", "Responsible_x0020_Team", "SharewebTaskType")
+      .select("ID", "Title", "DueDate", "ClientCategory/Id","ClientCategory/Title","Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+      .expand("Team_x0020_Members", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
       .get()
 
     await this.GetTaskUsers();
@@ -98,10 +98,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     let tempTask = {
       ID: 'T' + taskDetails["ID"],
       Title: taskDetails["Title"],
+      DueDate: taskDetails["DueDate"] != null ? (new Date(taskDetails["DueDate"])).toLocaleDateString() : '',
+      Categories: taskDetails["Categories"],
+      StartDate: taskDetails["StartDate"] != null ? (new Date(taskDetails["StartDate"])).toLocaleDateString() : '',
+      CompletedDate: taskDetails["CompletedDate"] != null ? (new Date(taskDetails["CompletedDate"])).toLocaleDateString() : '',
       Status: taskDetails["Status"],
       TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
       TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
-      PercentComplete: taskDetails["PercentComplete"],
+      PercentComplete: (taskDetails["PercentComplete"] * 100),
       Priority: taskDetails["Priority"],
       Created: taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
       Modified: taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
@@ -110,7 +114,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       component_url: taskDetails["component_x0020_link"],
       Comments: JSON.parse(taskDetails["Comments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
-      SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : ''
+      SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
+      Component: taskDetails["Component"],
+      Services: taskDetails["Services"],
+      TaskUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId="+this.state.itemID+"&Site="+this.state.listName
     };
 
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
@@ -464,15 +471,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       let allMention = regExpStr.match(regExpLiteral);
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
-          /*For Prod when mail is open for all
+          /*For Prod when mail is open for all */
           if (allMention[index].indexOf(null)<0){
             mention_To.push(allMention[index].replace('{','').replace('}','').trim());   
           } 
-          */
+          
           /*testing*/
-          if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de') > 0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de') > 0) {
+          /*if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de') > 0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de') > 0) {
             mention_To.push(allMention[index].replace('{', '').replace('}', '').trim());
-          }
+          }*/
         }
 
         console.log(mention_To);
@@ -494,7 +501,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private BindHtmlBody() {
     let body = document.getElementById('htmlMailBody')
     console.log(body.innerHTML);
-    return body.innerHTML;
+    return "<style>p>br {display: none;}</style>"+body.innerHTML;
   }
 
   private SendEmail(emailprops: any) {
@@ -524,6 +531,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.setState({
       editorChangeValue: value,
     }, () => console.log(console.log('set as HTML:', value)));
+  }
+
+  private joinObjectValues(arr:any){
+    let val = '';
+    arr.forEach((element:any) => {
+      val += element.Title +';'
+    });
+    return val;
   }
 
   public render(): React.ReactElement<ICommentCardProps> {
@@ -717,116 +732,232 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
         {this.state.Result != null && this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 &&
           <div id='htmlMailBody' style={{ display: 'none' }}>
-            <p><a><span>{this.state.Result["Title"]}</span></a></p>
-            <table>
-              <tr>
-                <td>
-                  {/* table for Comments */}
-                  <table style={{ border: '1px solid black' }}>
-                    <tr>
-                      <td colSpan={2}>Comments ({this.state.Result["Comments"].length})</td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                    {this.state.Result["Comments"].map((cmtData: any, i: any) => {
-                      return <tr>
-                        <td><span>{cmtData.Description}</span></td>
-                        <td><span>{cmtData.Created}</span></td>
-                      </tr>
-                    })}
-
-                  </table>
-                </td>
-                <td>
-                  {/* table for Basid info */}
-                  <table style={{ border: '1px solid black' }}>
-                    <tr>
-                      <td>
-                        <table>
+            
+            <div style={{marginTop:"11.25pt"}}>
+              <a href={this.state.Result["TaskUrl"]} target="_blank">{this.state.Result["Title"]}</a><u></u><u></u></div>
+            <table cellPadding="0" width="100%" style={{width:"100.0%"}}>
+                <tbody>
+                  <tr>
+                    <td width="70%" valign="top" style={{width:'70.0%', padding:'.75pt .75pt .75pt .75pt'}}>
+                    <table cellPadding="0" width="99%" style={{width:"99.0%"}}>
+                      <tbody>
                           <tr>
-                            <td colSpan={5}>
-                              Task Details
+                            <td style={{padding:".75pt .75pt .75pt .75pt"}}></td>
+                          </tr>
+                          <tr>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Task Id:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["ID"]}</span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Component:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p>{this.state.Result["Component"] != null &&
+                                this.state.Result["Component"].length > 0 && 
+                                <span style={{fontSize:'10.0pt',color:'black'}}>
+                                  {this.joinObjectValues(this.state.Result["Component"])}
+                                </span>
+                                }
+                                <span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Priority:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["Priority"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
                             </td>
                           </tr>
-                          <tr><td colSpan={5}></td></tr>
                           <tr>
-                            <td>Task URL:</td>
-                            <td colSpan={4}>{this.state.Result["component_url"] != null ? this.state.Result["component_url"].Url : ''}</td>
-                          </tr>
-                          <tr><td colSpan={5}></td></tr>
-                          <tr>
-                            <td>Component:</td>
-                            <td></td>
-                            <td></td>
-                            <td>Team:</td>
-                            <td></td>
-                          </tr>
-                          <tr><td colSpan={5}></td></tr>
-                        </table>
-                        <table>
-                          <tr>
-                            <td>Status:</td>
-                            <td></td>
-                            <td>Priority:</td>
-                            <td></td>
-                            <td>Created By:</td>
-                            <td></td>
-                            <td>Modified By:</td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Start Date:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["StartDate"]}</span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Completion Date:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["CompletedDate"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Due Date:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["DueDate"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
                           </tr>
                           <tr>
-                            <td>{this.state.Result["CompletedDate"]} {this.state.Result["Status"]}</td>
-                            <td></td>
-                            <td>{this.state.Result["Priority"]}</td>
-                            <td></td>
-                            <td>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</td>
-                            <td></td>
-                            <td>{this.state.Result["ModifiedBy"] != null && this.state.Result["ModifiedBy"].length > 0 && this.state.Result["ModifiedBy"][0].Title}</td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Team Members:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                            <p>{this.state.Result["TeamMembers"] != null &&
+                                this.state.Result["TeamMembers"].length > 0 && 
+                                <span style={{fontSize:'10.0pt',color:'black'}}>
+                                  {this.joinObjectValues(this.state.Result["TeamMembers"])}
+                                </span>
+                                }
+                                <span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Created By:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["StartDate"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Created:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
                           </tr>
                           <tr>
-                            <td colSpan={7}></td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Categories:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["Categories"]}</span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Status:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["Status"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>% Complete:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["PercentComplete"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
                           </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-            <table style={{ border: '1px solid black' }}>
-              <tr>
-                <td>
-                  <table>
-                    <tr>
-                      <td colSpan={3}>Task Description : </td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                    </tr>
-                    {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] != '' ||
-                      this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null &&
-                      this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
-                      this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
-                      this.state.Result["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
-                        return <table>
                           <tr>
-                            <td>{i + 1}.</td>
-                            <td>{fbData['Title'].replace(/<[^>]*>/g, '')}</td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>URL:</span></b><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td colSpan={7} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>
+                                  {this.state.Result["component_url"] != null &&
+                                    <a href={this.state.Result["component_url"].Url} target="_blank">{this.state.Result["component_url"].Url}</a>
+                                  }</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
                           </tr>
-                          {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
-                            return <tr>
-                              <td>{i + 1}.{j + 1}</td>
-                              <td>{fbSubData['Title'].replace(/<[^>]*>/g, '')}</td>
-                            </tr>
-                          })}
-                        </table>
-                      })}
+                          <tr>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                          </tr>
+                          <tr>
+                            <td width="91" style={{border:"none"}}></td>
+                            <td width="46" style={{border:"none"}}></td>
+                            <td width="46" style={{border:"none"}}></td>
+                            <td width="100" style={{border:"none"}}></td>
+                            <td width="53" style={{border:"none"}}></td>
+                            <td width="51" style={{border:"none"}}></td>
+                            <td width="74" style={{border:"none"}}></td>
+                            <td width="32" style={{border:"none"}}></td>
+                            <td width="33" style={{border:"none"}}></td>
+                          </tr>
+                      </tbody>
+                    </table>
+                    <table cellPadding="0" width="99%" style={{width:"99.0%"}}>
+                       <tbody>
+                          <tr>
+                             <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                          </tr>
+                          
+                             
+                             {this.state.Result["FeedBack"] != null &&
+                              this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
+                              this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
+                              this.state.Result["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
+                                return <>  
+                                <tr>
+                                  <td>
+                                    <p><span style={{fontSize:'10.0pt',color:'#6f6f6f'}}>{i + 1}.<u></u><u></u></span></p>
+                                  </td>                                
+                                  <td><span  dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                                    {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                      return <div style={{border:'solid #cccccc 1.0pt', padding:'7.0pt 7.0pt 7.0pt 7.0pt', marginTop:'3.75pt'}}>
+                                      <div style={{marginBottom:'3.75pt'}}>
+                                         <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
+                                      </div>
+                                      <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span><span  dangerouslySetInnerHTML={{ __html: fbComment['Title']}}></span><u></u><u></u></span></p>
+                                   </div>                                     
+                                    
+                                    })}
+                                  </td>
+                                  </tr>
+                                  {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                                    return <>
+                                    <tr>
+                                      <td>
+                                      <p><span style={{fontSize:'10.0pt',color:'#6f6f6f'}}>{i+1}.{j+1}.<u></u><u></u></span></p>
+                                      </td> 
+                                      <td><span  dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                        {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments'].map((fbSubComment: any) => {
+                                          return <div style={{border:'solid #cccccc 1.0pt', padding:'7.0pt 7.0pt 7.0pt 7.0pt', marginTop:'3.75pt'}}>
+                                          <div style={{marginBottom:'3.75pt'}}>
+                                             <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span style={{fontSize:'10.0pt', color:'black'}}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
+                                          </div>
+                                          <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span style={{fontSize:'10.0pt', color:'black'}}><span  dangerouslySetInnerHTML={{ __html: fbSubComment['Title']}}></span><u></u><u></u></span></p>
+                                       </div>                                     
+                                    
+                                      })}
+                                    </td>
+                                    </tr>
+                                    </>
+                                  })} 
+                                                                
+                                  
 
-                  </table>
-                </td>
-              </tr>
+                                </>
+                              })}                             
+                          
+                       </tbody>
+                    </table>
+                    </td>
+                    <td width="22%" style={{width:'22.0%', padding:'.75pt .75pt .75pt .75pt'}}>
+                      <table cellPadding={0} width="100%" style={{width:'100.0%', border:'solid #dddddd 1.0pt', borderRadius:'4px'}}>
+                        <tbody>
+                           <tr>
+                              <td style={{border:'none', borderBottom:'solid #dddddd 1.0pt', background:'whitesmoke',padding:'.75pt .75pt .75pt .75pt'}}>
+                                 <p style={{marginBottom: '1.25pt'}}><span style={{color:"#333333"}}>Comments:<u></u><u></u></span></p>
+                              </td>
+                           </tr>
+                           <tr>
+                             <td style={{border:'none', padding:'.75pt .75pt .75pt .75pt'}}>
+                             {this.state.Result["Comments"].map((cmtData: any, i: any) => {
+                                return <div style={{border:'solid #cccccc 1.0pt', padding:'7.0pt 7.0pt 7.0pt 7.0pt', marginTop:'3.75pt'}}>
+                                   <div style={{marginBottom:"3.75pt"}}>
+                                      <p style={{marginBottom:'1.25pt', background:'#fbfbfb'}}>
+                                        <span style={{color:'black'}}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                   </div>
+                                   <p style={{marginBottom:'1.25pt', background:'#fbfbfb'}}>
+                                    <span style={{color:'black'}}>{cmtData.Description}</span></p>
+                                </div>
+                                 })}
+                             </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                    </td>
+                  </tr>
+                </tbody>
             </table>
+            
           </div>
         }
 

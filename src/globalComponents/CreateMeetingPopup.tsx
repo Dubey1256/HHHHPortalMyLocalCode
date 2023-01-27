@@ -19,7 +19,7 @@ const CreateMeetingPopup = (Item: any) => {
     return (
         <>
             <Panel
-                headerText='CreateTask '
+                headerText='CreateTask '
                 type={PanelType.medium}
                 isOpen={modalopen}
                 onDismiss={ModalIsOpenToFalse}

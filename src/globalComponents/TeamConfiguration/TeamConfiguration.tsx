@@ -42,7 +42,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private dragUser: any;
     private async loadTaskUsers() {
-        let web = new Web(this.props.ItemInfo.siteURL);
+        let web = new Web(this.props.ItemInfo.siteUrl);
         let results: any = [];
 
         let taskUsers: any = [];
@@ -59,7 +59,15 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let self = this;
         results.forEach(function (item: any) {
             if (item.ItemType != 'Group') {
-                self.AllUsers.push(item);
+                if (self.props.ItemInfo.Services.length > 0){
+                    if (item.Role != null && item.Role.length > 0 && 
+                        item.Role.join(';').indexOf('Service Teams')>-1){
+                        self.AllUsers.push(item);
+                    }
+                }else{
+                    self.AllUsers.push(item);
+                }
+                //self.AllUsers.push(item);
             }
         })
 
@@ -77,18 +85,19 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         })
     }
     private async GetTaskDetails() {
-        let web = new Web(this.props.ItemInfo.siteURL);
+        let web = new Web(this.props.ItemInfo.siteUrl);
         let taskDetails = [];
         taskDetails = await web.lists
             .getByTitle(this.props.ItemInfo.listName)
             .items
-            .getById(this.props.ItemInfo.itemID)
+            .getById(this.props.ItemInfo.Id)
             .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
             .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
             .get()
 
         console.log('Task Details---');
         console.log(taskDetails);
+        
 
         this.setState({ taskDetails })
     }
@@ -97,7 +106,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         for (let index = 0; index < items.length; index++) {
             let childItem = items[index];
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
-                item.childs.push(childItem);
+                if (this.props.ItemInfo.Services.length > 0){
+                    if (childItem.Role != null && childItem.Role.length > 0 && childItem.Role.join(';').indexOf('Service Teams')>-1){
+                        item.childs.push(childItem);
+                    }
+                }else{
+                    item.childs.push(childItem);
+                }                
                 this.getChilds(childItem, items);
             }
         }
