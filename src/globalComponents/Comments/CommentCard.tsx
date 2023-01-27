@@ -471,15 +471,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       let allMention = regExpStr.match(regExpLiteral);
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
-          /*For Prod when mail is open for all
+          /*For Prod when mail is open for all */
           if (allMention[index].indexOf(null)<0){
             mention_To.push(allMention[index].replace('{','').replace('}','').trim());   
           } 
-          */
+          
           /*testing*/
-          if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de') > 0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de') > 0) {
+          /*if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de') > 0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de') > 0) {
             mention_To.push(allMention[index].replace('{', '').replace('}', '').trim());
-          }
+          }*/
         }
 
         console.log(mention_To);
@@ -892,9 +892,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                     {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
                                       return <div style={{border:'solid #cccccc 1.0pt', padding:'7.0pt 7.0pt 7.0pt 7.0pt', marginTop:'3.75pt'}}>
                                       <div style={{marginBottom:'3.75pt'}}>
-                                         <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span style={{fontSize:'10.0pt', color:'black'}}>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
+                                         <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
                                       </div>
-                                      <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span style={{fontSize:'10.0pt', color:'black'}}><span  dangerouslySetInnerHTML={{ __html: fbComment['Title']}}></span><u></u><u></u></span></p>
+                                      <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span><span  dangerouslySetInnerHTML={{ __html: fbComment['Title']}}></span><u></u><u></u></span></p>
                                    </div>                                     
                                     
                                     })}
