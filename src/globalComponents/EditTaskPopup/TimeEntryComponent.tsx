@@ -1350,9 +1350,9 @@ function TimeEntryPopup(item: any) {
         });
         var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
         //var DateFormate = new Date(Eyd)
-        $.each(AllTimeSheetDataNew, async function (index: any, items: any) {
-            if (items.Childs.length > 0 && items.Childs != undefined) {
-                $.each(items.Childs, function (index: any, subItem: any) {
+      
+                 $.each(TaskCate, function (index: any, subItem: any) {
+                    if(subItem.Id == child.ParentID){
                     if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
                         var timeSpentId = subItem.AdditionalTime[subItem.AdditionalTime.length - 1];
                         $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
@@ -1373,9 +1373,9 @@ function TimeEntryPopup(item: any) {
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
                     }
+                }
                 })
-            }
-        })
+           
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
             var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
@@ -1452,7 +1452,7 @@ function TimeEntryPopup(item: any) {
                     <div className="col-sm-12 p-0 mt-10" ng-form
                         role="form">
                         <div className="col-sm-12 ps-0 pr-5 TimeTabBox">
-                            <a className="hreflink pull-right mt-5 mr-0" onClick={openTaskStatusUpdatePoup}>
+                            <a className="hreflink pull-right mt-1 mr-0" onClick={openTaskStatusUpdatePoup}>
 
                                 + Add Time in New Structure
                             </a>
@@ -1711,7 +1711,7 @@ function TimeEntryPopup(item: any) {
                                             })}
                                         </tbody>
                                     </table>
-                                    {AllTimeSheetDataNew.length === 0 && <div className="right-col pt-0 MtPb"
+                                    {TaskCate.length === 0 && <div className="right-col pt-0 MtPb"
                                     >
                                         No Timesheet Available
                                     </div>}
