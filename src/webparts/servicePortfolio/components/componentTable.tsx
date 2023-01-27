@@ -1120,8 +1120,12 @@ function ComponentTable(SelectedProp: any) {
                         }
                         if (ComponetsData['allComponets'][i]['childs'] == undefined)
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task))
+                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
+                            ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Events Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png';
+                            ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Events Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png';
+
                             ComponetsData['allComponets'][i]['childs'].push(task);
+                        }
                         break;
                     }
                 }
@@ -1142,8 +1146,12 @@ function ComponentTable(SelectedProp: any) {
                         }
                         if (ComponetsData['allComponets'][i]['childs'] == undefined)
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task))
+                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
+                            ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Component Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png';
+                            ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Component Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png';
+
                             ComponetsData['allComponets'][i]['childs'].push(task);
+                        }
                         break;
                     }
                 }
@@ -1153,16 +1161,25 @@ function ComponentTable(SelectedProp: any) {
     //var pageType = 'Service-Portfolio';
     var ComponetsData: any = {};
     ComponetsData.allUntaggedTasks = []
+
+    const DynamicSort = function (items: any, column: any) {
+        items.sort(function (a: any, b: any) {
+            // return   a[column] - b[column];
+            var aID = a[column];
+            var bID = b[column];
+            return (aID == bID) ? 0 : (aID > bID) ? 1 : -1;
+        })
+    }
     const bindData = function () {
         var RootComponentsData: any[] = [];
         var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
-        
+
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
-            result.childsLength =0;
+            result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -1255,6 +1272,7 @@ function ComponentTable(SelectedProp: any) {
                         subcomp['childs'].unshift(featurecomp);;
                     }
                 })
+             DynamicSort(subcomp.childs,'Shareweb_x0020_ID');
             }
         })
 
@@ -1270,22 +1288,35 @@ function ComponentTable(SelectedProp: any) {
                         subcomp['childs'].unshift(featurecomp);;
                     }
                 })
+                 DynamicSort(subcomp.childs,'Shareweb_x0020_ID')
             }
         })
 
-        map(ComponentsData, (comp) => {
+        map(ComponentsData, (comp, index) => {
             if (comp.Title != undefined) {
                 map(FeatureData, (featurecomp) => {
                     if (featurecomp.Parent != undefined && comp.Id === featurecomp.Parent.Id) {
-                          comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         comp.childsLength++;
                         comp['childs'].unshift(featurecomp);;
                     }
                 })
+                 DynamicSort(comp.childs, 'Shareweb_x0020_ID')
             }
         })
         //maidataBackup.push(ComponentsData)
+        // map(ComponentsData, (comp, index) => {
+        //     if (comp.childs != undefined && comp.childs.length > 0) {
+        //         DynamicSort(comp.childs, 'Shareweb_x0020_ID')
+        //         if (comp.childs != undefined && comp.childs.length > 0) {
+        //             map(comp.childs, (chil, index) => {
+        //                 if (chil.childs != undefined && chil.childs.length > 0)
+        //                     DynamicSort(chil.childs, 'Shareweb_x0020_ID')
+        //             })
+        //         }
+        //     }
+        // })
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
         setComponentsData(ComponentsData);
         setmaidataBackup(ComponentsData)
@@ -1424,14 +1455,11 @@ function ComponentTable(SelectedProp: any) {
 
     }
 
-
 // Expand Table 
 const expndpopup = (e: any) => {
     
     settablecontiner(e);
   };
-
-
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1506,6 +1534,7 @@ const expndpopup = (e: any) => {
         setIsTimeEntry(false);
     }, []);
     const EditComponentPopup = (item: any) => {
+        item['siteUrl']='https://hhhhteams.sharepoint.com/sites/HHHH/SP';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
         setSharewebComponent(item);
@@ -1552,6 +1581,8 @@ const expndpopup = (e: any) => {
                                                     <option value="2">2</option>
                                                     <option value="3">3</option>
                                                 </select>
+
+
                                             </div>
                                             <div className="col-4 mb-10">
                                                 <label>Item Type</label>
@@ -1563,6 +1594,7 @@ const expndpopup = (e: any) => {
                                             </div>
                                         </div>
                                         <div className="row">
+
                                             <div className="col-sm-6 p-0">
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Service'"
                                                     className="col-sm-12 mb-10 Doc-align padL-0">
@@ -1574,7 +1606,9 @@ const expndpopup = (e: any) => {
                                                                 data-content="Click to activate auto suggest for components/services"
                                                                 data-original-title="Click to activate auto suggest for components/services"
                                                                 title="Click to activate auto suggest for components/services">
+
                                                             </span>
+
                                                         </label>
                                                         <input type="text" className="form-control ui-autocomplete-input"
                                                             id="txtSharewebComponent" ng-model="SearchComponent"
@@ -1586,10 +1620,12 @@ const expndpopup = (e: any) => {
                                                         <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/edititem.gif"
                                                             ng-click="EditComponent('Components',item)" />
                                                     </div>
+
                                                 </div>
                                                 <div ng-show="Item.Portfolio_x0020_Type=='Component'"
                                                     className="col-sm-12 padL-0">
                                                     <div className="col-sm-11 p-0 Doc-align">
+
                                                         <label>
                                                             Service Portfolio
                                                             <span data-toggle="popover" data-placement="right"
@@ -1597,7 +1633,9 @@ const expndpopup = (e: any) => {
                                                                 data-content="Click to activate auto suggest for components/services"
                                                                 data-original-title="Click to activate auto suggest for components/services"
                                                                 title="Click to activate auto suggest for components/services">
+
                                                             </span>
+
                                                         </label>
                                                         <input type="text" className="form-control ui-autocomplete-input"
                                                             id="txtServiceSharewebComponent" ng-model="SearchService"
@@ -1606,8 +1644,11 @@ const expndpopup = (e: any) => {
                                                     </div>
                                                     <div className="col-sm-1 no-padding">
                                                         <label className="full_width">&nbsp;</label>
+
                                                     </div>
+
                                                 </div>
+
                                             </div>
                                             <div className="col-sm-6 padR0">
                                                 <label>Deliverable-Synonyms </label>
@@ -1659,11 +1700,11 @@ const expndpopup = (e: any) => {
                 <h2 className="alignmentitle ng-binding d-flex">
 
                     {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} ><small style={{fontSize:"14px"}}>Old Service Portfolio</small></a></div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div>}
                     {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} ><small style={{fontSize:"14px"}}>Old Event Portfolio</small></a></div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
                     {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} ><small style={{fontSize:"14px"}}>Old Component Portfolio</small></a></div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
 
 
                 </h2>
@@ -1852,7 +1893,7 @@ const expndpopup = (e: any) => {
             </section>
 
 
-            <section className="TableContentSection taskprofilepagegreen"  id={tablecontiner}>
+            <section className="TableContentSection taskprofilepagegreen" id={tablecontiner}>
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container p-0">
@@ -2474,3 +2515,10 @@ const expndpopup = (e: any) => {
     );
 }
 export default ComponentTable;
+
+
+
+
+
+
+
