@@ -762,7 +762,7 @@ function TimeEntryPopup(item: any) {
         getStructurefTimesheetCategories();
         setEditItem(items.Title);
 
-        if(items.siteType == "Offshore Tasks"){ 
+        if(items.siteType == "Offshore Tasks"){ 
             var siteType="OffshoreTasks"
              var filteres = "Task" + siteType + "/Id eq " + items.Id;
         }

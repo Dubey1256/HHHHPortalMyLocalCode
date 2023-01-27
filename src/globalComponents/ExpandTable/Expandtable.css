@@ -1,0 +1,61 @@
+.main-tag {
+    height: 100vh;
+    width: 100%;
+  }
+  
+  #boxtrue {
+    background-color: #0000bc;
+    border: 6px solid #c4bdbd;
+  }
+  
+  #boxfalse {
+    background-color: #0000bc;
+  }
+  
+  /* #hundred {
+    width: 100%;
+  } */
+  
+  /********************************************************
+                           Expand Table Css
+  *********************************************************/
+  .container{margin: 0 auto;padding: 0px;}
+  section.TableSection .container {width: 100% !important;margin: 0 auto;}
+  /* .container-fluid { padding-right: 0px !important;padding-left: 0px !important;margin-right: auto;margin-left: auto;width: 100% !important;max-width: 100% !important;}
+  #s4-bodyContainer #hundred section.MiddleSection .ContentSection .container, #aspnetForm #main.container#hundred section.MiddleSection .ContentSection .container, #s4-bodyContainer#hundred section.TopSection, #aspnetForm #main.container#hundred section.TopSection {width: 1300px !important;max-width: 1300px !important;margin: 0 auto;padding: 0 15px !important;}
+  #s4-bodyContainer #hundred {width:100% !important;max-width: 1800px !important;padding: 0 15px !important;}
+  #s4-bodyContainer #seventyfive {width:100% !important;max-width: 1800px !important;padding: 0 15px !important;}
+  #s4-bodyContainer #sixty{width:100% !important; max-width: 1800px !important;padding: 0 15px !important;}
+  #s4-bodyContainer #fifty{width:100% !important;max-width: 1800px !important;padding: 0 15px !important;}
+  #s4-bodyContainer #hundred .TableContentSection .TableSection {width:100% !important;max-width: 1800px !important;margin: 0 auto;padding: 0 15px !important;}
+  #s4-bodyContainer #seventyfive .TableContentSection .TableSection {width:75% !important;max-width: 1800px !important;margin: 0 auto;padding: 0 15px !important;}
+  #s4-bodyContainer #sixty .TableContentSection .TableSection{width:62.5% !important; max-width: 1800px !important;margin: 0 auto;padding: 0 15px !important;}
+  #s4-bodyContainer #fifty .TableContentSection .TableSection{width:1300px !important;max-width: 1330px !important;margin: 0 auto;padding: 0 15px !important;}
+  #s4-bodyContainer #hundred {
+      margin: 0 auto;
+      width: 100% !important;
+  }
+  #s4-bodyContainer #hundred .MiddleSection, #s4-bodyContainer #seventyfive .MiddleSection, #s4-bodyContainer #sixty .MiddleSection, #s4-bodyContainer#fifty .MiddleSection{width:100% !important;max-width: 1800px !important;}
+  #s4-bodyContainer #hundred .ContentSection .container, #s4-bodyContainer #seventyfive .ContentSection .container, #s4-bodyContainer#sixty .ContentSection .container, #s4-bodyContainer#fifty .ContentSection .container {width:1300px !important;max-width: 1800px !important;padding: 0 15px !important;margin: 0 auto;}
+  #s4-bodyContainer #hundred .TopSection, #s4-bodyContainer #seventyfive .TopSection, #s4-bodyContainer #sixty .TopSection, #s4-bodyContainer #fifty .TopSection {width:1300px !important;max-width: 1800px !important;padding: 0 15px !important;margin: 0 auto;} */
+  
+  .TableContentSection #hundred {width:100% !important;max-width: 1800px !important;padding: 0 15px !important;}
+  .TableContentSection #seventyfive {width:75% !important;max-width: 1800px !important;margin: 0 auto;padding: 0 15px !important;}
+  .TableContentSection #sixty{width:62.5% !important; max-width: 1800px !important;margin: 0 auto;padding: 0 15px !important;}
+  .TableContentSection #fifty{width:1300px !important;max-width: 1330px !important;margin: 0 auto;padding: 0 15px !important;}
+  
+  /* #fifty {
+    width: 50%;
+  }
+  #sixty {
+    width: 60%;
+  }
+  #seventyfive{
+  } */
+  .i_a_8474018e {
+    max-width: 1924px !important
+    ;
+  }
+  .CanvasComponent.LCS .CanvasZone {
+    max-width: 1800px !important;
+  }

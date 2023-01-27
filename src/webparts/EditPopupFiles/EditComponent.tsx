@@ -1075,7 +1075,7 @@ function EditInstitution(item: any) {
 
                                 <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
                                     <div className="col-sm-7">
-                                 <TeamConfigurationCard ItemInfo={itemInfo} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                 <TeamConfigurationCard ItemInfo={itemInfo} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
                                 </div>
                                     <div className="col-sm-7">
 
