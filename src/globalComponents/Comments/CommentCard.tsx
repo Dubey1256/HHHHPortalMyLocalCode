@@ -554,7 +554,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue} onChange={(e) => this.setMentionValue(e)}
                   className="form-control"
                   classNames={mentionClass}>
-                  <Mention trigger="@" data={this.mentionUsers} className={mentionClass.mentions__mention} />
+                  <Mention trigger="@" data={this.mentionUsers}  />
                 </MentionsInput>
               </span>
 
@@ -623,11 +623,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
 
         <Modal isOpen={this.state.isModalOpen} isBlocking={false}>
-          <div className='modal-dialog modal-help' style={{ width: '890px' }}>
-            <div className='modal-content'>
+         
+        
+            <div >
               <div className='modal-header'>
                 <h3 className='modal-title'>Update Comment</h3>
-                <button type="button" className='close' style={{ minWidth: "10px" }} onClick={(e) => this.CloseModal(e)}>x</button>
+      
+                <Tooltip/> <button type="button" className='close' style={{ minWidth: "10px" }} onClick={(e) => this.CloseModal(e)}>x</button>
               </div>
               <div className='modal-body'>
                 <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
@@ -645,7 +647,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <button type="button" className="btn btn-default" onClick={(e) => this.CloseModal(e)}>Cancel</button>
               </div>
             </div>
-          </div>
+      
         </Modal>
 
         <Modal isOpen={this.state.AllCommentModal} isBlocking={false}>

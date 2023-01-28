@@ -1,5 +1,4 @@
 import * as React from "react";
-import "./Expandtable.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 
@@ -8,12 +7,10 @@ const ExpndTable = (props: any) => {
   
 
   return (
-    <div >
-      
-      <span data-bs-toggle="modal" data-bs-target="#exampleModal" className="border">
-        <svg
-          width="25"
-          height="25"
+    <> 
+       <svg data-bs-toggle="modal" data-bs-target="#exampleModal"
+          width="15"
+          height="15"
           viewBox="0 0 49 48"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +22,7 @@ const ExpndTable = (props: any) => {
             fill="#333333"
           />
         </svg>
-      </span>
+      
       <div
         className="modal fade"
         id="exampleModal"
@@ -53,12 +50,12 @@ const ExpndTable = (props: any) => {
               />
             </div>
             <div className="modal-body" style={{ backgroundColor: "#F2EDED" }}>
-              <div className="row d-flex justify-content-between">
+              <div className="row d-flex justify-content-center">
                 <div
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => props.prop("fifty")}
-                  className="card p-5 text-light fw-bold col-2 m-2 d-flex align-items-center justify-content-center"
+                  className="card p-5 text-light fw-bold col-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"
                   id={props.prop1 == "fifty" ? "boxtrue" : "boxfalse"}
                 >
                   50%
@@ -67,7 +64,7 @@ const ExpndTable = (props: any) => {
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => props.prop("sixty")}
-                  className="card p-5 text-light fw-bold col-2 m-2 d-flex align-items-center justify-content-center"
+                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
                   id={props.prop1 == "sixty" ? "boxtrue" : "boxfalse"}
                 >
                   60%
@@ -76,7 +73,7 @@ const ExpndTable = (props: any) => {
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => props.prop("seventyfive")}
-                  className="card p-5 text-light fw-bold col-2 m-2 d-flex align-items-center justify-content-center"
+                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
                   id={props.prop1 == "seventyfive" ? "boxtrue" : "boxfalse"}
                 >
                   75%
@@ -85,7 +82,7 @@ const ExpndTable = (props: any) => {
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => props.prop("hundred")}
-                  className="card p-5 text-light fw-bold col-2 m-2 d-flex align-items-center justify-content-center"
+                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
                   id={props.prop1 == "hundred" ? "boxtrue" : "boxfalse"}
                 >
                   100%
@@ -104,8 +101,7 @@ const ExpndTable = (props: any) => {
           </div>
         </div>
       </div>
-      
-    </div>
+    </>
   );
 };
 export default ExpndTable;

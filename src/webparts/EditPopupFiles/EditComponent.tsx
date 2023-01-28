@@ -19,6 +19,7 @@ import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import { EditorState } from 'draft-js'
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "../../globalComponents/TeamConfiguration/TeamConfiguration";
+import ImagesC from "./Image";
 
 
 
@@ -251,6 +252,10 @@ function EditInstitution(item: any) {
             }
             if (item.StartDate != undefined) {
                 item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
+                //setStartdate(item.StartDate);
+            }
+            if (item.component_x0020_link != null){
+                item.component_x0020_link = item.component_x0020_link.Url
                 //setStartdate(item.StartDate);
             }
             if (item.CompletedDate != undefined) {
@@ -718,9 +723,15 @@ function EditInstitution(item: any) {
         //item.props?.TeamConfigDataCallBack(dt);
     }
     var itemInfo = {
-        siteURL: TeamConfigInfo?TeamConfigInfo.siteUrl:'',
+        Portfolio_x0020_Type:TeamConfigInfo?TeamConfigInfo.Portfolio_x0020_Type:'',
+        Services: TeamConfigInfo?TeamConfigInfo.Services:'',
+        siteUrl: TeamConfigInfo?TeamConfigInfo.siteUrl:'https://hhhhteams.sharepoint.com/sites/HHHH/SP',
         listName: TeamConfigInfo?TeamConfigInfo.siteType:'',
         itemID: TeamConfigInfo?TeamConfigInfo.Id:''
+    }
+    const deleteCategories=()=>{
+        EditData.Categories=''
+        EditData.Categories=''
     }
     return (
         <>
@@ -745,6 +756,9 @@ function EditInstitution(item: any) {
                                 </li>
                                 <li className="nav-item" role="presentation">
                                     <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Architecture & Technologies</button>
+                                </li>
+                                <li className="nav-item" role="presentation">
+                                    <button className="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button" role="tab" aria-controls="image" aria-selected="false">IMAGE INFORMATION</button>
                                 </li>
                             </ul>
                             <div className="tab-content border border-top-0 clearfix " id="myTabContent">
@@ -1039,18 +1053,37 @@ function EditInstitution(item: any) {
 
                                                     <div className="col-sm-11  inner-tabb">
                                                         <div>
-
-                                                            {EditData != undefined && EditData.smartCategories != undefined && EditData.smartCategories.map((childi: any) =>
-                                                                < div className="block bgsiteColor"
+                                                            {(EditData.smartCategories != undefined && EditData.smartCategories.length>0)?
+                                                            <>
+                                                             {EditData != undefined && EditData.smartCategories != undefined && EditData.smartCategories.map((childi: any) =>
+                                                                <div className="block bgsiteColor"
 
                                                                 >
                                                                     <a className="hreflink" target="_blank"  >{childi.Title}</a>
                                                                     <a className="hreflink"
                                                                     >
-                                                                        <img src="/_layouts/images/delete.gif"></img>
+                                                                        <img src="/_layouts/images/delete.gif" onClick={()=>deleteCategories()}></img>
                                                                     </a>
                                                                 </div>
                                                             )}
+                                                             </>:
+                                                             <>
+                                                             {(EditData.Categories != '')&&
+                                                                <div className="block bgsiteColor">
+                                                                    <a className="hreflink" target="_blank"  >{EditData.Categories}</a>
+                                                                    <a className="hreflink"
+                                                                    >
+                                                                        <img src="/_layouts/images/delete.gif" onClick={()=>deleteCategories()}></img>
+                                                                    </a>
+                                                                </div>
+                                                                }
+                                                                </>
+                                                          
+                                                          
+                                                           
+                                                            }
+                                                           
+                                                            
 
 
                                                         </div>
@@ -1066,7 +1099,7 @@ function EditInstitution(item: any) {
                                             <div className="col-sm-8">
                                                 <div className="input-group mb-2">
                                                     <label className="form-label  full-width">Url</label>
-                                                    <input type="text" className="form-control" placeholder="Url"></input>
+                                                    <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ?EditData.component_x0020_link:''}  onChange={(e) => EditData.component_x0020_link = e.target.value}placeholder="Url"></input>
                                                 </div>
                                             </div>
                                         </div>
@@ -1118,14 +1151,7 @@ function EditInstitution(item: any) {
                                                                     </span>
                                                                     {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
                                                                     <HtmlEditorCard editorValue={EditData.Body != undefined ? EditData.Body : ''} HtmlEditorStateChange={HtmlEditorCallBack}></HtmlEditorCard>
-                                                                    {/* <Editor
-                                                                        editorState={editorState}
-                                                                        toolbarClassName="toolbarClassName"
-                                                                        wrapperClassName="wrapperClassName"
-                                                                        editorClassName="editorClassName"
-                                                                        wrapperStyle={{ width: '100%', border: "2px solid black", height: '60%' }}
-                                                                        onChange={onEditorStateChange}
-                                                                    /> */}
+                        
                                                                 </div>
                                                             }
 
@@ -1278,14 +1304,16 @@ function EditInstitution(item: any) {
                                             <div className="accordion p-0  overflow-hidden">
                                                 <div className="card shadow-none  mb-2">
 
-                                                    <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} >
+                                                    {/* <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} >
 
                                                         <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Technical Concept
 
-                                                    </a>
+                                                    </a> */}
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Technical Concept</span></button></div>
 
                                                     {CollapseExpend &&
-                                                        <div className='spxdropdown-menu'>
+                                                        <div>
                                                             <span className="form-check text-end">
                                                                 <input type="checkbox"
                                                                     defaultValue={EditData.TechnicalExplanationsVerified} />
@@ -1299,6 +1327,14 @@ function EditInstitution(item: any) {
                                                 </div>
                                             </div>
                                         </section>
+
+                                    </div>
+                                </div>
+                                <div className="tab-pane" id="image" role="tabpanel" aria-labelledby="image-tab">
+
+                                    <div className="col-sm-12">
+
+                                      <ImagesC/>
 
                                     </div>
                                 </div>
