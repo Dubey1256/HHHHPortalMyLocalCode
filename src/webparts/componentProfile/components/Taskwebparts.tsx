@@ -18,7 +18,7 @@ import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryCompone
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 var filt: any = '';
 var siteConfig: any = [];
-var IsUpdated:any = '';
+var IsUpdated: any = '';
 export default function ComponentTable({ props }: any) {
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -751,7 +751,7 @@ export default function ComponentTable({ props }: any) {
         //  setData(AllComponetsData);
         ComponetsData['allComponets'] = componentDetails;
     }
-   
+
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
     React.useEffect(() => {
         showProgressBar();
@@ -1156,12 +1156,12 @@ export default function ComponentTable({ props }: any) {
         var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
-        
+
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
             result.CreatedDateImg = []
             result.TeamLeaderUserTitle = '';
-            result.childsLength =0;
+            result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -1285,7 +1285,7 @@ export default function ComponentTable({ props }: any) {
             if (comp.Title != undefined) {
                 map(FeatureData, (featurecomp) => {
                     if (featurecomp.Parent != undefined && comp.Id === featurecomp.Parent.Id) {
-                          comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         comp.childsLength++;
                         comp['childs'].unshift(featurecomp);;
@@ -1296,25 +1296,25 @@ export default function ComponentTable({ props }: any) {
 
         var id = props.Id;
         var arrys: any = [];
-        if(props.Item_x0020_Type == "Component"){
-        $.each(ComponentsData, function (index: any, subcomp: any) {
-            if (subcomp.Id == id)
-                arrys.push(subcomp.childs)
-            if (subcomp.childs != undefined && subcomp.childs.length > 0) {
-                $.each(subcomp.childs, function (index: any, Nextcomp: any) {
-                    if (Nextcomp.childs.Id == id)
-                        arrys.push(Nextcomp.childs)
-                    if (Nextcomp.childs != undefined && Nextcomp.childs.length > 0) {
-                        $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
-                            if (Nextnextcomp.Id == id)
-                                arrys.push(Nextnextcomp.childs);
-                        })
-                    }
-                })
-            }
-        })
-    }
-        if(props.Item_x0020_Type == "SubComponent"){
+        if (props.Item_x0020_Type == "Component") {
+            $.each(ComponentsData, function (index: any, subcomp: any) {
+                if (subcomp.Id == id)
+                    arrys.push(subcomp.childs)
+                if (subcomp.childs != undefined && subcomp.childs.length > 0) {
+                    $.each(subcomp.childs, function (index: any, Nextcomp: any) {
+                        if (Nextcomp.childs.Id == id)
+                            arrys.push(Nextcomp.childs)
+                        if (Nextcomp.childs != undefined && Nextcomp.childs.length > 0) {
+                            $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
+                                if (Nextnextcomp.Id == id)
+                                    arrys.push(Nextnextcomp.childs);
+                            })
+                        }
+                    })
+                }
+            })
+        }
+        if (props.Item_x0020_Type == "SubComponent") {
             $.each(SubComponentsData, function (index: any, subcomp: any) {
                 if (subcomp.Id == id)
                     arrys.push(subcomp.childs)
@@ -1332,7 +1332,7 @@ export default function ComponentTable({ props }: any) {
                 }
             })
         }
-        if(props.Item_x0020_Type == "Feature"){
+        if (props.Item_x0020_Type == "Feature") {
             $.each(FeatureData, function (index: any, subcomp: any) {
                 if (subcomp.Id == id)
                     arrys.push(subcomp.childs)
@@ -1350,7 +1350,7 @@ export default function ComponentTable({ props }: any) {
                 }
             })
         }
-   
+
         //maidataBackup.push(ComponentsData)
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
         setComponentsData(ComponentsData);
@@ -1491,7 +1491,7 @@ export default function ComponentTable({ props }: any) {
     }
 
 
-// Expand Table 
+    // Expand Table 
 
 
 
@@ -1559,7 +1559,7 @@ export default function ComponentTable({ props }: any) {
         setTitle(e.target.value)
 
     };
-   
+
     const EditComponentPopup = (item: any) => {
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
@@ -1623,9 +1623,9 @@ export default function ComponentTable({ props }: any) {
     var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 15, "Title": "MileStone", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": [] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 15 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "etag": "\"4\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 105, "Title": "Development", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" }, "SmartFilters": null, "SortOrder": 3, "TaxType": "Category", "Selectable": true, "ParentID": 0, "SmartSuggestions": null, "ID": 105 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 282, "Title": "Implementation", "siteName": null, "siteUrl": null, "listId": null, "Description1": "This should be tagged if a task is for applying an already developed component/subcomponent/feature.", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "/SiteCollectionImages/ICONS/Shareweb/Implementation.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" }, "SmartFilters": null, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 282 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 11, "Title": "Bug", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 11 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "etag": "\"5\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 96, "Title": "Feedback", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" }, "SmartFilters": null, "SortOrder": 2, "TaxType": null, "Selectable": true, "ParentID": 0, "SmartSuggestions": false, "ID": 96 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "etag": "\"3\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 191, "Title": "Improvement", "siteName": null, "siteUrl": null, "listId": null, "Description1": "Use this task category for any improvements of EXISTING features", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" }, "SmartFilters": null, "SortOrder": 12, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 191 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 12, "Title": "Design", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 165, "SmartSuggestions": null, "ID": 12 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 100, "Title": "Activity", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 100 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists;(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 281, "Title": "Task", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 281 }] as unknown as { siteName: any, siteUrl: any, listId: any, Description1: any, results: any[], SmartSuggestions: any, SmartFilters: any }[];
     console.log(siteConfig)
     return (
-         <div className={IsUpdated == 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
-    {/* Add activity task */}
-    <Modal
+        <div className={IsUpdated == 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
+            {/* Add activity task */}
+            <Modal
                 show={lgShow}
                 aria-labelledby="example-modal-sizes-title-lg">
                 <Modal.Header>
@@ -1705,22 +1705,22 @@ export default function ComponentTable({ props }: any) {
                         Clear Selection
                     </span>
                     <div>
-                        {siteConfig!=null &&
-                        <>
-                        {siteConfig.map((site: any) => {
-                            return (
-                                <span>
-                                    {(site.Title != undefined && site.Title != 'Foundation' && site.Title != 'Master Tasks' && site.Title != 'Gender' && site.Title != 'Health' && site.Title != 'SDC Sites' && site.Title != 'Offshore Tasks') &&
-                                        <>
-                                            <img src={site.Item_x005F_x0020_Cover.Url} />
-                                            <p>{site.Title}</p>
-                                        </>
-                                    }
-                                </span>
-                            )
-                        })}
-                        </>
-                    }
+                        {siteConfig != null &&
+                            <>
+                                {siteConfig.map((site: any) => {
+                                    return (
+                                        <span>
+                                            {(site.Title != undefined && site.Title != 'Foundation' && site.Title != 'Master Tasks' && site.Title != 'Gender' && site.Title != 'Health' && site.Title != 'SDC Sites' && site.Title != 'Offshore Tasks') &&
+                                                <>
+                                                    <img src={site.Item_x005F_x0020_Cover.Url} />
+                                                    <p>{site.Title}</p>
+                                                </>
+                                            }
+                                        </span>
+                                    )
+                                })}
+                            </>
+                        }
                     </div>
                 </Modal.Body >
                 <Modal.Footer>
@@ -2105,62 +2105,73 @@ export default function ComponentTable({ props }: any) {
                 <div className="tbl-headings">
                     <span className="leftsec">
                         <span className=''>
-                            {props.Portfolio_x0020_Type == 'Component' &&  props.Item_x0020_Type!='SubComponent' && props.Item_x0020_Type!='Feature' &&
+                            {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type != 'SubComponent' && props.Item_x0020_Type != 'Feature' &&
                                 <>
                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{props.Title}</a>
                                 </>
                             }
-                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type!='SubComponent' && props.Item_x0020_Type!='Feature' &&
+                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type != 'SubComponent' && props.Item_x0020_Type != 'Feature' &&
                                 <>
                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{props.Title}</a>
                                 </>}
-                                {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type=='SubComponent'&&
+                            {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type == 'SubComponent' &&
                                 <>
-                                     {props.Parent != undefined &&
-                                                <a target='_blank' data-interception="off"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
-                                                    <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
-                                                </a>
-                                            } {'>'} <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />    <a>{props.Title}</a>   
-                                  </>   
-                                }
-                                 {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type=='SubComponent'&&
+                                    {props.Parent != undefined &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                        </a>
+                                    } {'>'} <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />    <a>{props.Title}</a>
+                                </>
+                            }
+                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type == 'SubComponent' &&
                                 <>
-                                {props.Parent != undefined &&
-                                                <a target='_blank' data-interception="off"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
-                                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
-                                                </a>
-                                            } {'>'}
-                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />    <a>{props.Title}</a>   
-                                  </>   
-                                }
+                                    {props.Parent != undefined &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+                                        </a>
+                                    } {'>'}
+                                    <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />    <a>{props.Title}</a>
+                                </>
+                            }
 
-{props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type=='Feature'&& 
+                            {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type == 'Feature' &&
                                 <>
 
                                     {props.Parent != undefined &&
-                                                <a target='_blank' data-interception="off"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
-                                                    <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
-                                                </a>
-                                            } {'>'}    <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{props.Title}</a>  
-                                  </>   
-                                }
-                                 {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type=='Feature'&&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                        </a>
+
+                                    } {'>'}  {(props.Parent.ItemType != undefined && props.Parent.ItemType == "SubComponent") &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />
+                                        </a>
+                                    }  {'>'}  <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{props.Title}</a>
+                                </>
+                            }
+                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type == 'Feature' &&
                                 <>
                                     {props.Parent != undefined &&
-                                                <a target='_blank' data-interception="off"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
-                                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
-                                                </a>
-                                            } {'>'}   <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" />    <a>{props.Title}</a>   
-                                  </>   
-                                }
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+                                        </a>
+                                    } {'>'} {(props.Parent.ItemType != undefined && props.Parent.ItemType == "SubComponent") &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' title={props.Parent.Title} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />
+                                        </a>
+                                    }  {'>'}  <img className='client-icons' title={props.Title} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" />    <a>{props.Title}</a>
+                                </>
+                            }
                         </span>
-                         <span className="g-search">
+                        <span className="g-search">
                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all"
-                                ng-model="SearchComponent.GlobalSearch"/>
+                                ng-model="SearchComponent.GlobalSearch" />
                             <span className="gsearch-btn" ng-click="SearchAll_Item()"><i className="fa fa-search"></i></span>
                         </span>
                     </span>
@@ -2322,7 +2333,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "8%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Due Date"
                                                     title="Due Date" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "Status")} />
+                                                // onChange={(e) => handleChange1(e, "Status")}
+                                                />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2350,7 +2362,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "8%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
                                                     title="Created Date" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "ItemRank")} />
+                                                // onChange={(e) => handleChange1(e, "ItemRank")} 
+                                                />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2379,7 +2392,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Smart Time"
                                                     title="Smart Time" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "Due")} />
+                                                // onChange={(e) => handleChange1(e, "Due")} 
+                                                />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2426,25 +2440,24 @@ export default function ComponentTable({ props }: any) {
                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                 <tr className="bold for-c0l">
                                                                     <td style={{ width: "2%" }}>
-                                                                     
 
-                                                                          <div className="accordian-header" >
-                                                                          {item.childs != undefined && item.childs.length > 0 &&
-                                                                              <a className='hreflink'
-                                                                                  title="Tap to expand the childs">
-                                                                                  <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
-                                                                                      : <img src={item.RightArrowIcon} />}
-                                                                                  </div>
-                                                                              </a>
-                                                                          }
-                                                                      </div>
-                                                                        
+
+                                                                        <div className="accordian-header" >
+                                                                            {item.childs != undefined && item.childs.length > 0 &&
+                                                                                <a className='hreflink'
+                                                                                    title="Tap to expand the childs">
+                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
+                                                                                        : <img src={item.RightArrowIcon} />}
+                                                                                    </div>
+                                                                                </a>
+                                                                            }
+                                                                        </div>
+
                                                                     </td>
                                                                     <td style={{ width: "6%" }}>
                                                                         <div className="d-flex">
-                                                                            <span className='pe-2'><input type="checkbox" /></span>
-                                                                            <span>
-                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                            <span className='pe-2'><input type="checkbox" />
+                                                                                <a className="hreflink"  data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
                                                                             </span>
@@ -2482,17 +2495,18 @@ export default function ComponentTable({ props }: any) {
                                                                         }
                                                                     </td>
                                                                     <td style={{ width: "7%" }}>
-                                                                    <div>
-                                                                                            {item.ClientCategory != undefined && item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </span>
-                                                                                                )
-                                                                                            })}</div>
+                                                                        <div>
+                                                                            {item.ClientCategory != undefined && item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                return (
+                                                                                    <span className="ClientCategory-Usericon"
+                                                                                        title={client.Title}>
+                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                    </span>
+                                                                                )
+                                                                            })}</div>
                                                                     </td>
                                                                     <td style={{ width: "7%" }}>{item.PercentComplete}</td>
+                                                                    <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                     <td style={{ width: "7%" }}>
                                                                         <div>
                                                                             {item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1: any) {
@@ -2506,14 +2520,18 @@ export default function ComponentTable({ props }: any) {
                                                                             })}
                                                                         </div>
                                                                     </td>
-                                                                    <td style={{ width: "10%" }}>{item.ItemRank}</td>
+                                                                    
+                                                                    
                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
                                                                     <td style={{ width: "9%" }}>
                                                                         {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
                                                                             return (
                                                                                 <span>
                                                                                     {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                    <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                        <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                    </a>
                                                                                 </span>
                                                                             )
                                                                         }) : ""}
@@ -2540,29 +2558,18 @@ export default function ComponentTable({ props }: any) {
                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                         <tr className="for-c02">
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <div className="accordian-header" onClick={() => handleOpen(childitem)}>
-                                                                                                    {childitem.childs.length > 0 &&
-                                                                                                        <a className='hreflink'
-                                                                                                            title="Tap to expand the childs">
-                                                                                                            <div className="sign">{childitem.childs != undefined && childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
-                                                                                                            </div>
-                                                                                                        </a>
-                                                                                                    }
-                                                                                                </div>
+                                                                                            <div onClick={() => handleOpen(childitem)} className="sign">{childitem.childs.length > 0 && childitem.show ? <img src={childitem.downArrowIcon} />
+                                                                                        : <img src={childitem.RightArrowIcon} />}
+                                                                                    </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
-                                                                                             </td>
-                                                                                            <td style={{ width: "7%" }}>  <div className="d-flex">
-                                                                                                <span>
-                                                                                                    <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                <span className='pe-2'><input type="checkbox" />
+                                                                                                    <a className="hreflink"  data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
-                                                                                                        {/* <img className="icon-sites-img"
-                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
                                                                                                     </a>
                                                                                                 </span>
-                                                                                                <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
-                                                                                            </div>
+                                                                                            </td>
+                                                                                            <td style={{ width: "7%" }}>  <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
                                                                                             </td>
                                                                                             <td style={{ width: "23%" }}>
                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
@@ -2589,35 +2596,45 @@ export default function ComponentTable({ props }: any) {
                                                                                                     <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
                                                                                                         <div className="popover__content">
-                                                                                                        {childitem.Short_x0020_Description_x0020_On}
+                                                                                                            {childitem.Short_x0020_Description_x0020_On}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 }
                                                                                             </td>
                                                                                             <td style={{ width: "7%" }}>
-                                                                                            <div>
-                                                                                            {childitem.ClientCategory != undefined && childitem.ClientCategory.length > 0 && childitem.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </span>
-                                                                                                )
-                                                                                            })}</div>
+                                                                                                <div>
+                                                                                                    {childitem.ClientCategory != undefined && childitem.ClientCategory.length > 0 && childitem.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                        return (
+                                                                                                            <span className="ClientCategory-Usericon"
+                                                                                                                title={client.Title}>
+                                                                                                                <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                            </span>
+                                                                                                        )
+                                                                                                    })}</div>
                                                                                             </td>
-                                                                                            <td style={{ width: "7%" }}>
-                                                                                                <div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                    return (
-                                                                                                        <div className="AssignUserPhoto"
-                                                                                                            title={client1.Title}>
-                                                                                                            <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                })}</div></td>
                                                                                             <td style={{ width: "7%" }}>{childitem.PercentComplete}</td>
-                                                                                            <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
+                                                                    <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
+                                                                                            <td style={{ width: "7%" }}><div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                return (
+                                                                                                    <div className="AssignUserPhoto"
+                                                                                                        title={client1.Title}>
+                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                    </div>
+                                                                                                )
+                                                                                            })}</div></td>
                                                                                             <td style={{ width: "9%" }}>{childitem.DueDate}</td>
-                                                                                            <td style={{ width: "9%" }}>{childitem.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                            <td style={{ width: "9%" }}>
+                                                                                                {childitem.CreatedDateImg != null ? childitem.CreatedDateImg.map((Creates: any) => {
+                                                                                                    return (
+                                                                                                        <span>
+                                                                                                            {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                            <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                                                <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                            </a>
+                                                                                                        </span>
+                                                                                                    )
+                                                                                                }) : ""}</td>
                                                                                             <td style={{ width: "7%" }}>
                                                                                                 <div></div>
                                                                                             </td>
@@ -2639,31 +2656,28 @@ export default function ComponentTable({ props }: any) {
                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                 <tr className="tdrow">
                                                                                                                     <td style={{ width: "2%" }}>
-                                                                                                                    <div className="accordian-header" onClick={() => handleOpen(childinew)}>
-                                                                                                                    {childinew.childs.length > 0 &&
-                                                                                                                        <a className='hreflink'
-                                                                                                                            title="Tap to expand the childs">
-                                                                                                                            <div className="sign">{childinew.childs.length > 0 && childinew.show ? <img src={childinew.downArrowIcon} />
-                                                                                                                                : <img src={childinew.RightArrowIcon} />}
-                                                                                                                            </div>
-                                                                                                                        </a>
-                                                                                                                    }
+                                                                                                                        <div className="accordian-header" onClick={() => handleOpen(childinew)}>
+                                                                                                                            {childinew.childs.length > 0 &&
+                                                                                                                                <a className='hreflink'
+                                                                                                                                    title="Tap to expand the childs">
+                                                                                                                                    <div className="sign">{childinew.childs.length > 0 && childinew.show ? <img src={childinew.downArrowIcon} />
+                                                                                                                                        : <img src={childinew.RightArrowIcon} />}
+                                                                                                                                    </div>
+                                                                                                                                </a>
+                                                                                                                            }
 
-                                                                                                                </div>
-                                                               
+                                                                                                                        </div>
+
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
-                                                                                                                        <div>
-                                                                                                                        </div>
-                                                                                                                    </td>
-                                                                                                                    <td style={{ width: "7%" }}> <div className="d-flex">
-                                                                                                                        <span>
+                                                                                                                        <span className='pe-2'><input type="checkbox" /> 
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
-                                                                                                                                {/* <img  className="icon-sites-img" 
-                                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" /> */}
                                                                                                                             </a>
                                                                                                                         </span>
+                                                                                                                    </td>
+                                                                                                                    <td style={{ width: "7%" }}> <div className="d-flex">
+
                                                                                                                         <span className="ml-2">{childinew.Shareweb_x0020_ID}</span>
                                                                                                                     </div>
                                                                                                                     </td>
@@ -2692,42 +2706,44 @@ export default function ComponentTable({ props }: any) {
                                                                                                                             <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
                                                                                                                                 <div className="popover__content">
-                                                                                                                                {childinew.Short_x0020_Description_x0020_On}
+                                                                                                                                    {childinew.Short_x0020_Description_x0020_On}
                                                                                                                                 </div>
                                                                                                                             </div>
                                                                                                                         }
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "7%" }}>
-                                                                                                                    <div>
-                                                                                            {childinew.ClientCategory != undefined && childinew.ClientCategory.length > 0 && childinew.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </span>
-                                                                                                )
-                                                                                            })}</div>
+                                                                                                                        <div>
+                                                                                                                            {childinew.ClientCategory != undefined && childinew.ClientCategory.length > 0 && childinew.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                                                return (
+                                                                                                                                    <span className="ClientCategory-Usericon"
+                                                                                                                                        title={client.Title}>
+                                                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                    </span>
+                                                                                                                                )
+                                                                                                                            })}</div>
                                                                                                                     </td>
-                                                                                                                    <td style={{ width: "7%" }}>
-                                                                                                                        <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                            return (
-                                                                                                                                <span className="AssignUserPhoto"
-                                                                                                                                    title={client1.Title}>
-                                                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                                </span>
-                                                                                                                            )
-                                                                                                                        })}</div></td>
                                                                                                                     <td style={{ width: "7%" }}>{childinew.PercentComplete}</td>
-                                                                                                                    <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
+                                                                    <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
+                                                                                                                    <td style={{ width: "7%" }}>  <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                                        return (
+                                                                                                                            <span className="AssignUserPhoto"
+                                                                                                                                title={client1.Title}>
+                                                                                                                                <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                            </span>
+                                                                                                                        )
+                                                                                                                    })}</div></td>
                                                                                                                     <td style={{ width: "9%" }}>{childinew.DueDate}</td>
                                                                                                                     <td style={{ width: "9%" }}> {childinew.CreatedDateImg != null ? childinew.CreatedDateImg.map((Creates: any) => {
-                                                                            return (
-                                                                                <span>
-                                                                                    {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
-                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                </span>
-                                                                            )
-                                                                        }) : ""}</td>
+                                                                                                                        return (
+                                                                                                                            <span>
+                                                                                                                                {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                                </a>
+                                                                                                                            </span>
+                                                                                                                        )
+                                                                                                                    }) : ""}</td>
                                                                                                                     <td style={{ width: "7%" }}></td>
                                                                                                                     <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} />}
@@ -2750,22 +2766,23 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                 {subchilditem.childs.length > 0 &&
                                                                                                                                                     <a className='hreflink'
                                                                                                                                                         title="Tap to expand the childs">
-                                                                                                                                                        {/* <div className="sign">{subchilditem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                                                                    : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-                                                                                                                                                                </div> */}
+                                                                                                                                                        <div className="sign">{subchilditem.childs.length > 0 && subchilditem.show ? <img src={subchilditem.downArrowIcon} />
+                                                                                                                                                            : <img src={subchilditem.RightArrowIcon} />}
+                                                                                                                                                        </div>
                                                                                                                                                     </a>
                                                                                                                                                 }
                                                                                                                                             </div>
                                                                                                                                         </td>
-                                                                                                                                        <td style={{ width: "6%" }}></td>
-                                                                                                                                        <td style={{ width: "7%" }}>  <div className="d-flex">
+                                                                                                                                        <td style={{ width: "6%" }}>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
                                                                                                                                             <span>
                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                     <img className="icon-sites-img ml20" src={subchilditem.SiteIcon}></img>
-                                                                                                                                                    {/* <img className="icon-sites-img"
-                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
                                                                                                                                                 </a>
                                                                                                                                             </span>
+                                                                                                                                        </td>
+                                                                                                                                        <td style={{ width: "7%" }}>  <div className="d-flex">
+
                                                                                                                                             <span className="ml-2">{subchilditem.Shareweb_x0020_ID}</span>
                                                                                                                                         </div>
                                                                                                                                         </td>
@@ -2794,45 +2811,49 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                 <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
                                                                                                                                                     <div className="popover__content">
-                                                                                                                                                    {subchilditem.Short_x0020_Description_x0020_On}
+                                                                                                                                                        {subchilditem.Short_x0020_Description_x0020_On}
                                                                                                                                                     </div>
                                                                                                                                                 </div>
                                                                                                                                             }
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "7%" }}>
-                                                                                                                                        <div>
-                                                                                            {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </span>
-                                                                                                )
-                                                                                            })}</div>
+                                                                                                                                            <div>
+                                                                                                                                                {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                                                                    return (
+                                                                                                                                                        <span className="ClientCategory-Usericon"
+                                                                                                                                                            title={client.Title}>
+                                                                                                                                                            <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                                        </span>
+                                                                                                                                                    )
+                                                                                                                                                })}</div>
                                                                                                                                         </td>
-                                                                                                                                        <td style={{ width: "7%" }}>
-                                                                                                                                            <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.map(function (client1: any) {
-                                                                                                                                                return (
-                                                                                                                                                    <div className="AssignUserPhoto"
-                                                                                                                                                        title={client1.Title}>
-                                                                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                                                    </div>
-                                                                                                                                                )
-                                                                                                                                            })}</div></td>
                                                                                                                                         <td style={{ width: "7%" }}>{subchilditem.PercentComplete}</td>
-                                                                                                                                        <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
+                                                                    <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
+                                                                                                                                        <td style={{ width: "7%" }}>   <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.map(function (client1: any) {
+                                                                                                                                            return (
+                                                                                                                                                <div className="AssignUserPhoto"
+                                                                                                                                                    title={client1.Title}>
+                                                                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                                </div>
+                                                                                                                                            )
+                                                                                                                                        })}</div></td>
+                                                                                                                                      
                                                                                                                                         <td style={{ width: "9%" }}>{subchilditem.DueDate}</td>
                                                                                                                                         <td style={{ width: "9%" }}>{subchilditem.CreatedDateImg != null ? subchilditem.CreatedDateImg.map((Creates: any) => {
-                                                                            return (
-                                                                                <span>
-                                                                                    {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                </span>
-                                                                            )
-                                                                        }) : ""}</td>
+                                                                                                                                            return (
+                                                                                                                                                <span>
+                                                                                                                                                    {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                                    <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                                                                                        <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                                                    </a>
+                                                                                                                                                </span>
+                                                                                                                                            )
+                                                                                                                                        }) : ""}</td>
                                                                                                                                         <td style={{ width: "7%" }}></td>
                                                                                                                                         <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                        <td style={{ width: "3%" }}></td>
+                                                                                                                                        <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(subchilditem)} />}
+                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
                                                                                                                                     </tr>
                                                                                                                                 </table>
                                                                                                                             </td>

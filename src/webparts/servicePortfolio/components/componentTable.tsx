@@ -1947,20 +1947,20 @@ const expndpopup = (e: any) => {
                                             disabled={true}>
                                             Restructure
                                         </button>
-                                        <a onClick={clearSearch}>
-                                            <i className="brush"><FaPaintBrush /></i>
+                                        <a className="brush" onClick={clearSearch}>
+                                       <FaPaintBrush />
                                         </a>
-                                        <a className=''>
-                                            <i><ExpndTable prop={expndpopup} prop1={tablecontiner} /> </i>
+                                        <a className='expand'>
+                                            <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                                         </a>
-                                        <a onClick={Prints}>
-                                            <i className="print"><FaPrint /></i>
+                                        <a onClick={Prints} className='Prints'>
+                                           <FaPrint />
                                         </a>
-                                        <a>
-                                            <CSVLink data={getCsvData()} >
-                                                <i className="excal"><FaFileExcel /></i>
+                                      
+                                            <CSVLink className="excal" data={getCsvData()} >
+                                               <FaFileExcel />
                                             </CSVLink>
-                                        </a>
+                                        
 
                                         {/* <span>
                                         <ExpandTable/>
