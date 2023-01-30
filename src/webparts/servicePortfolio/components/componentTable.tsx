@@ -17,6 +17,7 @@ import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryCompone
 import { any, number } from 'prop-types';
 import CheckboxTree from 'react-checkbox-tree';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
+import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 
 
 
@@ -50,6 +51,7 @@ function ComponentTable(SelectedProp: any) {
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
     const [IsUpdated, setIsUpdated] = React.useState('');
+    const [tablecontiner, settablecontiner]:any = React.useState("hundred");
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
     var IsExitSmartfilter = function (array: any, Item: any) {
@@ -793,8 +795,10 @@ function ComponentTable(SelectedProp: any) {
         return json;
     };
     var getSharewebId = function (item: any) {
+        if (item.Title == 'links not working' || item.Title == 'Projects not showing')
+            console.log(item);
         var Shareweb_x0020_ID = undefined;
-        if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title == undefined) {
+        if (item != undefined && item.SharewebTaskType == undefined) {
             Shareweb_x0020_ID = 'T' + item.Id;
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
@@ -804,17 +808,17 @@ function ComponentTable(SelectedProp: any) {
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
                 }
             }
@@ -836,17 +840,17 @@ function ComponentTable(SelectedProp: any) {
                 // }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
@@ -864,17 +868,17 @@ function ComponentTable(SelectedProp: any) {
                 //  }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
@@ -892,17 +896,17 @@ function ComponentTable(SelectedProp: any) {
                 // }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
@@ -1116,8 +1120,12 @@ function ComponentTable(SelectedProp: any) {
                         }
                         if (ComponetsData['allComponets'][i]['childs'] == undefined)
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task))
+                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
+                            ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Events Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png';
+                            ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Events Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png';
+
                             ComponetsData['allComponets'][i]['childs'].push(task);
+                        }
                         break;
                     }
                 }
@@ -1138,8 +1146,12 @@ function ComponentTable(SelectedProp: any) {
                         }
                         if (ComponetsData['allComponets'][i]['childs'] == undefined)
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task))
+                        if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
+                            ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Component Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png';
+                            ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Component Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png';
+
                             ComponetsData['allComponets'][i]['childs'].push(task);
+                        }
                         break;
                     }
                 }
@@ -1149,14 +1161,25 @@ function ComponentTable(SelectedProp: any) {
     //var pageType = 'Service-Portfolio';
     var ComponetsData: any = {};
     ComponetsData.allUntaggedTasks = []
+
+    const DynamicSort = function (items: any, column: any) {
+        items.sort(function (a: any, b: any) {
+            // return   a[column] - b[column];
+            var aID = a[column];
+            var bID = b[column];
+            return (aID == bID) ? 0 : (aID > bID) ? 1 : -1;
+        })
+    }
     const bindData = function () {
         var RootComponentsData: any[] = [];
         var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
+
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
+            result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -1243,13 +1266,13 @@ function ComponentTable(SelectedProp: any) {
             if (subcomp.Title != undefined) {
                 $.each(FeatureData, function (index: any, featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
-                        // subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-                        subcomp['childs'].push(featurecomp);;
+                        subcomp.childsLength++;
+                        subcomp['childs'].unshift(featurecomp);;
                     }
                 })
+             DynamicSort(subcomp.childs,'Shareweb_x0020_ID');
             }
         })
 
@@ -1261,28 +1284,39 @@ function ComponentTable(SelectedProp: any) {
                         //  subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-
-                        subcomp['childs'].push(featurecomp);;
+                        subcomp.childsLength++;
+                        subcomp['childs'].unshift(featurecomp);;
                     }
                 })
+                 DynamicSort(subcomp.childs,'Shareweb_x0020_ID')
             }
         })
 
-        // $.each(ComponentsData, function (index: any, subcomp: any) {
-        //     if (subcomp.Title != undefined) {
-        //         $.each(FeatureData, function (index: any, featurecomp: any) {
-        //             if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-        //                 // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
-        //                 //  subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
-        //                 subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-        //                 subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-
-        //                 subcomp['childs'].push(featurecomp);;
-        //             }
-        //         })
+        map(ComponentsData, (comp, index) => {
+            if (comp.Title != undefined) {
+                map(FeatureData, (featurecomp) => {
+                    if (featurecomp.Parent != undefined && comp.Id === featurecomp.Parent.Id) {
+                        comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+                        comp.childsLength++;
+                        comp['childs'].unshift(featurecomp);;
+                    }
+                })
+                 DynamicSort(comp.childs, 'Shareweb_x0020_ID')
+            }
+        })
+        //maidataBackup.push(ComponentsData)
+        // map(ComponentsData, (comp, index) => {
+        //     if (comp.childs != undefined && comp.childs.length > 0) {
+        //         DynamicSort(comp.childs, 'Shareweb_x0020_ID')
+        //         if (comp.childs != undefined && comp.childs.length > 0) {
+        //             map(comp.childs, (chil, index) => {
+        //                 if (chil.childs != undefined && chil.childs.length > 0)
+        //                     DynamicSort(chil.childs, 'Shareweb_x0020_ID')
+        //             })
+        //         }
         //     }
         // })
-        //maidataBackup.push(ComponentsData)
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
         setComponentsData(ComponentsData);
         setmaidataBackup(ComponentsData)
@@ -1349,7 +1383,7 @@ function ComponentTable(SelectedProp: any) {
     }
     const filterDataBasedOnList = function () {
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
-        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTas kData));
 
         //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
@@ -1421,7 +1455,11 @@ function ComponentTable(SelectedProp: any) {
 
     }
 
-
+// Expand Table 
+const expndpopup = (e: any) => {
+    
+    settablecontiner(e);
+  };
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1496,6 +1534,7 @@ function ComponentTable(SelectedProp: any) {
         setIsTimeEntry(false);
     }, []);
     const EditComponentPopup = (item: any) => {
+        item['siteUrl']='https://hhhhteams.sharepoint.com/sites/HHHH/SP';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
         setSharewebComponent(item);
@@ -1658,16 +1697,15 @@ function ComponentTable(SelectedProp: any) {
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
 
             <div className="col-sm-12 ">
-                <h2 className="alignmentitle ng-binding">
-                    <h2 className="alignmentitle ng-binding">
+                <h2 className="alignmentitle ng-binding d-flex">
 
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <span>Service Portfolio</span>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <span>Event Portfolio</span>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <span>Component Portfolio</span>}
-                        <span className="icontype display_hide padLR">
-                        </span>
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div>}
+                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
 
-                    </h2>
 
                 </h2>
             </div>
@@ -1855,7 +1893,7 @@ function ComponentTable(SelectedProp: any) {
             </section>
 
 
-            <section className="TableContentSection taskprofilepagegreen">
+            <section className="TableContentSection taskprofilepagegreen" id={tablecontiner}>
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container p-0">
@@ -1909,17 +1947,20 @@ function ComponentTable(SelectedProp: any) {
                                             disabled={true}>
                                             Restructure
                                         </button>
-                                        <a onClick={clearSearch}>
-                                            <i className="brush"><FaPaintBrush /></i>
+                                        <a className="brush" onClick={clearSearch}>
+                                       <FaPaintBrush />
                                         </a>
-                                        <a onClick={Prints}>
-                                            <i className="print"><FaPrint /></i>
+                                        <a className='expand'>
+                                            <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                                         </a>
-                                        <a>
-                                            <CSVLink data={getCsvData()} >
-                                                <i className="excal"><FaFileExcel /></i>
+                                        <a onClick={Prints} className='Prints'>
+                                           <FaPrint />
+                                        </a>
+                                      
+                                            <CSVLink className="excal" data={getCsvData()} >
+                                               <FaFileExcel />
                                             </CSVLink>
-                                        </a>
+                                        
 
                                         {/* <span>
                                         <ExpandTable/>
@@ -2071,17 +2112,17 @@ function ComponentTable(SelectedProp: any) {
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
-                                                                                            <span className='ms-1'>({item.childs.length})</span>
+                                                                                            <span className='ms-1'>({item.childsLength})</span>
                                                                                         }
 
                                                                                         {item.Short_x0020_Description_x0020_On != null &&
                                                                                             <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                               
+
                                                                                                 <div className="popover__content">
                                                                                                     {item.Short_x0020_Description_x0020_On}
                                                                                                 </div>
@@ -2169,11 +2210,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 &&
-                                                                                                                    <span className='ms-1'>({childitem.childs.length})</span>
+                                                                                                                    <span className='ms-1'>({childitem.childsLength})</span>
                                                                                                                 }
 
                                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -2273,11 +2314,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.childs.length > 0 &&
-                                                                                                                                            <span className='ms-1'>({childinew.childs.length})</span>
+                                                                                                                                            <span className='ms-1'>({childinew.childsLength})</span>
                                                                                                                                         }
 
                                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
@@ -2372,7 +2413,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&

@@ -18,29 +18,23 @@ import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryCompone
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 var filt: any = '';
 var siteConfig: any = [];
+var IsUpdated: any = '';
 export default function ComponentTable({ props }: any) {
-    const [maiArrayBackup, setmaiArrayBackup] = React.useState([])
-    // const [Editpopup, setEditpopup] = React.useState(false)
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [data, setData] = React.useState([])
     const [Title, setTitle] = React.useState()
-    const [itemType, setitemType] = React.useState()
     const [ComponentsData, setComponentsData] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
     const [table, setTable] = React.useState(data);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
-    const [Editpopup, setEditpopup] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
-    const [showItem, setshowItem] = React.useState(false);
     const [state, setState] = React.useState([]);
     const [filterGroups, setFilterGroups] = React.useState([])
     const [filterItems, setfilterItems] = React.useState([])
-    const [Editdata, setEditdata] = React.useState([]);
-    const [AllMetadata, setMetadata] = React.useState([])
+    // const [AllMetadata, setMetadata] = React.useState([])
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [IsTask, setIsTask] = React.useState(false);
@@ -49,24 +43,8 @@ export default function ComponentTable({ props }: any) {
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
-    const [IsUpdated, setIsUpdated] = React.useState('');
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-    const EditData = (e: any, item: any) => {
-        setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
-    }
-    const EditComponentPopup = (item: any) => {
-        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
-        setIsComponent(true);
-        setSharewebComponent(item);
-        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
-    }
-    const EditItemTaskPopup = (item: any) => {
-        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
-        setIsTask(true);
-        setSharewebTask(item);
-        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
-    }
+    IsUpdated = props.Portfolio_x0020_Type;
     var IsExitSmartfilter = function (array: any, Item: any) {
         var isExists = false;
         var count = 0;
@@ -84,6 +62,8 @@ export default function ComponentTable({ props }: any) {
         Item.count = count;
         return isExists;
     }
+
+
     var issmartExists = function (array: any, title: any) {
         var isExists = false;
         map(array, (item) => {
@@ -103,6 +83,7 @@ export default function ComponentTable({ props }: any) {
                     state.push(child);
                 })
             }
+
         }
         else {
             $.each(state, function (index: any, newite: any) {
@@ -115,6 +96,7 @@ export default function ComponentTable({ props }: any) {
                         --i;
                     }
                 }
+
             })
         }
         var ArrayItem: any = []
@@ -138,6 +120,7 @@ export default function ComponentTable({ props }: any) {
         // setData(maini...[maidataBackup])
         setData(maidataBackup)
         // const { checked } = e.target;
+
     }
     const Updateitem = () => {
         var filters: any[] = []
@@ -155,6 +138,7 @@ export default function ComponentTable({ props }: any) {
         }
         else {
             map(maidataBackup, (item) => {
+
                 map(state, (select) => {
                     if (select.Selected)
                         switch (select.TaxType) {
@@ -180,6 +164,7 @@ export default function ComponentTable({ props }: any) {
                                     })
                                 }
                                 break;
+
                             case 'Type':
                                 if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
                                     item.flag = true
@@ -202,6 +187,7 @@ export default function ComponentTable({ props }: any) {
                                     })
                                 }
                                 break;
+
                             case 'Priority':
                                 if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
                                     item.flag = true
@@ -224,6 +210,7 @@ export default function ComponentTable({ props }: any) {
                                     })
                                 }
                                 break;
+
                             case 'Sites':
                                 if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
                                     item.flag = true
@@ -246,6 +233,7 @@ export default function ComponentTable({ props }: any) {
                                     })
                                 }
                                 break;
+
                             case 'Team Members':
                                 if (item.TeamLeaderUserTitle != undefined && item.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title) > -1 && !isItemExists(ResponsibilityItems, item.Id)) {
                                     item.flag = true
@@ -268,14 +256,22 @@ export default function ComponentTable({ props }: any) {
                                     })
                                 }
                                 break;
+
+
                         }
                 })
             })
+
         }
         if (state.length > 0)
             setData(CategoryItems)
+
+
     }
+
+
     const LoadAllSiteTasks = function () {
+
         var Response: any = []
         var Counter = 0;
         map(siteConfig, async (config: any) => {
@@ -297,6 +293,7 @@ export default function ComponentTable({ props }: any) {
                     .filter("Status ne 'Completed'")
                     .orderBy('orderby', false)
                     .getAll(4000);
+
                 console.log(AllTasksMatches);
                 Counter++;
                 console.log(AllTasksMatches.length);
@@ -320,27 +317,33 @@ export default function ComponentTable({ props }: any) {
                     })
                     AllTasks = AllTasks.concat(AllTasksMatches);
                     AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
-                    if (Counter == 18) {
+                    if (Counter == siteConfig.length) {
                         map(AllTasks, (result: any) => {
                             result.TeamLeaderUser = []
+                            result.CreatedDateImg = []
                             result.TeamLeaderUserTitle = ''
                             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
+
                             if (result.DueDate == 'Invalid date' || '') {
                                 result.DueDate = result.DueDate.replaceAll("Invalid date", "")
                             }
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
                             if (result.Short_x0020_Description_x0020_On != undefined) {
                                 result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
                             }
+
                             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
                                 map(result.AssignedTo, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                                 users.ItemCover = users.Item_x0020_Cover;
                                                 result.TeamLeaderUser.push(users);
                                                 result.TeamLeaderUserTitle += users.Title + ';';
                                             }
+
                                         })
                                     }
                                 })
@@ -349,14 +352,25 @@ export default function ComponentTable({ props }: any) {
                                 map(result.Team_x0020_Members.results, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                                 users.ItemCover = users.Item_x0020_Cover;
                                                 result.TeamLeaderUser.push(users);
                                                 result.TeamLeaderUserTitle += users.Title + ';';
                                             }
+
                                         })
                                     }
                                 })
+                            }
+                            if (result.Author != undefined) {
+                                if (result.Author.Id != undefined) {
+                                    $.each(TaskUsers, function (index: any, users: any) {
+                                        if (result.Author.Id != undefined && users.AssingedToUser != undefined && result.Author.Id == users.AssingedToUser.Id) {
+                                            users.ItemCover = users.Item_x0020_Cover;
+                                            result.CreatedDateImg.push(users);
+                                        }
+                                    })
+                                }
                             }
                             result['SiteIcon'] = GetIconImageUrl(result.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP', undefined);
                             if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
@@ -381,32 +395,51 @@ export default function ComponentTable({ props }: any) {
                         filterDataBasedOnList();
                     }
                 }
+
             } else Counter++;
+
         })
+
     }
     const handleOpen2 = (item: any) => {
+
         item.show = item.show = item.show == true ? false : true;
         setfilterItems(filterItems => ([...filterItems]));
+
+
     };
     const handleOpen = (item: any) => {
+
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
+
     };
+
     const addModal = () => {
         setAddModalOpen(true)
     }
     const setModalIsOpenToTrue = () => {
         setModalIsOpen(true)
     }
+
+
     const sortBy = () => {
+
         const copy = data
+
         copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
+
         setTable(copy)
+
     }
     const sortByDng = () => {
+
         const copy = data
+
         copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
+
         setTable(copy)
+
     }
     // let handleChange = (e: { target: { value: string; }; }, titleName: any) => {
     //     setSearch(e.target.value.toLowerCase());
@@ -428,11 +461,85 @@ export default function ComponentTable({ props }: any) {
         $.each(searchTerms, function (index: any, val: any) {
             if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
                 isSearchTermAvailable = true;
+
             } else
                 isSearchTermAvailable = false;
         })
         return isSearchTermAvailable;
     }
+    let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
+        setSearch(e.target.value.toLowerCase());
+        var Title = titleName;
+
+        var AllFilteredTagNews = [];
+        var filterglobal = e.target.value.toLowerCase();
+        if (filterglobal != undefined && filterglobal.length >= 1) {
+            var searchTerms = stringToArray(filterglobal);
+            $.each(data, function (pareIndex: any, item: any) {
+                item.flag = false;
+                item.isSearch = true;
+                item.show = false;
+                item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
+                if (item.childs != undefined && item.childs.length > 0) {
+                    $.each(item.childs, function (parentIndex: any, child1: any) {
+                        child1.flag = false;
+                        child1.isSearch = true;
+                        child1.flag = (getSearchTermAvialable1(searchTerms, child1, Title));
+                        if (child1.flag) {
+                            item.childs[parentIndex].flag = true;
+                            data[pareIndex].flag = true;
+                            item.childs[parentIndex].show = true;
+                            data[pareIndex].show = true;
+                        }
+                        if (child1.childs != undefined && child1.childs.length > 0) {
+                            $.each(child1.childs, function (index: any, subchild: any) {
+                                subchild.flag = false;
+                                subchild.flag = (getSearchTermAvialable1(searchTerms, subchild, Title));
+                                if (subchild.flag) {
+                                    item.childs[parentIndex].flag = true;
+                                    child1.flag = true;
+                                    child1.childs[index].flag = true;
+                                    child1.childs[index].show = true;
+                                    item.childs[parentIndex].show = true;
+                                    data[pareIndex].flag = true;
+                                    data[pareIndex].show = true;
+                                }
+                                if (subchild.childs != undefined && subchild.childs.length > 0) {
+                                    $.each(subchild.childs, function (childindex: any, subchilds: any) {
+                                        subchilds.flag = false;
+                                        // subchilds.Title = subchilds.newTitle;
+                                        subchilds.flag = (getSearchTermAvialable1(searchTerms, subchilds, Title));
+                                        if (subchilds.flag) {
+                                            item.childs[parentIndex].flag = true;
+                                            child1.flag = true;
+                                            subchild.flag = true;
+                                            subchild.childs[childindex].flag = true;
+                                            child1.childs[index].flag = true;
+                                            child1.childs[index].show = true;
+                                            item.childs[parentIndex].show = true;
+                                            data[pareIndex].flag = true;
+                                            data[pareIndex].show = true;
+                                        }
+                                    })
+                                }
+                            })
+                        }
+
+                    })
+                }
+            })
+            //   getFilterLength();
+        } else {
+            //  ungetFilterLength();
+            // setData(data => ([...maidataBackup]));
+            setData(maidataBackup);
+            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
+        }
+        // console.log($scope.ComponetsData['allComponentItemWithStructure']);
+
+    };
+
+
     // var TaxonomyItems: any = [];
     var AllComponetsData: any = [];
     var TaskUsers: any = [];
@@ -443,6 +550,7 @@ export default function ComponentTable({ props }: any) {
     var showProgressBar = () => {
         $(' #SpfxProgressbar').show();
     }
+
     var showProgressHide = () => {
         $(' #SpfxProgressbar').hide();
     }
@@ -462,6 +570,7 @@ export default function ComponentTable({ props }: any) {
         setTaskUser(Response => ([...Response]));
         // setTaskUser(Response);
         console.log(Response);
+
     }
     const GetSmartmetadata = async () => {
         var metadatItem: any = []
@@ -477,8 +586,9 @@ export default function ComponentTable({ props }: any) {
             // .filter("TaxType eq 'Categories'")
             .expand('Parent')
             .get()
+
         console.log(smartmetaDetails);
-        setMetadata(smartmetaDetails => ([...smartmetaDetails]));
+        // setMetadata(smartmetaDetails => ([...smartmetaDetails]));
         map(smartmetaDetails, (newtest) => {
             newtest.Id = newtest.ID;
             // if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
@@ -495,6 +605,7 @@ export default function ComponentTable({ props }: any) {
                 newsite.DataLoadNew = true;
             /*-- Code for default Load Task Data---*/
             if (newsite.Title == "DRR" || newsite.Title == "Small Projects" || newsite.Title == "Gruene" || newsite.Title == "Offshore Tasks" || newsite.Title == "Health" || newsite.Title == "Shareweb Old") {
+
                 newsite.Selected = false;
             }
             else {
@@ -522,6 +633,7 @@ export default function ComponentTable({ props }: any) {
             }
         })
         LoadAllSiteTasks();
+
         map(Response, (user: any) => {
             user.TaxType = 'Team Members';
             user.SmartFilters = {};
@@ -530,7 +642,7 @@ export default function ComponentTable({ props }: any) {
             if (user.UserGroup == undefined)
                 user.ParentID = 0;
             if (user.UserGroup != undefined && user.UserGroup.Id != undefined)
-                user.ParentID = props.Id;
+                user.ParentID = user.UserGroup.Id;
             metadatItem.push(user);
         });
         map(metadatItem, (item) => {
@@ -548,6 +660,8 @@ export default function ComponentTable({ props }: any) {
                 if (item.Title == "Activities" || item.Title == "Workstream" || item.Title == "Task") {
                     item.Selected = true;
                 }
+
+
                 if (filterItem.ParentID == 0 || (filterItem.Parent != undefined && filterItem.Parent.Id == undefined)) {
                     if (item.TaxType == 'Team Members') {
                         getChildsBasedonId(item, Response);
@@ -557,11 +671,16 @@ export default function ComponentTable({ props }: any) {
                     filterItems.push(item);
                     if (filterItem.TaxType != "Type" && filterItem.TaxType != "Sites Old" && (filterGroups.length == 0 || filterGroups.indexOf(filterItem.TaxType) == -1)) {
                         filterGroups.push(filterItem.TaxType);
+
                     }
+
                     setFilterGroups(filterGroups)
+
                 }
+
             }
         });
+
         filterItems.push({ "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Component", "Selected": true, 'value': 1000, 'label': "Component", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "SubComponent", "Selected": true, 'value': 10000, 'label': "SubComponent", "childs": [] }, { "Group": "Portfolio", "TaxType": "Portfolio", "Title": "Feature", "Selected": true, 'value': 100000000, 'label': "Feature", "childs": [] });
         map(filterItems, (item) => {
             if (item.TaxType == "Sites" && item.Title == 'SDC Sites' || item.Title == 'Tasks') {
@@ -570,14 +689,16 @@ export default function ComponentTable({ props }: any) {
         })
         setfilterItems(filterItems => ([...filterItems]));
         // setfilterItems(filterItems)
+
         function getChildsBasedonId(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; Id: any; }, items: any) {
             item.childs = [];
             map(metadatItem, (childItem) => {
                 if (childItem.UserGroup != undefined && childItem.UserGroup.Id != undefined && childItem.UserGroup.Id == item.Id) {
                     childItem.value = childItem.Id;
                     childItem.label = childItem.Title;
-                    item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                    item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
+                    item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                    item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     item.childs.push(childItem);
                     getChildsBasedonId(childItem, items);
                 }
@@ -586,11 +707,11 @@ export default function ComponentTable({ props }: any) {
         function getChildsBasedOn(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; ID: number; }, items: any) {
             item.childs = [];
             map(metadatItem, (childItem) => {
-                if (childItem.Parent != undefined && childItem.Parent.Id == `${props.Id}` && parseInt(childItem.Parent.Id) == props.Id) {
+                if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
                     childItem.value = childItem.Id;
                     childItem.label = childItem.Title;
-                    item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                    item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+                    item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                    item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     item.childs.push(childItem);
                     getChildsBasedOn(childItem, items);
                 }
@@ -598,6 +719,7 @@ export default function ComponentTable({ props }: any) {
         }
     }
     const GetComponents = async () => {
+
         filt = "(Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature') and ((Portfolio_x0020_Type eq 'Service'))";
         if (IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1)
             filt = "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Service'))";
@@ -623,18 +745,13 @@ export default function ComponentTable({ props }: any) {
             .top(4999)
             .filter(filt)
             .get()
+
         console.log(componentDetails);
-        maiArrayBackup.push(componentDetails)
-        setmaiArrayBackup(componentDetails)
         AllComponetsData = componentDetails;
         //  setData(AllComponetsData);
         ComponetsData['allComponets'] = componentDetails;
     }
-    if (IsUpdated == '') {
-        setIsUpdated('Service Portfolio')
-    } else if (IsUpdated != `${props.Portfolio_x0020_Type}`) {
-        setIsUpdated(`${props.Portfolio_x0020_Type}`)
-    }
+
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
     React.useEffect(() => {
         showProgressBar();
@@ -651,12 +768,14 @@ export default function ComponentTable({ props }: any) {
         } else {
             map(filterItems, (filte) => {
                 if (filte != undefined && filte.childs) {
-                    filte.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                    filte.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+                    filte.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                    filte.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                 }
             })
             LoadAllSiteTasks();
+
         }
+
         GetComponents();
     }, [IsUpdated])
     // common services
@@ -674,8 +793,10 @@ export default function ComponentTable({ props }: any) {
         return json;
     };
     var getSharewebId = function (item: any) {
+        if (item.Title == 'links not working' || item.Title == 'Projects not showing')
+            console.log(item);
         var Shareweb_x0020_ID = undefined;
-        if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title == undefined) {
+        if (item != undefined && item.SharewebTaskType == undefined) {
             Shareweb_x0020_ID = 'T' + item.Id;
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
@@ -685,17 +806,17 @@ export default function ComponentTable({ props }: any) {
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
                 }
             }
@@ -708,6 +829,7 @@ export default function ComponentTable({ props }: any) {
             }
             if (item.SharewebTaskType.Title == 'Project')
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
+
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Workstream' || item.SharewebTaskType.Title == 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
             if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
@@ -716,17 +838,17 @@ export default function ComponentTable({ props }: any) {
                 // }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
@@ -735,6 +857,7 @@ export default function ComponentTable({ props }: any) {
             }
             if (item.SharewebTaskType.Title == 'Step')
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
+
         }
         else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
             if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
@@ -743,17 +866,17 @@ export default function ComponentTable({ props }: any) {
                 //  }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
                 }
             }
@@ -771,17 +894,17 @@ export default function ComponentTable({ props }: any) {
                 // }
             }
             if (item.Component != undefined) {
-                if (item.Component.results != undefined && item.Component.results.length > 0) {
+                if (item.Component != undefined && item.Component.length > 0) {
                     Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
             if (item.Services != undefined) {
-                if (item.Services.results != undefined && item.Services.results.length > 0) {
+                if (item.Services != undefined && item.Services.length > 0) {
                     Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
             if (item.Events != undefined) {
-                if (item.Events.results != undefined && item.Events.results.length > 0) {
+                if (item.Events != undefined && item.Events.length > 0) {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
                 }
             }
@@ -791,6 +914,7 @@ export default function ComponentTable({ props }: any) {
             if (item.SharewebTaskType.Title == 'MileStone') {
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
             }
+
         }
         return Shareweb_x0020_ID;
     }
@@ -845,12 +969,14 @@ export default function ComponentTable({ props }: any) {
             }
         }
         var MainComponent: any = [];
+
         if (task.PortfolioItemsId != undefined) {
             MainComponent = ArrayCopy($.grep(AllComponetsData, function (index: any, type: any) { return type.Id == task.PortfolioItemsId }));
         }
         if (task.Item_x0020_Type != undefined && task.Item_x0020_Type == 'Component' || task.Item_x0020_Type == 'SubComponent' || task.Item_x0020_Type == 'Feature') {
             MainComponent = ArrayCopy($.grep(AllComponetsData, function (type: any) { return type.Id == task.Id }));
         }
+
         var OtherStructure = "";
         if (MainComponent.length > 0) {
             if (MainComponent[0].Item_x0020_Type == 'Component') {
@@ -940,7 +1066,7 @@ export default function ComponentTable({ props }: any) {
     var isItemExistsNew = function (array: any, items: any) {
         var isExists = false;
         $.each(array, function (index: any, item: any) {
-            if (item.Id == items.Id && items.siteType == item.siteType) {
+            if (item.Id === items.Id && items.siteType === item.siteType) {
                 isExists = true;
                 return false;
             }
@@ -950,7 +1076,7 @@ export default function ComponentTable({ props }: any) {
     const findTaggedComponents = function (task: any) {
         task.Portfolio_x0020_Type = 'Component';
         task.isService = false;
-        if (IsUpdated === 'Service Portfolio') {
+        if (IsUpdated === 'Service') {
             $.each(task['Services'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
@@ -963,19 +1089,21 @@ export default function ComponentTable({ props }: any) {
                             task.isService = true;
                             task.Portfolio_x0020_Type = 'Service';
                         }
-                        if (ComponetsData['allComponets'][i]['childs'] == undefined)
+                        if (ComponetsData['allComponets'][i]['childs'] === undefined)
                             ComponetsData['allComponets'][i]['childs'] = [];
                         if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
-                            ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                            ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+                            ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                            ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                             ComponetsData['allComponets'][i]['childs'].push(task);
+                            if (ComponetsData['allComponets'][i].Id === 413)
+                                console.log(ComponetsData['allComponets'][i]['childs'].length)
                         }
                         break;
                     }
                 }
             });
         }
-        if (IsUpdated === 'Events Portfolio') {
+        if (IsUpdated === 'Events') {
             $.each(task['Events'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
@@ -997,7 +1125,7 @@ export default function ComponentTable({ props }: any) {
                 }
             });
         }
-        if (IsUpdated === 'Component Portfolio') {
+        if (IsUpdated === 'Component') {
             $.each(task['Component'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
@@ -1028,20 +1156,19 @@ export default function ComponentTable({ props }: any) {
         var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
-        var RootComponentsData: any[] = [];
-        var ComponentsData: any = [];
-        var SubComponentsData: any = [];
-        var FeatureData: any = [];
-        var maiArrayBackup: any = []
+
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
+            result.CreatedDateImg = []
             result.TeamLeaderUserTitle = '';
+            result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
                 result.DueDate = result.DueDate.replaceAll("Invalid date", "")
             }
             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
             if (result.Short_x0020_Description_x0020_On != undefined) {
                 result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
             }
@@ -1051,11 +1178,13 @@ export default function ComponentTable({ props }: any) {
                 $.each(result.AssignedTo, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(Response, function (index: any, users: any) {
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+
+                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
                                 result.TeamLeaderUserTitle += users.Title + ';';
                             }
+
                         })
                     }
                 })
@@ -1064,7 +1193,7 @@ export default function ComponentTable({ props }: any) {
                 $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(TaskUsers, function (index: any, users: any) {
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
                                 result.TeamLeaderUserTitle += users.Title + ';';
@@ -1072,6 +1201,16 @@ export default function ComponentTable({ props }: any) {
                         })
                     }
                 })
+            }
+            if (result.Author != undefined) {
+                if (result.Author.Id != undefined) {
+                    $.each(TaskUsers, function (index: any, users: any) {
+                        if (result.Author.Id != undefined && users.AssingedToUser != undefined && result.Author.Id == users.AssingedToUser.Id) {
+                            users.ItemCover = users.Item_x0020_Cover;
+                            result.CreatedDateImg.push(users);
+                        }
+                    })
+                }
             }
             if (result.PortfolioStructureID != null && result.PortfolioStructureID != undefined) {
                 result['Shareweb_x0020_ID'] = result.PortfolioStructureID;
@@ -1090,16 +1229,21 @@ export default function ComponentTable({ props }: any) {
             }
             if (result.Item_x0020_Type == 'Component') {
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
-                result.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
+                result.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
                 ComponentsData.push(result);
+
+
             }
+
             if (result.Item_x0020_Type == 'SubComponent') {
-                result.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+                result.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 SubComponentsData.push(result);
+
+
             }
             if (result.Item_x0020_Type == 'Feature') {
-                result.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
+                result.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 FeatureData.push(result);
             }
@@ -1108,69 +1252,131 @@ export default function ComponentTable({ props }: any) {
                 ComponentsData.push(result);
             }
         });
+
         $.each(SubComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
                 $.each(FeatureData, function (index: any, featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
-                        // subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
-                        subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                        subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-                        subcomp['childs'].push(featurecomp);;
+                        subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+                        subcomp.childsLength++;
+                        subcomp['childs'].unshift(featurecomp);;
                     }
                 })
             }
         })
+
         $.each(ComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
                 $.each(SubComponentsData, function (index: any, featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
                         // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
                         //  subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
-                        subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                        subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-                        subcomp['childs'].push(featurecomp);;
+                        subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+                        subcomp.childsLength++;
+                        subcomp['childs'].unshift(featurecomp);;
                     }
                 })
             }
         })
-        $.each(ComponentsData, function (index: any, subcomp: any) {
-            if (subcomp.Title != undefined) {
-                $.each(FeatureData, function (index: any, featurecomp: any) {
-                    if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
-                        //  subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
-                        subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                        subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-                        subcomp['childs'].push(featurecomp);;
+
+        map(ComponentsData, (comp) => {
+            if (comp.Title != undefined) {
+                map(FeatureData, (featurecomp) => {
+                    if (featurecomp.Parent != undefined && comp.Id === featurecomp.Parent.Id) {
+                        comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+                        comp.childsLength++;
+                        comp['childs'].unshift(featurecomp);;
                     }
                 })
             }
         })
+
+        var id = props.Id;
+        var arrys: any = [];
+        if (props.Item_x0020_Type == "Component") {
+            $.each(ComponentsData, function (index: any, subcomp: any) {
+                if (subcomp.Id == id)
+                    arrys.push(subcomp.childs)
+                if (subcomp.childs != undefined && subcomp.childs.length > 0) {
+                    $.each(subcomp.childs, function (index: any, Nextcomp: any) {
+                        if (Nextcomp.childs.Id == id)
+                            arrys.push(Nextcomp.childs)
+                        if (Nextcomp.childs != undefined && Nextcomp.childs.length > 0) {
+                            $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
+                                if (Nextnextcomp.Id == id)
+                                    arrys.push(Nextnextcomp.childs);
+                            })
+                        }
+                    })
+                }
+            })
+        }
+        if (props.Item_x0020_Type == "SubComponent") {
+            $.each(SubComponentsData, function (index: any, subcomp: any) {
+                if (subcomp.Id == id)
+                    arrys.push(subcomp.childs)
+                if (subcomp.childs != undefined && subcomp.childs.length > 0) {
+                    $.each(subcomp.childs, function (index: any, Nextcomp: any) {
+                        if (Nextcomp.childs.Id == id)
+                            arrys.push(Nextcomp.childs)
+                        if (Nextcomp.childs != undefined && Nextcomp.childs.length > 0) {
+                            $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
+                                if (Nextnextcomp.Id == id)
+                                    arrys.push(Nextnextcomp.childs);
+                            })
+                        }
+                    })
+                }
+            })
+        }
+        if (props.Item_x0020_Type == "Feature") {
+            $.each(FeatureData, function (index: any, subcomp: any) {
+                if (subcomp.Id == id)
+                    arrys.push(subcomp.childs)
+                if (subcomp.childs != undefined && subcomp.childs.length > 0) {
+                    $.each(subcomp.childs, function (index: any, Nextcomp: any) {
+                        if (Nextcomp.childs.Id == id)
+                            arrys.push(Nextcomp.childs)
+                        if (Nextcomp.childs != undefined && Nextcomp.childs.length > 0) {
+                            $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
+                                if (Nextnextcomp.Id == id)
+                                    arrys.push(Nextnextcomp.childs);
+                            })
+                        }
+                    })
+                }
+            })
+        }
+
         //maidataBackup.push(ComponentsData)
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
         setComponentsData(ComponentsData);
         setmaidataBackup(ComponentsData)
-        setData(ComponentsData);
+        setData(arrys[0]);
         showProgressHide();
     }
+
     var makeFinalgrouping = function () {
         var AllTaskData1: any = [];
         ComponetsData['allUntaggedTasks'] = [];
         AllTaskData1 = AllTaskData1.concat(TasksItem);
         $.each(AllTaskData1, function (index: any, task: any) {
             task.Portfolio_x0020_Type = 'Component';
-            if (IsUpdated == 'Service Portfolio') {
+            if (IsUpdated === 'Service') {
                 if (task['Services'] != undefined && task['Services'].length > 0) {
                     task.Portfolio_x0020_Type = 'Service';
                     findTaggedComponents(task);
                 }
-                else if (task['Component'] != undefined && task['Component'].length == 0 && task['Events'] != undefined && task['Events'].length == 0) {
+                else if (task['Component'] != undefined && task['Component'].length === 0 && task['Events'] != undefined && task['Events'].length === 0) {
                     // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
                     ComponetsData['allUntaggedTasks'].push(task);
                 }
+
             }
-            if (IsUpdated == 'Events Portfolio') {
+            if (IsUpdated === 'Events') {
                 if (task['Events'] != undefined && task['Events'].length > 0) {
                     task.Portfolio_x0020_Type = 'Events';
                     findTaggedComponents(task);
@@ -1179,8 +1385,9 @@ export default function ComponentTable({ props }: any) {
                     // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
                     ComponetsData['allUntaggedTasks'].push(task);
                 }
+
             }
-            if (IsUpdated == 'Component Portfolio') {
+            if (IsUpdated === 'Component') {
                 if (task['Component'] != undefined && task['Component'].length > 0) {
                     task.Portfolio_x0020_Type = 'Component';
                     findTaggedComponents(task);
@@ -1189,17 +1396,20 @@ export default function ComponentTable({ props }: any) {
                     // if (task.SharewebTaskType != undefined && task.SharewebTaskType.Title && (task.SharewebTaskType.Title == "Activities" || task.SharewebTaskType.Title == "Workstream" || task.SharewebTaskType.Title == "Task"))
                     ComponetsData['allUntaggedTasks'].push(task);
                 }
+
             }
         })
         var temp: any = {};
         temp.Title = 'Others';
         temp.childs = [];
         temp.flag = true;
+
         // ComponetsData['allComponets'][i]['childs']
         map(ComponetsData['allUntaggedTasks'], (task: any) => {
             if (task.Title != undefined) {
-                temp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                temp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+                temp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                temp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
                 temp.childs.push(task);
             }
         })
@@ -1208,10 +1418,12 @@ export default function ComponentTable({ props }: any) {
     }
     const filterDataBasedOnList = function () {
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
-        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+        //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTas kData));
+
         //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         //$scope.AllTaskData = angular.copy($scope.CopyTaskData);
         //$scope.AllTaskData = JSON.parse(JSON.stringify($scope.CopyTaskData));
+
         //$scope.AllTaskData = $scope.CopyTaskData.map(function (value) { value = Object.create(value); return value });
         var AllTaskData1: any = [];
         AllTaskData1 = AllTaskData1.concat(CopyTaskData);
@@ -1244,74 +1456,75 @@ export default function ComponentTable({ props }: any) {
         makeFinalgrouping();
         //  makeGroupingBasedOnLevel();
     }
-    let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
-        setSearch(e.target.value.toLowerCase());
-        var Title = titleName;
-        var AllFilteredTagNews = [];
-        var filterglobal = e.target.value.toLowerCase();
-        if (filterglobal != undefined && filterglobal.length >= 1) {
-            var searchTerms = stringToArray(filterglobal);
-            $.each(data, function (pareIndex: any, item: any) {
-                item.flag = false;
-                item.isSearch = true;
-                item.show = false;
-                item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
-                if (item.childs != undefined && item.childs.length > 0) {
-                    $.each(item.childs, function (parentIndex: any, child1: any) {
-                        child1.flag = false;
-                        child1.isSearch = true;
-                        child1.flag = (getSearchTermAvialable1(searchTerms, child1, Title));
-                        if (child1.flag) {
-                            item.childs[parentIndex].flag = true;
-                            data[pareIndex].flag = true;
-                            item.childs[parentIndex].show = true;
-                            data[pareIndex].show = true;
-                        }
-                        if (child1.childs != undefined && child1.childs.length > 0) {
-                            $.each(child1.childs, function (index: any, subchild: any) {
-                                subchild.flag = false;
-                                subchild.flag = (getSearchTermAvialable1(searchTerms, subchild, Title));
-                                if (subchild.flag) {
-                                    item.childs[parentIndex].flag = true;
-                                    child1.flag = true;
-                                    child1.childs[index].flag = true;
-                                    child1.childs[index].show = true;
-                                    item.childs[parentIndex].show = true;
-                                    data[pareIndex].flag = true;
-                                    data[pareIndex].show = true;
-                                }
-                                if (subchild.childs != undefined && subchild.childs.length > 0) {
-                                    $.each(subchild.childs, function (childindex: any, subchilds: any) {
-                                        subchilds.flag = false;
-                                        subchilds.Title = subchilds.newTitle;
-                                        subchilds.flag = (getSearchTermAvialable1(searchTerms, subchilds, Title));
-                                        if (subchilds.flag) {
-                                            item.childs[parentIndex].flag = true;
-                                            subchild.flag = true;
-                                            subchild.childs[index].show = true;
-                                            subchild.childs[childindex].flag = true;
-                                            item.childs[parentIndex].show = true;
-                                            subchild.childs[childindex].show = true;
-                                            data[pareIndex].flag = true;
-                                            data[pareIndex].show = true;
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
+    var TasksItem: any = [];
+
+    function Buttonclick(e: any) {
+        e.preventDefault();
+        this.setState({ callchildcomponent: true });
+
+    }
+    const setModalIsOpenToFalse = () => {
+        setModalIsOpen(false)
+    }
+
+    const closeModal = () => {
+        setAddModalOpen(false)
+    }
+
+
+    const Prints = () => {
+        window.print();
+    }
+    // ---------------------Export to Excel-------------------------------------------------------------------------------------
+
+    const getCsvData = () => {
+        const csvData = [['Title']];
+        let i;
+        for (i = 0; i < data.length; i += 1) {
+            csvData.push([`${data[i].Title}`]);
+        }
+        return csvData;
+    };
+    const clearSearch = () => {
+        setSearch('')
+
+    }
+
+
+    // Expand Table 
+
+
+
+    //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
+
+
+    const getStructurefTimesheetCategories = function () {
+        $.each(TaskTimeSheetCategories, function (index: any, item: any) {
+            $.each(TaskTimeSheetCategories, function (index: any, val: any) {
+                if (item.ParentID == 0 && item.Id == val.ParentID) {
+                    val.ParentType = item.Title;
                 }
             })
-            //   getFilterLength();
-        } else {
-            //  ungetFilterLength();
-            // setData(data => ([...maidataBackup]));
-            setData(maidataBackup);
-            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
-        }
-        // console.log($scope.ComponetsData['allComponentItemWithStructure']);
-    };
-    var TasksItem: any = [];
+        })
+        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, item: any) {
+            $.each(TaskTimeSheetCategoriesGrouping, function (index: any, val: any) {
+                if (item.ParentID == 0 && item.Id == val.ParentID) {
+                    val.ParentType = item.Title;
+                }
+            })
+        })
+    }
+    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        var Items: any = [];
+        $.each(metadataItems, function (index: any, taxItem: any) {
+            if (taxItem.TaxType == taxType)
+                Items.push(taxItem);
+        });
+        return Items;
+    }
+    var TaskTimeSheetCategoriesGrouping: any = [];
+    var TaskTimeSheetCategories: any = [];
+    var AllTimeSpentDetails: any = [];
     const isItemExists = function (arr: any, Id: any) {
         var isExists = false;
         $.each(arr, function (index: any, item: any) {
@@ -1321,6 +1534,45 @@ export default function ComponentTable({ props }: any) {
             }
         });
         return isExists;
+    }
+    const checkCategory = function (item: any, category: any) {
+        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
+            if (categoryTitle.Id == category) {
+                // item.isShow = true;
+                if (categoryTitle.Childs.length == 0) {
+                    categoryTitle.Childs = [];
+                }
+                if (!isItemExists(categoryTitle.Childs, item.Id)) {
+                    item.show = true;
+                    categoryTitle.Childs.push(item);
+                }
+            }
+        })
+    }
+
+    const EditData = (e: any, item: any) => {
+        setIsTimeEntry(true);
+        setSharewebTimeComponent(item);
+    }
+
+    const handleTitle = (e: any) => {
+        setTitle(e.target.value)
+
+    };
+
+    const EditComponentPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsComponent(true);
+        setSharewebComponent(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+    const EditItemTaskPopup = (item: any) => {
+        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        setIsTask(true);
+        setSharewebTask(item);
+        // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+    }
+    function AddItem() {
     }
     const Call = React.useCallback((item1) => {
         setIsComponent(false);
@@ -1371,7 +1623,7 @@ export default function ComponentTable({ props }: any) {
     var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 15, "Title": "MileStone", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": [] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 15 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "etag": "\"4\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 105, "Title": "Development", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" }, "SmartFilters": null, "SortOrder": 3, "TaxType": "Category", "Selectable": true, "ParentID": 0, "SmartSuggestions": null, "ID": 105 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 282, "Title": "Implementation", "siteName": null, "siteUrl": null, "listId": null, "Description1": "This should be tagged if a task is for applying an already developed component/subcomponent/feature.", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "/SiteCollectionImages/ICONS/Shareweb/Implementation.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" }, "SmartFilters": null, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 282 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 11, "Title": "Bug", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 11 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "etag": "\"5\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 96, "Title": "Feedback", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" }, "SmartFilters": null, "SortOrder": 2, "TaxType": null, "Selectable": true, "ParentID": 0, "SmartSuggestions": false, "ID": 96 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "etag": "\"3\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 191, "Title": "Improvement", "siteName": null, "siteUrl": null, "listId": null, "Description1": "Use this task category for any improvements of EXISTING features", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" }, "SmartFilters": null, "SortOrder": 12, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 191 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 12, "Title": "Design", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 165, "SmartSuggestions": null, "ID": 12 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 100, "Title": "Activity", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 100 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists;(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 281, "Title": "Task", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 281 }] as unknown as { siteName: any, siteUrl: any, listId: any, Description1: any, results: any[], SmartSuggestions: any, SmartFilters: any }[];
     console.log(siteConfig)
     return (
-        <div className={props.Portfolio_x0020_Type == 'Service' ? 'serviepannelgreena' : ""}>
+        <div className={IsUpdated == 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
             {/* Add activity task */}
             <Modal
                 show={lgShow}
@@ -1453,22 +1705,22 @@ export default function ComponentTable({ props }: any) {
                         Clear Selection
                     </span>
                     <div>
-                        {siteConfig!=null &&
-                        <>
-                        {siteConfig.map((site: any) => {
-                            return (
-                                <span>
-                                    {(site.Title != undefined && site.Title != 'Foundation' && site.Title != 'Master Tasks' && site.Title != 'Gender' && site.Title != 'Health' && site.Title != 'SDC Sites' && site.Title != 'Offshore Tasks') &&
-                                        <>
-                                            <img src={site.Item_x005F_x0020_Cover.Url} />
-                                            <p>{site.Title}</p>
-                                        </>
-                                    }
-                                </span>
-                            )
-                        })}
-                        </>
-                    }
+                        {siteConfig != null &&
+                            <>
+                                {siteConfig.map((site: any) => {
+                                    return (
+                                        <span>
+                                            {(site.Title != undefined && site.Title != 'Foundation' && site.Title != 'Master Tasks' && site.Title != 'Gender' && site.Title != 'Health' && site.Title != 'SDC Sites' && site.Title != 'Offshore Tasks') &&
+                                                <>
+                                                    <img src={site.Item_x005F_x0020_Cover.Url} />
+                                                    <p>{site.Title}</p>
+                                                </>
+                                            }
+                                        </span>
+                                    )
+                                })}
+                            </>
+                        }
                     </div>
                 </Modal.Body >
                 <Modal.Footer>
@@ -1853,30 +2105,84 @@ export default function ComponentTable({ props }: any) {
                 <div className="tbl-headings">
                     <span className="leftsec">
                         <span className=''>
-                            {props.Portfolio_x0020_Type == 'Component' &&
+                            {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type != 'SubComponent' && props.Item_x0020_Type != 'Feature' &&
                                 <>
                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{props.Title}</a>
                                 </>
                             }
-                            {props.Portfolio_x0020_Type == 'Service' &&
+                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type != 'SubComponent' && props.Item_x0020_Type != 'Feature' &&
                                 <>
                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{props.Title}</a>
                                 </>}
+                            {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type == 'SubComponent' &&
+                                <>
+                                    {props.Parent != undefined &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                        </a>
+                                    } {'>'} <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />    <a>{props.Title}</a>
+                                </>
+                            }
+                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type == 'SubComponent' &&
+                                <>
+                                    {props.Parent != undefined &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+                                        </a>
+                                    } {'>'}
+                                    <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />    <a>{props.Title}</a>
+                                </>
+                            }
+
+                            {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type == 'Feature' &&
+                                <>
+
+                                    {props.Parent != undefined &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                        </a>
+
+                                    } {'>'}  {(props.Parent.ItemType != undefined && props.Parent.ItemType == "SubComponent") &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />
+                                        </a>
+                                    }  {'>'}  <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{props.Title}</a>
+                                </>
+                            }
+                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type == 'Feature' &&
+                                <>
+                                    {props.Parent != undefined &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+                                        </a>
+                                    } {'>'} {(props.Parent.ItemType != undefined && props.Parent.ItemType == "SubComponent") &&
+                                        <a target='_blank' data-interception="off"
+                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' title={props.Parent.Title} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />
+                                        </a>
+                                    }  {'>'}  <img className='client-icons' title={props.Title} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" />    <a>{props.Title}</a>
+                                </>
+                            }
                         </span>
-                         <span className="g-search">
+                        <span className="g-search">
                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all"
-                                ng-model="SearchComponent.GlobalSearch"/>
+                                ng-model="SearchComponent.GlobalSearch" />
                             <span className="gsearch-btn" ng-click="SearchAll_Item()"><i className="fa fa-search"></i></span>
                         </span>
                     </span>
                     <span className="toolbox mx-auto">
                         <button type="button" className="btn btn-primary"
-                            onClick={addModal} title=" Add Structure">
+                            onClick={addModal} title=" Add Structure" disabled={true}>
                             Add Structure
                         </button>
                         <button type="button"
                             className="btn btn-primary"
-                            onClick={() => setLgShow(true)}>
+                            onClick={() => setLgShow(true)} disabled={true}>
                             <MdAdd />
                             Add Activity-Task
                         </button>
@@ -1895,7 +2201,7 @@ export default function ComponentTable({ props }: any) {
                         </a>
                     </span>
                 </div>
-                <div className="col-sm-12 pad0 smart">
+                <div className="col-sm-12 pad0 smart" >
                     <div className="section-event">
                         <div className="wrapper">
                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
@@ -2027,7 +2333,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "8%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Due Date"
                                                     title="Due Date" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "Status")} />
+                                                // onChange={(e) => handleChange1(e, "Status")}
+                                                />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2055,7 +2362,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "8%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
                                                     title="Created Date" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "ItemRank")} />
+                                                // onChange={(e) => handleChange1(e, "ItemRank")} 
+                                                />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2084,7 +2392,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Smart Time"
                                                     title="Smart Time" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "Due")} />
+                                                // onChange={(e) => handleChange1(e, "Due")} 
+                                                />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2121,7 +2430,7 @@ export default function ComponentTable({ props }: any) {
                                     <div id="SpfxProgressbar" style={{ display: "none" }}>
                                         <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
                                     </div>
-                                    {data.length > 0 && data && data.map(function (item, index) {
+                                    {data != undefined && data.length > 0 && data && data.map(function (item, index) {
                                         item.ClientCategory != undefined
                                         if (item.flag == true) {
                                             return (
@@ -2131,22 +2440,24 @@ export default function ComponentTable({ props }: any) {
                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                 <tr className="bold for-c0l">
                                                                     <td style={{ width: "2%" }}>
-                                                                        {item.childs != undefined && item.childs.length > 0 &&
-                                                                            <div className="accordian-header" >
+
+
+                                                                        <div className="accordian-header" >
+                                                                            {item.childs != undefined && item.childs.length > 0 &&
                                                                                 <a className='hreflink'
                                                                                     title="Tap to expand the childs">
-                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
+                                                                                        : <img src={item.RightArrowIcon} />}
                                                                                     </div>
                                                                                 </a>
-                                                                            </div>
-                                                                        }
+                                                                            }
+                                                                        </div>
+
                                                                     </td>
                                                                     <td style={{ width: "6%" }}>
                                                                         <div className="d-flex">
-                                                                            <span className='pe-2'><input type="checkbox" /></span>
-                                                                            <span>
-                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                            <span className='pe-2'><input type="checkbox" />
+                                                                                <a className="hreflink"  data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
                                                                             </span>
@@ -2159,7 +2470,7 @@ export default function ComponentTable({ props }: any) {
                                                                             {item.Title}
                                                                         </a>}
                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                         >{item.Title}
                                                                         </a>}
                                                                         {item.childs != undefined &&
@@ -2184,17 +2495,18 @@ export default function ComponentTable({ props }: any) {
                                                                         }
                                                                     </td>
                                                                     <td style={{ width: "7%" }}>
-                                                                    <div>
-                                                                                            {item.ClientCategory != undefined && item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </span>
-                                                                                                )
-                                                                                            })}</div>
+                                                                        <div>
+                                                                            {item.ClientCategory != undefined && item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                return (
+                                                                                    <span className="ClientCategory-Usericon"
+                                                                                        title={client.Title}>
+                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                    </span>
+                                                                                )
+                                                                            })}</div>
                                                                     </td>
                                                                     <td style={{ width: "7%" }}>{item.PercentComplete}</td>
+                                                                    <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                     <td style={{ width: "7%" }}>
                                                                         <div>
                                                                             {item.TeamLeaderUser != undefined && item.TeamLeaderUser.map(function (client1: any) {
@@ -2208,14 +2520,18 @@ export default function ComponentTable({ props }: any) {
                                                                             })}
                                                                         </div>
                                                                     </td>
-                                                                    <td style={{ width: "10%" }}>{item.ItemRank}</td>
+                                                                    
+                                                                    
                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
                                                                     <td style={{ width: "9%" }}>
                                                                         {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
                                                                             return (
                                                                                 <span>
-                                                                                    {Creates.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                    {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+                                                                                    <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                        <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                    </a>
                                                                                 </span>
                                                                             )
                                                                         }) : ""}
@@ -2226,7 +2542,7 @@ export default function ComponentTable({ props }: any) {
                                                                     </td>
                                                                     <td style={{ width: "3%" }}>{item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                     <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />}
-                                                                        {item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditTaskPopup(item)} />}</a></td>
+                                                                        {item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -2242,29 +2558,18 @@ export default function ComponentTable({ props }: any) {
                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                         <tr className="for-c02">
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <div className="accordian-header" onClick={() => handleOpen(childitem)}>
-                                                                                                    {childitem.childs.length > 0 &&
-                                                                                                        <a className='hreflink'
-                                                                                                            title="Tap to expand the childs">
-                                                                                                            <div className="sign">{childitem.childs != undefined && childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
-                                                                                                            </div>
-                                                                                                        </a>
-                                                                                                    }
-                                                                                                </div>
+                                                                                            <div onClick={() => handleOpen(childitem)} className="sign">{childitem.childs.length > 0 && childitem.show ? <img src={childitem.downArrowIcon} />
+                                                                                        : <img src={childitem.RightArrowIcon} />}
+                                                                                    </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
-                                                                                             </td>
-                                                                                            <td style={{ width: "7%" }}>  <div className="d-flex">
-                                                                                                <span>
-                                                                                                    <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                <span className='pe-2'><input type="checkbox" />
+                                                                                                    <a className="hreflink"  data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
-                                                                                                        {/* <img className="icon-sites-img"
-                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
                                                                                                     </a>
                                                                                                 </span>
-                                                                                                <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
-                                                                                            </div>
+                                                                                            </td>
+                                                                                            <td style={{ width: "7%" }}>  <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
                                                                                             </td>
                                                                                             <td style={{ width: "23%" }}>
                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
@@ -2272,54 +2577,58 @@ export default function ComponentTable({ props }: any) {
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-Spfx.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined &&
                                                                                                     <span className='ms-1'>({childitem.childs.length})</span>
                                                                                                 }
                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
-                                                                                                    // <span className="project-tool"><img
-                                                                                                    //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                    //         <span className="tooltiptext">
-                                                                                                    //             <div className="tooltip_Desc">
-                                                                                                    //                 <span>{childitem.Short_x0020_Description_x0020_On}</span>
-                                                                                                    //             </div>
-                                                                                                    //         </span>
-                                                                                                    //     </span>
-                                                                                                    // </span>
-                                                                                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                        <div className="popover__content">
-                                                                                                        {childitem.Short_x0020_Description_x0020_On}
-                                                                                                        </div>
-                                                                                                    </div>
+                                                                                                    <span className="project-tool"><img
+                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                            <span className="tooltiptext">
+                                                                                                                <div className="tooltip_Desc">
+                                                                                                                    <span>{childitem.Short_x0020_Description_x0020_On}</span>
+                                                                                                                </div>
+                                                                                                            </span>
+                                                                                                        </span>
+                                                                                                    </span>
                                                                                                 }
                                                                                             </td>
                                                                                             <td style={{ width: "7%" }}>
-                                                                                            <div>
-                                                                                            {childitem.ClientCategory != undefined && childitem.ClientCategory.length > 0 && childitem.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </span>
-                                                                                                )
-                                                                                            })}</div>
+                                                                                                <div>
+                                                                                                    {childitem.ClientCategory != undefined && childitem.ClientCategory.length > 0 && childitem.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                        return (
+                                                                                                            <span className="ClientCategory-Usericon"
+                                                                                                                title={client.Title}>
+                                                                                                                <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                            </span>
+                                                                                                        )
+                                                                                                    })}</div>
                                                                                             </td>
-                                                                                            <td style={{ width: "7%" }}>
-                                                                                                <div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                    return (
-                                                                                                        <div className="AssignUserPhoto"
-                                                                                                            title={client1.Title}>
-                                                                                                            <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                })}</div></td>
                                                                                             <td style={{ width: "7%" }}>{childitem.PercentComplete}</td>
-                                                                                            <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
+                                                                    <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
+                                                                                            <td style={{ width: "7%" }}><div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                return (
+                                                                                                    <div className="AssignUserPhoto"
+                                                                                                        title={client1.Title}>
+                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                    </div>
+                                                                                                )
+                                                                                            })}</div></td>
                                                                                             <td style={{ width: "9%" }}>{childitem.DueDate}</td>
-                                                                                            <td style={{ width: "9%" }}>{childitem.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                            <td style={{ width: "9%" }}>
+                                                                                                {childitem.CreatedDateImg != null ? childitem.CreatedDateImg.map((Creates: any) => {
+                                                                                                    return (
+                                                                                                        <span>
+                                                                                                            {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                            <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                                                <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                            </a>
+                                                                                                        </span>
+                                                                                                    )
+                                                                                                }) : ""}</td>
                                                                                             <td style={{ width: "7%" }}>
                                                                                                 <div></div>
                                                                                             </td>
@@ -2341,29 +2650,28 @@ export default function ComponentTable({ props }: any) {
                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                 <tr className="tdrow">
                                                                                                                     <td style={{ width: "2%" }}>
-                                                                                                                        {childinew.childs.length > 0 &&
-                                                                                                                            <div className="accordian-header" onClick={() => handleOpen(childinew)}>
-                                                                                                                                <a className='hreflink' onClick={(e) => this.EditDatas(e, item)}
+                                                                                                                        <div className="accordian-header" onClick={() => handleOpen(childinew)}>
+                                                                                                                            {childinew.childs.length > 0 &&
+                                                                                                                                <a className='hreflink'
                                                                                                                                     title="Tap to expand the childs">
-                                                                                                                                    <div className="sign">{childinew.childs != undefined && childinew.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                                                                    <div className="sign">{childinew.childs.length > 0 && childinew.show ? <img src={childinew.downArrowIcon} />
+                                                                                                                                        : <img src={childinew.RightArrowIcon} />}
                                                                                                                                     </div>
                                                                                                                                 </a>
-                                                                                                                            </div>
-                                                                                                                        }
+                                                                                                                            }
+
+                                                                                                                        </div>
+
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
-                                                                                                                        <div>
-                                                                                                                        </div>
-                                                                                                                    </td>
-                                                                                                                    <td style={{ width: "7%" }}> <div className="d-flex">
-                                                                                                                        <span>
+                                                                                                                        <span className='pe-2'><input type="checkbox" /> 
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
-                                                                                                                                {/* <img  className="icon-sites-img" 
-                                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" /> */}
                                                                                                                             </a>
                                                                                                                         </span>
+                                                                                                                    </td>
+                                                                                                                    <td style={{ width: "7%" }}> <div className="d-flex">
+
                                                                                                                         <span className="ml-2">{childinew.Shareweb_x0020_ID}</span>
                                                                                                                     </div>
                                                                                                                     </td>
@@ -2373,54 +2681,57 @@ export default function ComponentTable({ props }: any) {
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-Spfx.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.childs != undefined &&
                                                                                                                             <span className='ms-1'>({childinew.childs.length})</span>
                                                                                                                         }
                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
-                                                                                                                            // <span className="project-tool"><img
-                                                                                                                            //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                                            //         <span className="tooltiptext">
-                                                                                                                            //             <div className="tooltip_Desc">
-                                                                                                                            //                 <span>{childinew.Short_x0020_Description_x0020_On}</span>
-                                                                                                                            //             </div>
-                                                                                                                            //         </span>
-                                                                                                                            //     </span>
-                                                                                                                            // </span>
-                                                                                                                            <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                                <div className="popover__content">
-                                                                                                                                {childinew.Short_x0020_Description_x0020_On}
-                                                                                                                                </div>
-                                                                                                                            </div>
+                                                                                                                            <span className="project-tool"><img
+                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                                                    <span className="tooltiptext">
+                                                                                                                                        <div className="tooltip_Desc">
+                                                                                                                                            <span>{childinew.Short_x0020_Description_x0020_On}</span>
+                                                                                                                                        </div>
+                                                                                                                                    </span>
+                                                                                                                                </span>
+                                                                                                                            </span>
                                                                                                                         }
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "7%" }}>
-                                                                                                                    <div>
-                                                                                            {childinew.ClientCategory != undefined && childinew.ClientCategory.length > 0 && childinew.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </span>
-                                                                                                )
-                                                                                            })}</div>
+                                                                                                                        <div>
+                                                                                                                            {childinew.ClientCategory != undefined && childinew.ClientCategory.length > 0 && childinew.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                                                return (
+                                                                                                                                    <span className="ClientCategory-Usericon"
+                                                                                                                                        title={client.Title}>
+                                                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                    </span>
+                                                                                                                                )
+                                                                                                                            })}</div>
                                                                                                                     </td>
-                                                                                                                    <td style={{ width: "7%" }}>
-                                                                                                                        <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                            return (
-                                                                                                                                <span className="AssignUserPhoto"
-                                                                                                                                    title={client1.Title}>
-                                                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                                </span>
-                                                                                                                            )
-                                                                                                                        })}</div></td>
                                                                                                                     <td style={{ width: "7%" }}>{childinew.PercentComplete}</td>
-                                                                                                                    <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
+                                                                    <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
+                                                                                                                    <td style={{ width: "7%" }}>  <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                                        return (
+                                                                                                                            <span className="AssignUserPhoto"
+                                                                                                                                title={client1.Title}>
+                                                                                                                                <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                            </span>
+                                                                                                                        )
+                                                                                                                    })}</div></td>
                                                                                                                     <td style={{ width: "9%" }}>{childinew.DueDate}</td>
-                                                                                                                    <td style={{ width: "9%" }}>{childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                                                    <td style={{ width: "9%" }}> {childinew.CreatedDateImg != null ? childinew.CreatedDateImg.map((Creates: any) => {
+                                                                                                                        return (
+                                                                                                                            <span>
+                                                                                                                                {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                                </a>
+                                                                                                                            </span>
+                                                                                                                        )
+                                                                                                                    }) : ""}</td>
                                                                                                                     <td style={{ width: "7%" }}></td>
                                                                                                                     <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} />}
@@ -2443,22 +2754,23 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                 {subchilditem.childs.length > 0 &&
                                                                                                                                                     <a className='hreflink'
                                                                                                                                                         title="Tap to expand the childs">
-                                                                                                                                                        {/* <div className="sign">{subchilditem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                                                                    : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-                                                                                                                                                                </div> */}
+                                                                                                                                                        <div className="sign">{subchilditem.childs.length > 0 && subchilditem.show ? <img src={subchilditem.downArrowIcon} />
+                                                                                                                                                            : <img src={subchilditem.RightArrowIcon} />}
+                                                                                                                                                        </div>
                                                                                                                                                     </a>
                                                                                                                                                 }
                                                                                                                                             </div>
                                                                                                                                         </td>
-                                                                                                                                        <td style={{ width: "6%" }}></td>
-                                                                                                                                        <td style={{ width: "7%" }}>  <div className="d-flex">
+                                                                                                                                        <td style={{ width: "6%" }}>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
                                                                                                                                             <span>
                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                     <img className="icon-sites-img ml20" src={subchilditem.SiteIcon}></img>
-                                                                                                                                                    {/* <img className="icon-sites-img"
-                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
                                                                                                                                                 </a>
                                                                                                                                             </span>
+                                                                                                                                        </td>
+                                                                                                                                        <td style={{ width: "7%" }}>  <div className="d-flex">
+
                                                                                                                                             <span className="ml-2">{subchilditem.Shareweb_x0020_ID}</span>
                                                                                                                                         </div>
                                                                                                                                         </td>
@@ -2468,57 +2780,62 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-Spfx.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined &&
                                                                                                                                                 <span className='ms-1'>({subchilditem.childs.length})</span>
                                                                                                                                             }
                                                                                                                                             {subchilditem.Short_x0020_Description_x0020_On != null &&
-                                                                                                                                                // <span className="project-tool"><img
-                                                                                                                                                //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                                                                                //         <span className="tooltiptext">
-                                                                                                                                                //             <div className="tooltip_Desc">
-                                                                                                                                                //                 <span>{subchilditem.Short_x0020_Description_x0020_On}</span>
-                                                                                                                                                //             </div>
-                                                                                                                                                //         </span>
-                                                                                                                                                //     </span>
-                                                                                                                                                // </span>
-                                                                                                                                                <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                                                    <div className="popover__content">
-                                                                                                                                                    {subchilditem.Short_x0020_Description_x0020_On}
-                                                                                                                                                    </div>
-                                                                                                                                                </div>
+                                                                                                                                                <span className="project-tool"><img
+                                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                                                                        <span className="tooltiptext">
+                                                                                                                                                            <div className="tooltip_Desc">
+                                                                                                                                                                <span>{subchilditem.Short_x0020_Description_x0020_On}</span>
+                                                                                                                                                            </div>
+                                                                                                                                                        </span>
+                                                                                                                                                    </span>
+                                                                                                                                                </span>
                                                                                                                                             }
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "7%" }}>
-                                                                                                                                        <div>
-                                                                                            {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <span className="ClientCategory-Usericon"
-                                                                                                        title={client.Title}>
-                                                                                                        <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </span>
-                                                                                                )
-                                                                                            })}</div>
+                                                                                                                                            <div>
+                                                                                                                                                {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                                                                    return (
+                                                                                                                                                        <span className="ClientCategory-Usericon"
+                                                                                                                                                            title={client.Title}>
+                                                                                                                                                            <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                                        </span>
+                                                                                                                                                    )
+                                                                                                                                                })}</div>
                                                                                                                                         </td>
-                                                                                                                                        <td style={{ width: "7%" }}>
-                                                                                                                                            <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.map(function (client1: any) {
-                                                                                                                                                return (
-                                                                                                                                                    <div className="AssignUserPhoto"
-                                                                                                                                                        title={client1.Title}>
-                                                                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                                                    </div>
-                                                                                                                                                )
-                                                                                                                                            })}</div></td>
                                                                                                                                         <td style={{ width: "7%" }}>{subchilditem.PercentComplete}</td>
-                                                                                                                                        <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
+                                                                    <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
+                                                                                                                                        <td style={{ width: "7%" }}>   <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.map(function (client1: any) {
+                                                                                                                                            return (
+                                                                                                                                                <div className="AssignUserPhoto"
+                                                                                                                                                    title={client1.Title}>
+                                                                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                                </div>
+                                                                                                                                            )
+                                                                                                                                        })}</div></td>
+                                                                                                                                      
                                                                                                                                         <td style={{ width: "9%" }}>{subchilditem.DueDate}</td>
-                                                                                                                                        <td style={{ width: "9%" }}>{subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}</td>
+                                                                                                                                        <td style={{ width: "9%" }}>{subchilditem.CreatedDateImg != null ? subchilditem.CreatedDateImg.map((Creates: any) => {
+                                                                                                                                            return (
+                                                                                                                                                <span>
+                                                                                                                                                    {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                                    <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                                                                                        <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                                                    </a>
+                                                                                                                                                </span>
+                                                                                                                                            )
+                                                                                                                                        }) : ""}</td>
                                                                                                                                         <td style={{ width: "7%" }}></td>
                                                                                                                                         <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                        <td style={{ width: "3%" }}></td>
+                                                                                                                                        <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(subchilditem)} />}
+                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
                                                                                                                                     </tr>
                                                                                                                                 </table>
                                                                                                                             </td>

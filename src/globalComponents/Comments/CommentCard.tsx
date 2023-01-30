@@ -17,104 +17,124 @@ import "@pnp/sp/sputilities";
 import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
 
 export interface ICommentCardProps {
-  siteUrl? : string;
-  userDisplayName? : string;
-  listName? : string;
-  itemID? : number;
-  Context?:any;
-  
+  siteUrl?: string;
+  userDisplayName?: string;
+  listName?: string;
+  itemID?: number;
+  Context?: any;
+
 }
 
-export interface ICommentCardState {  
-  Result : any;
-  listName : string;
-  itemID : number;
-  CommenttoPost : string;
+export interface ICommentCardState {
+  Result: any;
+  listName: string;
+  itemID: number;
+  CommenttoPost: string;
   updateComment: boolean;
   isModalOpen: boolean;
   AllCommentModal: boolean;
   mentionValue: string;
   //editorState : EditorState;
-  htmlContent : any;
-  updateCommentPost : any;
-  editorValue : string;
-  editorChangeValue : string;
+  htmlContent: any;
+  updateCommentPost: any;
+  editorValue: string;
+  editorChangeValue: string;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
-  private taskUsers : any = [];
+  private taskUsers: any = [];
   private currentUser: any;
-  private mentionUsers:any=[];
-  private topCommenters:any=[];
+  private mentionUsers: any = [];
+  private topCommenters: any = [];
 
-  private params1:any;
-  constructor(props:ICommentCardProps){
+  private params1: any;
+  constructor(props: ICommentCardProps) {
     super(props);
-     this.params1 = new URLSearchParams(window.location.search);  
-    
-    this.state ={
-      Result:{},
-      listName: (this.params1.get('Site')  !=undefined ? this.params1.get('Site'):  props.listName),
-      itemID : (this.params1.get('taskId')  != undefined ? Number(this.params1.get('taskId')): props.itemID),
-    
+    this.params1 = new URLSearchParams(window.location.search);
+
+    this.state = {
+      Result: {},
+      listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props.listName),
+      itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props.itemID),
+
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,
       AllCommentModal: false,
-      mentionValue:'',
+      mentionValue: '',
       /*editorState:EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
         )
       ),*/
       //editorState:EditorState.createEmpty(),
-      htmlContent : '',
-      updateCommentPost : null,
-      editorValue : '',
-      editorChangeValue : ''
+      htmlContent: '',
+      updateCommentPost: null,
+      editorValue: '',
+      editorChangeValue: ''
     }
-    this.GetResult();    
+    this.GetResult();
     console.log(this.props.Context);
     sp.setup({
       spfxContext: this.props.Context
-    });     
+    });
   }
 
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
-    let taskDetails = [];    
+    let taskDetails = [];
     taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID","Title","Status","Team_x0020_Members/Title","PercentComplete","Priority","Created","Author/Title","Author/EMail","Editor/Title","component_x0020_link","FeedBack","Responsible_x0020_Team/Title","SharewebTaskType/Title","Comments","Modified")
-      .expand("Team_x0020_Members","Author","Editor","Responsible_x0020_Team","SharewebTaskType")
-      .get()      
-   
+      .select("ID", "Title", "DueDate", "ClientCategory/Id","ClientCategory/Title","Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+      .expand("Team_x0020_Members", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+      .get()
+
     await this.GetTaskUsers();
 
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
 
-    let tempTask = {      
-      ID: 'T'+taskDetails["ID"],
-      Title: taskDetails["Title"],      
+    let tempTask = {
+      ID: 'T' + taskDetails["ID"],
+      Title: taskDetails["Title"],
+      DueDate: taskDetails["DueDate"] != null ? (new Date(taskDetails["DueDate"])).toLocaleDateString() : '',
+      Categories: taskDetails["Categories"],
+      StartDate: taskDetails["StartDate"] != null ? (new Date(taskDetails["StartDate"])).toLocaleDateString() : '',
+      CompletedDate: taskDetails["CompletedDate"] != null ? (new Date(taskDetails["CompletedDate"])).toLocaleDateString() : '',
       Status: taskDetails["Status"],
       TeamLeader: taskDetails["Responsible_x0020_Team"] != null ? this.GetUserObjectFromCollection(taskDetails["Responsible_x0020_Team"]) : null,
       TeamMembers: taskDetails["Team_x0020_Members"] != null ? this.GetUserObjectFromCollection(taskDetails["Team_x0020_Members"]) : null,
-      PercentComplete: taskDetails["PercentComplete"],
+      PercentComplete: (taskDetails["PercentComplete"] * 100),
       Priority: taskDetails["Priority"],
-      Created:  taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
-      Modified:  taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
+      Created: taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
+      Modified: taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
       ModifiedBy: this.GetUserObjectArr(taskDetails["Editor"]),
       Author: this.GetUserObjectArr(taskDetails["Author"]),
-      component_url: taskDetails["component_x0020_link"],     
+      component_url: taskDetails["component_x0020_link"],
       Comments: JSON.parse(taskDetails["Comments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
-      SharewebTaskType : taskDetails["SharewebTaskType"] !=null ? taskDetails["SharewebTaskType"].Title : ''      
-    };    
-    
-    if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0){
-      tempTask["Comments"].sort(function(a:any, b:any) {
+      SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
+      Component: taskDetails["Component"],
+      Services: taskDetails["Services"],
+      TaskUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId="+this.state.itemID+"&Site="+this.state.listName
+    };
+
+    if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+      tempTask["Comments"].map((item: any) => {
+        if (item.AuthorImage != undefined && item.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+          var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+          item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
+        }
+        // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+        // })
+        // this.taskUsers.map((user: any) => {
+        //   if (user.AssingedToUser !=undefined && user.AssingedToUser.Id === item.AuthorId)
+        //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+        // })
+      })
+
+      tempTask["Comments"].sort(function (a: any, b: any) {
         let keyA = a.ID,
           keyB = b.ID;
         // Compare the 2 dates
@@ -122,101 +142,101 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         if (keyA > keyB) return -1;
         return 0;
       });
-    }   
-    
+    }
+
     this.setState({
-      Result : tempTask
+      Result: tempTask
     });
   }
 
-  private GetUserObjectFromCollection(UsersValues:any){  
+  private GetUserObjectFromCollection(UsersValues: any) {
     let userDeatails = [];
     for (let index = 0; index < UsersValues.length; index++) {
-      let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
-        if (user.AssingedToUser != undefined){
+      let senderObject = this.taskUsers.filter(function (user: any, i: any) {
+        if (user.AssingedToUser != undefined) {
           return user.AssingedToUser['Title'] == UsersValues[index].Title
         }
       });
-      if (senderObject.length > 0){
-          userDeatails.push({
-            'Id' : senderObject[0].Id,
-            'Name' : senderObject[0].Email,
-            'Suffix' : senderObject[0].Suffix,
-            'Title' : senderObject[0].Title,
-            'userImage': senderObject[0].Item_x0020_Cover.Url
-          })
-        }
+      if (senderObject.length > 0) {
+        userDeatails.push({
+          'Id': senderObject[0].Id,
+          'Name': senderObject[0].Email,
+          'Suffix': senderObject[0].Suffix,
+          'Title': senderObject[0].Title,
+          'userImage': senderObject[0].Item_x0020_Cover.Url
+        })
       }
+    }
     return userDeatails;
   }
 
- 
-  private async GetTaskUsers(){
+
+  private async GetTaskUsers() {
     let web = new Web(this.props.siteUrl);
     let currentUser = await web.currentUser.get();
     //.then((r: any) => {  
-     // console.log("Cuurent User Name - " + r['Title']);  
+    // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
-    let taskUsers = [];    
+    let taskUsers = [];
     taskUsers = await web.lists
       .getByTitle('Task Users')
       .items
-      .select('Id','Email','Suffix','Title','Item_x0020_Cover','AssingedToUser/Title','AssingedToUser/EMail')
+      .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail')
       .filter("ItemType eq 'User'")
       .expand('AssingedToUser')
-      .get();    
-    this.taskUsers = taskUsers; 
-       
-      for (let index = 0; index < this.taskUsers.length; index++) {
-        this.mentionUsers.push({
-          id : this.taskUsers[index].Title+"{"+this.taskUsers[index].Email+"}",
-          display: this.taskUsers[index].Title
-        });
-        
-        if (this.taskUsers[index].Title =="Deepak Trivedi"  || this.taskUsers[index].Title =="Stefan Hochhuth"  || this.taskUsers[index].Title =="Robert Ungethuem"  || this.taskUsers[index].Title =="Mattis Hahn" ){
-          this.topCommenters.push({
-            id : this.taskUsers[index].Title+"{"+this.taskUsers[index].Email+"}",
-            display: this.taskUsers[index].Title,
-            Title:this.taskUsers[index].Title,
-            ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ? 
-                              this.taskUsers[index].Item_x0020_Cover.Url :
-                              "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-          })
-        }
+      .get();
+    this.taskUsers = taskUsers;
 
-        if (this.taskUsers[index].AssingedToUser !=null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'] )
-          this.currentUser= this.taskUsers[index];          
-      }       
-      console.log(this.topCommenters);
-      console.log(this.mentionUsers);
+    for (let index = 0; index < this.taskUsers.length; index++) {
+      this.mentionUsers.push({
+        id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
+        display: this.taskUsers[index].Title
+      });
+
+      if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn") {
+        this.topCommenters.push({
+          id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
+          display: this.taskUsers[index].Title,
+          Title: this.taskUsers[index].Title,
+          ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
+            this.taskUsers[index].Item_x0020_Cover.Url :
+            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+        })
+      }
+
+      if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
+        this.currentUser = this.taskUsers[index];
+    }
+    console.log(this.topCommenters);
+    console.log(this.mentionUsers);
   }
 
-  private handleInputChange(e:any){
-    this.setState({CommenttoPost: e.target.value}); 
-   }
+  private handleInputChange(e: any) {
+    this.setState({ CommenttoPost: e.target.value });
+  }
 
-  private async PostComment(txtCommentControlId:any){   
+  private async PostComment(txtCommentControlId: any) {
     let txtComment = this.state.CommenttoPost;
-    if (txtComment != ''){
+    if (txtComment != '') {
       let temp = {
-        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '', 
-        AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '', 
-        Created: (new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',',''),
-        Description:txtComment,
+        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
+        AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
+        Created: (new Date().toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',', ''),
+        Description: txtComment,
         Header: this.GetMentionValues(),
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
         editable: false
       };
       //Add object in feedback
-      
-      if (this.state.Result["Comments"] != undefined){
+
+      if (this.state.Result["Comments"] != undefined) {
         this.state.Result["Comments"].push(temp);
       }
-      else{
+      else {
         this.state.Result["Comments"] = [temp];
-      }      
-      this.state.Result["Comments"].sort(function(a:any, b:any) {
+      }
+      this.state.Result["Comments"].sort(function (a: any, b: any) {
         let keyA = a.ID,
           keyB = b.ID;
         // Compare the 2 dates
@@ -224,40 +244,40 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         if (keyA > keyB) return -1;
         return 0;
       });
-      
-      console.log(this.state.Result);      
-      (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';      
-      let web = new Web(this.props.siteUrl);      
-      const i = await web.lists.getByTitle(this.state.listName)
-              .items
-              .getById(this.state.itemID).update({
-                Comments: JSON.stringify(this.state.Result["Comments"])
-              });      
-      this.setState({ 
-          updateComment: true
-      },()=>this.GetEmailObjects());      
 
-      this.setState({ 
+      console.log(this.state.Result);
+      (document.getElementById(txtCommentControlId) as HTMLTextAreaElement).value = '';
+      let web = new Web(this.props.siteUrl);
+      const i = await web.lists.getByTitle(this.state.listName)
+        .items
+        .getById(this.state.itemID).update({
+          Comments: JSON.stringify(this.state.Result["Comments"])
+        });
+      this.setState({
+        updateComment: true
+      }, () => this.GetEmailObjects());
+
+      this.setState({
         updateComment: true,
         CommenttoPost: '',
-        mentionValue:''
-      });       
-    }else{
+        mentionValue: ''
+      });
+    } else {
       alert('Please input some text.')
     }
-  } 
+  }
 
-  private async updateComment(){
+  private async updateComment() {
     let updateCommentPost = this.state.updateCommentPost;
     //let txtComment = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
     let txtComment = this.state.editorChangeValue;
-    
-    if (txtComment != ''){
+
+    if (txtComment != '') {
       let temp = {
-        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '', 
-        AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '', 
-        Created: (new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',',''),
-        Description:txtComment,
+        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
+        AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
+        Created: (new Date().toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',', ''),
+        Description: txtComment,
         Header: updateCommentPost.Header,
         ID: updateCommentPost.ID,
         Title: txtComment,
@@ -269,22 +289,22 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       let elementPosition = 0;
       for (let index = 0; index < this.state.Result["Comments"].length; index++) {
         let elementId = this.state.Result["Comments"][index].ID;
-        if (elementId == temp.ID){
-          elementPosition = index;        
+        if (elementId == temp.ID) {
+          elementPosition = index;
           break;
-        }          
+        }
       }
       //delete this.state.Result["Comments"][elementPosition];
       this.state.Result["Comments"].splice(elementPosition, 1);
       //Add new value in 
-      
-      if (this.state.Result["Comments"] != undefined){
+
+      if (this.state.Result["Comments"] != undefined) {
         this.state.Result["Comments"].push(temp);
       }
-      else{
+      else {
         this.state.Result["Comments"] = [temp];
-      }      
-      this.state.Result["Comments"].sort(function(a:any, b:any) {
+      }
+      this.state.Result["Comments"].sort(function (a: any, b: any) {
         let keyA = a.ID,
           keyB = b.ID;
         // Compare the 2 dates
@@ -292,129 +312,129 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         if (keyA > keyB) return -1;
         return 0;
       });
-      
-      console.log(this.state.Result);      
-           
-      let web = new Web(this.props.siteUrl);      
+
+      console.log(this.state.Result);
+
+      let web = new Web(this.props.siteUrl);
       const i = await web.lists.getByTitle(this.state.listName)
-              .items
-              .getById(this.state.itemID).update({
-                Comments: JSON.stringify(this.state.Result["Comments"])
-              });      
-      this.setState({ 
-          updateComment: true,
-          updateCommentPost: null,
-          isModalOpen: false
-      });       
-    }else{
+        .items
+        .getById(this.state.itemID).update({
+          Comments: JSON.stringify(this.state.Result["Comments"])
+        });
+      this.setState({
+        updateComment: true,
+        updateCommentPost: null,
+        isModalOpen: false
+      });
+    } else {
       alert('Please input some text.')
     }
 
   }
 
-  private GetMentionValues(){
-    let mention_str='';
-    if (this.state.mentionValue != ''){
+  private GetMentionValues() {
+    let mention_str = '';
+    if (this.state.mentionValue != '') {
       let regExpStr = this.state.mentionValue;
       let regExpLiteral = /\[(.*?)\]/gi;
       let allMention = regExpStr.match(regExpLiteral);
-      if (allMention.length>0){
+      if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
-          mention_str += allMention[index].replace('[','@').replace(']','').trim() + ' ';          
-        }        
+          mention_str += allMention[index].replace('[', '@').replace(']', '').trim() + ' ';
+        }
       }
     }
     return mention_str.trim();
   }
 
-  private GetUserObjectArr(username:any){
+  private GetUserObjectArr(username: any) {
     let userDeatails = [];
-    let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
-      if (user.AssingedToUser != undefined ){        
+    let senderObject = this.taskUsers.filter(function (user: any, i: any) {
+      if (user.AssingedToUser != undefined) {
         return user.AssingedToUser['Title'] == username.Title //|| user.AssingedToUser['Title'] == "SPFx Developer1"
       }
-      else{
+      else {
         return user.Title == username.Title
       }
-      });
-      if (senderObject.length > 0){
-          userDeatails.push({
-            'Id' : senderObject[0].Id,
-            'Name' : senderObject[0].Email,
-            'Suffix' : senderObject[0].Suffix,
-            'Title' : senderObject[0].Title,
-            'userImage': senderObject[0].Item_x0020_Cover.Url
-          })
-        }    
+    });
+    if (senderObject.length > 0) {
+      userDeatails.push({
+        'Id': senderObject[0].Id,
+        'Name': senderObject[0].Email,
+        'Suffix': senderObject[0].Suffix,
+        'Title': senderObject[0].Title,
+        'userImage': senderObject[0].Item_x0020_Cover.Url
+      })
+    }
     return userDeatails;
   }
 
-  private GetUserObject(username:any){
+  private GetUserObject(username: any) {
     let userDeatails = {};
-    let senderObject = this.taskUsers.filter(function (user:any, i:any){ 
-      if (user.AssingedToUser != undefined){
+    let senderObject = this.taskUsers.filter(function (user: any, i: any) {
+      if (user.AssingedToUser != undefined) {
         return user.AssingedToUser['Title'] == username
       }
-      
+
     });
-      if (senderObject.length > 0){
-          userDeatails = {
-            'Id' : senderObject[0].Id,
-            'Name' : senderObject[0].Email,
-            'Suffix' : senderObject[0].Suffix,
-            'Title' : senderObject[0].Title,
-            'userImage': senderObject[0].Item_x0020_Cover.Url
-          }
-        }    
+    if (senderObject.length > 0) {
+      userDeatails = {
+        'Id': senderObject[0].Id,
+        'Name': senderObject[0].Email,
+        'Suffix': senderObject[0].Suffix,
+        'Title': senderObject[0].Title,
+        'userImage': senderObject[0].Item_x0020_Cover.Url
+      }
+    }
     return userDeatails;
   }
 
-  private async clearComment(indexOfDeleteElement:any){
-    if (confirm('Are you sure, you want to delete this?')){
-      this.state.Result["Comments"].splice(indexOfDeleteElement,1);    
-    let web = new Web(this.props.siteUrl);      
-    const i = await web.lists.getByTitle(this.state.listName)
-              .items
-              .getById(this.state.itemID).update({
-                Comments: JSON.stringify(this.state.Result["Comments"])
-              });
-      
-    this.setState({ 
+  private async clearComment(indexOfDeleteElement: any) {
+    if (confirm('Are you sure, you want to delete this?')) {
+      this.state.Result["Comments"].splice(indexOfDeleteElement, 1);
+      let web = new Web(this.props.siteUrl);
+      const i = await web.lists.getByTitle(this.state.listName)
+        .items
+        .getById(this.state.itemID).update({
+          Comments: JSON.stringify(this.state.Result["Comments"])
+        });
+
+      this.setState({
         updateComment: true
-    });
-    }     
+      });
+    }
   }
-  private openEditModal(cmdData:any , indexOfDeleteElement:any){
+  private openEditModal(cmdData: any, indexOfDeleteElement: any) {
     this.setState({
-      isModalOpen : true,
-      editorValue : cmdData.Description,
+      isModalOpen: true,
+      editorValue: cmdData.Description,
       /*editorState : EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('<p>'+cmdData.Description+'</p>').contentBlocks
         )
       ),*/
-      updateCommentPost : cmdData
+      updateCommentPost: cmdData
     })
   }
 
-  private openAllCommentModal(){
+  private openAllCommentModal() {
     this.setState({
-      AllCommentModal : true
+      AllCommentModal: true
     })
   }
 
-  private closeAllCommentModal(e:any){
+  private closeAllCommentModal(e: any) {
     e.preventDefault();
     this.setState({
-      AllCommentModal : false
+      AllCommentModal: false
     })
   }
 
   //close the model
-  private CloseModal(e:any) {
+  private CloseModal(e: any) {
     e.preventDefault();
-    this.setState({ 
-      isModalOpen:false,
+    this.setState({
+      isModalOpen: false,
       /*editorState : EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
@@ -424,67 +444,67 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
   }
 
-  private topCommentersClick(e:any){
+  private topCommentersClick(e: any) {
     console.log(e.currentTarget.className);
-    if (e.currentTarget.className.indexOf('active')<0){
+    if (e.currentTarget.className.indexOf('active') < 0) {
       e.currentTarget.classList.add('active');
       this.setState({
-        mentionValue : this.state.mentionValue + '@['+ e.currentTarget.title +']('+ e.currentTarget.id + ') '
-      }, ()=>{console.log(this.state.mentionValue)})
+        mentionValue: this.state.mentionValue + '@[' + e.currentTarget.title + '](' + e.currentTarget.id + ') '
+      }, () => { console.log(this.state.mentionValue) })
     }
-    
+
   }
 
-  private setMentionValue(e:any){
+  private setMentionValue(e: any) {
     this.setState({
-      mentionValue:e.target.value
-    },()=>{ console.log(this.state.mentionValue) })    
+      mentionValue: e.target.value
+    }, () => { console.log(this.state.mentionValue) })
   }
 
-  private GetEmailObjects(){
-   
-    if (this.state.mentionValue != ''){
+  private GetEmailObjects() {
+
+    if (this.state.mentionValue != '') {
       //Get All To's
-      let mention_To:any=[];
+      let mention_To: any = [];
       let regExpStr = this.state.mentionValue;
       let regExpLiteral = /\{(.*?)\}/gi;
       let allMention = regExpStr.match(regExpLiteral);
-      if (allMention.length>0){
+      if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
-          /*For Prod when mail is open for all
+          /*For Prod when mail is open for all */
           if (allMention[index].indexOf(null)<0){
             mention_To.push(allMention[index].replace('{','').replace('}','').trim());   
           } 
-          */
-           /*testing*/
-           if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de')>0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de')>0){
-            mention_To.push(allMention[index].replace('{','').replace('}','').trim());   
-            }                      
-          }        
-      
-      console.log(mention_To);
-      if (mention_To.length > 0){
-        let emailprops = {
-          To:mention_To,
-          Subject :"["+this.params1.get('Site')+" - Comment by "+ this.props.Context.pageContext.user.displayName +"] " + this.state.Result["Title"],
-          Body:this.state.Result["Title"]
+          
+          /*testing*/
+          /*if (allMention[index].indexOf('mitesh.jha@hochhuth-consulting.de') > 0 || allMention[index].indexOf('ranu.trivedi@hochhuth-consulting.de') > 0) {
+            mention_To.push(allMention[index].replace('{', '').replace('}', '').trim());
+          }*/
         }
-        console.log(emailprops);
-        
-        this.SendEmail(emailprops);      
-                    
-        }      
+
+        console.log(mention_To);
+        if (mention_To.length > 0) {
+          let emailprops = {
+            To: mention_To,
+            Subject: "[" + this.params1.get('Site') + " - Comment by " + this.props.Context.pageContext.user.displayName + "] " + this.state.Result["Title"],
+            Body: this.state.Result["Title"]
+          }
+          console.log(emailprops);
+
+          this.SendEmail(emailprops);
+
+        }
       }
     }
   }
 
-  private BindHtmlBody(){
-    let body= document.getElementById('htmlMailBody')
+  private BindHtmlBody() {
+    let body = document.getElementById('htmlMailBody')
     console.log(body.innerHTML);
-    return body.innerHTML;
+    return "<style>p>br {display: none;}</style>"+body.innerHTML;
   }
-  
-  private SendEmail(emailprops:any){
+
+  private SendEmail(emailprops: any) {
     sp.utility.sendEmail({
       //Body of Email  
       Body: this.BindHtmlBody(),
@@ -495,9 +515,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       AdditionalHeaders: {
         "content-type": "text/html"
       },
-      }).then(() => {
-        console.log("Email Sent!");
-      });
+    }).then(() => {
+      console.log("Email Sent!");
+    });
   }
 
   /*private onEditorStateChange = (editorState:EditorState):void => { 
@@ -507,118 +527,128 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });  
   }*/
 
-  HtmlEditorStateChange = (value:any) =>{
-    this.setState({  
-      editorChangeValue : value,  
-    }, ()=>console.log(console.log('set as HTML:', value)));
+  HtmlEditorStateChange = (value: any) => {
+    this.setState({
+      editorChangeValue: value,
+    }, () => console.log(console.log('set as HTML:', value)));
+  }
+
+  private joinObjectValues(arr:any){
+    let val = '';
+    arr.forEach((element:any) => {
+      val += element.Title +';'
+    });
+    return val;
   }
 
   public render(): React.ReactElement<ICommentCardProps> {
     //const { editorState } = this.state;
     return (
       <div>
-         <div className='mb-3 card commentsection'>
-                                    <div className='card-header'>
-                                        {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
-                                        <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip/></span></div>
+        <div className='mb-3 card commentsection'>
+          <div className='card-header'>
+            {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
+            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip /></span></div>
 
-                                    </div>
-                                    <div className='card-body'>
-                                        <div className="comment-box  mb-2">
-                                            <div className='mb-1'>
-                                            <span> <strong>To:</strong>  </span>
-                                            {this.topCommenters != null && this.topCommenters.length>0 && this.topCommenters.map( (topCmnt:any,i:any)=> {
+          </div>
+          <div className='card-body'>
+            <div className="comment-box  mb-2">
+              <div className='mb-1'>
+                <span> <strong>To:</strong>  </span>
+                {this.topCommenters != null && this.topCommenters.length > 0 && this.topCommenters.map((topCmnt: any, i: any) => {
                   return <span>
-                            <a  target="_blank">
-                              <img onClick={(e)=>this.topCommentersClick(e)} className="circularImage rounded-circle " title={topCmnt.Title}
-                                  id={topCmnt.id} src={topCmnt.ItemCoverURL}/>
-                            </a>
-                          </span>
+                    <a target="_blank">
+                      <img onClick={(e) => this.topCommentersClick(e)} className="circularImage rounded-circle " title={topCmnt.Title}
+                        id={topCmnt.id} src={topCmnt.ItemCoverURL} />
+                    </a>
+                  </span>
                 })}
-                  </div>
-                
-                <span className='clintlist'>
-                <MentionsInput  placeholder='Recipients Name' value={this.state.mentionValue} onChange={(e)=>this.setMentionValue(e)}
-                      className="form-control"
-                      classNames={mentionClass}>
-                  <Mention trigger="@" data={this.mentionUsers} className={mentionClass.mentions__mention}/>            
-                </MentionsInput>
-                </span>
+              </div>
 
-                                        </div>
-                                        <div>
-                                            <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e)=>this.handleInputChange(e)}  placeholder="Enter your comments here" className='form-control' ></textarea>
-                                            {/* <p className="ng-hide">
+              <span className='clintlist'>
+                <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue} onChange={(e) => this.setMentionValue(e)}
+                  className="form-control"
+                  classNames={mentionClass}>
+                  <Mention trigger="@" data={this.mentionUsers}  />
+                </MentionsInput>
+              </span>
+
+            </div>
+            <div>
+              <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
+              {/* <p className="ng-hide">
                                             <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
                                             Comment shouldn't be empty
                                         </p> */}
-                                            <button onClick={()=>this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
-                                                Post
-                                            </button>
-                                        </div>
+              <button onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
+                Post
+              </button>
+            </div>
 
-                                        <div className="clearfix"></div>
+            <div className="clearfix"></div>
 
-                                        <div className="commentMedia">
-            {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 &&
-              <div>
-                <ul className="list-unstyled">
-                {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 && this.state.Result["Comments"].slice(0,3).map( (cmtData:any,i:any)=> {
-                  return <li className="media border p-1 my-1">
-                 
-                    <div className="media-bodyy">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span className="comment-date ng-binding">
-                        <span className="round  pe-1">
-                      <img className="align-self-start " title={cmtData.AuthorName}
-                          src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ? 
-                          cmtData.AuthorImage  :
-                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                            />
-                    </span>
-                          {cmtData.Created}</span>
-                          <div className="ml-auto media-icons ">
-                            <a className="mx-1" onClick={()=>this.openEditModal(cmtData,i)}>
-                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
-                            </a>
-                            <a title="Delete" onClick={()=>this.clearComment(i)}>
-                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
-                            </a>
+            <div className="commentMedia">
+              {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 &&
+                <div>
+                  <ul className="list-unstyled">
+                    {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 && this.state.Result["Comments"].slice(0, 3).map((cmtData: any, i: any) => {
+                      return <li className="media border p-1 my-1">
+
+                        <div className="media-bodyy">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <span className="comment-date ng-binding">
+                              <span className="round  pe-1">
+                                <img className="align-self-start " title={cmtData.AuthorName}
+                                  src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ?
+                                    cmtData.AuthorImage :
+                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                />
+                              </span>
+                              {cmtData.Created}</span>
+                            <div className="ml-auto media-icons ">
+                              <a className="mx-1" onClick={() => this.openEditModal(cmtData, i)}>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
+                              </a>
+                              <a title="Delete" onClick={() => this.clearComment(i)}>
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
+                              </a>
+                            </div>
                           </div>
-                      </div>
-                      <div className="row mt-1 ">
-                        { cmtData.Header !='' && <h6 className="userid pt-2"><a className="ng-binding">{cmtData.Header}</a></h6>}
-                      </div>
-                      <p className="media-text ng-binding"><span dangerouslySetInnerHTML={{ __html: cmtData.Description}}></span></p>
+                          <div className="row mt-1 ">
+                            {cmtData.Header != '' && <h6 className="userid pt-2"><a className="ng-binding">{cmtData.Header}</a></h6>}
+                          </div>
+                          <p className="media-text ng-binding"><span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></p>
+                        </div>
+                      </li>
+                    })}
+                  </ul>
+                  {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 3 &&
+                    <div className="MoreComments ng-hide">
+                      <a className="MoreComments ng-binding ng-hide" title="Click to Reply" onClick={() => this.openAllCommentModal()}>
+                        All Comments({this.state.Result["Comments"].length})
+                      </a>
                     </div>
-                  </li>
-                })}
-                </ul>
-                {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>3 &&
-                  <div className="MoreComments ng-hide">
-                        <a className="MoreComments ng-binding ng-hide" title="Click to Reply" onClick={()=>this.openAllCommentModal()}>
-                            All Comments({this.state.Result["Comments"].length})
-                        </a>
-                  </div>
-                }
-              </div>
+                  }
+                </div>
               }
             </div>
 
-                                    </div>
-                                </div>
+          </div>
+        </div>
 
-        
+
         <Modal isOpen={this.state.isModalOpen} isBlocking={false}>
-              <div className='modal-dialog modal-help' style={{width: '890px'}}>
-                <div className='modal-content'>
-                  <div className='modal-header'>
-                      <h3 className='modal-title'>Update Comment</h3>
-                      <button type="button" className='close' style={{minWidth: "10px"}} onClick={(e) =>this.CloseModal(e) }>x</button>
-                  </div>
-                  <div className='modal-body'>
-                    <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
-                  {/*<Editor
+         
+        
+            <div >
+              <div className='modal-header'>
+                <h3 className='modal-title'>Update Comment</h3>
+      
+                <Tooltip/> <button type="button" className='close' style={{ minWidth: "10px" }} onClick={(e) => this.CloseModal(e)}>x</button>
+              </div>
+              <div className='modal-body'>
+                <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
+                {/*<Editor
                       editorState={editorState}
                       onEditorStateChange={this.onEditorStateChange}                     
                       toolbarClassName="toolbarClassName"
@@ -626,199 +656,315 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       editorClassName="editorClassName"
                       wrapperStyle={{ width: '100%', border: "2px solid black", height:'60%' }}
                   />*/}
-                  </div>
-                  <div className="modal-footer">
-                    <button type="button" className="btn btn-primary" onClick={(e) =>this.updateComment() } >Save</button>
-                    <button type="button" className="btn btn-default" onClick={(e) =>this.CloseModal(e) }>Cancel</button>
-                  </div>
-                </div>
-              </div>          
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-primary" onClick={(e) => this.updateComment()} >Save</button>
+                <button type="button" className="btn btn-default" onClick={(e) => this.CloseModal(e)}>Cancel</button>
+              </div>
+            </div>
+      
         </Modal>
 
         <Modal isOpen={this.state.AllCommentModal} isBlocking={false}>
           <div className='modal-dialog modal-help'>
-          <div id='ShowAllCommentsId'>
-            <div className='modal-content'>
+            <div id='ShowAllCommentsId'>
+              <div className='modal-content'>
                 <div className='modal-header'>
                   {this.state.Result["Comments"] != undefined && this.state.Result["Comments"].length > 0 &&
-                    <h3 className='modal-title'>Comment: {this.state.Result["Title"] +' ('+this.state.Result["Comments"].length +')'}</h3>
-                  }  
-                    <button type="button" className='close' style={{minWidth: "10px"}} onClick={(e) =>this.closeAllCommentModal(e) }>x</button>
+                    <h3 className='modal-title'>Comment: {this.state.Result["Title"] + ' (' + this.state.Result["Comments"].length + ')'}</h3>
+                  }
+                  <button type="button" className='close' style={{ minWidth: "10px" }} onClick={(e) => this.closeAllCommentModal(e)}>x</button>
                 </div>
                 <div className='modal-body bg-f5f5 clearfix'>
-                <div className="col-sm-12  pl-10 boxbackcolor" id="ShowAllComments">                
-                  <div className="col-sm-12 mt-10 mb-10 padL-0 PadR0">
+                  <div className="col-sm-12  pl-10 boxbackcolor" id="ShowAllComments">
+                    <div className="col-sm-12 mt-10 mb-10 padL-0 PadR0">
                       <div className="col-sm-12 mb-10 pl-7 PadR0">
                         <div className="col-sm-11 padL-0">
-                          <textarea id="txtCommentModal" onChange={(e)=>this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>                          
+                          <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
                           <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                         </div>
                         <div className="col-sm-1 padL-0">
                           <div className="icon_post">
-                            <a onClick={()=>this.PostComment('txtCommentModal')} ><img title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png"/></a>
+                            <a onClick={() => this.PostComment('txtCommentModal')} ><img title="Save changes & exit" className="ng-binding" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/Post.png" /></a>
                           </div>
                         </div>
                       </div>
-                      {this.state.Result["Comments"] != null && this.state.Result["Comments"].length>0 && this.state.Result["Comments"].map( (cmtData:any,i:any)=> {
+                      {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 && this.state.Result["Comments"].map((cmtData: any, i: any) => {
                         return <div className="DashboardpublicationItem ng-scope">
-                        <div className="col-sm-12 pad7">
-                          <div className="col-sm-1 padL-0 PadR0">
-                            <img style={{height:'35px',width:'35px'}} title={cmtData.AuthorName} 
-                              src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ? 
-                              cmtData.AuthorImage  :
-                                "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                              />                            
-                          </div>
-                          <div className="col-sm-11 padL-0 PadR0">
-                            <div className="" style={{color:'#069'}}>                              
-                              <span className="footerUsercolor ng-binding" style={{fontSize: 'smaller'}}>{cmtData.Created}</span>
-                              <a className="hreflink" onClick={()=>this.openEditModal(cmtData,i)}>
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
-                              </a>
-                              <a className="hreflink" title="Delete" onClick={()=>this.clearComment(i)}>
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
-                              </a>
+                          <div className="col-sm-12 pad7">
+                            <div className="col-sm-1 padL-0 PadR0">
+                              <img style={{ height: '35px', width: '35px' }} title={cmtData.AuthorName}
+                                src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ?
+                                  cmtData.AuthorImage :
+                                  "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                              />
                             </div>
-                            {cmtData.Header !='' && <b className="ng-binding">{cmtData.Header}</b>}
-                          </div>
-                          <div className="col-sm-1"></div>
-                          <div className="col-sm-11 padL-0">
-                            <span id="pageContent" className="ng-binding"><span dangerouslySetInnerHTML={{ __html: cmtData.Description}}></span></span>
+                            <div className="col-sm-11 padL-0 PadR0">
+                              <div className="" style={{ color: '#069' }}>
+                                <span className="footerUsercolor ng-binding" style={{ fontSize: 'smaller' }}>{cmtData.Created}</span>
+                                <a className="hreflink" onClick={() => this.openEditModal(cmtData, i)}>
+                                  <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
+                                </a>
+                                <a className="hreflink" title="Delete" onClick={() => this.clearComment(i)}>
+                                  <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
+                                </a>
+                              </div>
+                              {cmtData.Header != '' && <b className="ng-binding">{cmtData.Header}</b>}
+                            </div>
+                            <div className="col-sm-1"></div>
+                            <div className="col-sm-11 padL-0">
+                              <span id="pageContent" className="ng-binding"><span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></span>
+                            </div>
                           </div>
                         </div>
-                      </div>
                       })}
-                      
-                  </div>          
 
-                </div>
+                    </div>
+
+                  </div>
                 </div>
                 <div className="modal-footer">
-                  
-                  <button type="button" className="btn btn-default" onClick={(e) =>this.closeAllCommentModal(e) }>Cancel</button>
+
+                  <button type="button" className="btn btn-default" onClick={(e) => this.closeAllCommentModal(e)}>Cancel</button>
                 </div>
+              </div>
             </div>
-          </div>          
-          </div>          
+          </div>
         </Modal>
 
-        {this.state.Result !=null && this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 &&
-        <div id='htmlMailBody' style={{display:'none'}}>
-        <p><a><span>{this.state.Result["Title"]}</span></a></p>
-        <table>
-          <tr>
-            <td>
-              {/* table for Comments */}
-              <table style={{border:'1px solid black'}}>
-                <tr>
-                  <td colSpan={2}>Comments ({this.state.Result["Comments"].length})</td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                </tr>
-                {this.state.Result["Comments"].map( (cmtData:any,i:any)=> {
-                  return  <tr>
-                          <td><span>{cmtData.Description}</span></td>
-                          <td><span>{cmtData.Created}</span></td>
+        {this.state.Result != null && this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 &&
+          <div id='htmlMailBody' style={{ display: 'none' }}>
+            
+            <div style={{marginTop:"11.25pt"}}>
+              <a href={this.state.Result["TaskUrl"]} target="_blank">{this.state.Result["Title"]}</a><u></u><u></u></div>
+            <table cellPadding="0" width="100%" style={{width:"100.0%"}}>
+                <tbody>
+                  <tr>
+                    <td width="70%" valign="top" style={{width:'70.0%', padding:'.75pt .75pt .75pt .75pt'}}>
+                    <table cellPadding="0" width="99%" style={{width:"99.0%"}}>
+                      <tbody>
+                          <tr>
+                            <td style={{padding:".75pt .75pt .75pt .75pt"}}></td>
                           </tr>
-                })}
-                
-              </table>
-            </td>
-            <td>
-              {/* table for Basid info */}
-              <table style={{border:'1px solid black'}}>
-                <tr>
-                  <td>
-                    <table>
-                      <tr>
-                        <td colSpan={5}>
-                        Task Details
-                        </td>
-                      </tr>
-                      <tr><td colSpan={5}></td></tr>
-                      <tr>
-                        <td>Task URL:</td>
-                        <td colSpan={4}>{this.state.Result["component_url"] != null ? this.state.Result["component_url"].Url : ''}</td>
-                      </tr>
-                      <tr><td colSpan={5}></td></tr>
-                      <tr>
-                        <td>Component:</td>
-                        <td></td>
-                        <td></td>
-                        <td>Team:</td>
-                        <td></td>
-                      </tr>
-                      <tr><td colSpan={5}></td></tr>
+                          <tr>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Task Id:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["ID"]}</span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Component:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p>{this.state.Result["Component"] != null &&
+                                this.state.Result["Component"].length > 0 && 
+                                <span style={{fontSize:'10.0pt',color:'black'}}>
+                                  {this.joinObjectValues(this.state.Result["Component"])}
+                                </span>
+                                }
+                                <span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Priority:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["Priority"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Start Date:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["StartDate"]}</span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Completion Date:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["CompletedDate"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Due Date:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["DueDate"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Team Members:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                            <p>{this.state.Result["TeamMembers"] != null &&
+                                this.state.Result["TeamMembers"].length > 0 && 
+                                <span style={{fontSize:'10.0pt',color:'black'}}>
+                                  {this.joinObjectValues(this.state.Result["TeamMembers"])}
+                                </span>
+                                }
+                                <span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Created By:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["StartDate"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Created:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Categories:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["Categories"]}</span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>Status:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["Status"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>% Complete:</span></b><u></u><u></u></p>
+                            </td>
+                            <td colSpan={2} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>{this.state.Result["PercentComplete"]}</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{border:'solid #cccccc 1.0pt',background:'#f4f4f4',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><b><span style={{fontSize:'10.0pt',color:'black'}}>URL:</span></b><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td colSpan={7} style={{border:'solid #cccccc 1.0pt',background:'#fafafa',padding:'.75pt .75pt .75pt .75pt'}}>
+                                <p><span style={{fontSize:'10.0pt',color:'black'}}>
+                                  {this.state.Result["component_url"] != null &&
+                                    <a href={this.state.Result["component_url"].Url} target="_blank">{this.state.Result["component_url"].Url}</a>
+                                  }</span><span style={{color:"black"}}> </span><u></u><u></u></p>
+                            </td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                          </tr>
+                          <tr>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                            <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                          </tr>
+                          <tr>
+                            <td width="91" style={{border:"none"}}></td>
+                            <td width="46" style={{border:"none"}}></td>
+                            <td width="46" style={{border:"none"}}></td>
+                            <td width="100" style={{border:"none"}}></td>
+                            <td width="53" style={{border:"none"}}></td>
+                            <td width="51" style={{border:"none"}}></td>
+                            <td width="74" style={{border:"none"}}></td>
+                            <td width="32" style={{border:"none"}}></td>
+                            <td width="33" style={{border:"none"}}></td>
+                          </tr>
+                      </tbody>
                     </table>
-                    <table>
-                      <tr>
-                        <td>Status:</td>
-                        <td></td>
-                        <td>Priority:</td>
-                        <td></td>
-                        <td>Created By:</td>
-                        <td></td>
-                        <td>Modified By:</td>
-                      </tr>
-                      <tr>
-                        <td>{this.state.Result["CompletedDate"]} {this.state.Result["Status"]}</td>
-                        <td></td>
-                        <td>{this.state.Result["Priority"]}</td>
-                        <td></td>
-                        <td>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</td>
-                        <td></td>
-                        <td>{this.state.Result["ModifiedBy"] != null && this.state.Result["ModifiedBy"].length > 0 && this.state.Result["ModifiedBy"][0].Title}</td>
-                      </tr>
-                      <tr>
-                        <td colSpan={7}></td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-        <table style={{border:'1px solid black'}}>
-          <tr>
-            <td>
-              <table>
-                <tr>
-                  <td colSpan={3}>Task Description : </td>
-                </tr>
-                <tr>
-                  <td></td>
-                </tr>                
-                {this.state.Result["SharewebTaskType"] !=null && (this.state.Result["SharewebTaskType"] !='' || 
-                    this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null && 
-                    this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 && 
-                    this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title!='' &&
-                    this.state.Result["FeedBack"][0].FeedBackDescriptions.map( (fbData:any,i:any)=> {
-                      return <table>
-                                  <tr>
-                                    <td>{i+1}.</td>
-                                    <td>{fbData['Title'].replace(/<[^>]*>/g, '')}</td>
+                    <table cellPadding="0" width="99%" style={{width:"99.0%"}}>
+                       <tbody>
+                          <tr>
+                             <td style={{padding:'.75pt .75pt .75pt .75pt'}}></td>
+                          </tr>
+                          
+                             
+                             {this.state.Result["FeedBack"] != null &&
+                              this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
+                              this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
+                              this.state.Result["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
+                                return <>  
+                                <tr>
+                                  <td>
+                                    <p><span style={{fontSize:'10.0pt',color:'#6f6f6f'}}>{i + 1}.<u></u><u></u></span></p>
+                                  </td>                                
+                                  <td><span  dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                                    {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                      return <div style={{border:'solid #cccccc 1.0pt', padding:'7.0pt 7.0pt 7.0pt 7.0pt', marginTop:'3.75pt'}}>
+                                      <div style={{marginBottom:'3.75pt'}}>
+                                         <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
+                                      </div>
+                                      <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span><span  dangerouslySetInnerHTML={{ __html: fbComment['Title']}}></span><u></u><u></u></span></p>
+                                   </div>                                     
+                                    
+                                    })}
+                                  </td>
                                   </tr>
-                        {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map( (fbSubData:any,j:any)=> {
-                          return <tr>
-                            <td>{i+1}.{j+1}</td>
-                            <td>{fbSubData['Title'].replace(/<[^>]*>/g, '')}</td>
-                          </tr>
-                        })}
-                      </table>                      
-                    })}               
-                
-              </table>
-            </td>
-          </tr>
-        </table>
-      </div>
-        }
-        
+                                  {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                                    return <>
+                                    <tr>
+                                      <td>
+                                      <p><span style={{fontSize:'10.0pt',color:'#6f6f6f'}}>{i+1}.{j+1}.<u></u><u></u></span></p>
+                                      </td> 
+                                      <td><span  dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                        {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments'].map((fbSubComment: any) => {
+                                          return <div style={{border:'solid #cccccc 1.0pt', padding:'7.0pt 7.0pt 7.0pt 7.0pt', marginTop:'3.75pt'}}>
+                                          <div style={{marginBottom:'3.75pt'}}>
+                                             <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span style={{fontSize:'10.0pt', color:'black'}}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
+                                          </div>
+                                          <p style={{marginLeft:'1.5pt',background:'#fbfbfb'}}><span style={{fontSize:'10.0pt', color:'black'}}><span  dangerouslySetInnerHTML={{ __html: fbSubComment['Title']}}></span><u></u><u></u></span></p>
+                                       </div>                                     
+                                    
+                                      })}
+                                    </td>
+                                    </tr>
+                                    </>
+                                  })} 
+                                                                
+                                  
 
-      </div>      
+                                </>
+                              })}                             
+                          
+                       </tbody>
+                    </table>
+                    </td>
+                    <td width="22%" style={{width:'22.0%', padding:'.75pt .75pt .75pt .75pt'}}>
+                      <table cellPadding={0} width="100%" style={{width:'100.0%', border:'solid #dddddd 1.0pt', borderRadius:'4px'}}>
+                        <tbody>
+                           <tr>
+                              <td style={{border:'none', borderBottom:'solid #dddddd 1.0pt', background:'whitesmoke',padding:'.75pt .75pt .75pt .75pt'}}>
+                                 <p style={{marginBottom: '1.25pt'}}><span style={{color:"#333333"}}>Comments:<u></u><u></u></span></p>
+                              </td>
+                           </tr>
+                           <tr>
+                             <td style={{border:'none', padding:'.75pt .75pt .75pt .75pt'}}>
+                             {this.state.Result["Comments"].map((cmtData: any, i: any) => {
+                                return <div style={{border:'solid #cccccc 1.0pt', padding:'7.0pt 7.0pt 7.0pt 7.0pt', marginTop:'3.75pt'}}>
+                                   <div style={{marginBottom:"3.75pt"}}>
+                                      <p style={{marginBottom:'1.25pt', background:'#fbfbfb'}}>
+                                        <span style={{color:'black'}}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                   </div>
+                                   <p style={{marginBottom:'1.25pt', background:'#fbfbfb'}}>
+                                    <span style={{color:'black'}}>{cmtData.Description}</span></p>
+                                </div>
+                                 })}
+                             </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+            
+          </div>
+        }
+
+
+      </div>
     );
   }
 }

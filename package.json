@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "gulp bundle",
-    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=8096\" gulp bundle",
+    "dev_more_mem": "NODE_OPTIONS=\"--max_old_space_size=9096\" gulp bundle",
     "clean": "gulp clean",
     "test": "gulp test"
   },
@@ -60,9 +60,9 @@
   "devDependencies": {
     "@microsoft/eslint-config-spfx": "1.15.2",
     "@microsoft/eslint-plugin-spfx": "1.15.2",
-    "@microsoft/rush-stack-compiler-3.9": "0.4.47",
+    "@microsoft/rush-stack-compiler-3.9": "^0.5.0",
     "@microsoft/rush-stack-compiler-4.5": "0.2.2",
-    "@microsoft/sp-build-web": "1.14.0",
+    "@microsoft/sp-build-web": "^1.16.1",
     "@microsoft/sp-module-interfaces": "1.16.1",
     "@microsoft/sp-tslint-rules": "1.14.0",
     "@rushstack/eslint-config": "2.5.1",

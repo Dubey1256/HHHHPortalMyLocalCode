@@ -24,7 +24,6 @@ const LinkedComponent = (item: any) => {
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
-
         if (item.props.linkedComponent != undefined && item.props.linkedComponent.length == 0)
             item.props.linkedComponent = CheckBoxdata;
         else {
@@ -36,10 +35,8 @@ const LinkedComponent = (item: any) => {
     }
 
     const handleOpen = (item: any) => {
-
         item.show = item.show = item.show == true ? false : true;
         setComponentsData(data => ([...data]));
-
     };
     var Response: [] = [];
     const GetTaskUsers = async () => {
@@ -51,13 +48,11 @@ const LinkedComponent = (item: any) => {
             .get();
         Response = taskUsers;
         //console.log(this.taskUsers);
-
     }
     const GetComponents = async () => {
         var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
         var SubComponentsData: any[] = [];
         var FeatureData: any[] = [];
-
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let componentDetails = [];
         componentDetails = await web.lists
@@ -170,7 +165,7 @@ const LinkedComponent = (item: any) => {
             <div className="">
                 <div className="modal-body">
                     <div className="Alltable mt-10">
-                        <div className="col-sm-12 pad0 smart">
+                        <div className="col-sm-12 p-0 smart">
                             <div className="section-event">
                                 <div className="wrapper">
                                     <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
@@ -280,8 +275,8 @@ const LinkedComponent = (item: any) => {
                                                 return (
                                                     <>
                                                         <tr >
-                                                            <td className="pad0" colSpan={10}>
-                                                                <table className="table taskprofilepagegreen" style={{ width: "100%" }}>
+                                                            <td className="p-0" colSpan={10}>
+                                                                <table className="mb-0 table taskprofilepagegreen" style={{ width: "100%" }}>
                                                                     <tr className="bold for-c0l">
 
                                                                         <td style={{ width: "2%" }}>
@@ -389,8 +384,8 @@ const LinkedComponent = (item: any) => {
 
                                                                         <>
                                                                             <tr >
-                                                                                <td className="pad0" colSpan={10}>
-                                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                                <td className="p-0" colSpan={10}>
+                                                                                    <table className="mb-0 table" style={{ width: "100%" }}>
                                                                                         <tr className="for-c02">
                                                                                             <td style={{ width: "2%" }}>
                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childitem)}>
@@ -492,8 +487,8 @@ const LinkedComponent = (item: any) => {
                                                                                     {childitem.Child.map(function (childinew: any) {
                                                                                         return (
                                                                                             <tr >
-                                                                                                <td className="pad0" colSpan={10}>
-                                                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                                                <td className="p-0" colSpan={10}>
+                                                                                                    <table className="mb-0 table" style={{ width: "100%" }}>
                                                                                                         <tr className="tdrow">
                                                                                                             <td style={{ width: "2%" }}>
 
@@ -589,9 +584,9 @@ const LinkedComponent = (item: any) => {
                         </div>
                     </div>
                 </div>
-                <footer>
-                    <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
-                    <button type="button" className="btn btn-grey" onClick={setModalIsOpenToFalse}>Cancel</button>
+                <footer className="float-end mt-2">
+                    <button type="button" className="btn btn-primary px-3" onClick={setModalIsOpenToOK}>OK</button>
+                    <button type="button" className="btn btn-greyb ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
                 </footer>
             </div >
         </Panel >

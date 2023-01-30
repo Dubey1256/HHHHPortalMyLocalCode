@@ -37,10 +37,10 @@ const SmartTimeTotalFunction=(item:any)=>{
         await GetTaskUsers();
 
     }
-    if(smartTimeTotal!=null){
-         console.log("smartTimeTotal",smartTimeTotal)
-        item.CallBackSumSmartTime(smartTimeTotal);
-    }
+    // if(smartTimeTotal!=null){
+    //      console.log("smartTimeTotal",smartTimeTotal)
+    //     item.CallBackSumSmartTime(smartTimeTotal);
+    // }
     const GetTaskUsers = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let taskUsers = [];
@@ -84,8 +84,14 @@ const SmartTimeTotalFunction=(item:any)=>{
         
 
         getStructurefTimesheetCategories();
-   
-        var filteres = "Task" + items.siteType + "/Id eq " + items.Id;
+               if(items.siteType == "Offshore Tasks"){
+                var siteType="OffshoreTasks"
+                var filteres = "Task" + siteType + "/Id eq " + items.Id;
+               }
+               else{
+                var filteres = "Task" + items.siteType + "/Id eq " + items.Id;
+               }
+    
         var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
         var count = 0;
          if(items.siteType=="Migration"||items.siteType=="ALAKDigital"){
@@ -311,15 +317,11 @@ const SmartTimeTotalFunction=(item:any)=>{
             if(type.AdditionalTime!=undefined&&type.AdditionalTime.length>0){
 
                 $.each(type.AdditionalTime,function(index:any,time:any){
-
-                    if(time.TaskTime.includes('.')){
-
-                       var Time=parseInt(time.TaskTime.split('.')[0])+(parseInt(time.TaskTime.split('.')[1]))/100 ;
-
-                       TotalTime =  TotalTime + Time;
-
-                       console.log("SMARTTIMETOTALDECIMAL",TotalTime)
-
+                    
+                  if(time.TaskTime.toString().includes('.')){
+               var Time=parseInt(time.TaskTime.toString().split('.')[0])+(parseInt(time.TaskTime.toString().split('.')[1]))/100 ;
+                 TotalTime =  TotalTime + Time;
+                 console.log("SMARTTIMETOTALDECIMAL",TotalTime)
                     }
 
                     else{var Time = parseInt(time.TaskTime)
@@ -331,7 +333,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                    
 
                 })
-
+                item.CallBackSumSmartTime(TotalTime);
                 setsmartTimeTotal(TotalTime);
 
             }

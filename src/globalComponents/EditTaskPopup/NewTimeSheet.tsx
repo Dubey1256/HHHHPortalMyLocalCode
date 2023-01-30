@@ -19,7 +19,7 @@ const NewTameSheetComponent = (props: any) => {
     return (
         <div>
             <div className="col-sm-7">
-                <TeamConfigurationCard ItemInfo={itemInfo} parentCallback={DDComponentCallBack}>
+                <TeamConfigurationCard ItemInfo={TeamConfigInfo} parentCallback={DDComponentCallBack}>
                 </TeamConfigurationCard>
             </div>
             <div className='col-sm-7'>

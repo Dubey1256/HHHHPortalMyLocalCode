@@ -626,7 +626,7 @@ const ProjectManagementMain = () => {
                                                 </td>
                                                 <td>{item.Shareweb_x0020_ID}</td>
                                                 <td>
-                                                    <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
+                                                    <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
 
                                                 </td>
                                                 <td>
