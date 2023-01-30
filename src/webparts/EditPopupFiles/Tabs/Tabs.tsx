@@ -1,6 +1,6 @@
 import * as React from 'react';
 import TabTitle from "./TabTitle"
-import '../../cssFolder/Style.scss';
+import './styles.scss'
 type Props = {
   children: React.ReactElement[]
 }

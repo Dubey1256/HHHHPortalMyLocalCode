@@ -1,6 +1,5 @@
 import * as React from 'react';
-
-import '../../cssFolder/Style.scss';
+import './styles.scss'
 import Tabs from './Tabs';
 type Props = {
   title: string
