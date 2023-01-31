@@ -260,11 +260,11 @@ const Picker = (item: any) => {
                         </div>
 
                     </div>
-                    <div className="modal-footer">
-                        <button type="button" className="btn btn-primary" onClick={saveCategories}>
+                    <footer>
+                        <button type="button" className="btn btn-primary px-2" onClick={saveCategories}>
                             OK
                         </button>
-                    </div>
+                    </footer>
                 </div>
             </Panel>
         </>

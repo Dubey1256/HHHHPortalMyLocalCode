@@ -182,7 +182,7 @@ const ComponentPortPolioPopup = (item: any) => {
             <div>
                 <div className="modal-body">
                     <div className="Alltable mt-10">
-                        <div className="col-sm-12 pad0 smart">
+                        <div className="col-sm-12 p-0 smart">
                             <div className="section-event">
                                 <div className="wrapper">
                                     <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
@@ -212,7 +212,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     <div></div>
                                                 </th>
                                                 <th style={{ width: "22%" }}>
-                                                    <div style={{ width: "21%" }} className="smart-relative form-control">
+                                                    <div style={{ width: "21%" }} className="smart-relative ">
                                                         <input type="search" placeholder="Title" className="full_width searchbox_height" />
 
                                                         {/* <span className="sorticon">
@@ -224,7 +224,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "18%" }}>
-                                                    <div style={{ width: "17%" }} className="smart-relative form-control">
+                                                    <div style={{ width: "17%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
@@ -235,7 +235,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "20%" }}>
-                                                    <div style={{ width: "19%" }} className="smart-relative form-control">
+                                                    <div style={{ width: "19%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
@@ -247,7 +247,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
-                                                    <div style={{ width: "9%" }} className="smart-relative form-control">
+                                                    <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
@@ -270,7 +270,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
-                                                    <div style={{ width: "9%" }} className="smart-relative form-control">
+                                                    <div style={{ width: "9%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Due"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
@@ -292,8 +292,8 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 return (
                                                     <>
                                                         <tr >
-                                                            <td className="pad0" colSpan={10}>
-                                                                <table className="table" style={{ width: "100%" }}>
+                                                            <td className="p-0" colSpan={10}>
+                                                                <table className="mb-0 table" style={{ width: "100%" }}>
                                                                     <tr className="bold for-c0l">
 
                                                                         <td style={{ width: "2%" }}>
@@ -401,8 +401,8 @@ const ComponentPortPolioPopup = (item: any) => {
 
                                                                         <>
                                                                             <tr >
-                                                                                <td className="pad0" colSpan={10}>
-                                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                                <td className="p-0" colSpan={10}>
+                                                                                    <table className="mb-0 table" style={{ width: "100%" }}>
                                                                                         <tr className="for-c02">
                                                                                             <td style={{ width: "2%" }}>
                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childitem)}>
@@ -504,8 +504,8 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                     {childitem.Child.map(function (childinew: any) {
                                                                                         return (
                                                                                             <tr >
-                                                                                                <td className="pad0" colSpan={10}>
-                                                                                                    <table className="table" style={{ width: "100%" }}>
+                                                                                                <td className="p-0" colSpan={10}>
+                                                                                                    <table className="mb-0 table" style={{ width: "100%" }}>
                                                                                                         <tr className="tdrow">
                                                                                                             <td style={{ width: "2%" }}>
 

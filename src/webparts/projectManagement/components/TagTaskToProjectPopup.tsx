@@ -452,7 +452,7 @@ const TagTaskToProjectPopup = (props: any) => {
                                                                            title={item?.siteType} src={item?.siteIcon} />
                                                                     </td >
                                                                     <td style={{ width: "10%" }}>{item?.Shareweb_x0020_ID}</td>
-                                                                    <td style={{ width: "35%" }}> <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-SPFx.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span></td>
+                                                                    <td style={{ width: "35%" }}> <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span></td>
                                                                     <td style={{ width: "20%" }}>
                                                                         {item.Component != undefined &&
                                                                             <>

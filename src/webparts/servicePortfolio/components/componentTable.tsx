@@ -17,6 +17,7 @@ import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryCompone
 import { any, number } from 'prop-types';
 import CheckboxTree from 'react-checkbox-tree';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
+import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 
 
 
@@ -50,6 +51,8 @@ function ComponentTable(SelectedProp: any) {
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
     const [IsUpdated, setIsUpdated] = React.useState('');
+    const [tablecontiner, settablecontiner]:any = React.useState("hundred");
+    const [Isshow, setIsshow] = React.useState(false);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
     var IsExitSmartfilter = function (array: any, Item: any) {
@@ -398,19 +401,34 @@ function ComponentTable(SelectedProp: any) {
 
     }
     const handleOpen2 = (item: any) => {
-
         item.show = item.show = item.show == true ? false : true;
         setfilterItems(filterItems => ([...filterItems]));
-
-
     };
     const handleOpen = (item: any) => {
-
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
-
     };
+    const handleOpenAll = () => {
+       var Isshow1:any = Isshow == true ? false : true;
+        map(data, (obj) => {
+            obj.show = Isshow1;
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                map(obj.childs, (subchild) => {
+                    subchild.show = Isshow1;
+                    if (subchild.childs != undefined && subchild.childs.length > 0) {
+                        map(subchild.childs, (child) => {
+                            child.show = Isshow1;
+                        })
 
+                    }
+                })
+
+            }
+
+        })
+        setIsshow(Isshow1);
+        setData(data => ([...data]));
+    };
     const addModal = () => {
         setAddModalOpen(true)
     }
@@ -1256,6 +1274,7 @@ function ComponentTable(SelectedProp: any) {
             }
             if (result.Title == 'Others') {
                 //result['childs'] = result['childs'] != undefined ? result['childs'] : [];
+                result.childsLength =result.childs.length;
                 ComponentsData.push(result);
             }
         });
@@ -1267,10 +1286,10 @@ function ComponentTable(SelectedProp: any) {
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         subcomp.childsLength++;
-                        subcomp['childs'].unshift(featurecomp);;
+                        subcomp['childs'].push(featurecomp);;
                     }
                 })
-             DynamicSort(subcomp.childs,'Shareweb_x0020_ID');
+                DynamicSort(subcomp.childs, 'PortfolioLevel');
             }
         })
 
@@ -1283,10 +1302,10 @@ function ComponentTable(SelectedProp: any) {
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         subcomp.childsLength++;
-                        subcomp['childs'].unshift(featurecomp);;
+                        subcomp['childs'].push(featurecomp);;
                     }
                 })
-                 DynamicSort(subcomp.childs,'Shareweb_x0020_ID')
+                DynamicSort(subcomp.childs, 'PortfolioLevel')
             }
         })
 
@@ -1297,28 +1316,60 @@ function ComponentTable(SelectedProp: any) {
                         comp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         comp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         comp.childsLength++;
-                        comp['childs'].unshift(featurecomp);;
+                        comp['childs'].push(featurecomp);;
                     }
                 })
-                 DynamicSort(comp.childs, 'Shareweb_x0020_ID')
+                DynamicSort(comp.childs, 'PortfolioLevel')
             }
         })
-        //maidataBackup.push(ComponentsData)
-        // map(ComponentsData, (comp, index) => {
-        //     if (comp.childs != undefined && comp.childs.length > 0) {
-        //         DynamicSort(comp.childs, 'Shareweb_x0020_ID')
-        //         if (comp.childs != undefined && comp.childs.length > 0) {
-        //             map(comp.childs, (chil, index) => {
-        //                 if (chil.childs != undefined && chil.childs.length > 0)
-        //                     DynamicSort(chil.childs, 'Shareweb_x0020_ID')
-        //             })
-        //         }
-        //     }
-        // })
+        var array: any = [];
+        map(ComponentsData, (comp, index) => {
+            if (comp.childs != undefined && comp.childs.length > 0) {
+                var Subcomponnet = comp.childs.filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'SubComponent'));
+                DynamicSort(Subcomponnet, 'PortfolioLevel')
+                var SubTasks = comp.childs.filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Task'));
+                var SubFeatures = comp.childs.filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Feature'));
+                DynamicSort(SubFeatures, 'PortfolioLevel')
+                SubFeatures = SubFeatures.concat(SubTasks);
+                Subcomponnet = Subcomponnet.concat(SubFeatures);
+                comp['childs'] = Subcomponnet;
+                array.push(comp)
+
+                if (Subcomponnet != undefined && Subcomponnet.length > 0) {
+                    //  if (comp.childs != undefined && comp.childs.length > 0) {
+                    map(Subcomponnet, (subcomp, index) => {
+                        if (subcomp.childs != undefined && subcomp.childs.length > 0) {
+                            var Subchildcomponnet = subcomp.childs.filter((sub: any) => (sub.Item_x0020_Type === 'Feature'));
+                            DynamicSort(SubFeatures, 'PortfolioLevel')
+                            var SubchildTasks = subcomp.childs.filter((sub: any) => (sub.Item_x0020_Type === 'Task'));
+                            Subchildcomponnet = Subchildcomponnet.concat(SubchildTasks);
+                            subcomp['childs'] = Subchildcomponnet;
+                            // var SubchildTasks = subcomp.childs.filter((sub: any) => (sub.ItemType === 'SubComponnet'));
+                        }
+
+                    })
+                    // }
+                }
+                // if (SubFeatures != undefined && SubFeatures.length > 0) {
+                //     //  if (comp.childs != undefined && comp.childs.length > 0) {
+                //           map(SubFeatures, (subcomp, index) => {
+                //               if (subcomp.childs != undefined && subcomp.childs.length > 0) {
+                //                   //var Subchildcomponnet = subcomp.childs.filter((sub: any) => (sub.Item_x0020_Type === 'Feature'));
+                //                   var SubchildTasks = subcomp.childs.filter((sub: any) => (sub.Item_x0020_Type === 'Task'));
+                //                   subcomp['childs'] =SubchildTasks;
+                //                   // var SubchildTasks = subcomp.childs.filter((sub: any) => (sub.ItemType === 'SubComponnet'));
+                //               }
+
+                //           })
+                //      // }
+                //   }
+            } else array.push(comp)
+        })
+
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
-        setComponentsData(ComponentsData);
+        setComponentsData(array);
         setmaidataBackup(ComponentsData)
-        setData(ComponentsData);
+        setData(array);
         showProgressHide();
     }
 
@@ -1365,6 +1416,7 @@ function ComponentTable(SelectedProp: any) {
         var temp: any = {};
         temp.Title = 'Others';
         temp.childs = [];
+        temp.childsLength =0;
         temp.flag = true;
 
         // ComponetsData['allComponets'][i]['childs']
@@ -1376,6 +1428,7 @@ function ComponentTable(SelectedProp: any) {
                 temp.childs.push(task);
             }
         })
+        
         ComponetsData['allComponets'].push(temp);
         bindData();
     }
@@ -1453,7 +1506,11 @@ function ComponentTable(SelectedProp: any) {
 
     }
 
-
+// Expand Table 
+const expndpopup = (e: any) => {
+    
+    settablecontiner(e);
+  };
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1528,7 +1585,7 @@ function ComponentTable(SelectedProp: any) {
         setIsTimeEntry(false);
     }, []);
     const EditComponentPopup = (item: any) => {
-        item['siteUrl']='https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+        item['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
         setSharewebComponent(item);
@@ -1887,7 +1944,7 @@ function ComponentTable(SelectedProp: any) {
             </section>
 
 
-            <section className="TableContentSection taskprofilepagegreen">
+            <section className="TableContentSection taskprofilepagegreen" id={tablecontiner}>
                 <div className="container-fluid">
                     <section className="TableSection">
                         <div className="container p-0">
@@ -1941,17 +1998,20 @@ function ComponentTable(SelectedProp: any) {
                                             disabled={true}>
                                             Restructure
                                         </button>
-                                        <a onClick={clearSearch}>
-                                            <i className="brush"><FaPaintBrush /></i>
+                                        <a className="brush" onClick={clearSearch}>
+                                       <FaPaintBrush />
                                         </a>
-                                        <a onClick={Prints}>
-                                            <i className="print"><FaPrint /></i>
+                                        <a className='expand'>
+                                            <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                                         </a>
-                                        <a>
-                                            <CSVLink data={getCsvData()} >
-                                                <i className="excal"><FaFileExcel /></i>
+                                        <a onClick={Prints} className='Prints'>
+                                           <FaPrint />
+                                        </a>
+                                      
+                                            <CSVLink className="excal" data={getCsvData()} >
+                                               <FaFileExcel />
                                             </CSVLink>
-                                        </a>
+                                        
 
                                         {/* <span>
                                         <ExpandTable/>
@@ -1965,7 +2025,9 @@ function ComponentTable(SelectedProp: any) {
                                                 <thead>
                                                     <tr>
                                                         <th style={{ width: "2%" }}>
-                                                            <div></div>
+                                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
+                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                            </div>
                                                         </th>
                                                         <th style={{ width: "7%" }}>
                                                             <div style={{ width: "6%" }} className="smart-relative">
@@ -2204,8 +2266,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
-                                                                                                                {childitem.childs.length > 0 &&
-                                                                                                                    <span className='ms-1'>({childitem.childsLength})</span>
+                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type =='Feature' &&
+                                                                                                                    <span className='ms-1'>  ({childitem.childs.length})</span>
+                                                                                                                }
+                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type !='Feature' &&
+                                                                                                                    <span className='ms-1'>  ({childitem.childsLength})</span>
                                                                                                                 }
 
                                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -2308,9 +2373,15 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
-                                                                                                                                        {childinew.childs.length > 0 &&
+                                                                                                                                        {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
-                                                                                                                                        }
+                                                                                                                                        } */}
+                                                                                                                                         {childinew.childs.length > 0 && childinew.Item_x0020_Type =='Feature' &&
+                                                                                                                    <span className='ms-1'>  ({childinew.childs.length})</span>
+                                                                                                                }
+                                                                                                                {childinew.childs.length > 0 && childinew.Item_x0020_Type !='Feature' &&
+                                                                                                                    <span className='ms-1'>  ({childinew.childsLength})</span>
+                                                                                                                }
 
                                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
                                                                                                                                             <div className='popover__wrapper ms-1'>

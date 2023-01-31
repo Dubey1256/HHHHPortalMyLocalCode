@@ -185,7 +185,7 @@ export const getTaskId=(item: any)=> {
 }
 
 export const loadTaskUsers= async ()=> {
-    let taskUser ;
+    let taskUser  = undefined;
     try {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         taskUser = await web.lists

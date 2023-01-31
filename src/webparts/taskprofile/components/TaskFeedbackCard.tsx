@@ -3,6 +3,7 @@ import * as React from 'react';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import * as moment from 'moment';
 import {Modal} from '@fluentui/react';
+var sunchildcomment:any;
 export interface ITaskFeedbackProps {
     fullfeedback: any;
     feedback: any;
@@ -50,7 +51,9 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
   }
 
   
-  private showhideCommentBoxOfSubText(){    
+  private showhideCommentBoxOfSubText(j:any){ 
+ sunchildcomment=j;
+
     if (this.state.showcomment == 'none'){
       this.setState({ 
         showcomment_subtext:'block'
@@ -70,11 +73,12 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
+     var date= moment(new Date()).format('dd MMM yyyy HH:mm')
       let temp = {
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         // Created: new Date().toLocaleString('default',{ month: 'short',day:'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        Created:moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm A'),
+        Created:moment(date).format("DD MMM YYYY HH:mm"),
         Title:txtComment
       };
       //Add object in feedback
@@ -104,7 +108,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         // Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        Created: moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm A'),
+        Created: moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
         Title:txtComment
       };
       //Add object in feedback
@@ -218,6 +222,16 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                 <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
               }
               </li>
+              <li>
+              {this.state.fbData['LowImportance'] != null && this.state.fbData['LowImportance'] &&
+                <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+              }
+              </li>
+              <li>
+              {this.state.fbData['Phone'] != null && this.state.fbData['Phone'] &&
+                <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+              }
+              </li>
               </ul>
             </div>
 
@@ -262,7 +276,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         {this.state.fbData['Subtext'] != null && this.state.fbData['Subtext'].length > 0 && this.state.fbData['Subtext'].map( (fbSubData:any,j:any)=> {
         return <div className="col-sm-12 p-0 mb-2" style={{width: '100%'}}>
             <span className="d-block text-end">
-            <a  style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBoxOfSubText()}>Add Comment</a>
+            <a  style={{cursor:'pointer'}} onClick={(e) =>this.showhideCommentBoxOfSubText(j)}>Add Comment</a>
           </span>
 
           <div className="d-flex pe-0">
@@ -309,7 +323,9 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
             </div>
           </div>
-         <div className='d-flex '>
+
+
+         {sunchildcomment==j?<div className='d-flex ' >
           <div  className="col-sm-11 mt-2 p-0 " style={{display: this.state.showcomment_subtext}}>
             <textarea id="txtCommentSubtext" onChange={(e)=>this.handleInputChange(e)} style={{width:'100%'}} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
           </div>
@@ -317,7 +333,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           <div  className="col-sm-1 pe-0 mt-2 text-end " style={{display: this.state.showcomment_subtext}}>
             <button type="button"  className="post btn btn-primary" onClick={()=>this.SubtextPostButtonClick(j)}>Post</button>
           </div>
-          </div>
+          </div>:null}
         
         </div>
         })}
@@ -330,7 +346,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
                 <div style={{width:'99%', marginTop:'2%', padding:'2%'}}><textarea id="txtUpdateComment" rows={6} onChange={(e)=>this.handleUpdateComment(e)} style={{width: '100%',  marginLeft: '3px'}} >{this.state.CommenttoUpdate}</textarea></div>
                 <div style={{display:'flex', marginTop: '2%',float: 'right', width:'19%', marginBottom:'2%'}}>
                   <div><button className="btn btnPrimary" onClick={(e) =>this.updateComment() }>Save</button>
-                  <button className='btn btn-gray round 0 ms-1' onClick={(e) =>this.CloseModal(e) }>Cancel</button></div>
+                  <button className='btn btn-default round 0 ms-1' onClick={(e) =>this.CloseModal(e) }>Cancel</button></div>
                   
                 </div>
             </div>
