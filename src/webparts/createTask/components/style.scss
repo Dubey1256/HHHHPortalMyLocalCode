@@ -22,10 +22,17 @@
     background-color: #0000BC;
     color: white;
 }
+.sitecolor a{
+    text-decoration: none!important;
+    color: white !important;
+}
 .sitecolor:hover {
     text-align: center!important;
     background-color: #1e90ff;
     color: white;
+}
+.selectedTaskList {
+    background: #1e90ff !important;
 }
 .taskprofilepagegreen .selectedTaskList {
     background: #60cf60 !important;
