@@ -173,7 +173,7 @@ var imagUrls:any[]=[];
                                                                     id="coverImages"
                                                                     ng-show="selectedImageType == 'cover'">
                                                                    
-                                                                        <ul className="imageinfo-gallery">
+                                                                        <ul className="imageinfo-gallery d-flex">
                                                                              {imgdata.map((imgd) => {
                                                                             return(
                                                                                 <>

@@ -1,6 +1,6 @@
 import * as React from "react";
 // import ImagesC from "./Images";
-import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import { arraysEqual, Modal, Panel, PanelType, TextField } from 'office-ui-fabric-react';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
@@ -19,10 +19,19 @@ import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import { EditorState } from 'draft-js'
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "../../globalComponents/TeamConfiguration/TeamConfiguration";
+import Tooltip from "../../globalComponents/Tooltip";
 import ImagesC from "./Image";
+import { AllOut } from "@material-ui/icons";
 
-
-
+var PostTechnicalExplanations=''
+var PostDeliverables=''
+var PostShort_x0020_Description_x0020_On=''
+var PostBody=''
+var AllUsers:any=[]
+var Assin:any=[]
+var AssignedToIds: any = [];
+var ResponsibleTeamIds: any = [];
+var TeamMemberIds: any = [];
 function EditInstitution(item: any) {
     // Id:any
 
@@ -34,11 +43,17 @@ function EditInstitution(item: any) {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [CollapseExpend, setCollapseExpend] = React.useState(false);
+    const [CategoriesData, setCategoriesData] = React.useState('');
     const TeamConfigInfo = item.props;
+    const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [TeamConfig, setTeamConfig] = React.useState()
     const [date, setDate] = React.useState(undefined);
     const [Startdate, setStartdate] = React.useState(undefined);
+    const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
+    const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
+    const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
+    const [AssignUser, setAssignUser] = React.useState(undefined);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [editorState, setEditorState] = React.useState(EditorState.createEmpty());
     // $('.ms-Dialog-main .main-153').hide();
@@ -72,22 +87,55 @@ function EditInstitution(item: any) {
         setDate(date);
         setComponent(EditData => ([...EditData]));
     };
-    const Call = React.useCallback((item1) => {
+    const Call = React.useCallback((item1:any,type:any) => {
+        if (type == "SmartComponent") {
         if (EditData != undefined && item1 != undefined) {
             item.props.smartComponent = item1.smartComponent;
-            // setComponent([ item.props]);
+            setSmartComponentData(item1.smartComponent);
         }
+        
+    }
+
+    if (type == "Category") {
         if (item1 != undefined && item1.Categories != "") {
             var title: any = {};
             title.Title = item1.categories;
+            setCategoriesData(item1.categories)
             item.props.smartCategories = item1.smartCategories;
             //  item.props.smartCategories.push(title);
 
         }
+    }
         setIsComponentPicker(false);
         setIsComponent(false);
         // setComponent(CompoenetItem => ([...CompoenetItem]));
     }, []);
+    const GetTaskUsers = async () => {
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let taskUsers = [];
+        taskUsers = await web.lists
+            .getByTitle('Task Users')
+            .items
+            .top(4999)
+            .get();
+        AllUsers = taskUsers;
+        var UpdatedData:any={}
+      AllUsers.forEach(function(taskUser: any) {
+        // item.props.AssignedTo.forEach(function(assign:any){
+        //     if (taskUser.AssingedToUserId == assign.Id) {
+        //         UpdatedData['AuthorName'] = taskUser.Title;
+        //         UpdatedData['Company'] = taskUser.Company;
+        //         UpdatedData['AuthorImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+        //     }
+        //     Assin.push(UpdatedData)
+        // })
+        setAssignUser(Assin)
+           
+
+        });
+        
+
+    }
     // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
     //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
 
@@ -176,6 +224,7 @@ function EditInstitution(item: any) {
             .filter("Id eq " + item.props.Id + "")
             .get()
         console.log(componentDetails);
+       
         // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
         // $.ajax({
         //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
@@ -230,6 +279,14 @@ function EditInstitution(item: any) {
 
                 }
             }
+              item.AssignedUsers = [];
+            AllUsers?.map((userData: any) => {
+                item.AssignedTo?.map((AssignedUser: any) => {
+                    if (userData?.AssingedToUserId == AssignedUser.Id) {
+                        item. AssignedUsers.push(userData);
+                    }
+                })
+            })
             if (item.SharewebCategories != undefined) {
                 if (item.SharewebCategories.results != undefined) {
                     map(item.SharewebCategories.results, (bj) => {
@@ -249,6 +306,12 @@ function EditInstitution(item: any) {
             if (item.DueDate != undefined) {
                 item.DueDate = moment(item.DueDate).format('DD/MM/YYYY')
                 // setDate(item.DueDate);
+            }
+            if (item.Categories != null) {
+                setCategoriesData(item.Categories);
+            }
+            if (item.Component?.length > 0) {
+                setSmartComponentData(item.Component);
             }
             if (item.StartDate != undefined) {
                 item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
@@ -314,6 +377,8 @@ function EditInstitution(item: any) {
         console.log(smartmetaDetails);
     }
     React.useEffect(() => {
+
+        GetTaskUsers();
         var initLoading = function () {
             if (item.props != undefined) {
                 var Item = item.props;
@@ -606,25 +671,66 @@ function EditInstitution(item: any) {
         var item: any = {}
         var smartComponentsIds: any[] = [];
         var Items = EditData;
-
-        if (Items.smartComponent != undefined) {
-            Items.smartComponent.map((com: any) => {
-                // if (com.Title != undefined) {
-
-                //     component = com.Title
-
-                // }
-
-                if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
-
-                    $.each(Items.smartComponent, function (index: any, smart: any) {
-
+        if (smartComponentData != undefined && smartComponentData.length > 0) {
+            smartComponentData.map((com: any) => {
+                if (smartComponentData != undefined && smartComponentData.length >= 0) {
+                    $.each(smartComponentData, function (index: any, smart: any) {
                         smartComponentsIds.push(smart.Id);
-
                     })
                 }
             })
         }
+        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+            TaskAssignedTo.map((taskInfo) => {
+                AssignedToIds.push(taskInfo.Id);
+            })
+        } else {
+            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                EditData.AssignedTo.map((taskInfo: any) => {
+                    AssignedToIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+            TaskTeamMembers.map((taskInfo) => {
+                TeamMemberIds.push(taskInfo.Id);
+            })
+        } else {
+            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                EditData.Team_x0020_Members.map((taskInfo: any) => {
+                    TeamMemberIds.push(taskInfo.Id);
+                })
+            }
+        }
+        if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+            TaskResponsibleTeam.map((taskInfo) => {
+                ResponsibleTeamIds.push(taskInfo.Id);
+            })
+        } else {
+            if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
+                EditData.Responsible_x0020_Team.map((taskInfo: any) => {
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                })
+            }
+        }
+        // if (Items.smartComponent != undefined) {
+        //     Items.smartComponent.map((com: any) => {
+        //         // if (com.Title != undefined) {
+
+        //         //     component = com.Title
+
+        //         // }
+
+        //         if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
+
+        //             $.each(Items.smartComponent, function (index: any, smart: any) {
+
+        //                 smartComponentsIds.push(smart.Id);
+
+        //             })
+        //         }
+        //     })
+        // }
         if (Items.ItemRankTitle != undefined && Items.ItemRankTitle != 'Select Item Rank')
             var ItemRank = SharewebItemRank.filter((option: { rankTitle: any; }) => option.rankTitle == Items.ItemRankTitle)[0].rank;
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
@@ -638,7 +744,8 @@ function EditInstitution(item: any) {
             Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
             StartDate: Startdate != undefined ? new Date(Startdate).toDateString() : Startdate,
             DueDate: date != undefined ? new Date(date).toDateString() : date,
-            CompletedDate: Completiondate != undefined ? new Date(Startdate).toDateString() : Completiondate,
+            CompletedDate: Completiondate != undefined ? new Date(Completiondate).toDateString() : Completiondate,
+            Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
             Synonyms: JSON.stringify(Items['Synonyms']),
             Package: Items.Package,
             AdminStatus: Items.AdminStatus,
@@ -648,14 +755,20 @@ function EditInstitution(item: any) {
             Idea: Items.Idea,
             Background: Items.Background,
             Admin_x0020_Notes: Items.Admin_x0020_Notes,
-            // component_x0020_link: {
-            //     '__metadata': { 'type': 'SP.FieldUrlValue' },
-            //     'Description': Items.component_x0020_link != undefined ? Items.component_x0020_link.Url : null,
-            //     'Url': Items.component_x0020_link != undefined ? Items.component_x0020_link.Url : null,
-            // },
-            // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete,
+            component_x0020_link: {
+                Description: Items.component_x0020_link != undefined ? Items.component_x0020_link : null,
+                 Url: Items.component_x0020_link != undefined ? Items.component_x0020_link : null,
+            },
+            TechnicalExplanations:PostTechnicalExplanations != undefined && PostTechnicalExplanations != ''?PostTechnicalExplanations:EditData.TechnicalExplanations,
+            Deliverables:PostDeliverables != undefined &&  PostDeliverables != ''?PostDeliverables:EditData.Deliverables,
+            Short_x0020_Description_x0020_On: PostShort_x0020_Description_x0020_On != undefined &&  PostShort_x0020_Description_x0020_On != ''?PostShort_x0020_Description_x0020_On:EditData.Short_x0020_Description_x0020_On,
+            Body:PostBody != undefined &&  PostBody != ''?PostBody:EditData.Body,
+            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+            // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete, 
 
-
+ 
 
             // Categories: Items.Categories
 
@@ -703,24 +816,67 @@ function EditInstitution(item: any) {
     }
     const HtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
         let message: any = Editorvalue; EditData.Body = message;
+        PostBody=EditData.Body
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     const SortHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
         let message: any = Editorvalue; EditData.Short_x0020_Description_x0020_On = message;
+        PostShort_x0020_Description_x0020_On =  EditData.Short_x0020_Description_x0020_On
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     const DeliverablesHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
-        let message: any = Editorvalue; EditData.Deliverables = message;
+        let message: any = Editorvalue; 
+        EditData.Deliverables = message;
+        PostDeliverables =  EditData.Deliverables
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     const TechnicalExplanationsHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
-        let message: any = Editorvalue; EditData.TechnicalExplanations = message;
+        let message: any = Editorvalue;
+         EditData.TechnicalExplanations = message;
+          PostTechnicalExplanations =  EditData.TechnicalExplanations
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     const DDComponentCallBack = (dt: any) => {
         setTeamConfig(dt)
         console.log(TeamConfig)
-        //item.props?.TeamConfigDataCallBack(dt);
+        if (dt?.AssignedTo?.length > 0) {
+            let tempArray: any = [];
+            dt.AssignedTo?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskAssignedTo(tempArray);
+            console.log("Team Config  assigadf=====", tempArray)
+        }
+        if (dt?.TeamMemberUsers?.length > 0) {
+            let tempArray: any = [];
+            dt.TeamMemberUsers?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskTeamMembers(tempArray);
+            console.log("Team Config member=====", tempArray)
+
+        }
+        if (dt?.ResponsibleTeam?.length > 0) {
+            let tempArray: any = [];
+            dt.ResponsibleTeam?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser)
+                } else {
+                    tempArray.push(arrayData);
+                }
+            })
+            setTaskResponsibleTeam(tempArray);
+            console.log("Team Config reasponsible ===== ", tempArray)
+
+        }
     }
     var itemInfo = {
         Portfolio_x0020_Type:TeamConfigInfo?TeamConfigInfo.Portfolio_x0020_Type:'',
@@ -729,9 +885,52 @@ function EditInstitution(item: any) {
         listName: TeamConfigInfo?TeamConfigInfo.siteType:'',
         itemID: TeamConfigInfo?TeamConfigInfo.Id:''
     }
-    const deleteCategories=()=>{
-        EditData.Categories=''
-        EditData.Categories=''
+    const deleteCategories=(type:any)=>{
+        if(type == 'EditData.Categories'){
+        EditData.Categories='';
+        }
+        else{
+            EditData.smartCategories[0].Title=''
+        }
+        setComponent(EditData => ([...EditData]));
+        
+    }
+    const deleteComponent=(type:any)=>{
+        if(type == 'EditData.Component'){
+        EditData.Component='';
+        }
+        else{
+            EditData.smartComponent=''
+        }
+        setComponent(EditData => ([...EditData]));
+        
+    }
+    const onRenderCustomHeader = (
+      ) => {
+        return (
+          <>
+          <div style={{marginRight:"auto",fontSize:"20px",fontWeight:"600"}}>
+            {`Service-Portfolio > ${EditData.Title}`}
+          </div>
+            <Tooltip />
+          </>
+        );
+      };
+      const deleteTask = async () => {
+
+       var confirmDelete= confirm("Are you sure, you want to delete this?")
+        if(confirmDelete){
+        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        await web.lists.getByTitle('Master Tasks').items.getById(item.props.Id).delete()
+            .then(i => {
+                console.log(i);
+                setComponent(EditData => ([...EditData]));
+                setModalIsOpenToFalse();
+                item.showProgressBar();
+
+            });
+        }
+        
     }
     return (
         <>
@@ -741,11 +940,14 @@ function EditInstitution(item: any) {
                 headerText={`  Service-Portfolio > ${EditData.Title}`}
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
+                onRenderHeader={onRenderCustomHeader}
                 isBlocking={false}
                 type={PanelType.large}
             >
                 {EditData != undefined && EditData.Title != undefined &&
                     <div id="EditGrueneContactSearch" >
+
+
                         <div className="modal-body">
                             <ul className="nav nav-tabs" id="myTab" role="tablist">
                                 <li className="nav-item" role="presentation">
@@ -813,8 +1015,10 @@ function EditInstitution(item: any) {
 
                                                         <div className="col-sm-11  inner-tabb">
                                                             <div>
-
-                                                                {EditData != undefined && EditData.smartComponent != undefined && EditData.smartComponent.map((childinew: any) =>
+                                                                {/* {(EditData != undefined && EditData.smartComponent != undefined)?
+                                                                <>
+                                                                {(EditData != undefined && EditData.smartComponent != undefined && EditData.smartComponent.length>0)&& EditData.smartComponent.map((childinew: any) =>{
+                                                                return(
                                                                     < div className="block bgsiteColor"
 
                                                                     >
@@ -822,10 +1026,49 @@ function EditInstitution(item: any) {
                                                                             href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData.Id}}&amp;Site={{EditData.siteType}}">{childinew.Title}</a>
                                                                         <a className="hreflink"
                                                                         >
-                                                                            <img src="/_layouts/images/delete.gif"></img>
+                                                                            <img src="/_layouts/images/delete.gif" ></img>
                                                                         </a>
                                                                     </div>
                                                                 )}
+                                                                )}
+                                                                </>:<>
+                                                                 {(EditData != undefined && EditData.Component != undefined  && EditData.Component.length>0) && EditData.Component.map((childinew: any) =>{
+                                                                 return(
+                                                                    < div className="block bgsiteColor"
+
+                                                                    >
+                                                                        <a className="hreflink" target="_blank"
+                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData.Id}}&amp;Site={{EditData.siteType}}">{childinew.Title}</a>
+                                                                        <a className="hreflink"
+                                                                        >
+                                                                            <img src="/_layouts/images/delete.gif" ></img>
+                                                                        </a>
+                                                                    </div>
+                                                                 )}
+                                                                )}
+                                                                </>
+                                                              } */}
+                                                               {smartComponentData?.length > 0 ? null :
+                                                        <>
+                                                            <input type="text" ng-model="SearchService"
+                                                                className="form-control"
+                                                                id="{{PortfoliosID}}" autoComplete="off"
+                                                            />
+                                                        </>
+                                                    }
+                                                    {smartComponentData ? smartComponentData?.map((com: any) => {
+                                                        return (
+                                                            <>
+                                                                <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
+                                                                    <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                    <a>
+                                                                        <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
+                                                                    </a>
+                                                                </div>
+                                                            </>
+                                                        )
+                                                    }) : null}
+
 
                                                             </div>
                                                         </div>
@@ -1032,6 +1275,26 @@ function EditInstitution(item: any) {
                                                             checked={EditData.Priority === "(3) Low" ? true : false}></input>
                                                         <label> Low</label>
                                                     </div>
+                                                    <div className="col mt-2">
+                                                <div className="input-group">
+                                                    <label className="form-label full-width  mx-2">Task Users</label>
+                                                    {EditData.AssignedUsers?.map((userDtl: any, index: any) => {
+                                                        return (
+                                                            <div className="TaskUsers" key={index}>
+                                                                <a
+                                                                    target="_blank"
+                                                                    href={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
+                                                                    <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                        on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
+                                                                        data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                        src={userDtl.Item_x0020_Cover.Url ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                    />
+                                                                </a>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
                                                 </div>
                                                 <div className="col">
                                                     <div className="input-group position-relative">
@@ -1041,19 +1304,19 @@ function EditInstitution(item: any) {
                                                             
                                                     <span className="input-group-text"  >
 
-<svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+                                       <svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
 
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                               <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
 
-</svg>
+                                </svg>
 
-</span>
+                         </span>
                                                     </div>
 
 
                                                     <div className="col-sm-11  inner-tabb">
                                                         <div>
-                                                            {(EditData.smartCategories != undefined && EditData.smartCategories.length>0)?
+                                                            {/* {(EditData.smartCategories != undefined && EditData.smartCategories.length>0)?
                                                             <>
                                                              {EditData != undefined && EditData.smartCategories != undefined && EditData.smartCategories.map((childi: any) =>
                                                                 <div className="block bgsiteColor"
@@ -1062,18 +1325,18 @@ function EditInstitution(item: any) {
                                                                     <a className="hreflink" target="_blank"  >{childi.Title}</a>
                                                                     <a className="hreflink"
                                                                     >
-                                                                        <img src="/_layouts/images/delete.gif" onClick={()=>deleteCategories()}></img>
+                                                                        <img src="/_layouts/images/delete.gif" onClick={()=>deleteCategories('EditData.smartCategories')}></img>
                                                                     </a>
                                                                 </div>
                                                             )}
                                                              </>:
                                                              <>
-                                                             {(EditData.Categories != '')&&
+                                                             {(EditData.Categories != '' && EditData.Categories != null)&&
                                                                 <div className="block bgsiteColor">
                                                                     <a className="hreflink" target="_blank"  >{EditData.Categories}</a>
                                                                     <a className="hreflink"
                                                                     >
-                                                                        <img src="/_layouts/images/delete.gif" onClick={()=>deleteCategories()}></img>
+                                                                        <img src="/_layouts/images/delete.gif" onClick={()=>deleteCategories('EditData.Categories')}></img>
                                                                     </a>
                                                                 </div>
                                                                 }
@@ -1081,7 +1344,15 @@ function EditInstitution(item: any) {
                                                           
                                                           
                                                            
-                                                            }
+                                                            } */}
+                                                            {CategoriesData != "" ?
+                                                            <div className="Component-container-edit-task d-flex justify-content-between">
+                                                                <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                    {CategoriesData}
+                                                                </a>
+                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setCategoriesData('')} className="p-1" />
+                                                            </div> : null
+                                                        }
                                                            
                                                             
 
@@ -1357,7 +1628,7 @@ function EditInstitution(item: any) {
                                         </span>
                                     </div>
                                     <div className="text-left">
-                                        <a>
+                                        <a onClick={()=>deleteTask()}>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
 
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
@@ -1372,8 +1643,11 @@ function EditInstitution(item: any) {
                                             <a target="_blank"
                                                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData.Id}&name=${EditData.Title}`}>
                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" /> Go to Profile page
-                                            </a>
-                                        </span>
+                                            </a>||
+                                            <img className="mail-width mx-2"
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                                            <a href={`mailto:?subject=${('Test')}&body=${EditData.component_x0020_link}`}> Share this task ||</a>
+                                        </span> 
                                         <span className="p-1">|</span>
                                         <a className="p-1" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
                                             target="_blank">Open out-of-the-box form</a>
