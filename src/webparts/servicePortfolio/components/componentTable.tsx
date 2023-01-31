@@ -1600,7 +1600,7 @@ const expndpopup = (e: any) => {
     function AddItem() {
     }
     return (
-        <div className={IsUpdated == 'Events Portfolio' ? 'app component eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component serviepannelgreena' : 'app component')}>
+        <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component serviepannelgreena' : 'app component')}>
 
             {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
             {/* <Modal

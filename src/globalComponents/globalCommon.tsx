@@ -9,7 +9,7 @@ export const getData = async (url:any,listId:any,query:any) => {
     const web = new Web(url);
     let result;
     try {
-        result = (await web.lists.getById(listId).items.select(query).get());
+        result = (await web.lists.getById(listId).items.select(query).getAll());
     }
     catch (error) {
         return Promise.reject(error);
