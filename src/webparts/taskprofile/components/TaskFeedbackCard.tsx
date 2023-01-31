@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  * as React from 'react';
 //import styles from './Taskprofile.module.scss';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import * as moment from 'moment';
@@ -27,6 +27,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
  
   constructor(props: ITaskFeedbackProps) {
     super(props);
+    
+   
     this.state = {
         showcomment : 'none',
         showcomment_subtext : 'none',
@@ -236,7 +238,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
 
             <div className="border p-2 full-width text-break">
-              <span  dangerouslySetInnerHTML={{ __html: this.state.fbData['Title'] }}></span>
+           
+              <span  dangerouslySetInnerHTML={{ __html: this.state.fbData.Title}}></span>
               <div className="col">
               {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments'].map( (fbComment:any,k:any)=> {
                 return <div className="col d-flex add_cmnt my-1">

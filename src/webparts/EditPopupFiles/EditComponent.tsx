@@ -16,6 +16,7 @@ import { map } from "lodash";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
+import LinkedComponent from "../../globalComponents/EditTaskPopup/LinkedComponent";
 import { EditorState } from 'draft-js'
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "../../globalComponents/TeamConfiguration/TeamConfiguration";
@@ -42,12 +43,13 @@ function EditInstitution(item: any) {
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebCategory, setSharewebCategory] = React.useState('');
-    const [CollapseExpend, setCollapseExpend] = React.useState(false);
+    const [CollapseExpend, setCollapseExpend] = React.useState(true);
     const [CategoriesData, setCategoriesData] = React.useState('');
     const TeamConfigInfo = item.props;
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [TeamConfig, setTeamConfig] = React.useState()
     const [date, setDate] = React.useState(undefined);
+    const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [Startdate, setStartdate] = React.useState(undefined);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
@@ -104,6 +106,14 @@ function EditInstitution(item: any) {
             item.props.smartCategories = item1.smartCategories;
             //  item.props.smartCategories.push(title);
 
+        }
+    }
+    if (type == "LinkedComponent") {
+        if (item1?.linkedComponent?.length > 0) {
+            Item.props.linkedComponent = item1.linkedComponent;
+            // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
+            setLinkedComponentData(item1.linkedComponent);
+            console.log("Popup component linkedComponent", item1.linkedComponent)
         }
     }
         setIsComponentPicker(false);
@@ -313,6 +323,9 @@ function EditInstitution(item: any) {
             if (item.Component?.length > 0) {
                 setSmartComponentData(item.Component);
             }
+            if (item.RelevantPortfolio?.length > 0) {
+                setLinkedComponentData(item.RelevantPortfolio)
+            }
             if (item.StartDate != undefined) {
                 item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
                 //setStartdate(item.StartDate);
@@ -376,6 +389,11 @@ function EditInstitution(item: any) {
 
         console.log(smartmetaDetails);
     }
+    const EditLinkedServices = (item: any, title: any) => {
+        setIsComponentPicker(true);
+        setSharewebCategory(item.props);
+    }
+    
     React.useEffect(() => {
 
         GetTaskUsers();
@@ -745,7 +763,8 @@ function EditInstitution(item: any) {
             StartDate: Startdate != undefined ? new Date(Startdate).toDateString() : Startdate,
             DueDate: date != undefined ? new Date(date).toDateString() : date,
             CompletedDate: Completiondate != undefined ? new Date(Completiondate).toDateString() : Completiondate,
-            Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
+           // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
+           Categories: CategoriesData ? CategoriesData : null,
             Synonyms: JSON.stringify(Items['Synonyms']),
             Package: Items.Package,
             AdminStatus: Items.AdminStatus,
@@ -999,6 +1018,7 @@ function EditInstitution(item: any) {
                                                         </div>
                                                     </div>
                                                     <div className="col-4 ps-0 pe-0 mt-2 ">
+                                                        {EditData.Portfolio_x0020_Type == 'Component' &&
                                                         <div className="input-group">
                                                             <label className="form-label full-width">
                                                                 Component Portfolio
@@ -1012,6 +1032,39 @@ function EditInstitution(item: any) {
                                                                 </svg>
                                                             </span>
                                                         </div>
+                                                         }
+                                                           {EditData.Portfolio_x0020_Type == 'Services' &&
+                                                         <div className="input-group">
+                                                        <label className="form-label full-width">
+                                                            Linked Service
+                                                        </label>
+                                                        {
+                                                            linkedComponentData?.length > 0 ? <div>
+                                                                {linkedComponentData?.map((com: any) => {
+                                                                    return (
+                                                                        <>
+                                                                            <div className="d-flex Component-container-edit-task">
+                                                                                <div>
+                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                        {com.Title}
+                                                                                    </a>
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
+                                                                                </div>
+                                                                            </div>
+                                                                        </>
+                                                                    )
+                                                                })}
+                                                            </div> :
+                                                                <input type="text" readOnly
+                                                                    className="form-control"
+                                                                />
+                                                        }
+                                                        <span className="input-group-text">
+                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                onClick={(e) => EditLinkedServices(EditData, 'Component')} />
+                                                        </span>
+                                                        </div>
+                                                          }
 
                                                         <div className="col-sm-11  inner-tabb">
                                                             <div>
@@ -1085,7 +1138,7 @@ function EditInstitution(item: any) {
                                                                 value={EditData.StartDate}
                                                                 onChange={handleDatestart}
                                                                 dateFormat="dd/MM/yyyy"
-                                                                locale="es"
+                                                                
                                                             />
                                                         </div>
                                                     </div>
@@ -1097,7 +1150,7 @@ function EditInstitution(item: any) {
                                                                 value={EditData.DueDate}
                                                                 onChange={handleDatedue}
                                                                 dateFormat="dd/MM/yyyy"
-                                                                locale="es"
+                                                                
                                                             />
                                                         </div>
                                                     </div>
@@ -1110,7 +1163,7 @@ function EditInstitution(item: any) {
                                                                 dateFormat="dd/MM/yyyy"
                                                                 value={EditData.CompletedDate}
                                                                 onChange={handleDate}
-                                                                locale="es"
+                                                                
                                                             />
                                                         </div>
                                                     </div>
@@ -1379,7 +1432,7 @@ function EditInstitution(item: any) {
 
                                 <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
                                     <div className="col-sm-7">
-                                 <TeamConfigurationCard ItemInfo={itemInfo} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                 <TeamConfigurationCard ItemInfo={item.props} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
                                 </div>
                                     <div className="col-sm-7">
 
@@ -1662,8 +1715,8 @@ function EditInstitution(item: any) {
 
 
 
-                        {IsComponent && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
-                        {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
+                        {(IsComponent  && item.props.Portfolio_x0020_Type=='Component') && <LinkedComponent props={SharewebCategory} Call={Call}></LinkedComponent>}
+                        {(IsComponent && item.props.Portfolio_x0020_Type=='Services') && <ComponentPortPolioPopup props={SharewebCategory} Call={Call}></ComponentPortPolioPopup>}
 
                     </div>
                 }

@@ -1586,6 +1586,7 @@ const expndpopup = (e: any) => {
     }, []);
     const EditComponentPopup = (item: any) => {
         item['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+        item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
         setSharewebComponent(item);
@@ -2164,9 +2165,10 @@ const expndpopup = (e: any) => {
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
-                                                                                        {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                        {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         ><span>{item.Title}</span>
+
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
                                                                                             <span className='ms-1'>({item.childsLength})</span>

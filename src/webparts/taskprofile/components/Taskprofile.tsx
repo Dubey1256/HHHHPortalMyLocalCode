@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as Moment from 'moment';
+// import * as Moment from 'moment';
 import * as moment from 'moment';
 ///import styles from './Taskprofile.module.scss';
 import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
-import { escape } from '@microsoft/sp-lodash-subset';
+// import { escape } from '@microsoft/sp-lodash-subset';
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
@@ -226,7 +226,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       });
     }
     
-   var array2=taskDetails["AssignedTo"]
+   var array2:any=taskDetails["AssignedTo"]!=undefined?taskDetails["AssignedTo"]:[]
    if( taskDetails["Team_x0020_Members"]!=undefined){
    taskDetails.array=array2.concat(taskDetails["Team_x0020_Members"].filter((item:any)=>array2.Id!=item.Id))
     console.log(taskDetails.array);
@@ -525,6 +525,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   //open the model
   private OpenModal(e: any, item: any) {
+    if(item.Url!=undefined){
+      item.ImageUrl=item.Url;
+    }
     //debugger;
     e.preventDefault();
     console.log(item);
@@ -616,7 +619,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       dtformat = "DD/MM/YYYY";
     if (LocalDateTime != '') {
       let serverDateTime;
-      let mDateTime = Moment(LocalDateTime);
+      let mDateTime = moment(LocalDateTime);
       serverDateTime = mDateTime.format(dtformat);
       return serverDateTime;
     }
@@ -1171,13 +1174,19 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    <div className="col-sm-8 pe-0 mt-2">
+                    <div className={this.state.Result["BasicImageInfo"] != null ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
-                        this.state.Result["SharewebTaskType"] == 'Task') && this.state.Result["FeedBack"] != null &&
+                        this.state.Result["SharewebTaskType"] == 'Task'|| this.state.Result["SharewebTaskType"]=="Activities") && this.state.Result["FeedBack"] != null &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
                         <div className={"Addcomment " + "manage_gap"}>
                           {this.state.Result["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
+                             try {
+                              if (fbData.Title != undefined) {
+                                fbData.Title = fbData.Title.replace(/\n/g, '<br/>');
+                              }
+                          } catch (e) {
+                          }
                             return <TaskFeedbackCard feedback={fbData} index={i + 1}
                               onPost={() => { this.onPost() }}
                               fullfeedback={this.state.Result["FeedBack"]}
@@ -1187,6 +1196,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         </div>
                       }
                     </div>
+                
                   </div>
                 </div>
 
@@ -1233,8 +1243,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </div>
                     }
                    {this.state.Result["OffshoreComments"]!=null && this.state.Result["OffshoreComments"]!=undefined &&this.state.Result["OffshoreComments"].length>0&& <div className="col-sm-7 pe-0 mt-2">
-                         <fieldset>
-                    <legend>Background Comments</legend>
+                         <fieldset className='border p-1'>
+                    <legend className="border-bottom fs-6">Background Comments</legend>
                       {this.state.Result["OffshoreComments"]!=null&&this.state.Result["OffshoreComments"].length>0 &&this.state.Result["OffshoreComments"].map((item:any,index:any)=>{
                         return <div>
                       
@@ -1246,8 +1256,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                   </span>
                           
                           <span className="pe-1">{item.AuthorName}</span>
-                          <span className="pe-1">{moment(item.Created).format("DD/MM/YY")}</span>
-                          <div>{item.Body}
+                          <span className="pe-1" >{moment(item.Created).format("DD/MM/YY")}</span>
+                          <div style={{paddingLeft:"30px"}}><span  dangerouslySetInnerHTML={{ __html:item.Body}}></span>
                             </div>
                          
                          
