@@ -1,7 +1,8 @@
 import * as React from 'react';
 import Tab from './Tabs/Tab';
 import Tabs from './Tabs/Tabs';
-import './Tabs/styles.scss';
+// import './Tabs/styles.scss';
+import './Tabs/styles.scss'
 export default function ImagesC({id}:any) {
     const [imgdata, setimgdata] = React.useState([]);
     const [SelectedImages, setSelectedImages] = React.useState([]);

@@ -4,11 +4,14 @@ import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
 
 const CommentBoxComponent = (commentData: any) => {
     const [commentArray, setCommentArray] = useState([])
+    const CallBack = commentData.callBack;
+    var array: any = [];
     useEffect(() => {
         let data: any = [];
         if (commentData.data != undefined) {
             let temp = commentData.data;
             data.push(temp[0])
+            array.push(temp[0])
         }
         setCommentArray(data);
     }, [])
@@ -21,27 +24,51 @@ const CommentBoxComponent = (commentData: any) => {
             const obj = { ...commentArray[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setCommentArray(copy);
-            console.log("comment box object =====", commentArray);
+            array = copy;
         }
+        setTimeout(() => {
+            CallBack(array);
+        }, 1000);
     }
     const HtmlEditorCallBack = useCallback((EditorData: any) => {
-        const copy = [...commentArray];
-        const obj = { ...commentArray[0], 
-            Title: EditorData,
-            Completed: commentArray[0].Completed,
-            text: commentArray[0].text,
-            Phone: commentArray[0].Phone,
-            LowImportance: commentArray[0].LowImportance,
-            HighImportance: commentArray[0].HighImportance,
-            Id:commentArray[0].Id,
-            Comments:commentArray[0].Comments,
-            isAddComment:commentArray[0].isAddComment,
-            isShowComment:commentArray[0].isShowComment,
-            isPageType:commentArray[0].isPageType
-         };
-        copy[0] = obj;
-        setCommentArray(copy);
-        console.log("comment html box object =====", commentArray);
+        if (array.length > 0) {
+            array[0].Title = EditorData;
+        }
+        setTimeout(() => {
+            CallBack(array);
+        }, 1000);
+
+        // setCommentArray({ ...commentArray[0], 
+        //     Title: EditorData,
+        //     // Completed: commentArray[0].Completed != undefined?commentArray[0].Completed:null,
+        //     // text: commentArray[0].text != undefined ?commentArray[0].text:'',
+        //     // Phone: commentArray[0].Phone != undefined ?commentArray[0].Phone:null,
+        //     // LowImportance: commentArray[0].LowImportance != undefined ?commentArray[0].LowImportance:null,
+        //     // HighImportance: commentArray[0].HighImportance != undefined ?commentArray[0].HighImportance:null,
+        //     // Id:commentArray[0].Id != undefined ?commentArray[0].Id:null,
+        //     // Comments:commentArray[0].Comments != undefined ?commentArray[0].Comments:[],
+        //     // isAddComment:commentArray[0].isAddComment != undefined ?commentArray[0].isAddComment:null,
+        //     // isShowComment:commentArray[0].isShowComment != undefined ?commentArray[0].isShowComment:null,
+        //     // isPageType:commentArray[0].isPageType != undefined ?commentArray[0].isPageType:''
+        //  })
+        // const copy = [...commentArray];
+        // const obj = { ...commentArray[0], 
+        //     Title: EditorData,
+        //     Completed: commentArray[0].Completed != undefined?commentArray[0].Completed:null,
+        //     text: commentArray[0].text != undefined ?commentArray[0].text:'',
+        //     Phone: commentArray[0].Phone != undefined ?commentArray[0].Phone:null,
+        //     LowImportance: commentArray[0].LowImportance != undefined ?commentArray[0].LowImportance:null,
+        //     HighImportance: commentArray[0].HighImportance != undefined ?commentArray[0].HighImportance:null,
+        //     Id:commentArray[0].Id != undefined ?commentArray[0].Id:null,
+        //     Comments:commentArray[0].Comments != undefined ?commentArray[0].Comments:[],
+        //     isAddComment:commentArray[0].isAddComment != undefined ?commentArray[0].isAddComment:null,
+        //     isShowComment:commentArray[0].isShowComment != undefined ?commentArray[0].isShowComment:null,
+        //     isPageType:commentArray[0].isPageType != undefined ?commentArray[0].isPageType:''
+        //  };
+        // copy[0] = obj;
+        // setCommentArray(copy);
+
+
     }, [])
     return (
         <div>
@@ -92,7 +119,6 @@ const CommentBoxComponent = (commentData: any) => {
                                         <a href="#"> Add Comment </a>
                                     </span>
                                     <span>|</span>
-
                                 </div>
                                 <div className="d-flex">
                                     <span className="border p-1 me-1">{i + 1}</span>
@@ -107,7 +133,6 @@ const CommentBoxComponent = (commentData: any) => {
                     )
                 })
             }
-
         </div>
     )
 }

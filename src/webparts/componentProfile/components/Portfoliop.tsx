@@ -713,7 +713,7 @@ function Portfolio({ ID }: any) {
                                                                 {myarray1.map((items: any) =>
                                                                     <li className="dropdown-item">
                                                                         <span>
-                                                                            <img style={{ width: "22px" }} src={items.SiteImages} data-themekey="#" />
+                                                                            <img style={{ width: "22px" }} title={items.Title}  src={items.SiteImages} data-themekey="#" />
                                                                         </span>
                                                                         <span >
                                                                             {/* {{item.ClienTimeDescription.substring(0,2)}}% */}
@@ -721,10 +721,10 @@ function Portfolio({ ID }: any) {
                                                                             {(items.ClienTimeDescription != undefined) &&
                                                                                 <span className="ng-binding">
                                                                                     {/* {item.ClienTimeDescription}% */}
-                                                                                    <>
+                                                                                    {/* <>
                                                                                       {parseInt(items.ClienTimeDescription).toFixed(2)}%
-                                                                                   </>
-                                                                                   {/* {items.ClienTimeDescription.length ===  undefined  &&
+                                                                                   </> */}
+                                                                                   {items.ClienTimeDescription.length ===  undefined  &&
                                                                                       <>
                                                                                          {(items.ClienTimeDescription).toFixed(2)}%
                                                                                       </>
@@ -732,7 +732,7 @@ function Portfolio({ ID }: any) {
                                                                                      {(items.ClienTimeDescription.length <= 2 || items.ClienTimeDescription.length > 2) &&
                                                                                       <>
                                                                                       {parseInt(items.ClienTimeDescription).toFixed(2)}%
-                                                                                   </>} */}
+                                                                                   </>}
                                                                                     
                                                                                 </span>
                                                                             }

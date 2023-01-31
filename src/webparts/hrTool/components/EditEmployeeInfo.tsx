@@ -115,24 +115,24 @@ const EditEmployeeInfo = ((props: any) => {
                 setInstitutionTitle(data[0].Institution.Title);
                 setEmployeeData(data[0]);
                 setFormData(data[0])
-                testGlobalFunction();
+                // testGlobalFunction();
             }).catch((err) => {
                 console.log(err.message);
             });
     }
  
-    const testGlobalFunction =()=>{
-        let url='https://hhhhteams.sharepoint.com/sites/HHHH/HR';
-        let listId='a7b80424-e5e1-47c6-80a1-0ee44a70f92c';
-        let query ="Id,additionalContributionToHI,CellPhone,NRPNotSubToTax,NRPSubToTax,HomePhone,FirstName,IM,SmartLanguagesId,WorkCity,WorkZip,WorkAddress,WorkPhone,Email,Item_x0020_Cover,SmartContactId,Title,JobTitle,WebPage,SmartCountriesId,SmartStateId,Institution/Id,Institution/Title,SocialMediaUrls,levy2ContributionRate,SmartInstitutionId,contributionStatus,StaffID,netNonRecurringPayments,levy1ReimbursementRate,levy1RateOfContribution,levy1Type,healthInsuranceCompany,healthInsuranceType,NonRecurringPayments,PersonGroupKey,Country,Fedral_State,BIC,IBAN,contributionGroupNCI,contributionGroupUI,contributionGroupRI,contributionGroupHi,Parenthood,insuranceNo,childAllowance,monthlyTaxAllowance,solidaritySurcharge,taxClass,churchTax,taxNo,incomeTax,taxFreePayments,Languages,otherQualifications,highestVocationalEducation,highestSchoolDiploma,ZIP_x0020_Code,No_x002e_,City,Street,maritalStatus,Nationality,placeOfBirth,dateOfBirth,Created,Author/Title,Modified,Editor/Title,EmployeeID/Title,EmployeeID/Id&$expand=EmployeeID,Institution,Author,Editor";
-       // let expand ="EmployeeID,Institution,Author,Editor";
-        let filter ="Id eq " + props.props;
-        globalCommon.getData(url,listId,query,filter).then((data:any) => {
-            console.log(data)
-           }),((err:any) => {
-               console.log(err.message);
-           });
-    }
+    // const testGlobalFunction =()=>{
+    //     let url='https://hhhhteams.sharepoint.com/sites/HHHH/HR';
+    //     let listId='a7b80424-e5e1-47c6-80a1-0ee44a70f92c';
+    //     let query ="Id,additionalContributionToHI,CellPhone,NRPNotSubToTax,NRPSubToTax,HomePhone,FirstName,IM,SmartLanguagesId,WorkCity,WorkZip,WorkAddress,WorkPhone,Email,Item_x0020_Cover,SmartContactId,Title,JobTitle,WebPage,SmartCountriesId,SmartStateId,Institution/Id,Institution/Title,SocialMediaUrls,levy2ContributionRate,SmartInstitutionId,contributionStatus,StaffID,netNonRecurringPayments,levy1ReimbursementRate,levy1RateOfContribution,levy1Type,healthInsuranceCompany,healthInsuranceType,NonRecurringPayments,PersonGroupKey,Country,Fedral_State,BIC,IBAN,contributionGroupNCI,contributionGroupUI,contributionGroupRI,contributionGroupHi,Parenthood,insuranceNo,childAllowance,monthlyTaxAllowance,solidaritySurcharge,taxClass,churchTax,taxNo,incomeTax,taxFreePayments,Languages,otherQualifications,highestVocationalEducation,highestSchoolDiploma,ZIP_x0020_Code,No_x002e_,City,Street,maritalStatus,Nationality,placeOfBirth,dateOfBirth,Created,Author/Title,Modified,Editor/Title,EmployeeID/Title,EmployeeID/Id&$expand=EmployeeID,Institution,Author,Editor";
+    //    // let expand ="EmployeeID,Institution,Author,Editor";
+    //     let filter ="Id eq " + props.props;
+    //     globalCommon.getData(url,listId,query,filter).then((data:any) => {
+    //         console.log(data)
+    //        }),((err:any) => {
+    //            console.log(err.message);
+    //        });
+    // }
        const postData=async(TagInstitutionId:any)=>{
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
        await web.lists.getById('a7b80424-e5e1-47c6-80a1-0ee44a70f92c').items.getById(props.props).update({
