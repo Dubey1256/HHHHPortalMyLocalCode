@@ -4,7 +4,7 @@ import "bootstrap/dist/js/bootstrap.min.js";
 
 const ExpndTable = (props: any) => {
   //  Must include id in the table section
-  if (props.prop1 != undefined) {
+  if (props !=undefined && props.prop1 != undefined) {
     $('#spPageCanvasContent').removeClass();
     $('#spPageCanvasContent').addClass(props.prop1)
   }
