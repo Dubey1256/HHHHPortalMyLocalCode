@@ -1,6 +1,7 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-const { useState, useEffect } = React;
+const { useState, useEffect, useCallback } = React;
+import AddCommentComponent from './AddCommentComponent'
 
 export default function subCommentComponent(SubTextItemsArray: any) {
     let SubTextItems = SubTextItemsArray.SubTextItemsArray;
@@ -8,6 +9,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     const [Texts, setTexts] = useState(false);
     const [subCommentsData, setSubCommentsData] = useState([]);
     const [btnStatus, setBtnStatus] = useState(false);
+    const [postBtnStatus, setPostBtnStatus] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState('');
     var Array: any = [];
     const addSubRow = () => {
         const object = {
@@ -41,7 +44,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         // tempArray = subCommentsData.filter((array: any, index: number) => {
         //     return index != Index;
         // })
-        subCommentsData.map((array: any, index:number) => {
+        subCommentsData.map((array: any, index: number) => {
             if (index != Index) {
                 tempArray.push(array);
             }
@@ -50,7 +53,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         Array = tempArray;
     }
 
-    function handleChange(e: any) {
+    function handleChangeChild(e: any) {
 
         if (e.target.matches("textarea")) {
             const { id } = e.currentTarget.dataset;
@@ -74,18 +77,38 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             callBack(Array, SubTextItemsArray.commentId);
         }, 1000);
     }
+
+    const postBtnHandle = (index: any) => {
+        setCurrentIndex(index)
+        if (postBtnStatus) {
+            setPostBtnStatus(false)
+        } else {
+            setPostBtnStatus(true)
+        }
+    }
+    const postBtnHandleCallBack = useCallback((status: any, dataPost: any, Index: any) => {
+        if (status) {
+            setPostBtnStatus(false)
+        } else {
+            setPostBtnStatus(true)
+        }
+        Array[Index].Comments = dataPost;
+        setTimeout(() => {
+            callBack(Array, SubTextItemsArray.commentId);
+        }, 1000);
+
+    }, [])
+
     function createSubRows(state: any[]) {
         return (
             <div className="add-text-box">
-                {console.log("Sub text data in div =====", state)}
-
                 {state?.map((obj, index) => {
                     return (
                         <div className="row ms-1">
                             <div
                                 data-id={index}
                                 className="col"
-                                onChange={handleChange}
+                                onChange={handleChangeChild}
                             >
                                 <div className="Task-panel d-flex  justify-content-end ">
                                     <span>
@@ -122,7 +145,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                     </span>
                                     <span> |</span>
                                     <span className="form-check">
-                                        <a href="#"> Add Comment </a>
+                                        <span onClick={() => postBtnHandle(index)}> Add Comment </span>
                                     </span>
                                     <span> |</span>
                                     <span className="">
@@ -149,6 +172,18 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                     {/* {subCommentsData.length==1 || 2 || 3 ?<button className="btn btn-primary" onClick={addRow}>Add New Box</button>:""} */}
                                 </div>
                             </div >
+                            <div>
+                                <div>
+                                    <AddCommentComponent
+                                        Data={obj.Comments != null ? obj.Comments : []}
+                                        allFbData={SubTextItems}
+                                        index={currentIndex}
+                                        postStatus={postBtnStatus}
+                                        allUsers={SubTextItemsArray.allUsers}
+                                        callBack={postBtnHandleCallBack}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     );
                 })}
@@ -165,12 +200,11 @@ export default function subCommentComponent(SubTextItemsArray: any) {
 
     return (
         <div className="col ms-5">
-            {btnStatus ? null :
+            {subCommentsData.length ? null :
                 <div className="float-end">
                     <button className="btn btn-primary my-1" onClick={addSubRow}>Add Sub-Text Box</button>
                 </div>
             }
-            {/* <button onClick={showsubCommentsData}>Show subCommentsData</button> */}
             {subCommentsData.length ? createSubRows(subCommentsData) : null}
         </div>
     );

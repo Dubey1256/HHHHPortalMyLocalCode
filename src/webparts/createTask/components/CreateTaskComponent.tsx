@@ -7,7 +7,7 @@ import './style.scss'
 import * as moment from 'moment';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
-import { GlobalConstants } from '../../../globalComponents/LocalCommonList';
+import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { Item } from '@pnp/sp/items';
 var AllMetadata: any = []
@@ -39,10 +39,17 @@ function CreateTaskComponent() {
     const [activeCategory, setActiveCategory] = React.useState([]);
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
     const [taskUrl, setTaskUrl] = React.useState('');
+    const [burgerMenuTaskDetails, setBurgerMenuTaskDetails] = React.useState({
+        ComponentID: undefined,
+        Siteurl:undefined,
+    });
     const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: undefined, DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     React.useEffect(() => {
         GetSmartMetadata();
         LoadTaskUsers();
+        if(burgerMenuTaskDetails.Siteurl!==undefined){
+            setTaskUrl(burgerMenuTaskDetails.Siteurl);
+        }
     }, [])
     const EditComponent = (item: any, title: any) => {
         setIsComponent(true);
@@ -54,13 +61,13 @@ function CreateTaskComponent() {
     }
     const Call = (propsItems: any, type: any) => {
         setIsComponent(false);
-        if (type == "LinkedComponent") {
+        if (type === "LinkedComponent") {
             if (propsItems?.linkedComponent?.length > 0) {
                 setSave({ ...save, linkedServices: propsItems.linkedComponent });
                 setLinkedComponentData(propsItems.linkedComponent);
             }
         }
-        if (type == "SmartComponent") {
+        if (type === "SmartComponent") {
             if (propsItems?.smartComponent?.length > 0) {
                 setSave({ ...save, Component: propsItems.smartComponent });
                 setSmartComponentData(propsItems.smartComponent);
@@ -77,21 +84,21 @@ function CreateTaskComponent() {
 
         let date = new Date();
         let dueDate;
-        if (item == "Today") {
+        if (item === "Today") {
             dueDate = date.toISOString();
         }
-        if (item == "Tomorrow") {
+        if (item === "Tomorrow") {
             dueDate = date.setDate(date.getDate() + 1);
             dueDate = date.toISOString();
         }
-        if (item == "ThisWeek") {
+        if (item === "ThisWeek") {
             date.setDate(date.getDate());
             var getdayitem = date.getDay();
             var dayscount = 7 - getdayitem
             date.setDate(date.getDate() + dayscount);
             dueDate = date.toISOString();
         }
-        if (item == "NextWeek") {
+        if (item === "NextWeek") {
 
             date.setDate(date.getDate() + 7);
             var getdayitem = date.getDay();
@@ -99,14 +106,14 @@ function CreateTaskComponent() {
             date.setDate(date.getDate() + dayscount);
             dueDate = date.toISOString();
         }
-        if (item == "ThisMonth") {
+        if (item === "ThisMonth") {
 
             var year = date.getFullYear();
             var month = date.getMonth();
             var lastday = new Date(year, month + 1, 0);
             dueDate = lastday.toISOString();
         }
-        if (item == undefined) {
+        if (item === undefined) {
             alert("Please select due date");
         }
         setSave({ ...save, DueDate: dueDate });
@@ -120,21 +127,29 @@ function CreateTaskComponent() {
         }
 
         let Mileage;
-        if (itemTitle == 'Very Quick') {
+        if (itemTitle === 'Very Quick') {
             Mileage = '15'
         }
-        if (itemTitle == 'Quick') {
+        if (itemTitle === 'Quick') {
             Mileage = '60'
         }
-        if (itemTitle == 'Medium') {
+        if (itemTitle === 'Medium') {
             Mileage = '240'
         }
-        if (itemTitle == 'Long') {
+        if (itemTitle === 'Long') {
             Mileage = '480'
         }
         setSave({ ...save, Mileage: Mileage });
     }
+    const params = new URLSearchParams(window.location.search);
     const GetSmartMetadata = async () => {
+        let paramSiteUrl= params.get("Siteurl");
+        let paramComponentId = params.get('ComponentID');
+        setBurgerMenuTaskDetails({
+            ComponentID:paramComponentId,
+            Siteurl:paramSiteUrl
+        })
+
         var TaskTypes: any = []
         var Priority: any = []
         var Timing: any = []
@@ -152,7 +167,7 @@ function CreateTaskComponent() {
         AllMetadata = MetaData;
         siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
         siteConfig.map((site: any) => {
-            if (site.Title != undefined && site.Title != 'Foundation' && site.Title != 'Master Tasks' && site.Title != 'DRR' && site.Title != 'Health' && site.Title != 'Gender') {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
                 SitesTypes.push(site);
             }
 
@@ -168,17 +183,17 @@ function CreateTaskComponent() {
         setpriorityRank(Priority)
 
         TaskTypes.map((task: any) => {
-            if (task.ParentID != undefined && task.ParentID == 0 && task.Title != 'Phone') {
+            if (task.ParentID !== undefined && task.ParentID === 0 && task.Title !== 'Phone') {
                 Task.push(task);
                 getChilds(task, TaskTypes);
             }
-            if (task.ParentID != undefined && task.ParentID != 0 && task.IsVisible) {
+            if (task.ParentID !== undefined && task.ParentID !== 0 && task.IsVisible) {
                 subCategories.push(task);
             }
         })
         Task.map((taskItem: any) => {
             subCategories?.map((item: any) => {
-                if (taskItem.Id == item.ParentID) {
+                if (taskItem.Id === item.ParentID) {
                     try {
                         item.ActiveTile = false;
                         item.SubTaskActTile = item.Title.replace(/\s/g, "");
@@ -201,6 +216,7 @@ function CreateTaskComponent() {
 
     let LoadTaskUsers = async () => {
         let AllTaskUsers = globalCommon.loadTaskUsers();
+       
         setTaskuser(await AllTaskUsers);
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
@@ -218,7 +234,7 @@ function CreateTaskComponent() {
     const getChilds = (item: any, items: any) => {
         item.childs = [];
         items.map((childItem: any) => {
-            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
+            if (childItem.ParentID !== undefined && parseInt(childItem.ParentID) === item.ID) {
                 item.childs.push(childItem);
                 getChilds(childItem, items);
             }
@@ -237,133 +253,133 @@ function CreateTaskComponent() {
         console.log(data)
     }
     const createTask = async () => {
-       if(save.taskName.length<=0){
-        alert("Please Enter The Task Name")
-       }else if(save.siteType.length<=0){
-        alert("Please Select the Site ")
-       }else{
-        let CategoryTitle: any;
-        let TeamMembersIds: any[] = [];
-        sharewebCat.map((cat: any) => {
-            subCategory?.map((item: any) => {
-                if (cat == item.Id) {
-                    if(CategoryTitle==undefined){
-                        CategoryTitle = item.Title ;
-                    }else{
-                        CategoryTitle += item.Title + ';';
-                    }
-                   
-                }
-            })
-
-        })
-        if (CategoryTitle != undefined) {
-            CategoryTitle.split(';').map((cat: any) => {
-                if (cat.toLowerCase() == 'design') {
-                    taskUsers.map((User: any) => {
-                        if (User.Title == 'Design' && TeamMembersIds.length == 0) {
-                            TeamMembersIds.push(User.AssingedToUserId);
+        if (save.taskName.length <= 0) {
+            alert("Please Enter The Task Name")
+        } else if (save.siteType.length <= 0) {
+            alert("Please Select the Site ")
+        } else {
+            let CategoryTitle: any;
+            let TeamMembersIds: any[] = [];
+            sharewebCat.map((cat: any) => {
+                subCategory?.map((item: any) => {
+                    if (cat === item.Id) {
+                        if (CategoryTitle === undefined) {
+                            CategoryTitle = item.Title + ';';
+                        } else {
+                            CategoryTitle += item.Title + ';';
                         }
-                        else if (User.Title == 'Design' && TeamMembersIds.length > 0) {
-                            TeamMembersIds.map((workingMember: any) => {
-                                if (workingMember != 48 && workingMember != 49) {
-                                    TeamMembersIds.push(User.AssingedToUserId);
-                                }
+
+                    }
+                })
+
+            })
+            if (CategoryTitle !== undefined) {
+                CategoryTitle.split(';').map((cat: any) => {
+                    if (cat.toLowerCase() === 'design') {
+                        taskUsers.map((User: any) => {
+                            if (User.Title === 'Design' && TeamMembersIds.length === 0) {
+                                TeamMembersIds.push(User.AssingedToUserId);
+                            }
+                            else if (User.Title === 'Design' && TeamMembersIds.length > 0) {
+                                TeamMembersIds.map((workingMember: any) => {
+                                    if (workingMember !== 48 && workingMember !== 49) {
+                                        TeamMembersIds.push(User.AssingedToUserId);
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+
+            if (TeamMembersIds.length > 0) {
+                TeamMembersIds.map((workingMember: any) => {
+                    if (workingMember === 48 || workingMember === 49) {
+                        AssignedToIds.push(workingMember);
+                    }
+                })
+            }
+
+            try {
+                let selectedComponent: any[] = [];
+                if (save.Component !== undefined && save.Component.length > 0) {
+                    save.Component.map((com: any) => {
+                        if (save.Component !== undefined && save.Component.length >= 0) {
+                            $.each(save.Component, function (index: any, smart: any) {
+                                selectedComponent.push(smart.Id);
                             })
                         }
                     })
                 }
-            })
-        }
-
-        if (TeamMembersIds.length > 0) {
-            TeamMembersIds.map((workingMember: any) => {
-                if (workingMember == 48 || workingMember == 49) {
-                    AssignedToIds.push(workingMember);
+                let selectedService: any[] = [];
+                if (save.linkedServices !== undefined && save.linkedServices.length > 0) {
+                    save.linkedServices.map((com: any) => {
+                        if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
+                            $.each(save.linkedServices, function (index: any, smart: any) {
+                                selectedService.push(smart.Id);
+                            })
+                        }
+                    })
                 }
-            })
-        }
-
-        try {
-            let selectedComponent: any[] = [];
-            if (save.Component != undefined && save.Component.length > 0) {
-                save.Component.map((com: any) => {
-                    if (save.Component != undefined && save.Component.length >= 0) {
-                        $.each(save.Component, function (index: any, smart: any) {
-                            selectedComponent.push(smart.Id);
-                        })
-                    }
-                })
-            }
-            let selectedService: any[] = [];
-            if (save.linkedServices != undefined && save.linkedServices.length > 0) {
-                save.linkedServices.map((com: any) => {
-                    if (save.linkedServices != undefined && save.linkedServices.length >= 0) {
-                        $.each(save.linkedServices, function (index: any, smart: any) {
-                            selectedService.push(smart.Id);
-                        })
-                    }
-                })
-            }
-            let selectedSite: any;
-            let priority: any;
-            if (save.siteType != undefined && save.siteType.length > 0) {
-                siteType.map((site: any) => {
-                    if (site.Title == save.siteType) {
-                        selectedSite = site;
-                    }
-                })
-                let priorityRank = 4;
-                if (save.rank == undefined || parseInt(save.rank) <= 0) {
-                    setSave({ ...save, rank: 4 })
-                    priority = '(2) Normal';
-                }
-                else {
-                    priorityRank = parseInt(save.rank);
-                    if (priorityRank >= 8 && priorityRank <= 10) {
-                        priority = '(1) High';
-                    }
-                    if (priorityRank >= 4 && priorityRank <= 7) {
+                let selectedSite: any;
+                let priority: any;
+                if (save.siteType !== undefined && save.siteType.length > 0) {
+                    siteType.map((site: any) => {
+                        if (site.Title === save.siteType) {
+                            selectedSite = site;
+                        }
+                    })
+                    let priorityRank = 4;
+                    if (save.rank === undefined || parseInt(save.rank) <= 0) {
+                        setSave({ ...save, rank: 4 })
                         priority = '(2) Normal';
                     }
-                    if (priorityRank >= 1 && priorityRank <= 3) {
-                        priority = '(3) Low';
+                    else {
+                        priorityRank = parseInt(save.rank);
+                        if (priorityRank >= 8 && priorityRank <= 10) {
+                            priority = '(1) High';
+                        }
+                        if (priorityRank >= 4 && priorityRank <= 7) {
+                            priority = '(2) Normal';
+                        }
+                        if (priorityRank >= 1 && priorityRank <= 3) {
+                            priority = '(3) Low';
+                        }
                     }
+                    var AssignedToIds: any[] = [];
+
+
+                    let web = new Web(selectedSite?.siteUrl?.Url);
+                    await web.lists.getById(selectedSite?.listId).items.add({
+                        Title: save.taskName,
+                        Priority_x0020_Rank: priorityRank,
+                        Priority: priority,
+                        PercentComplete: 0,
+                        component_x0020_link: {
+                            __metadata: { 'type': 'SP.FieldUrlValue' },
+                            Description: taskUrl.length > 0 ? taskUrl : null,
+                            Url: taskUrl.length > 0 ? taskUrl : null,
+                        },
+                        DueDate: save.DueDate,
+                        ComponentId: { "results": (selectedComponent !== undefined && selectedComponent.length > 0) ? selectedComponent : [] },
+                        Mileage: save.Mileage,
+                        ServicesId: { "results": (selectedService !== undefined && selectedService.length > 0) ? selectedService : [] },
+                        AssignedToId: { "results": AssignedToIds },
+                        SharewebCategoriesId: { "results": sharewebCat },
+                        Team_x0020_MembersId: { "results": TeamMembersIds },
+
+                    }).then((data) => {
+                        data.data.siteUrl = selectedSite?.siteUrl?.Url;
+                        data.data.siteType = save.siteType;
+                        data.data.siteUrl = selectedSite?.siteUrl?.Url;
+                        window.open("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + data.data.Id + "&Site=" + save.siteType, "_self")
+
+                    })
                 }
-                var AssignedToIds: any[] = [];
-
-
-                let web = new Web(selectedSite?.siteUrl?.Url);
-                await web.lists.getById(selectedSite?.listId).items.add({
-                    Title: save.taskName,
-                    Priority_x0020_Rank: priorityRank,
-                    Priority: priority,
-                    PercentComplete: 0,
-                    component_x0020_link: {
-                        __metadata: { 'type': 'SP.FieldUrlValue' },
-                        Description: taskUrl.length > 0 ? taskUrl : null,
-                        Url: taskUrl.length > 0 ? taskUrl : null,
-                    },
-                    DueDate: save.DueDate,
-                    ComponentId: { "results": (selectedComponent != undefined && selectedComponent.length > 0) ? selectedComponent : [] },
-                    Mileage: save.Mileage,
-                    ServicesId: { "results": (selectedService != undefined && selectedService.length > 0) ? selectedService : [] },
-                    AssignedToId: { "results": AssignedToIds },
-                    SharewebCategoriesId: { "results": sharewebCat },
-                    Team_x0020_MembersId: { "results": TeamMembersIds },
-
-                }).then((data) => {
-                    data.data.siteUrl = selectedSite?.siteUrl?.Url;
-                    data.data.siteType = save.siteType;
-                    data.data.siteUrl = selectedSite?.siteUrl?.Url;
-                    window.open("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + data.data.Id + "&Site=" + save.siteType, "_self")
-
-                })
+            } catch (error) {
+                console.log("Error:", error.message);
             }
-        } catch (error) {
-            console.log("Error:", error.message);
         }
-       }
     }
 
     const urlChange = (e: any) => {
@@ -377,7 +393,7 @@ function CreateTaskComponent() {
         let TestUrl = e.target.value;
         // TestUrl = $scope.component_x0020_link;
         var item = '';
-        if (TestUrl != undefined) {
+        if (TestUrl !== undefined) {
             siteType.map((site: any) => {
                 if (TestUrl.toLowerCase().indexOf('.com') > -1)
                     TestUrl = TestUrl.split('.com')[1];
@@ -385,148 +401,148 @@ function CreateTaskComponent() {
                     TestUrl = TestUrl.split('.ch')[1];
                 else if (TestUrl.toLowerCase().indexOf('.de') > -1)
                     TestUrl = TestUrl.split('.de')[1];
-                if (TestUrl != undefined && ((TestUrl.toLowerCase().indexOf('/eps/')) > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() == 'eps') {
-                        item = site.Title == 'EPS' ? item = 'EPS' : site = site.Title;
+                if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/eps/')) > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
+                    if (site.Title.toLowerCase() === 'eps') {
+                        item = site.Title === 'EPS' ? item = 'EPS' : site = site.Title;
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/ei/') > -1 || TestUrl.toLowerCase().indexOf('/ee/') > -1) && TestUrl.toLowerCase().indexOf('/digitaladministration/') <= -1 && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() == 'ei') {
-                        item = site.Title == 'EI' ? item = 'EI' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/ei/') > -1 || TestUrl.toLowerCase().indexOf('/ee/') > -1) && TestUrl.toLowerCase().indexOf('/digitaladministration/') <= -1 && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
+                    if (site.Title.toLowerCase() === 'ei') {
+                        item = site.Title === 'EI' ? item = 'EI' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/digitaladministration/') > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() == 'alakdigital') {
-                        item = site.Title == 'ALAKDigital' ? item = 'ALAKDigital' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/digitaladministration/') > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
+                    if (site.Title.toLowerCase() === 'alakdigital') {
+                        item = site.Title === 'ALAKDigital' ? item = 'ALAKDigital' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/migration/') > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() == 'migration') {
-                        item = site.Title == 'Migration' ? item = 'MIGRATION' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/migration/') > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
+                    if (site.Title.toLowerCase() === 'migration') {
+                        item = site.Title === 'Migration' ? item = 'MIGRATION' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/education/') > -1)) {
-                    if (site.Title.toLowerCase() == 'education') {
-                        item = site.Title == 'Education' ? item = 'Education' : site = site.Title;
-                        // if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/education/') > -1)) {
+                    if (site.Title.toLowerCase() === 'education') {
+                        item = site.Title === 'Education' ? item = 'Education' : site = site.Title;
+                        // if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/gender/') > -1)) {
-                    if (site.Title.toLowerCase() == 'gender') {
-                        item = site.Title == 'Gender' ? item = 'Gender' : site = site.Title;
-                        // if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/gender/') > -1)) {
+                    if (site.Title.toLowerCase() === 'gender') {
+                        item = site.Title === 'Gender' ? item = 'Gender' : site = site.Title;
+                        // if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/drr/') > -1)) {
-                    if (site.Title.toLowerCase() == 'drr') {
-                        item = site.Title == 'DRR' ? item = 'DRR' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/drr/') > -1)) {
+                    if (site.Title.toLowerCase() === 'drr') {
+                        item = site.Title === 'DRR' ? item = 'DRR' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/health') > -1)) {
-                    if (site.Title.toLowerCase() == 'health') {
-                        item = site.Title == 'Health' ? item = 'Health' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/health') > -1)) {
+                    if (site.Title.toLowerCase() === 'health') {
+                        item = site.Title === 'Health' ? item = 'Health' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
 
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/development-effectiveness/')) > -1 && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() == 'de') {
-                        item = site.Title == 'DE' ? item = 'DE' : site = site.Title;
-                        // if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/development-effectiveness/')) > -1 && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
+                    if (site.Title.toLowerCase() === 'de') {
+                        item = site.Title === 'DE' ? item = 'DE' : site = site.Title;
+                        // if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/qa/') > -1)) {
-                    if (site.Title.toLowerCase() == 'qa') {
-                        item = site.Title == 'QA' ? item = 'QA' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/qa/') > -1)) {
+                    if (site.Title.toLowerCase() === 'qa') {
+                        item = site.Title === 'QA' ? item = 'QA' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/shareweb') > -1)) {
-                    if (site.Title.toLowerCase() == 'shareweb') {
-                        item = site.Title == 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/shareweb') > -1)) {
+                    if (site.Title.toLowerCase() === 'shareweb') {
+                        item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/joint') > -1)) {
-                    if (site.Title.toLowerCase() == 'shareweb') {
-                        item = site.Title == 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/joint') > -1)) {
+                    if (site.Title.toLowerCase() === 'shareweb') {
+                        item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('www.gruene-washington.de') > -1)) {
-                    if (site.Title.toLowerCase() == 'gruene') {
-                        item = site.Title == 'Gruene' ? item = 'Gruene' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('www.gruene-washington.de') > -1)) {
+                    if (site.Title.toLowerCase() === 'gruene') {
+                        item = site.Title === 'Gruene' ? item = 'Gruene' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('kathabeck.sharepoint.com') > -1)) {
-                    if (site.Title.toLowerCase() == 'kathabeck') {
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('kathabeck.sharepoint.com') > -1)) {
+                    if (site.Title.toLowerCase() === 'kathabeck') {
                         item = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('hhhhteams.sharepoint.com') > -1) || (TestUrl.toLowerCase().indexOf('hhhh') > -1)) {
-                    if (site.Title.toLowerCase() == 'hhhh') {
-                        item = site.Title == 'HHHH' ? item = 'HHHH' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('hhhhteams.sharepoint.com') > -1) || (TestUrl.toLowerCase().indexOf('hhhh') > -1)) {
+                    if (site.Title.toLowerCase() === 'hhhh') {
+                        item = site.Title === 'HHHH' ? item = 'HHHH' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('hhhhteams.sharepoint.com') > -1)) {
-                    if (site.Title.toLowerCase() == 'Offshore Tasks') {
-                        item = site.Title == 'Offshore Tasks' ? item = 'Offshore Tasks' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('hhhhteams.sharepoint.com') > -1)) {
+                    if (site.Title.toLowerCase() === 'Offshore Tasks') {
+                        item = site.Title === 'Offshore Tasks' ? item = 'Offshore Tasks' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
-                if (TestUrl != undefined && (TestUrl.toLowerCase().indexOf('/sco-belgrade-online-monitoring-tool') > -1)) {
-                    if (site.Title.toLowerCase() == 'shareweb') {
-                        item = site.Title == 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        //if (item != undefined && getLatestSiteName.toLowerCase() == site.Title.toLowerCase())
+                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/sco-belgrade-online-monitoring-tool') > -1)) {
+                    if (site.Title.toLowerCase() === 'shareweb') {
+                        item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
+                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
                         // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
             })
-            //if (item != undefined && getLatestSiteName.toLowerCase() == item.toLowerCase())
+            //if (item !== undefined && getLatestSiteName.toLowerCase() === item.toLowerCase())
             //$scope.selectedsiteMetadata(item);
         }
         setSave({ ...save, siteType: selectedSiteTitle })
-        if (selectedSiteTitle != undefined) {
+        if (selectedSiteTitle !== undefined) {
             setIsActive({ ...isActive, siteType: true });
         }
         else {
@@ -543,20 +559,20 @@ function CreateTaskComponent() {
 
         let saveItem = save;
         let isActiveData = isActive;
-        if (item == "dueDate") {
+        if (item === "dueDate") {
             DueDate(title)
         }
-        if (item == "Time") {
+        if (item === "Time") {
             setTaskTime(title)
         }
-        if (save[item] != title) {
+        if (save[item] !== title) {
             saveItem[item] = title;
             setSave(saveItem);
-            if (isActive[isActiveItem] != true) {
+            if (isActive[isActiveItem] !== true) {
                 isActiveData[isActiveItem] = true;
                 setIsActive(isActiveData);
             }
-        } else if (save[item] == title) {
+        } else if (save[item] === title) {
             saveItem[item] = '';
             setSave(saveItem);
             isActiveData[isActiveItem] = false;
@@ -568,11 +584,11 @@ function CreateTaskComponent() {
     //     setIsActiveTime(current => !current);
     // };
     const selectPortfolioType = (item: any) => {
-        if (item == 'Component') {
+        if (item === 'Component') {
             setSave({ ...save, portfolioType: 'Component' })
             setSmartComponentData([])
         }
-        if (item == 'Service') {
+        if (item === 'Service') {
             setSave({ ...save, portfolioType: 'Service' })
             setLinkedComponentData([])
         }
@@ -580,18 +596,25 @@ function CreateTaskComponent() {
     }
 
     const selectSubTaskCategory = (title: undefined, Id: any, item: any) => {
-        if (title == 'Email Notification' || title == 'Immediate' || title == 'Bug') {
-            DueDate(new Date());
-            setActiveTile("dueDate", "dueDate", 'Today');
-            setActiveTile("rank", "rank", "10")
-        }
+
+
         let activeCategoryArray = activeCategory;
         let SharewebCategories: any[] = sharewebCat;
         if (item.ActiveTile) {
             item.ActiveTile = !item.ActiveTile;
-            activeCategoryArray = activeCategoryArray.filter((category: any) => category != title);
-            SharewebCategories = SharewebCategories.filter((category: any) => category != Id);
-        } else if (item.ActiveTile == false) {
+            activeCategoryArray = activeCategoryArray.filter((category: any) => category !== title);
+            SharewebCategories = SharewebCategories.filter((category: any) => category !== Id);
+
+        } else if (!item.ActiveTile) {
+            if (title === 'Email Notification' || title === 'Immediate' || title === 'Bug') {
+                DueDate(new Date());
+                if (!isActive.rank) {
+                    setActiveTile("rank", "rank", "10");
+                }
+                if (!isActive.dueDate) {
+                    setActiveTile("dueDate", "dueDate", 'Today');
+                }
+            }
             item.ActiveTile = !item.ActiveTile;
             activeCategoryArray.push(title);
             SharewebCategories.push(Id)
@@ -602,7 +625,7 @@ function CreateTaskComponent() {
 
     }
     return (
-        <>  <div className={save.portfolioType == "Service" ? "taskprofilepagegreen" : ''}>
+        <>  <div className={save.portfolioType === "Service" ? "taskprofilepagegreen" : ''}>
 
             <div className='row'>
                 <div className='col-sm-12'>
@@ -614,7 +637,7 @@ function CreateTaskComponent() {
                 </div>
                 <div className='col-sm-4 mt-4'>
                     <input
-                        type="radio" className="form-check-input" defaultChecked={save.portfolioType == 'Component'}
+                        type="radio" className="form-check-input" defaultChecked={save.portfolioType === 'Component'}
                         name="taskcategory" onChange={() => selectPortfolioType('Component')} />
                     <label className='form-check-label me-2'>Component</label>
                     <input
@@ -624,7 +647,7 @@ function CreateTaskComponent() {
                 </div>
 
                 <div className='col-sm-4'>{
-                    save.portfolioType == 'Component' ?
+                    save.portfolioType === 'Component' ?
                         <div className="input-group">
                             <label className="form-label full-width">Component Portfolio</label>
                             {smartComponentData?.length > 0 ? null :
@@ -655,7 +678,7 @@ function CreateTaskComponent() {
                         </div> : ''
                 }
                     {
-                        save.portfolioType == 'Service' ? <div className="input-group">
+                        save.portfolioType === 'Service' ? <div className="input-group">
                             <label className="form-label full-width">
                                 Service Portfolio
                             </label>
@@ -690,7 +713,7 @@ function CreateTaskComponent() {
             </div>
             <div className='row mt-2'>
                 <div className='col-sm-12'>
-                    <input type="text" placeholder='Enter task Url' className='col-sm-12' onChange={(e) => urlChange(e)}></input>
+                    <input type="text" placeholder='Enter task Url' value={taskUrl} className='col-sm-12' onChange={(e) => urlChange(e)}></input>
                 </div>
             </div>
             <div className='row mt-2'>
@@ -700,10 +723,10 @@ function CreateTaskComponent() {
                         {siteType.map((item: any) => {
                             return (
                                 <>
-                                    {(item.Title != undefined && item.Title != 'Offshore Tasks' && item.Title != 'Master Tasks' && item.Title != 'DRR' && item.Title != 'SDC Sites' && item.Title != 'QA') &&
+                                    {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
                                         <>
                                             <dt
-                                                className={isActive.siteType && save.siteType == item.Title ? ' mx-1 p-2 px-4 sitecolor selectedTaskList' : "mx-1 p-2 px-4 sitecolor"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
+                                                className={isActive.siteType && save.siteType === item.Title ? ' mx-1 p-2 px-4 sitecolor selectedTaskList' : "mx-1 p-2 px-4 sitecolor"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
                                                 {/*  */}
                                                 <a >
                                                     <span className="icon-sites">
@@ -731,7 +754,7 @@ function CreateTaskComponent() {
                                             className="tasks col-sm-2"  >
                                             <span id={"subcategorytasks" + Task.Id} className={isActiveCategory ? 'task manage_tiles' : 'task manage_tiles'}>
                                                 <span className="icon-box">
-                                                    {(Task.Item_x005F_x0020_Cover != undefined && Task.Item_x005F_x0020_Cover.Url != undefined) &&
+                                                    {(Task.Item_x005F_x0020_Cover !== undefined && Task.Item_x005F_x0020_Cover.Url !== undefined) &&
                                                         <img className="icon-task"
                                                             src={Task.Item_x005F_x0020_Cover.Url} />}
                                                 </span>
@@ -742,12 +765,12 @@ function CreateTaskComponent() {
                                             {subCategory?.map((item: any) => {
                                                 return (
                                                     <>
-                                                        {Task.Id == item.ParentID && <>
+                                                        {Task.Id === item.ParentID && <>
                                                             {/* onClick={() => selectSubTaskCategory(item.Title, item.Id)} */}
                                                             <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'text-center subcategoryTask selectedTaskList' : 'text-center subcategoryTask'} >
 
                                                                 <span className="icon-box">
-                                                                    {(item.Item_x005F_x0020_Cover != undefined && item.Item_x005F_x0020_Cover.Url != undefined) &&
+                                                                    {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
                                                                         <img className="icon-task"
                                                                             src={item.Item_x005F_x0020_Cover.Url} />}
                                                                 </span> <span className="tasks-label">{item.Title}</span>
@@ -774,7 +797,7 @@ function CreateTaskComponent() {
 
                                     <>
                                         <dt
-                                            className={isActive.rank && save.rank == item.Title ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("rank", "rank", item.Title)}>
+                                            className={isActive.rank && save.rank === item.Title ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("rank", "rank", item.Title)}>
 
                                             <a >
                                                 <span className="icon-sites">
@@ -802,7 +825,7 @@ function CreateTaskComponent() {
                                 <>
 
                                     <>
-                                        <dt className={isActive.time && save.Time == item.Title ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("Time", "time", item.Title)} >
+                                        <dt className={isActive.time && save.Time === item.Title ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("Time", "time", item.Title)} >
                                             <div>
                                                 <a>
                                                     <span className="icon-sites">
@@ -825,20 +848,20 @@ function CreateTaskComponent() {
                 <fieldset className='fieldsett'>
                     <legend className="reset">Due Date</legend>
                     <dl className="quick-actions d-flex center-Box">
-                        <dt className={isActive.dueDate && save.dueDate == 'Today' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
+                        <dt className={isActive.dueDate && save.dueDate === 'Today' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
                             <a>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
                         </dt>
-                        <dt className={isActive.dueDate && save.dueDate == 'Tomorrow' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow"><a>Tomorrow</a> </dt>
-                        <dt className={isActive.dueDate && save.dueDate == 'ThisWeek' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek"><a>This Week</a> </dt>
-                        <dt className={isActive.dueDate && save.dueDate == 'NextWeek' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a>Next Week</a> </dt>
-                        <dt className={isActive.dueDate && save.dueDate == 'ThisMonth' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a>This Month</a> </dt>
+                        <dt className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow"><a>Tomorrow</a> </dt>
+                        <dt className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek"><a>This Week</a> </dt>
+                        <dt className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a>Next Week</a> </dt>
+                        <dt className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'mx-1 p-2 px-4 sitecolor selectedTaskList' : 'mx-1 p-2 px-4 sitecolor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a>This Month</a> </dt>
                     </dl>
                 </fieldset>
             </div>
             <div className='pull-right'>
                 {
                     siteType.map((site: any) => {
-                        if (site.Title == save.siteType) {
+                        if (site.Title === save.siteType) {
                             return (
                                 <span>
                                     <img className="client-icons"
