@@ -4,7 +4,7 @@ const { useState, useEffect, useCallback } = React;
 import AddCommentComponent from './AddCommentComponent'
 
 export default function subCommentComponent(SubTextItemsArray: any) {
-    let SubTextItems = SubTextItemsArray.SubTextItemsArray;
+    const SubTextItems = SubTextItemsArray.SubTextItemsArray;
     const callBack = SubTextItemsArray.callBack
     const [Texts, setTexts] = useState(false);
     const [subCommentsData, setSubCommentsData] = useState([]);
@@ -17,9 +17,9 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             Completed: "",
             Title: "",
             text: "",
-            Phone: '',
-            LowImportance: '',
-            HighImportance: ''
+            Phone: "",
+            LowImportance: "",
+            HighImportance: ""
         };
         subCommentsData.push(object);
         setTexts(!Texts)
@@ -30,6 +30,9 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     useEffect(() => {
         if (SubTextItems != undefined && SubTextItems.length > 0) {
             setSubCommentsData(SubTextItems);
+            SubTextItems.map((subItem: any) => {
+                Array.push(subItem);
+            })
             Array = SubTextItems
             setBtnStatus(true)
         } else {
@@ -41,16 +44,19 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     }, [])
     const RemoveSubtexTItem = (dltItem: any, Index: number) => {
         let tempArray: any = []
-        // tempArray = subCommentsData.filter((array: any, index: number) => {
-        //     return index != Index;
-        // })
         subCommentsData.map((array: any, index: number) => {
             if (index != Index) {
                 tempArray.push(array);
+
             }
         });
+        tempArray?.map((tempData: any) => {
+            Array.push(tempData);
+        })
+        setTimeout(() => {
+            callBack(tempArray, SubTextItemsArray.commentId);
+        }, 1000);
         setSubCommentsData(tempArray);
-        Array = tempArray;
     }
 
     function handleChangeChild(e: any) {
@@ -62,7 +68,10 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const obj = { ...subCommentsData[id], [name]: value };
             copy[id] = obj;
             setSubCommentsData(copy);
-            Array = copy;
+            Array = [];
+            copy?.map((copyItem: any) => {
+                Array.push(copyItem)
+            })
         }
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
@@ -70,8 +79,11 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const copy = [...subCommentsData];
             const obj = { ...subCommentsData[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
-            Array = copy;
             setSubCommentsData(copy);
+            Array = [];
+            copy?.map((copyItem: any) => {
+                Array.push(copyItem)
+            })
         }
         setTimeout(() => {
             callBack(Array, SubTextItemsArray.commentId);

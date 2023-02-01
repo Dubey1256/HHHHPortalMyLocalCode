@@ -25,6 +25,8 @@ var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
+var tempCategoryData: any;
+
 const EditTaskPopup = (Items: any) => {
     const [images, setImages] = React.useState([]);
     const [TaskImages, setTaskImages] = React.useState([]);
@@ -88,8 +90,8 @@ const EditTaskPopup = (Items: any) => {
             if (propsItems?.categories != "" && propsItems?.categories != undefined) {
                 Items.Items.Categories = propsItems.categories;
                 // setEditData({ ...EditData, Categories: propsItems.Categories })
-                setCategoriesData(CategoriesData + " " + propsItems.categories);
-                console.log("Popup component Categories", propsItems.categories)
+                let category: any = tempCategoryData + ";" + propsItems.categories
+                setCategoriesData(category);
             }
         }
         if (type == "LinkedComponent") {
@@ -279,9 +281,33 @@ const EditTaskPopup = (Items: any) => {
                     item.UploadedImage = saveImage ? saveImage[0] : '';
                     uploadImageFunction(tempData, tempData?.length);
                 }
-
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
+                    tempCategoryData = item.Categories;
+                    let phoneCheck = item.Categories.search("Phone");
+                    let emailCheck = item.Categories.search("Email");
+                    let ImmediateCheck = item.Categories.search("Immediate");
+                    let ApprovalCheck = item.Categories.search("Approval");
+                    if (phoneCheck >= 0) {
+                        item.PhoneStatus = true;
+                    } else {
+                        item.PhoneStatus = false;
+                    }
+                    if (emailCheck >= 0) {
+                        item.EmailStatus = true;
+                    } else {
+                        item.EmailStatus = false;
+                    }
+                    if (ImmediateCheck >= 0) {
+                        item.ImmediateCheck = true;
+                    } else {
+                        item.ImmediateCheck = false;
+                    }
+                    if (ApprovalCheck >= 0) {
+                        item.ApprovalCheck = true;
+                    } else {
+                        item.ApprovalCheck = false
+                    }
                 }
                 if (item.Component?.length > 0) {
                     setSmartComponentData(item.Component);
@@ -449,7 +475,6 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
         }
-
         try {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
@@ -560,6 +585,28 @@ const EditTaskPopup = (Items: any) => {
         SubCommentBoxData = feedBackData;
         console.log("Feedback Array in Edit Sub comp=====", feedBackData)
     }, [])
+
+    const removeCategoryItem = (TypeCategory: any) => {
+        let tempString: any = [];
+        CategoriesData.split(";")?.map((type: any, index: number) => {
+            if (type != TypeCategory) {
+                tempString.push(type);
+            }
+        })
+        setCategoriesData(tempString.join(";"));
+        tempCategoryData = tempString.join(";");
+    }
+
+    const StatusAutoSuggestion = (e: any) => {
+
+    }
+    const CategoryChange = (e: any, type: any) => {
+       
+            let category: any = tempCategoryData + ";" + type;
+            setCategoriesData(category);
+            tempCategoryData = category;
+       
+    }
     return (
         <>
             <Panel
@@ -750,7 +797,10 @@ const EditTaskPopup = (Items: any) => {
                                                         <div
                                                             className="form-check">
                                                             <input className="form-check-input"
-                                                                type="checkbox"
+                                                                name="Phone"
+                                                                type="checkbox" defaultChecked={EditData.PhoneStatus}
+
+                                                                onChange={(e) => CategoryChange(e, "Phone")}
                                                             />
                                                             <label className="form-check-label">Phone</label>
                                                         </div>
@@ -758,6 +808,9 @@ const EditTaskPopup = (Items: any) => {
                                                             className="form-check">
                                                             <input className="form-check-input"
                                                                 type="checkbox"
+                                                                defaultChecked={EditData.EmailStatus}
+
+                                                                onChange={(e) => CategoryChange(e, "Email")}
                                                             />
                                                             <label>Email Notification</label>
                                                             <div className="form-check ms-2">
@@ -769,20 +822,27 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div
                                                             className="form-check">
-                                                            <input className="form-check-input" type="checkbox" />
+                                                            <input className="form-check-input"
+                                                                type="checkbox"
+                                                                defaultChecked={EditData.ImmediateCheck}
+
+                                                                onChange={(e) => CategoryChange(e, "Immediate")} />
                                                             <label>Immediate</label>
                                                         </div>
                                                         {CategoriesData != "" ?
                                                             <div>
                                                                 {(CategoriesData.split(";"))?.map((type: any, index: number) => {
-                                                                    return (
-                                                                        <div className="Component-container-edit-task d-flex my-1 justify-content-between">
-                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
-                                                                                {type}
-                                                                            </a>
-                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setCategoriesData('')} className="p-1" />
-                                                                        </div>
-                                                                    )
+                                                                    if (type != "Phone" && type != "Email" && type != "Immediate") {
+                                                                        return (
+                                                                            <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                    {type}
+                                                                                </a>
+                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => removeCategoryItem(type)} className="p-1" />
+                                                                            </div>
+                                                                        )
+                                                                    }
+
                                                                 })}
                                                             </div> : null
                                                         }
@@ -791,7 +851,10 @@ const EditTaskPopup = (Items: any) => {
                                                         <label className="full-width">Approval</label>
                                                         <input
                                                             type="checkbox"
-                                                            className="form-check-input" />
+                                                            className="form-check-input"
+                                                            name="Approval"
+
+                                                        />
                                                     </div>
                                                     <div className="col ps-4">
                                                         <div
@@ -816,35 +879,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-check-input" />
                                                         </div>
                                                     </div>
-                                                    {/* <div className="col mb-2">
-                                                        <div className="input-group">
-                                                            {EditData.Approver?.length > 0 ? null :
-                                                                <>
-                                                                    <input type="text" ng-model="SearchService"
-                                                                        className="form-control"
-                                                                        id="{{PortfoliosID}}" autoComplete="off"
-                                                                    />
-                                                                </>
-                                                            }
-                                                            {smartComponentData ? smartComponentData?.map((com: any) => {
-                                                                return (
-                                                                    <>
-                                                                        <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
-                                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                                            <a>
-                                                                                <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
-                                                                            </a>
-                                                                        </div>
-                                                                    </>
-                                                                )
-                                                            }) : null}
 
-                                                            <span className="input-group-text">
-                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                    onClick={(e) => EditComponent(EditData, 'Component')} />
-                                                            </span>
-                                                        </div>
-                                                    </div> */}
                                                 </div>
                                             </div>
                                             <div className="col-6 ps-0 pe-0 pt-4">
@@ -918,17 +953,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                {/* <div className="col-12"
-                                                            ng-repeat="item in AllRelevantTasks track by $index">
-                                                            <div className="hhProcesscat">
-                                                                <a className="hreflink" target="_blank"
-                                                                    ng-href="{{pageContext}}/SitePages/Task-Profile.aspx?taskId={{item.Id}}&Site={{item.siteType}}"> item.Title </a>
-                                                                <a className="hreflink"
-                                                                    ng-click="removeAllRelevantTasks(item.Id)">
-                                                                    <img ng-src="/_layouts/images/delete.gif" />
-                                                                </a>
-                                                            </div>
-                                                        </div> */}
+
                                                 <div className="col-12" title="Relevant Portfolio Items">
                                                     <div className="input-group">
                                                         <label className="form-label full-width "> Linked Component Task </label>
@@ -989,109 +1014,22 @@ const EditTaskPopup = (Items: any) => {
                                                             </span>
                                                         </h3>
                                                     </div>
-                                                    {/* {composition === true ?
-                                                                            <div className='spxdropdown-menu'>
-                                                    
-                                                                            <ul>
-                                                                                {  myarray1.map((item: any) =>
-                    
-                                                                                    <li className="dropdown-item">
-                                                                                        <span>
-                                                                                            <img style={{ width: "22px" }} src={item.SiteImages} data-themekey="#" />
-                                                                                        </span>
-                                                                                        <span >
-                                                                                           
-                                                                                            {(item.ClienTimeDescription != undefined) &&
-                                                                                                <span className="ng-binding">
-                                                                                                 
-                    
-                                                                                                    {parseInt(item.ClienTimeDescription)}%
-                    
-                                                                                                </span>
-                                                                                            }
-                                                                                        </span>
-                                                                                        {item.Title == 'EPS' &&
-                                                                                            <span>
-                                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
-                                                                                                    return (
-                                                                                                        <div className="Members-Item">
-                    
-                                                                                                            <div ng-show="client.siteName=='EPS'" className="user-Member-img"   ng-repeat="client in Task.ClientCategory.results">
-                                                                                                                {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
-                                                                                                                    <span>
-                    
-                                                                                                                        {client.Title}
-                    
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                }) : ""}
-                                                                                            </span>
-                                                                                        }
-                                                                                        {item.Title == 'Education' &&
-                                                                                            <span>
-                                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
-                                                                                                    return (
-                                                                                                        <div className="Members-Item">
-                    
-                                                                                                            <div className="user-Member-img" ng-repeat="client in Task.ClientCategory.results">
-                                                                                                                {(client.Title == "Contact Management") &&
-                                                                                                                    <span>
-                    
-                                                                                                                        {client.Title}
-                    
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                }) : ""}
-                                                                                            </span>
-                                                                                        }
-                                                                                        {item.Title == 'EI' &&
-                                                                                            <span  ng-show="item.Title=='EI'" >
-                                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
-                                                                                                    return (
-                                                                                                        <div className="Members-Item">
-                                                                                                            <div ng-show="client.siteName=='EI'" className="user-Member-img"
-                                                                                                                ng-repeat="client in Task.ClientCategory.results">
-                                                                                                                {(client.Title == "Nutzer Verwaltung" || client.Title == "Shareweb Maintenance" || client.Title == "EI fachspezifische Aufgaben" || client.Title == "EI Projekt-Übersicht" || client.Title == "Mithilfe Zugriffsrechte-Konzepts") &&
-                                                                                                                    <span>
-                    
-                                                                                                                        {client.Title}
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                            </div>
-                    
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                }) : ""}
-                                                                                            </span>
-                                                                                        }
-                                                                                    </li>
-                                                                                ) }
-                                                                            </ul>
-                                                                            </div>
-                                                                            : ""}  */}
+
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" placeholder="% Complete" className="form-control px-2"
+                                                <input type="text" placeholder="% Complete" className="form-control px-2" disabled
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
-                                                    onChange={(e) => setEditData({ ...EditData, PercentComplete: e.target.value })} />
+                                                    onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 48 48" fill="none">
                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
                                                     </svg>
                                                 </span>
-                                                {/* {(EditData.PercentComplete?.Title)?.length > 0 ? <span style={
-                                                            { width: '210px', color: "#fff", background: '#000066', padding: '5px' }
-                                                        }> {EditData.PercentComplete ? EditData.PercentComplete.Title : ''}</span> : null} */}
+
                                                 {EditData.PercentComplete != null ?
                                                     <span className="full-width">
                                                         <input type='radio' className="my-2" checked />

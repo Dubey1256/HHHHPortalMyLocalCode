@@ -162,7 +162,7 @@ const LinkedComponent = (item: any) => {
             onDismiss={setModalIsOpenToFalse}
             isBlocking={false}
         >
-            <div className="">
+            <div className="serviepannelgreena">
                 <div className="modal-body">
                     <div className="Alltable mt-10">
                         <div className="col-sm-12 p-0 smart">
@@ -302,7 +302,7 @@ const LinkedComponent = (item: any) => {
                                                                                 <span>
                                                                                     <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                         <img className="icon-sites-img"
-                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />
+                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/service_icons/component_icon.png " />
                                                                                     </a>
                                                                                 </span>
                                                                             </div>

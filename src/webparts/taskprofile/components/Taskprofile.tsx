@@ -6,7 +6,7 @@ import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
 // import { escape } from '@microsoft/sp-lodash-subset';
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
-import { Modal } from 'office-ui-fabric-react';
+// import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
@@ -14,8 +14,8 @@ import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import RelevantDocuments from './RelevantDocuments'
-import { forEach } from 'lodash';
-import { Item } from '@pnp/sp/items';
+// import { forEach } from 'lodash';
+// import { Item } from '@pnp/sp/items';
 var smartTime: Number = 0                                   ;
 var ClientTimeArray:any=[];
 
@@ -74,11 +74,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     this.GetResult();
   }
-  // smartTime= smartTime.toFixed(1)
-  public async componentDidMount() {
-    //this.GetRes ult()
-    smartTime
-  }
+  
+  // public async componentDidMount() {
+   
+    
+  // }
 
   private gAllDataMatches: any = [];
   private taskResult: any;
@@ -304,8 +304,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
     let ImagesInfo: any = [];
+   
     if (Attachments) {
-    
+     if(AttachmentFiles.length>9){
+      AttachmentFiles.FileName.split()
+
+     }
       AttachmentFiles.forEach(function (Attach: any) {
         let attachdata :any=[];
         if(BasicImageInfo!=null ||BasicImageInfo!=undefined){
@@ -606,7 +610,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.GetResult();
   }
   private CallBackSumSmartTime(item: any) {
+  if(item.toString().includes('0.0')){
+    smartTime = item*10;
+  }else{
     smartTime = item
+  }
+ 
   }
   private CallBackTimesheet() {
     this.setState({
@@ -1220,6 +1229,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
                               <div className='usericons'>
                                 <span ng-show="attachedFiles.FileName==imageInfo.ImageName" ng-repeat="imageInfo in BasicImageInfo">
+                                <span >
+                                  {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
+                                </span>
                                   <span >{imgData.UploadeDate}</span>
                                   <span className='round px-1'>
                                     {imgData.UserImage != null &&
@@ -1229,12 +1241,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                                 </span>
                               </div>
-                              <div>
+                              {/* <div>
                                 <span >
                                   {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
                                 </span>
                                 <span>|</span>
-                              </div>
+                              </div> */}
 
                             </div>
 
@@ -1257,7 +1269,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                           
                           <span className="pe-1">{item.AuthorName}</span>
                           <span className="pe-1" >{moment(item.Created).format("DD/MM/YY")}</span>
-                          <div style={{paddingLeft:"30px"}}><span  dangerouslySetInnerHTML={{ __html:item.Body}}></span>
+                          <div style={{paddingLeft:"30px"}} className="border-bottom mb-2 px-4 py-2 text-break"><span  dangerouslySetInnerHTML={{ __html:item.Body}}></span>
                             </div>
                          
                          
