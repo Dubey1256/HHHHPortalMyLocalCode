@@ -51,7 +51,7 @@ function ComponentTable(SelectedProp: any) {
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
     const [IsUpdated, setIsUpdated] = React.useState('');
-    const [tablecontiner, settablecontiner]:any = React.useState("hundred");
+    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [Isshow, setIsshow] = React.useState(false);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -409,7 +409,7 @@ function ComponentTable(SelectedProp: any) {
         setData(maidataBackup => ([...maidataBackup]));
     };
     const handleOpenAll = () => {
-       var Isshow1:any = Isshow == true ? false : true;
+        var Isshow1: any = Isshow == true ? false : true;
         map(data, (obj) => {
             obj.show = Isshow1;
             if (obj.childs != undefined && obj.childs.length > 0) {
@@ -1274,7 +1274,7 @@ function ComponentTable(SelectedProp: any) {
             }
             if (result.Title == 'Others') {
                 //result['childs'] = result['childs'] != undefined ? result['childs'] : [];
-                result.childsLength =result.childs.length;
+                result.childsLength = result.childs.length;
                 ComponentsData.push(result);
             }
         });
@@ -1416,7 +1416,7 @@ function ComponentTable(SelectedProp: any) {
         var temp: any = {};
         temp.Title = 'Others';
         temp.childs = [];
-        temp.childsLength =0;
+        temp.childsLength = 0;
         temp.flag = true;
 
         // ComponetsData['allComponets'][i]['childs']
@@ -1428,7 +1428,7 @@ function ComponentTable(SelectedProp: any) {
                 temp.childs.push(task);
             }
         })
-        
+
         ComponetsData['allComponets'].push(temp);
         bindData();
     }
@@ -1506,11 +1506,11 @@ function ComponentTable(SelectedProp: any) {
 
     }
 
-// Expand Table 
-const expndpopup = (e: any) => {
-    
-    settablecontiner(e);
-  };
+    // Expand Table 
+    const expndpopup = (e: any) => {
+
+        settablecontiner(e);
+    };
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1748,22 +1748,24 @@ const expndpopup = (e: any) => {
             </Modal> */}
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
 
-            <div className="col-sm-12 ">
-                <h2 className="alignmentitle ng-binding d-flex">
 
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
-
-
-                </h2>
-            </div>
             <section className="ContentSection">
+                <div className="col-sm-12 clearfix">
+                    <h2 className="alignmentitle ng-binding d-flex">
+
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
+
+
+                    </h2>
+                </div>
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
+
                         <label className="toggler full_width mb-10">
                             <span className=" siteColor">
                                 {/* <img className="hreflink wid22"
@@ -2000,19 +2002,19 @@ const expndpopup = (e: any) => {
                                             Restructure
                                         </button>
                                         <a className="brush" onClick={clearSearch}>
-                                       <FaPaintBrush />
+                                            <FaPaintBrush />
                                         </a>
                                         <a className='expand'>
                                             <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                                         </a>
                                         <a onClick={Prints} className='Prints'>
-                                           <FaPrint />
+                                            <FaPrint />
                                         </a>
-                                      
-                                            <CSVLink className="excal" data={getCsvData()} >
-                                               <FaFileExcel />
-                                            </CSVLink>
-                                        
+
+                                        <CSVLink className="excal" data={getCsvData()} >
+                                            <FaFileExcel />
+                                        </CSVLink>
+
 
                                         {/* <span>
                                         <ExpandTable/>
@@ -2268,10 +2270,10 @@ const expndpopup = (e: any) => {
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
-                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type =='Feature' &&
+                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type == 'Feature' &&
                                                                                                                     <span className='ms-1'>  ({childitem.childs.length})</span>
                                                                                                                 }
-                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type !='Feature' &&
+                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type != 'Feature' &&
                                                                                                                     <span className='ms-1'>  ({childitem.childsLength})</span>
                                                                                                                 }
 
@@ -2378,12 +2380,12 @@ const expndpopup = (e: any) => {
                                                                                                                                         {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
                                                                                                                                         } */}
-                                                                                                                                         {childinew.childs.length > 0 && childinew.Item_x0020_Type =='Feature' &&
-                                                                                                                    <span className='ms-1'>  ({childinew.childs.length})</span>
-                                                                                                                }
-                                                                                                                {childinew.childs.length > 0 && childinew.Item_x0020_Type !='Feature' &&
-                                                                                                                    <span className='ms-1'>  ({childinew.childsLength})</span>
-                                                                                                                }
+                                                                                                                                        {childinew.childs.length > 0 && childinew.Item_x0020_Type == 'Feature' &&
+                                                                                                                                            <span className='ms-1'>  ({childinew.childs.length})</span>
+                                                                                                                                        }
+                                                                                                                                        {childinew.childs.length > 0 && childinew.Item_x0020_Type != 'Feature' &&
+                                                                                                                                            <span className='ms-1'>  ({childinew.childsLength})</span>
+                                                                                                                                        }
 
                                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
                                                                                                                                             <div className='popover__wrapper ms-1'>
