@@ -1,4 +1,5 @@
 import React from 'react';
+import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
 
 export interface ITeamConfigurationProps {
@@ -290,7 +291,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             }
         });
 
-        this.dropSuccessHandler()
+        this.dropSuccessHandler(true);
 
     }
 
@@ -317,7 +318,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             })
         }
 
-        this.dropSuccessHandler();
+        this.dropSuccessHandler(true);
     }
 
     private onDropTeam1(e: any, array: any, Team: any, AllUser: any) {
@@ -344,19 +345,23 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             array.push($data);
         }
 
-        this.dropSuccessHandler();
+        this.dropSuccessHandler(false);
 
     }
 
-    private dropSuccessHandler() {
-        if (dragItem.userType == 'TeamMemberUsers')
-            this.state.TeamMemberUsers.splice(dragItem.current, 1);
+    private dropSuccessHandler(isRemove:any) {       
 
-        if (dragItem.userType == 'ResponsibleTeam')
-            this.state.ResponsibleTeam.splice(dragItem.current, 1);
+        if (isRemove){
+            if (dragItem.userType == 'TeamMemberUsers')
+                this.state.TeamMemberUsers.splice(dragItem.current, 1);
+
+            if (dragItem.userType == 'ResponsibleTeam')
+                this.state.ResponsibleTeam.splice(dragItem.current, 1);        
+        }
 
         if (dragItem.userType == 'Assigned User')
             this.state.AssignedToUsers.splice(dragItem.current, 1);
+        
 
         let TeamConfiguration = {
             TeamMemberUsers: this.state.TeamMemberUsers,
@@ -368,7 +373,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             updateDragState: true,
             TeamConfiguration
         }, () => this.props.parentCallback(this.state.TeamConfiguration))
-
 
     }
 
@@ -419,10 +423,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 <h6>Team Members</h6>
                                 <div className="d-flex p-1  UserTimeTabGray">
                                     <div className="col-sm-5 border-end p-0" >
-                                        <div ng-show="Item_x0020_Type == undefined" className="col"
+                                        <div className="col"
                                             onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
-                                            <div>
+                                            <div className="p-1" style={{minHeight:'45px'}}>
+                                            <div className='d-flex'>
                                                 {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
                                                     return <div
                                                         className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
@@ -432,12 +437,14 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 })
                                                 }
                                             </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-sm-7 ">
-                                        <div ng-show="Item_x0020_Type == undefined" className="col-sm-12"
+                                        <div className="col-sm-12"
                                             onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
+                                            <div className="p-1" style={{minHeight:'45px'}}>
                                             <div className='d-flex'>
                                                 {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                     return <div
@@ -448,6 +455,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                         onDragOver={(e) => e.preventDefault()} />
                                                 })
                                                 }
+                                            </div>
                                             </div>
                                         </div>
                                     </div>

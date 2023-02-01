@@ -2,11 +2,14 @@ import * as React from "react";
 import { useEffect, useState } from 'react';
 import { Web } from "sp-pnp-js";
 import * as moment from 'moment';
-export const getData = async (url:any,listId:any,query:any,filter:any) => {
+import { GlobalConstants } from '../globalComponents/LocalCommon';
+
+
+export const getData = async (url:any,listId:any,query:any) => {
     const web = new Web(url);
     let result;
     try {
-        result = (await web.lists.getById(listId).items.select(query).filter(filter).get());
+        result = (await web.lists.getById(listId).items.select(query).getAll());
     }
     catch (error) {
         return Promise.reject(error);
@@ -16,6 +19,41 @@ export const getData = async (url:any,listId:any,query:any,filter:any) => {
     
 }
 
+export const addData = async (url:any,listId:any,item:any) => {
+    const web = new Web(url);
+    let result;
+    try {
+        result = (await web.lists.getById(listId).items.add(item));
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+    return result;
+}
+
+export const updateItemById = async (url:any,listId:any,item:any,itemId:any) => {
+    const web = new Web(url);
+    let result;
+    try {
+        result = (await web.lists.getById(listId).items.getById(itemId).update(item));
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+    return result;
+}
+
+export const deleteItemById = async (url:any,listId:any,item:any,itemId:any) => {
+    const web = new Web(url);
+    let result;
+    try {
+        result = (await web.lists.getById(listId).items.getById(itemId).delete());
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+    return result;
+}
 
 export const getTaskId=(item: any)=> {
     let Shareweb_x0020_ID = undefined;
@@ -146,4 +184,52 @@ export const getTaskId=(item: any)=> {
         return Promise.reject(error);
     }
     return Shareweb_x0020_ID;
+}
+
+export const loadTaskUsers= async ()=> {
+    let taskUser;
+    try {
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        taskUser = await web.lists
+            .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
+            .items
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
+            .expand("AssingedToUser,Approver")
+            .get();
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+    return taskUser;
+}
+export const parseJSON = (jsonItem: any) => {
+    var json = [];
+    try {
+        json = JSON.parse(jsonItem);
+    } catch (err) {
+        console.log(err);
+    }
+    return json;
+};
+export const  GetIconImageUrl =(listName: any, listUrl: any, Item: any) =>{
+    var IconUrl = '';
+    if (listName != undefined) {
+        let TaskListsConfiguration = parseJSON(GlobalConstants.LIST_CONFIGURATIONS_TASKS);
+        let TaskListItem = TaskListsConfiguration.filter(function (filterItem: any) {
+            let SiteRelativeUrl = filterItem.siteUrl;
+            return (filterItem.Title.toLowerCase() == listName.toLowerCase() && SiteRelativeUrl.toLowerCase() == (listUrl).toLowerCase());
+        });
+        if (TaskListItem.length > 0) {
+            if (Item == undefined) {
+                IconUrl = TaskListItem[0].ImageUrl;
+            }
+            else if (TaskListItem[0].ImageInformation != undefined) {
+                var IconUrlItem = (TaskListItem[0].ImageInformation.filter(function (index: any, filterItem: any) { return filterItem.ItemType == Item.Item_x0020_Type && filterItem.PortfolioType == Item.Portfolio_x0020_Type }));
+                if (IconUrlItem != undefined && IconUrlItem.length > 0) {
+                    IconUrl = IconUrlItem[0].ImageUrl;
+                }
+            }
+        }
+    }
+    return IconUrl;
 }

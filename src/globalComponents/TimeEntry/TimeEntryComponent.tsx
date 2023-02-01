@@ -432,7 +432,7 @@ function DisplayTimeEntry(item: any) {
                             <TimeEntryPopup props={item.props}></TimeEntryPopup>
                         </div>
                         <div className='modal-footer '>
-                            <button type="button" className="btn btn-danger" onClick={setModalTimmeIsOpenToFalse}>Cancel</button>
+                            <button type="button" className="btn btn-default" onClick={setModalTimmeIsOpenToFalse}>Cancel</button>
                         </div>
                     </div>
                 </div>

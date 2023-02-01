@@ -41,7 +41,7 @@ const EditTaskPopup = (Items: any) => {
     const [ImageSection, setImageSection] = React.useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
-            Title: '', PercentCompleteStatus: ''
+            Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
     const [FeedBackDescription, setFeedBackDescription] = React.useState([]);
@@ -154,7 +154,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     var count = 0;
-    const loadTaskUsers = () => {
+    const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
         axios.get("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$select=Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc")
             .then((response: AxiosResponse) => {
@@ -181,6 +181,32 @@ const EditTaskPopup = (Items: any) => {
             },
                 function (data) {
                 });
+
+
+        // try {
+        //     taskUsers = await globalCommon.loadTaskUsers;
+        //     $.each(taskUsers, function (index: any, user: any) {
+        //         var ApproverUserItem = '';
+        //         var UserApproverMail: any = []
+        //         if (user.Title != undefined && user.IsShowTeamLeader === true) {
+        //             if (user.Approver != undefined) {
+        //                 $.each(user.Approver.results, function (ApproverUser: any, index) {
+        //                     ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
+        //                     UserApproverMail.push(ApproverUser.Name.split('|')[2]);
+        //                 })
+        //                 user['UserManagerName'] = ApproverUserItem;
+        //                 user['UserManagerMail'] = UserApproverMail;
+        //             }
+        //             AllTaskUsers.push(user);
+        //         }
+
+        //     });
+        //     if (AllMetaData != undefined && AllMetaData?.length > 0) {
+        //         GetEditData();
+        //     }
+        // } catch (error) {
+        //     console.log("Error:", error.message);
+        // }
     }
 
     const GetEditData = async () => {
@@ -342,7 +368,7 @@ const EditTaskPopup = (Items: any) => {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
                 let message = JSON.parse(EditData.FeedBack);
                 let feedbackArray = message[0]?.FeedBackDescriptions
-                let tempArray:any =[];
+                let tempArray: any = [];
                 tempArray.push(feedbackArray[0])
                 CommentBoxData = tempArray;
                 let result = tempArray.concat(SubCommentBoxData);
@@ -440,14 +466,16 @@ const EditTaskPopup = (Items: any) => {
                 DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
                 CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
                 Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
-                // BasicImageInfo: JSON.stringify(UploadImage),
                 Mileage: (EditData.Mileage ? EditData.Mileage : ''),
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                 Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-                // Body: FeedBackDescription != undefined ? FeedBackDescription : null
                 FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
-               
+                component_x0020_link: {
+                    "__metadata": { type: "SP.FieldUrlValue" },
+                    Description: "Description",
+                    Url: UpdateTaskInfo.ComponentLink ? UpdateTaskInfo.ComponentLink : (EditData.component_x0020_link ? EditData.component_x0020_link.Url : null)
+                },
             }).then((res: any) => {
                 console.log(res);
                 Items.Call();
@@ -928,10 +956,10 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col-12 mb-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width ">Relevant URL</label>
-                                                <input type="text" className="form-control" placeholder="Url"
+                                                <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} placeholder="Url" onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, ComponentLink: e.target.value })}
                                                 />
                                                 <span className="input-group-text">
-                                                    <a target="_blank" data-interception="off"
+                                                    <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off"
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
                                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3677 13.2672C11.023 13.7134 9.87201 14.4471 8.99831 15.4154C6.25928 18.4508 6.34631 23.1488 9.19578 26.0801C10.6475 27.5735 12.4385 28.3466 14.4466 28.3466H15.4749V27.2499V26.1532H14.8471C12.6381 26.1532 10.4448 24.914 9.60203 23.1898C8.93003 21.8151 8.9251 19.6793 9.5906 18.3208C10.4149 16.6384 11.9076 15.488 13.646 15.1955C14.7953 15.0022 22.5955 14.9933 23.7189 15.184C26.5649 15.6671 28.5593 18.3872 28.258 21.3748C27.9869 24.0644 26.0094 25.839 22.9861 26.1059L21.9635 26.1961V27.2913V28.3866L23.2682 28.3075C27.0127 28.0805 29.7128 25.512 30.295 21.6234C30.8413 17.9725 28.3779 14.1694 24.8492 13.2166C24.1713 13.0335 23.0284 12.9942 18.5838 13.0006C13.785 13.0075 13.0561 13.0388 12.3677 13.2672ZM23.3224 19.8049C18.7512 20.9519 16.3624 26.253 18.4395 30.6405C19.3933 32.6554 20.9948 34.0425 23.1625 34.7311C23.9208 34.9721 24.5664 35 29.3689 35C34.1715 35 34.8171 34.9721 35.5754 34.7311C38.1439 33.9151 39.9013 32.1306 40.6772 29.5502C41 28.4774 41.035 28.1574 40.977 26.806C40.9152 25.3658 40.8763 25.203 40.3137 24.0261C39.0067 21.2919 36.834 19.8097 33.8475 19.6151L32.5427 19.53V20.6267V21.7236L33.5653 21.8132C35.9159 22.0195 37.6393 23.0705 38.4041 24.7641C39.8789 28.0293 38.2035 31.7542 34.8532 32.6588C33.8456 32.9309 25.4951 32.9788 24.1462 32.7205C22.4243 32.3904 21.0539 31.276 20.2416 29.5453C19.8211 28.6492 19.7822 28.448 19.783 27.1768C19.7837 26.0703 19.8454 25.6485 20.0853 25.1039C20.4635 24.2463 21.3756 23.2103 22.1868 22.7175C22.8985 22.2851 24.7121 21.7664 25.5124 21.7664H26.0541V20.6697V19.573L25.102 19.5851C24.5782 19.5919 23.7775 19.6909 23.3224 19.8049Z" fill="#333333" />
@@ -1255,8 +1283,8 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Id ? <>
-                                            <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} />
+                                            <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
+                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} />
                                         </>
                                             : null}
                                     </div>

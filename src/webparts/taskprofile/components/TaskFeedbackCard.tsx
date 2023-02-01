@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  * as React from 'react';
 //import styles from './Taskprofile.module.scss';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import * as moment from 'moment';
@@ -27,6 +27,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
  
   constructor(props: ITaskFeedbackProps) {
     super(props);
+    
+   
     this.state = {
         showcomment : 'none',
         showcomment_subtext : 'none',
@@ -73,11 +75,12 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
+     var date= moment(new Date()).format('dd MMM yyyy HH:mm')
       let temp = {
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         // Created: new Date().toLocaleString('default',{ month: 'short',day:'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        Created:moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm A'),
+        Created:moment(date).format("DD MMM YYYY HH:mm"),
         Title:txtComment
       };
       //Add object in feedback
@@ -107,7 +110,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         // Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        Created: moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm A'),
+        Created: moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
         Title:txtComment
       };
       //Add object in feedback
@@ -235,7 +238,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
 
             <div className="border p-2 full-width text-break">
-              <span  dangerouslySetInnerHTML={{ __html: this.state.fbData['Title'] }}></span>
+           
+              <span  dangerouslySetInnerHTML={{ __html: this.state.fbData.Title}}></span>
               <div className="col">
               {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments'].map( (fbComment:any,k:any)=> {
                 return <div className="col d-flex add_cmnt my-1">
