@@ -1,4 +1,5 @@
 import React from 'react';
+import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
 import Tooltip from '../Tooltip';
 
@@ -291,7 +292,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             }
         });
 
-        this.dropSuccessHandler()
+        this.dropSuccessHandler(true);
 
     }
 
@@ -318,7 +319,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             })
         }
 
-        this.dropSuccessHandler();
+        this.dropSuccessHandler(true);
     }
 
     private onDropTeam1(e: any, array: any, Team: any, AllUser: any) {
@@ -345,19 +346,23 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             array.push($data);
         }
 
-        this.dropSuccessHandler();
+        this.dropSuccessHandler(false);
 
     }
 
-    private dropSuccessHandler() {
-        if (dragItem.userType == 'TeamMemberUsers')
-            this.state.TeamMemberUsers.splice(dragItem.current, 1);
+    private dropSuccessHandler(isRemove:any) {       
 
-        if (dragItem.userType == 'ResponsibleTeam')
-            this.state.ResponsibleTeam.splice(dragItem.current, 1);
+        if (isRemove){
+            if (dragItem.userType == 'TeamMemberUsers')
+                this.state.TeamMemberUsers.splice(dragItem.current, 1);
+
+            if (dragItem.userType == 'ResponsibleTeam')
+                this.state.ResponsibleTeam.splice(dragItem.current, 1);        
+        }
 
         if (dragItem.userType == 'Assigned User')
             this.state.AssignedToUsers.splice(dragItem.current, 1);
+        
 
         let TeamConfiguration = {
             TeamMemberUsers: this.state.TeamMemberUsers,
@@ -369,7 +374,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             updateDragState: true,
             TeamConfiguration
         }, () => this.props.parentCallback(this.state.TeamConfiguration))
-
 
     }
 
