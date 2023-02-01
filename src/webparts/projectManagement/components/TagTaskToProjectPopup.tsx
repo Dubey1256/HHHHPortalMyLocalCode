@@ -410,81 +410,87 @@ const TagTaskToProjectPopup = (props: any) => {
                 </Modal.Header>
                 <Modal.Body>
                     {
-                        AllTasks?.length > 0 ? <div>
-                            <div className='row'>
-                                <div className='col-sm-6 searchTaskTag'>
-                                    <input className="form-control " type="text" value={searchText} onKeyDown={handleKeyDown} onChange={onSearchText} placeholder="Search" aria-label="Search" />
-                                    <span className="input-group-text" onClick={() => { searchTaskToTag() }}><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M31.0138 7.06731C33.8354 7.61202 36.1852 8.86678 37.9071 10.7481C39.8647 12.8866 40.832 15.2084 40.979 18.1218C41.0896 20.3107 40.7731 21.8402 39.7795 23.9182C39.1457 25.2435 38.8458 25.6499 37.5723 26.9085C35.1834 29.2697 33.1175 30.1768 29.783 30.3289C27.9988 30.4101 27.6948 30.3806 26.3472 29.9939C24.6941 29.5197 23.8671 29.1402 22.7405 28.3386C22.3186 28.0385 21.9187 27.7929 21.8519 27.7929C21.7851 27.7929 18.7525 30.7738 15.1127 34.4173C8.73245 40.8041 8.47514 41.04 7.93518 40.9963C7.15937 40.9331 6.78471 40.3003 7.12757 39.6316C7.25623 39.3804 10.2498 36.2724 13.78 32.7251C17.3101 29.1776 20.1984 26.2245 20.1984 26.1623C20.1984 26.1003 19.9343 25.6607 19.6115 25.1856C17.4873 22.0598 17.0424 17.9103 18.4541 14.3929C19.8012 11.0364 22.4973 8.58667 26.0904 7.45461C27.2002 7.10508 30.0487 6.88084 31.0138 7.06731ZM27.5326 9.2402C26.2441 9.47559 24.1717 10.4672 23.1928 11.3167C20.2179 13.8984 19.0413 17.6838 20.0893 21.3025C21.0407 24.5876 23.6698 27.1581 26.9782 28.0375C28.2549 28.3769 30.5384 28.3442 31.8541 27.9679C35.2193 27.0055 37.9175 24.2229 38.6949 20.9132C39.1038 19.1722 38.9464 16.9223 38.3009 15.2809C36.5751 10.8934 32.1303 8.40004 27.5326 9.2402Z" fill="#333333" />
-                                    </svg></span>
-                                    {searchText?.length > 0 ? <span className='searchclearTagTask' onClick={clearSearch} >×</span> : ''}
-                                </div>
-                                {SearchedAllTasks?.length > 0 ? <div className="col-sm-12">
-                                    <div className="col-sm-12">
-                                        <div className="tbl-header">
-                                            <table className="compareTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th><input type="checkbox" id="isActive" checked={selectAll} defaultChecked={selectAll} onChange={() => selectAllFiltered(selectAll)} /></th>
-                                                        <th style={{ width: "5%" }}>Site</th>
-                                                        <th style={{ width: "10%" }}>Task Id</th>
-                                                        <th style={{ width: "35%" }}> Task Title</th>
-                                                        <th style={{ width: "20%" }}>Portfolio Type</th>
-                                                        <th style={{ width: "10%" }}> % Complete</th>
-                                                        <th style={{ width: "10%" }}>Priority</th>
-                                                        <th style={{ width: "10%" }}>Created</th>
-                                                        {/* <th>Edit</th> */}
-                                                    </tr>
-                                                </thead>
-                                            </table>
-                                        </div>
-                                        <div className="tbl-content">
-                                            <table className="compareTable">
-                                                <tbody>
-                                                    {
-                                                        SearchedAllTasks.map((item: any, index: any) => {
-                                                            return (
-                                                                <tr className="table-body-content" key={index}>
-                                                                    <td><input type="checkbox" id="isActive" onClick={() => { selectRow(item, index) }} checked={item?.selected} /></td>
-                                                                    <td style={{ width: "5%" }}>
-                                                                        <img className="icon-sites-img"
-                                                                           title={item?.siteType} src={item?.siteIcon} />
-                                                                    </td >
-                                                                    <td style={{ width: "10%" }}>{item?.Shareweb_x0020_ID}</td>
-                                                                    <td style={{ width: "35%" }}> <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span></td>
-                                                                    <td style={{ width: "20%" }}>
-                                                                        {item.Component != undefined &&
+                        AllTasks?.length > 0 ? <div className=''>
+                            <div className='col'>
+                                <div className='Alltable'>
+                                    <div className="tbl-headings">
+                                        <span className="leftsec">
+                                            <span className="g-search">
+                                                <input className="searchbox_height full_width" type="text" value={searchText} onKeyDown={handleKeyDown} onChange={onSearchText} placeholder="Search" aria-label="Search" />
+                                                    {searchText?.length > 0 ? <span className='g-searchclear' onClick={clearSearch} >×</span> : ''}
+                                                    <span className="gsearch-btn" onClick={() => { searchTaskToTag() }}><i><FaSearch /></i></span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                
+                                    {SearchedAllTasks?.length > 0 ? <div className="col-sm-12 p-0 smart">
+                                            <div className="section-event" style={{paddingTop : "35px"}}>
+                                                <div className='Scrolling'>
+                                                    <table className="table table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style={{ width: "2%" }}><div className='smart-relative'><input type="checkbox" id="isActive" checked={selectAll} defaultChecked={selectAll} onChange={() => selectAllFiltered(selectAll)} /></div></th>
+                                                                <th style={{ width: "5%" }}><div className='smart-relative'>Site</div></th>
+                                                                <th style={{ width: "10%" }}><div className='smart-relative'>Task Id</div></th>
+                                                                <th style={{ width: "33%" }}><div className='smart-relative'> Task Title</div></th>
+                                                                <th style={{ width: "18%" }}><div className='smart-relative'>Portfolio Type</div></th>
+                                                                <th style={{ width: "10%" }}><div className='smart-relative'> % Complete</div></th>
+                                                                <th style={{ width: "10%" }}><div className='smart-relative'>Priority</div></th>
+                                                                <th style={{ width: "12%" }}><div className='smart-relative'>Created</div></th>
+                                                                {/* <th>Edit</th> */}
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                                {
+                                                                    SearchedAllTasks.map((item: any, index: any) => {
+                                                                        return (
                                                                             <>
-                                                                                {item.Component.map((types: any) => {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
-                                                                                        </>
-                                                                                    )
-                                                                                })}
-                                                                            </>
-                                                                        }
-                                                                        {item.Component == undefined &&
-                                                                            <>
-                                                                                {item.Services.map((types: any) => {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
-                                                                                        </>
-                                                                                    )
-                                                                                })}
-                                                                            </>
-                                                                        }
-                                                                    </td>
-                                                                    <td style={{ width: "10%" }}><span className="ml-2">{item.PercentComplete}</span></td>
-                                                                    <td style={{ width: "10%" }}>{item.Priority}</td>
-                                                                    <td style={{ width: "10%" }}>{item.CreatedDis}
-                                                                        {
-                                                                            AllUser.map((user: any) => {
-                                                                                if (user.AssingedToUserId == item.Author.Id) {
-                                                                                    return (
-                                                                                        <img className="AssignUserPhoto1" title={user.Title} src={user.Item_x0020_Cover.Url} alt={user.Title} />
-                                                                                    )
+                                                                            <tr >
+                                                                                <td className="p-0" colSpan={8}>
+                                                                                    <table className="table table-hover m-0" style={{ width: "100%" }}>
+                                                                                        <tr className="" key={index}>
+                                                                                            <td style={{ width: "2%" }}><input type="checkbox" id="isActive" onClick={() => { selectRow(item, index) }} checked={item?.selected} /></td>
+                                                                                            <td style={{ width: "5%" }}>
+                                                                                                <img className="icon-sites-img"
+                                                                                                title={item?.siteType} src={item?.siteIcon} />
+                                                                                            </td >
+                                                                                            <td style={{ width: "10%" }}>{item?.Shareweb_x0020_ID}</td>
+                                                                                            <td style={{ width: "33%" }}>
+                                                                                            <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-spfx.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
+                                                                                            </td>
+                                                                                            <td style={{ width: "18%" }}>
+                                                                                                {item.Component != undefined &&
+                                                                                                    <>
+                                                                                                        {item.Component.map((types: any) => {
+                                                                                                            return (
+                                                                                                                <>
+                                                                                                                    <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                                                                                </>
+                                                                                                            )
+                                                                                                        })}
+                                                                                                    </>
+                                                                                                }
+                                                                                                {item.Component == undefined &&
+                                                                                                    <>
+                                                                                                        {item.Services.map((types: any) => {
+                                                                                                            return (
+                                                                                                                <>
+                                                                                                                    <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                                                                                </>
+                                                                                                            )
+                                                                                                        })}
+                                                                                                    </>
+                                                                                                }
+                                                                                            </td>
+                                                                                            <td style={{ width: "10%" }}><span className="ml-2">{item.PercentComplete}</span></td>
+                                                                                            <td style={{ width: "10%" }}>{item.Priority}</td>
+                                                                                            <td style={{ width: "12%" }}>{item.CreatedDis}
+                                                                                                {
+                                                                                                    AllUser.map((user: any) => {
+                                                                                                        if (user.AssingedToUserId == item.Author.Id) {
+                                                                                                            return (
+                                                                                                                <img className="AssignUserPhoto1" title={user.Title} src={user.Item_x0020_Cover.Url} alt={user.Title} />
+                                                                                                            )
 
                                                                                                         }
                                                                                                     }) 
