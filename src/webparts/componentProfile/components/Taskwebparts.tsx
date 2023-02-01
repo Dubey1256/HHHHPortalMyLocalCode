@@ -409,7 +409,7 @@ export default function ComponentTable({ props }: any) {
         }
         if (props.Item_x0020_Type != undefined && props.Item_x0020_Type === 'SubComponent') {
             array = $.grep(componentDetails, function (compo: any) { return compo.Id === props.Id })
-            let temp = $.grep(componentDetails, function (compo: any) { return compo.Parent.Id === props.Id })
+            let temp = $.grep(componentDetails, function (compo: any) { return compo.Parent?.Id === props.Id })
             if (temp != undefined && temp.length > 0)
                 array = [...array, ...temp];
         }
@@ -705,6 +705,7 @@ export default function ComponentTable({ props }: any) {
                             subcomp['childs'].unshift(featurecomp);;
                         }
                     })
+                    DynamicSort(subcomp.childs, 'PortfolioLevel');
                 }
             })
 
