@@ -1715,7 +1715,7 @@ function TimeEntryPopup(item: any) {
                                             })}
                                         </tbody>
                                     </table>
-                                    {TaskCate.length === 0 && <div className="right-col pt-0 MtPb"
+                                    {TaskCate.length === 0 && <div className="text-center pb-3"
                                     >
                                         No Timesheet Available
                                     </div>}
