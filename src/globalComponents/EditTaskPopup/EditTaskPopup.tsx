@@ -27,6 +27,7 @@ var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
+var tempShareWebTypeData: any = [];
 var tempCategoryData: any;
 
 const EditTaskPopup = (Items: any) => {
@@ -37,6 +38,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState('');
+    const [ShareWebTypeData, setShareWebTypeData] = React.useState([]);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
@@ -78,31 +80,30 @@ const EditTaskPopup = (Items: any) => {
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
     // }
-    const Call = React.useCallback((propsItems: any, type: any) => {
+    const Call = React.useCallback((PopupItemData: any, type: any) => {
         setIsComponent(false);
         setIsComponentPicker(false);
         if (type == "SmartComponent") {
-            if (propsItems?.smartComponent?.length > 0) {
-                Items.Items.smartComponent = propsItems.smartComponent;
-                // setEditData({ ...EditData, Component: propsItems.smartComponent })
-                setSmartComponentData(propsItems.smartComponent);
-                console.log("Popup component smartComponent ", propsItems.smartComponent)
+            if (PopupItemData?.smartComponent?.length > 0) {
+                Items.Items.smartComponent = PopupItemData.smartComponent;
+                setSmartComponentData(PopupItemData.smartComponent);
+                console.log("Popup component smartComponent ", PopupItemData.smartComponent)
             }
         }
         if (type == "Category") {
-            if (propsItems?.categories != "" && propsItems?.categories != undefined) {
-                Items.Items.Categories = propsItems.categories;
-                // setEditData({ ...EditData, Categories: propsItems.Categories })
-                let category: any = tempCategoryData + ";" + propsItems.categories
+            if (PopupItemData?.categories != "" && PopupItemData?.categories != undefined) {
+                Items.Items.Categories = PopupItemData.categories;
+                let category: any = tempCategoryData + ";" + PopupItemData.categories[0]?.Title
                 setCategoriesData(category);
+                tempShareWebTypeData.push(PopupItemData.categories[0]);
+                setShareWebTypeData(tempShareWebTypeData);
             }
         }
         if (type == "LinkedComponent") {
-            if (propsItems?.linkedComponent?.length > 0) {
-                Items.Items.linkedComponent = propsItems.linkedComponent;
-                // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-                setLinkedComponentData(propsItems.linkedComponent);
-                console.log("Popup component linkedComponent", propsItems.linkedComponent)
+            if (PopupItemData?.linkedComponent?.length > 0) {
+                Items.Items.linkedComponent = PopupItemData.linkedComponent;
+                setLinkedComponentData(PopupItemData.linkedComponent);
+                console.log("Popup component linkedComponent", PopupItemData.linkedComponent)
             }
         }
 
@@ -311,6 +312,14 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         item.ApprovalCheck = false
                     }
+                }
+                if(item.SharewebCategories != undefined && item.SharewebCategories?.length > 0){
+                    let tempArray:any = [];
+                    tempArray = item.SharewebCategories;
+                    setShareWebTypeData(item.SharewebCategories);
+                    tempArray?.map((tempData:any)=>{
+                        tempShareWebTypeData.push(tempData);
+                    })
                 }
                 if (item.Component?.length > 0) {
                     setSmartComponentData(item.Component);
@@ -596,7 +605,7 @@ const EditTaskPopup = (Items: any) => {
         SubCommentBoxData = feedBackData;
         console.log("Feedback Array in Edit Sub comp=====", feedBackData)
     }, [])
-    const removeCategoryItem = (TypeCategory: any) => {
+    const removeCategoryItem = (TypeCategory: any, TypeId:any) => {
         let tempString: any = [];
         CategoriesData.split(";")?.map((type: any, index: number) => {
             if (type != TypeCategory) {
@@ -605,24 +614,38 @@ const EditTaskPopup = (Items: any) => {
         })
         setCategoriesData(tempString.join(";"));
         tempCategoryData = tempString.join(";");
+        let tempArray2:any=[];
+        tempShareWebTypeData = [];
+        ShareWebTypeData?.map((dataType:any)=>{
+             if(dataType.Id != TypeId){
+                tempArray2.push(dataType)
+                tempShareWebTypeData.push(dataType);
+             }
+        })
+        setShareWebTypeData(tempArray2);
     }
     const StatusAutoSuggestion = (e: any) => {
 
     }
-    const CategoryChange = (e: any, type: any) => {
+    const CategoryChange = (e: any, type: any, Id:any) => {
         if (e.target.value == "true") {
-            removeCategoryItem(type);
+            removeCategoryItem(type, Id);
         } else {
             let category: any = tempCategoryData + ";" + type;
             setCategoriesData(category);
             tempCategoryData = category;
+            let tempObject = {
+                Title:type,
+                Id:Id
+            }
+            ShareWebTypeData.push(tempObject);
+            tempShareWebTypeData.push(tempObject);
         }
     }
     const SaveAndAddTimeSheet = () => {
         UpdateTaskInfoFunction("TimeSheetPopup");
         setTimeSheetPopup(true);
         setModalIsOpen(false);
-
     }
     const closeTimeSheetPopup = () => {
         setTimeSheetPopup(false);
@@ -832,7 +855,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 name="Phone"
                                                                 type="checkbox" defaultChecked={EditData.PhoneStatus}
                                                                 value={EditData.PhoneStatus}
-                                                                onClick={(e) => CategoryChange(e, "Phone")}
+                                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
                                                             />
                                                             <label className="form-check-label">Phone</label>
                                                         </div>
@@ -842,7 +865,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 defaultChecked={EditData.EmailStatus}
                                                                 value={EditData.EmailStatus}
-                                                                onClick={(e) => CategoryChange(e, "Email")}
+                                                                onClick={(e) => CategoryChange(e, "Email", 276)}
                                                             />
                                                             <label>Email Notification</label>
                                                             <div className="form-check ms-2">
@@ -858,19 +881,19 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 defaultChecked={EditData.ImmediateCheck}
                                                                 value={EditData.ImmediateCheck}
-                                                                onClick={(e) => CategoryChange(e, "Immediate")} />
+                                                                onClick={(e) => CategoryChange(e, "Immediate", 228)} />
                                                             <label>Immediate</label>
                                                         </div>
-                                                        {CategoriesData != "" ?
+                                                        {ShareWebTypeData != undefined &&  ShareWebTypeData?.length > 0?
                                                             <div>
-                                                                {(CategoriesData.split(";"))?.map((type: any, index: number) => {
-                                                                    if (type != "Phone" && type != "Email" && type != "Immediate") {
+                                                                {ShareWebTypeData?.map((type: any, index: number) => {
+                                                                    if (type.Title != "Phone" && type.Title != "Email" && type.Title != "Immediate") {
                                                                         return (
                                                                             <div className="Component-container-edit-task d-flex my-1 justify-content-between">
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
-                                                                                    {type}
+                                                                                    {type.Title}
                                                                                 </a>
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => removeCategoryItem(type)} className="p-1" />
+                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => removeCategoryItem(type.Title, type.Id)} className="p-1" />
                                                                             </div>
                                                                         )
                                                                     }
@@ -1124,7 +1147,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <a
                                                                     target="_blank"
                                                                     data-interception="off"
-                                                                    href={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
+                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
                                                                     <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                         on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
                                                                         data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
@@ -1302,15 +1325,15 @@ const EditTaskPopup = (Items: any) => {
                         <div className="d-flex justify-content-between py-2">
                             <div>
                                 <div className="">
-                                    Created <span className="font-weight-normal">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal">
+                                    Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
 
                                         {EditData.Author?.Title ? EditData.Author?.Title : ''}
 
                                     </span>
                                 </div>
                                 <div>
-                                    Last modified <span className="font-weight-normal"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
-                                    </span> By <span className="font-weight-normal">
+                                    Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                    </span> By <span className="font-weight-normal siteColor">
                                         {EditData.Editor?.Title ? EditData.Editor.Title : ''}
                                     </span>
                                 </div>

@@ -8,6 +8,7 @@ import TaskFeedbackCard from './TaskFeedbackCard';
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 // import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
+
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
 import TimeEntry from './TimeEntry';
@@ -1186,7 +1187,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    <div className={this.state.Result["BasicImageInfo"] != null ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 mt-2"}>
+                    <div className={this.state.Result["BasicImageInfo"] != null &&this.state.Result["BasicImageInfo"] .length>0 ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
                         this.state.Result["SharewebTaskType"] == 'Task'|| this.state.Result["SharewebTaskType"]=="Activities") && this.state.Result["FeedBack"] != null &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
@@ -1235,7 +1236,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                 <span >
                                   {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
                                 </span>
-                                <div>
+                              
+                                </span>
+                              </div>
+                              <div>
                                   <span >{imgData.UploadeDate}</span>
                                   <span className='round px-1'>
                                     {imgData.UserImage != null &&
@@ -1243,8 +1247,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                     }
                                   </span>
                                       </div>
-                                </span>
-                              </div>
                               {/* <div>
                                 <span >
                                   {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
@@ -1306,6 +1308,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <div>
               <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
               </div>
+              {/* <div><SmartInformation /></div> */}
                <div>  <RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID}siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments></div>
             
             </div>
