@@ -18,6 +18,8 @@ import { RiDeleteBin6Line } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
 import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
+import TimeEntryPopup from './TimeEntryComponent';
+
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -51,6 +53,7 @@ const EditTaskPopup = (Items: any) => {
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
+    const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
     const [composition, setComposition] = React.useState(false);
     const [FolderData, SetFolderData] = React.useState([]);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
@@ -350,7 +353,6 @@ const EditTaskPopup = (Items: any) => {
         setPercentCompleteCheck(false);
     }
     const setModalIsOpenToFalse = () => {
-
         let callBack = Items.Call
         callBack();
     }
@@ -370,7 +372,7 @@ const EditTaskPopup = (Items: any) => {
     var AssignedToIds: any = [];
     var ResponsibleTeamIds: any = [];
     var TeamMemberIds: any = [];
-    const UpdateTaskInfoFunction = async (child: any) => {
+    const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImage: any = []
         var item: any = {}
         images?.map((imgDtl: any) => {
@@ -503,7 +505,10 @@ const EditTaskPopup = (Items: any) => {
                 },
             }).then((res: any) => {
                 console.log(res);
-                Items.Call();
+                if (typeFunction != "TimeSheetPopup") {
+                    Items.Call();
+                }
+
             })
         } catch (error) {
             console.log("Error:", error.messages)
@@ -552,7 +557,6 @@ const EditTaskPopup = (Items: any) => {
             setTaskResponsibleTeam(tempArray);
         }
     }, [])
-
     const shareThisTaskFunction = (EmailData: any) => {
         var link = "mailTo:"
             + "?cc:"
@@ -561,16 +565,24 @@ const EditTaskPopup = (Items: any) => {
         window.location.href = link;
     }
     const deleteTaskFunction = async (TaskID: number) => {
+        let deletePost = confirm("Do you really want to delete this Task?")
+        if (deletePost) {
+            deleteItemFunction(TaskID);
+        } else {
+            console.log("Your Task has not been deleted");
+        }
+    }
+    const deleteItemFunction = async (itemId: any) => {
         try {
             if (Items.Items.listId != undefined) {
                 let web = new Web(Items.Items.siteUrl);
-                await web.lists.getById(Items.Items.listId).items.getById(TaskID).delete();
+                await web.lists.getById(Items.Items.listId).items.getById(itemId).delete();
             } else {
                 let web = new Web(Items.Items.siteUrl);
-                await web.lists.getById(Items.Items.listName).items.getById(TaskID).delete();
+                await web.lists.getById(Items.Items.listName).items.getById(itemId).delete();
             }
             Items.Call();
-
+            console.log("Your post has been deleted successfully");
         } catch (error) {
             console.log("Error:", error.message);
         }
@@ -580,12 +592,10 @@ const EditTaskPopup = (Items: any) => {
 
         console.log("Editor Data call back HTML ====", EditorData)
     }, [])
-
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
         SubCommentBoxData = feedBackData;
         console.log("Feedback Array in Edit Sub comp=====", feedBackData)
     }, [])
-
     const removeCategoryItem = (TypeCategory: any) => {
         let tempString: any = [];
         CategoriesData.split(";")?.map((type: any, index: number) => {
@@ -596,16 +606,27 @@ const EditTaskPopup = (Items: any) => {
         setCategoriesData(tempString.join(";"));
         tempCategoryData = tempString.join(";");
     }
-
     const StatusAutoSuggestion = (e: any) => {
 
     }
     const CategoryChange = (e: any, type: any) => {
-       
+        if (e.target.value == "true") {
+            removeCategoryItem(type);
+        } else {
             let category: any = tempCategoryData + ";" + type;
             setCategoriesData(category);
             tempCategoryData = category;
-       
+        }
+    }
+    const SaveAndAddTimeSheet = () => {
+        UpdateTaskInfoFunction("TimeSheetPopup");
+        setTimeSheetPopup(true);
+        setModalIsOpen(false);
+
+    }
+    const closeTimeSheetPopup = () => {
+        setTimeSheetPopup(false);
+        setModalIsOpenToFalse();
     }
     return (
         <>
@@ -645,6 +666,18 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
             <Panel
+                headerText={`Update Task Status`}
+                isOpen={TimeSheetPopup}
+                type={PanelType.custom}
+                customWidth="850px"
+                onDismiss={closeTimeSheetPopup}
+                isBlocking={false}
+            >
+                <div className="modal-body">
+                    <TimeEntryPopup props={Items.Items} />
+                </div>
+            </Panel>
+            <Panel
                 headerText={`T${EditData.Id} ${EditData.Title}`}
                 type={PanelType.large}
                 isOpen={modalIsOpen}
@@ -653,8 +686,7 @@ const EditTaskPopup = (Items: any) => {
             >
                 <div >
 
-                    <div className="modal-body ">
-                        {console.log("Feedback All  Array=====", FeedBackDescription)}
+                    <div className="modal-body">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
                                 BASIC INFORMATION
@@ -799,8 +831,8 @@ const EditTaskPopup = (Items: any) => {
                                                             <input className="form-check-input"
                                                                 name="Phone"
                                                                 type="checkbox" defaultChecked={EditData.PhoneStatus}
-
-                                                                onChange={(e) => CategoryChange(e, "Phone")}
+                                                                value={EditData.PhoneStatus}
+                                                                onClick={(e) => CategoryChange(e, "Phone")}
                                                             />
                                                             <label className="form-check-label">Phone</label>
                                                         </div>
@@ -809,8 +841,8 @@ const EditTaskPopup = (Items: any) => {
                                                             <input className="form-check-input"
                                                                 type="checkbox"
                                                                 defaultChecked={EditData.EmailStatus}
-
-                                                                onChange={(e) => CategoryChange(e, "Email")}
+                                                                value={EditData.EmailStatus}
+                                                                onClick={(e) => CategoryChange(e, "Email")}
                                                             />
                                                             <label>Email Notification</label>
                                                             <div className="form-check ms-2">
@@ -825,8 +857,8 @@ const EditTaskPopup = (Items: any) => {
                                                             <input className="form-check-input"
                                                                 type="checkbox"
                                                                 defaultChecked={EditData.ImmediateCheck}
-
-                                                                onChange={(e) => CategoryChange(e, "Immediate")} />
+                                                                value={EditData.ImmediateCheck}
+                                                                onClick={(e) => CategoryChange(e, "Immediate")} />
                                                             <label>Immediate</label>
                                                         </div>
                                                         {CategoriesData != "" ?
@@ -1270,27 +1302,26 @@ const EditTaskPopup = (Items: any) => {
                         <div className="d-flex justify-content-between py-2">
                             <div>
                                 <div className="">
-                                    Created <span> <b> {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""} </b> </span> by <span className="siteColor mx-1">
-                                        <b>
-                                            {EditData.Author?.Title ? EditData.Author?.Title : ''}
-                                        </b>
+                                    Created <span className="font-weight-normal">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal">
+
+                                        {EditData.Author?.Title ? EditData.Author?.Title : ''}
+
                                     </span>
                                 </div>
                                 <div>
-                                    Last modified <span> <b> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''} </b> </span>
-                                    by
-                                    <span className="siteColor">
-                                        <b> {EditData.Editor?.Title ? EditData.Editor.Title : ''} </b>
+                                    Last modified <span className="font-weight-normal"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                    </span> By <span className="font-weight-normal">
+                                        {EditData.Editor?.Title ? EditData.Editor.Title : ''}
                                     </span>
                                 </div>
                                 <div>
                                     <a className="hreflink">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                         </svg>
-                                        <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete this item</span>
+                                        <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                                     </a>
-                                    <span> |</span>
+                                    <span> | </span>
                                     <a className="hreflink">
                                         Copy
                                         Task
@@ -1309,30 +1340,30 @@ const EditTaskPopup = (Items: any) => {
                                     <span>
                                         <a className="mx-2" target="_blank" data-interception="off"
                                             href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
-                                            Go to profile page
+                                            Go To Profile Page
                                         </a>
                                     </span> ||
                                     <span>
-                                        <a className="mx-2" >
-                                            Save & Add Timesheet
+                                        <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
+                                            Save & Add Time-Sheet
                                         </a>
                                     </span> ||
 
-                                    <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} >
+                                    <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
                                         <img className="mail-width mx-2"
                                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
-                                        Share this task
+                                        Share This Task
                                     </span> ||
                                     <a target="_blank" className="mx-2" data-interception="off"
                                         href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/HHHH/EditForm.aspx?ID=${EditData.ID}`}>
-                                        Open out-of-the-box form
+                                        Open Out-Of-The-Box Form
                                     </a>
                                     <span >
-                                        <button className="btn btn-primary"
+                                        <button className="btn btn-primary px-3"
                                             onClick={UpdateTaskInfoFunction}>
                                             Save
                                         </button>
-                                        <button type="button" className="btn btn-default mx-1" onClick={Items.Call}>
+                                        <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
                                             Close
                                         </button>
                                     </span>
