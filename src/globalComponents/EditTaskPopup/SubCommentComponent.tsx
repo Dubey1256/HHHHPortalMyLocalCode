@@ -135,26 +135,26 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                     <span className="mx-1" >
                                         <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mx-1"
                                         />
-                                        <label>Low Importance</label>
+                                        <label>Low Importance</label> 
                                     </span>
                                     <span> | </span>
-                                    <span>
+                                    <span className="mx-1">
                                         <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
                                             value={obj.HighImportance} className="form-check-input mx-1"
                                         />
-                                        <label>High Importance</label>
-                                    </span>
+                                        <label>High Importance </label>
+                                    </span> 
                                     <span> | </span>
                                     <span className="mx-1">
                                         <input type="checkbox" id="" className="form-check-input mx-1"
                                             name='Completed' checked={obj.Completed} value={obj.Completed} />
                                         <label>Mark As Completed</label>
-                                    </span>
+                                    </span> 
                                     <span> | </span>
-                                    <span className="hreflink" style={{ color: "#000066" }}>
-                                        <span onClick={() => postBtnHandle(index)}>Add Comment</span>
-                                    </span>
-                                    <span> | </span>
+                                    <span className="hreflink mx-1" style={{ color: "#000066" }}>
+                                        <span onClick={() => postBtnHandle(index)}> Add Comment </span> 
+                                    </span> 
+                                    <span> | </span> 
                                     <span className="">
                                         <a className="ps-1 hreflink"
                                             target="_blank"
