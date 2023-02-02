@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Select } from "@material-ui/core";
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 const Picker = (item: any) => {
-    const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(false);
+    const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
 
@@ -20,6 +20,7 @@ const Picker = (item: any) => {
     const closePopupSmartTaxanomy = () => {
         //Example(item);
         setPopupSmartTaxanomy(false)
+        item.Call();
 
     }
     const saveCategories = () => {
@@ -146,29 +147,22 @@ const Picker = (item: any) => {
                             </span>
 
                         </div>
-                        <table className="ms-dialogHeaderDescription">
-                            <tbody>
-                                <tr id="addNewTermDescription" className="">
-                                    <td>New items are added under the currently selected item.</td>
-                                    <td className="TaggingLinkWidth">
-                                        <a className="hreflink" ng-click="gotomanagetaxonomy();">
-                                            Add New Item
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr id="SendFeedbackTr">
-                                    <td>Make a request or send feedback to the Term Set manager.</td>
-                                    <td className="TaggingLinkWidth">
-                                        <a ng-click="sendFeedback();">
-                                            Send Feedback
-                                        </a>
-                                    </td>
-                                    <td className="TaggingLinkWidth">
-                                        {select}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <section>
+                            <div className="row">
+                                <div className="d-flex text-muted pt-3">
+                                    <svg className="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
+                                    <div className="pb-3 mb-0 small">
+                                        <p className="mb-1">
+                                            New items are added under the currently selected item. <span><a className="hreflink" ng-click="gotomanagetaxonomy();"> Add New Item </a></span>
+                                        </p>
+                                        <p className="mb-1">Make a request or send feedback to the Term Set manager. <span><a className="hreflink" ng-click="sendFeedback();">  Send Feedback </a></span></p>
+                                        <div className="block col p-1">  {select}</div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </section>
                         <div className="col-sm-12">
                            
                                 <ul className="categories-menu">

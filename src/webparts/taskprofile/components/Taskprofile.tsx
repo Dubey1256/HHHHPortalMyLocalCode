@@ -295,21 +295,24 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.setState({
       Result: tempTask
     }, () => {
-      this.loadOtherDetailsForComponents(this.taskResult);
       this.getSmartTime();
+      this.loadOtherDetailsForComponents(this.taskResult);
+   
     });
   }
  
-
+  private sortAlphaNumericAscending = (a:any, b:any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
 
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
     let ImagesInfo: any = [];
    
     if (Attachments) {
-     if(AttachmentFiles.length>9){
-      AttachmentFiles.FileName.split()
-
-     }
+      AttachmentFiles.map((items:any)=>{
+        var regex = items.FileName.substring(0, 20);
+        items.newFileName = regex;
+      })
+      AttachmentFiles.sort(this.sortAlphaNumericAscending)
+   
       AttachmentFiles.forEach(function (Attach: any) {
         let attachdata :any=[];
         if(BasicImageInfo!=null ||BasicImageInfo!=undefined){
@@ -1232,13 +1235,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                 <span >
                                   {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
                                 </span>
+                                <div>
                                   <span >{imgData.UploadeDate}</span>
                                   <span className='round px-1'>
                                     {imgData.UserImage != null &&
                                       <img className='align-self-start' title={imgData.UserName} src={imgData.UserImage} />
                                     }
                                   </span>
-
+                                      </div>
                                 </span>
                               </div>
                               {/* <div>
@@ -1269,7 +1273,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                           
                           <span className="pe-1">{item.AuthorName}</span>
                           <span className="pe-1" >{moment(item.Created).format("DD/MM/YY")}</span>
-                          <div style={{paddingLeft:"30px"}} className="border-bottom mb-2 px-4 py-2 text-break"><span  dangerouslySetInnerHTML={{ __html:item.Body}}></span>
+                          <div style={{paddingLeft:"30px"}} className=" mb-4 text-break"><span  dangerouslySetInnerHTML={{ __html:item.Body}}></span>
                             </div>
                          
                          
