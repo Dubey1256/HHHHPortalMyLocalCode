@@ -14,6 +14,7 @@ import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
 import DatePicker from "react-datepicker";
+import { ClickAwayListener } from "@material-ui/core";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import LinkedComponent from "../../globalComponents/EditTaskPopup/LinkedComponent";
@@ -41,6 +42,7 @@ function EditInstitution(item: any) {
     const [EditData, setEditData] = React.useState<any>({});
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
+    const [isOpenPicker, setIsOpenPicker] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebCategory, setSharewebCategory] = React.useState('');
@@ -103,7 +105,13 @@ function EditInstitution(item: any) {
             if (item1 != undefined && item1.Categories != "") {
                 var title: any = {};
                 title.Title = item1.categories;
-                setCategoriesData(item1.categories)
+                item1.categories.map((itenn:any)=>{
+                    CategoriesData.push(itenn)
+                })
+                item1.SharewebCategories.map((itenn:any)=>{
+                    CategoriesData.push(itenn)
+                })
+                setCategoriesData(CategoriesData)
                 item.props.smartCategories = item1.smartCategories;
                 //  item.props.smartCategories.push(title);
 
@@ -889,7 +897,7 @@ function EditInstitution(item: any) {
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     var CheckCategory:any=[]
-    CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199,"ParentId":225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276,"ParentId":225 }, {  "TaxType": "Categories", "Title": "Approval", "Id": 227,"ParentId":225 },
+    CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199,"ParentId":225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276,"ParentId":225 }, {  "TaxType": "Categories", "Title": "Approvel", "Id": 227,"ParentId":225 },
             { "TaxType": "Categories", "Title": "Immediate", "Id": 228,"parentId":225 });
 
     const DDComponentCallBack = (dt: any) => {
@@ -1192,6 +1200,7 @@ function EditInstitution(item: any) {
                                                 <div className="col-sm-4 ps-0 ">
                                                     <div className="input-group">
                                                         <label className="form-label  full-width">Start Date</label>
+                                                       
                                                         <DatePicker className="form-control"
                                                             selected={Startdate}
                                                             value={EditData.StartDate}
@@ -1199,6 +1208,7 @@ function EditInstitution(item: any) {
                                                             dateFormat="dd/MM/yyyy"
 
                                                         />
+                                                       
                                                     </div>
                                                 </div>
                                                 <div className="col-sm-4 ">

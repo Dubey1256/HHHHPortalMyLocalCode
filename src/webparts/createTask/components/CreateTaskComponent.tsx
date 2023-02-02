@@ -159,7 +159,14 @@ return componentDetails;
         const params = new URLSearchParams(window.location.search);
         let paramSiteUrl= params.get("Siteurl");
         let paramComponentId = params.get('Component');
-        
+        let paramType= params.get('Type');
+        let paramServiceId=params.get('ServiceID');
+        if (paramComponentId== undefined && paramSiteUrl != undefined && paramType == undefined) {
+            paramComponentId = "756";
+        }
+        else if (paramComponentId == undefined && paramServiceId == undefined && paramSiteUrl != undefined && paramType == 'Service') {
+            paramServiceId = "4497";
+        }
         setBurgerMenuTaskDetails({
             ComponentID:paramComponentId,
             Siteurl:paramSiteUrl
@@ -675,19 +682,21 @@ return componentDetails;
                 <div className='col-sm-12'>
                     <dl className='d-grid text-right pull-right'><span className="pull-right"> <a target='_blank' href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx" style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
                 </div>
-                <div className='col-sm-4'>
+                <div className='col-sm-6'>
                      <label className='full-width'>Task Name</label>
-                    <input type="text" placeholder='Enter task Name' className='' value={save.taskName} onChange={(e) => setSave({ ...save, taskName: e.target.value })}></input>
+                    <input type="text" placeholder='Enter task Name'  className='full-width' value={save.taskName} onChange={(e) => setSave({ ...save, taskName: e.target.value })}></input>
                 </div>
-                <div className='col-sm-4 mt-4'>
+                <div className='col-sm-2 mt-4'>
                     <input
                         type="radio" className="form-check-input radio  me-1" defaultChecked={save.portfolioType === 'Component'}
                         name="taskcategory" onChange={() => selectPortfolioType('Component')} />
                     <label className='form-check-label me-2'>Component</label>
-                    <input
-                        type="radio" className="form-check-input radio  me-1"
-                        name="taskcategory" onChange={() => selectPortfolioType('Service')} />
-                    <label className='form-check-label'>Service</label>
+                   {
+                    burgerMenuTaskDetails?.ComponentID==undefined? <><input
+                    type="radio" className="form-check-input radio  me-1"
+                    name="taskcategory" onChange={() => selectPortfolioType('Service')} />
+                <label className='form-check-label'>Service</label></>:''
+                   }
                 </div>
 
                 <div className='col-sm-4'>{
@@ -757,9 +766,12 @@ return componentDetails;
             </div>
             <div className='row mt-2'>
                 <div className='col-sm-12'>
-                    <input type="text" placeholder='Enter task Url' value={taskUrl} className='col-sm-12' onChange={(e) => urlChange(e)}></input>
+                    <input type="text" placeholder='Enter task Url' value={taskUrl} className='col-sm-12' onChange={(e) => urlChange(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length>0}></input>
+                    
                 </div>
             </div>
+            {/*---------------- Sites -------------
+            -------------------------------*/}
             <div className='row mt-2'>
                  <fieldset>
                     <legend className="border-bottom fs-6 ">Sites</legend>
@@ -770,7 +782,7 @@ return componentDetails;
                                     {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
                                         <>
                                             <li
-                                                className={isActive.siteType && save.siteType === item.Title ? '  mx-1 p-2 px-4 bg-siteColor selectedTaskList text-center mb-2' : "mx-1 p-2 px-4 bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
+                                                className={isActive.siteType && save.siteType === item.Title ? '  mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
                                                 {/*  */}
                                                 <a className='text-white text-decoration-none' >
                                                     <span className="icon-sites">
@@ -786,6 +798,8 @@ return componentDetails;
                     </ul>
                 </fieldset>
             </div>
+            {/*---- Task Categories ---------
+            -------------------------------*/}
             <div className='row mt-2'>
                 <fieldset >
                     <legend className="border-bottom fs-6">Task Categories</legend>
@@ -831,19 +845,21 @@ return componentDetails;
                     </div>
                 </fieldset>
             </div>
+             {/*-----Priority Rank --------
+            -------------------------------*/}
             <div className='row mt-2'>
                 <fieldset>
                     <legend className="border-bottom fs-6">Priority Rank</legend>
-                    <dl className="quick-actions">
+                    <dl className="row px-2 text-center">
                         {priorityRank.map((item: any) => {
                             return (
                                 <>
 
                                     <>
                                         <dt
-                                            className={isActive.rank && save.rank === item.Title ?'bg-siteColor float-sm-start selectedTaskList  mx-1 p-2 px-2  mb-2 ' : 'bg-siteColor float-sm-start mx-1 p-2 px-2  mb-2 '} onClick={() => setActiveTile("rank", "rank", item.Title)}>
+                                            className={isActive.rank && save.rank === item.Title ?'bg-siteColor col selectedTaskList  mx-1 p-2  mb-2 ' : 'bg-siteColor col mx-1 p-2  mb-2 '} onClick={() => setActiveTile("rank", "rank", item.Title)}>
 
-                                            <a>
+                                            <a className='text-white'>
                                                 <span>
                                                     <img src={item.Item_x005F_x0020_Cover.Url} />
                                                 </span>
@@ -859,6 +875,8 @@ return componentDetails;
                     </dl>
                 </fieldset>
             </div>
+              {/*-----Time --------
+            -------------------------------*/}
             <div className='row mt-2'>
 
                     <legend className="border-bottom fs-6">Time</legend>
@@ -886,6 +904,8 @@ return componentDetails;
                     </div>
            
             </div>
+            {/*-----Due date --------
+            -------------------------------*/}
             <div className='row mt-2'>
     
                     <legend className="border-bottom fs-6">Due Date</legend>

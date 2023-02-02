@@ -1401,6 +1401,7 @@ function TimeEntryPopup(item: any) {
             console.log(res);
 
             closeCopyTaskpopup();
+            setupdateData(updateData + 7)
 
         })
     }

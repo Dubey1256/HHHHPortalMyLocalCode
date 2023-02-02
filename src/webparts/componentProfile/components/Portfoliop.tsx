@@ -260,7 +260,8 @@ function Portfolio({ ID }: any) {
     const handleClose = () => setLgShow(false);
 
     const EditComponentPopup = (item: any) => {
-        // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+        item['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+        item['listName'] = 'Master Tasks';
         setIsComponent(true);
         setSharewebComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
