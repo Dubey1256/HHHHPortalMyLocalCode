@@ -586,7 +586,7 @@ const LinkedComponent = (item: any) => {
                 </div>
                 <footer className="float-end mt-2">
                     <button type="button" className="btn btn-primary px-3" onClick={setModalIsOpenToOK}>OK</button>
-                    <button type="button" className="btn btn-greyb ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
+                    <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
                 </footer>
             </div >
         </Panel >

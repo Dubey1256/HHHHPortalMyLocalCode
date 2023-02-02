@@ -601,9 +601,9 @@ const ComponentPortPolioPopup = (item: any) => {
                         </div>
                     </div>
                 </div>
-                <footer>
-                    <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
-                    <button type="button" className="btn btn-grey" onClick={setModalIsOpenToFalse}>Cancel</button>
+                <footer className="float-end mt-2">
+                    <button type="button" className="btn btn-primary px-3" onClick={setModalIsOpenToOK}>OK</button>
+                    <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
                 </footer>
             </div >
         </Panel >
