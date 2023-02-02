@@ -2,12 +2,17 @@ import * as React from "react";
 import { useState, useEffect } from 'react';
 import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
+import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import { SystemUpdateTwoTone } from "@material-ui/icons";
+
 
 const AddCommentComponent = (FbData: any) => {
     const FeedBackData = FbData.Data;
     const [FeedBackArray, setFeedBackArray] = useState([]);
     const [postTextInput, setPostTextInput] = useState('');
     const [currentUserData, setCurrentUserData] = useState([]);
+    const [editPostPanel, setEditPostPanel] = useState(false);
+    const [updateComment, setUpdateComment] = useState('');
     var Array: any = [];
     useEffect(() => {
         console.log(FeedBackData);
@@ -16,23 +21,23 @@ const AddCommentComponent = (FbData: any) => {
                 Array.push(dataItem);
             })
             setFeedBackArray(FeedBackData);
-
         }
         getCurrentUserDetails();
     }, [])
 
     const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any) => {
-
+        setUpdateComment(comment);
+        setEditPostPanel(true);
     }
     const clearComment = (isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any) => {
-        let tempArray:any =[];
+        let tempArray: any = [];
         FeedBackArray?.map((item: any, index: any) => {
-            if (index != indexOfSubtext) {
+            if (index != indexOfDeleteElement) {
                 tempArray.push(item);
             }
         })
         setFeedBackArray(tempArray);
-      
+        FbData.callBack(isSubtextComment, tempArray, indexOfDeleteElement);
     }
 
     const handleChangeInput = (e: any) => {
@@ -70,6 +75,14 @@ const AddCommentComponent = (FbData: any) => {
         }
     }
 
+    const editPostCloseFunction = () => {
+        setEditPostPanel(false);
+    }
+
+    const updateCommentFunction = () => {
+
+    }
+
     return (
         <div>
             <section className="previous-FeedBack-section">
@@ -88,7 +101,7 @@ const AddCommentComponent = (FbData: any) => {
                                                 {commentDtl.AuthorName} - {commentDtl.Created}
                                                 <span>
                                                     <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
-                                                    <a className="ps-1" onClick={() => clearComment(false, index, 0)}><img src='/_layouts/images/delete.gif'></img></a>
+                                                    <a className="ps-1" onClick={() => clearComment(true, index, 0)}><img src='/_layouts/images/delete.gif'></img></a>
                                                 </span>
                                             </div>
                                             <div><span dangerouslySetInnerHTML={{ __html: commentDtl.Title }}></span></div>
@@ -120,7 +133,29 @@ const AddCommentComponent = (FbData: any) => {
                 }
             </div>
             <section className="Update-FeedBack-section">
-                <div> </div>
+                <Panel headerText={`Update Comment`}
+                    isOpen={editPostPanel}
+                    onDismiss={editPostCloseFunction}
+                    isBlocking={false}
+                    type={PanelType.custom}
+                    customWidth="500px"
+                >
+                    <div className="parentDiv">
+                        <div style={{ width: '99%', marginTop: '2%', padding: '2%' }}>
+                            <textarea id="txtUpdateComment" rows={6} onChange={(e) => setUpdateComment(e.target.value)} style={{ width: '100%', marginLeft: '3px' }} defaultValue={updateComment ? updateComment : ''}>
+                            </textarea>
+                        </div>
+                        <footer className="float-end">
+                            <button className="btn btnPrimary" onClick={updateCommentFunction}>
+                                Save
+                            </button>
+                            <button className='btn btn-default mx-1' onClick={editPostCloseFunction}>
+                                Cancel
+                            </button>
+
+                        </footer>
+                    </div>
+                </Panel>
             </section>
         </div>
     )

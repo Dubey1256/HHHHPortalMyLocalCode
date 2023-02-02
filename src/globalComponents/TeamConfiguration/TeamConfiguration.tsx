@@ -1,6 +1,7 @@
 import React from 'react';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
+import Tooltip from '../Tooltip';
 
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
@@ -381,8 +382,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             <>
                 <div className="col">
                     <div className="col bg-ee p-1">
-                        <div ng-if="teamUserExpanded" className="col-sm-11" ng-click="forCollapse()">
-                            <span className="txtSizeClr">Select Team Members</span>
+                        <div ng-if="teamUserExpanded" className="d-flex justify-content-between align-items-center" ng-click="forCollapse()">
+                            <span>Select Team Members</span>
+                            <span><Tooltip/></span>
                         </div>
                     </div>
 

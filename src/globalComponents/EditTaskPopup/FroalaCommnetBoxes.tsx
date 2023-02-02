@@ -52,15 +52,21 @@ export default function FroalaCommnetBoxes(textItems: any) {
                 tempArray.push(array);
             }
         })
-        setState(tempArray);
-        Array = tempArray;
+        Array = [];
+        tempArray?.map((tempDataItem:any)=>{
+             Array.push(tempDataItem);
+        })
+       
         if (tempArray?.length == 0) {
             setBtnStatus(false)
         }
+        setTimeout(() => {
+            callBack(tempArray);
+        }, 1000);
+        setState(tempArray);
     }
 
     function handleChange(e: any) {
-
         if (e.target.matches("textarea")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
@@ -97,7 +103,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
         setTimeout(() => {
             callBack(Array);
         }, 1000);
-        console.log("Sub text array call back ====", Array);
     }, [])
 
     const postBtnHandle = (index: any) => {

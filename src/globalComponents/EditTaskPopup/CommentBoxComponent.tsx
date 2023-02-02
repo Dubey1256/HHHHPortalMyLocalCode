@@ -84,7 +84,7 @@ const CommentBoxComponent = (commentData: any) => {
                             >
                                 <div className="Task-panel d-flex  justify-content-end ">
                                     <span className="form-check">
-                                        <input className="mx-1" type="checkbox"
+                                        <input className="form-check-input mx-1" type="checkbox"
                                             checked={obj.Phone}
                                             value={obj.Phone}
                                             name='Phone'
@@ -92,7 +92,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         <label>Phone</label>
                                     </span>
                                     <span className="form-check">
-                                        <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="mx-1"
+                                        <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mx-1"
                                         />
                                         <label>
                                             Low Importance
@@ -101,23 +101,23 @@ const CommentBoxComponent = (commentData: any) => {
                                     <span>|</span>
                                     <span className="form-check">
                                         <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
-                                            value={obj.HighImportance} className="mx-1"
+                                            value={obj.HighImportance} className="form-check-input mx-1"
                                         />
                                         <label>
-                                            High Importance
+                                            High Importance 
                                         </label>
                                     </span>
-                                    <span>|</span>
+                                    <span> |</span>
                                     <span className="form-check">
-                                        <input type="checkbox" id="" className="mx-1"
+                                        <input type="checkbox" id="" className="form-check-input mx-1"
                                             name='Completed' checked={obj.Completed} value={obj.Completed} />
                                         <label>
-                                            Mark As Completed
+                                             Mark As Completed
                                         </label>
                                     </span>
-                                    <span>|</span>
+                                    <span> |</span>
                                     <span className="form-check">
-                                        <span onClick={() => postBtnHandle(i)}> Add Comment </span>
+                                        <span onClick={() => postBtnHandle(i)}>Add Comment </span>
                                     </span>
                                     <span>|</span>
                                 </div>

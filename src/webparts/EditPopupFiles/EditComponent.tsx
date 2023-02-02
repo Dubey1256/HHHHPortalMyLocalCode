@@ -24,15 +24,16 @@ import Tooltip from "../../globalComponents/Tooltip";
 import ImagesC from "./Image";
 import { AllOut } from "@material-ui/icons";
 
-var PostTechnicalExplanations=''
-var PostDeliverables=''
-var PostShort_x0020_Description_x0020_On=''
-var PostBody=''
-var AllUsers:any=[]
-var Assin:any=[]
+var PostTechnicalExplanations = ''
+var PostDeliverables = ''
+var PostShort_x0020_Description_x0020_On = ''
+var PostBody = ''
+var AllUsers: any = []
+var Assin: any = []
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
+
 function EditInstitution(item: any) {
     // Id:any
 
@@ -44,7 +45,7 @@ function EditInstitution(item: any) {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [CollapseExpend, setCollapseExpend] = React.useState(true);
-    const [CategoriesData, setCategoriesData] = React.useState('');
+    const [CategoriesData, setCategoriesData] = React.useState([]);
     const TeamConfigInfo = item.props;
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [TeamConfig, setTeamConfig] = React.useState()
@@ -89,33 +90,33 @@ function EditInstitution(item: any) {
         setDate(date);
         setComponent(EditData => ([...EditData]));
     };
-    const Call = React.useCallback((item1:any,type:any) => {
+    const Call = React.useCallback((item1: any, type: any) => {
         if (type == "SmartComponent") {
-        if (EditData != undefined && item1 != undefined) {
-            item.props.smartComponent = item1.smartComponent;
-            setSmartComponentData(item1.smartComponent);
-        }
-        
-    }
-
-    if (type == "Category") {
-        if (item1 != undefined && item1.Categories != "") {
-            var title: any = {};
-            title.Title = item1.categories;
-            setCategoriesData(item1.categories)
-            item.props.smartCategories = item1.smartCategories;
-            //  item.props.smartCategories.push(title);
+            if (EditData != undefined && item1 != undefined) {
+                item.props.smartComponent = item1.smartComponent;
+                setSmartComponentData(item1.smartComponent);
+            }
 
         }
-    }
-    if (type == "LinkedComponent") {
-        if (item1?.linkedComponent?.length > 0) {
-            Item.props.linkedComponent = item1.linkedComponent;
-            // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-            setLinkedComponentData(item1.linkedComponent);
-            console.log("Popup component linkedComponent", item1.linkedComponent)
+
+        if (type == "Category") {
+            if (item1 != undefined && item1.Categories != "") {
+                var title: any = {};
+                title.Title = item1.categories;
+                setCategoriesData(item1.categories)
+                item.props.smartCategories = item1.smartCategories;
+                //  item.props.smartCategories.push(title);
+
+            }
         }
-    }
+        if (type == "LinkedComponent") {
+            if (item1?.linkedComponent?.length > 0) {
+                // Item.props.linkedComponent = item1.linkedComponent;
+                // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
+                setLinkedComponentData(item1.linkedComponent);
+                console.log("Popup component linkedComponent", item1.linkedComponent)
+            }
+        }
         setIsComponentPicker(false);
         setIsComponent(false);
         // setComponent(CompoenetItem => ([...CompoenetItem]));
@@ -129,21 +130,21 @@ function EditInstitution(item: any) {
             .top(4999)
             .get();
         AllUsers = taskUsers;
-        var UpdatedData:any={}
-      AllUsers.forEach(function(taskUser: any) {
-        // item.props.AssignedTo.forEach(function(assign:any){
-        //     if (taskUser.AssingedToUserId == assign.Id) {
-        //         UpdatedData['AuthorName'] = taskUser.Title;
-        //         UpdatedData['Company'] = taskUser.Company;
-        //         UpdatedData['AuthorImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
-        //     }
-        //     Assin.push(UpdatedData)
-        // })
-        setAssignUser(Assin)
-           
+        var UpdatedData: any = {}
+        AllUsers.forEach(function (taskUser: any) {
+            // item.props.AssignedTo.forEach(function(assign:any){
+            //     if (taskUser.AssingedToUserId == assign.Id) {
+            //         UpdatedData['AuthorName'] = taskUser.Title;
+            //         UpdatedData['Company'] = taskUser.Company;
+            //         UpdatedData['AuthorImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+            //     }
+            //     Assin.push(UpdatedData)
+            // })
+            setAssignUser(Assin)
+
 
         });
-        
+
 
     }
     // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
@@ -234,7 +235,7 @@ function EditInstitution(item: any) {
             .filter("Id eq " + item.props.Id + "")
             .get()
         console.log(componentDetails);
-       
+
         // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
         // $.ajax({
         //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
@@ -289,11 +290,11 @@ function EditInstitution(item: any) {
 
                 }
             }
-              item.AssignedUsers = [];
+            item.AssignedUsers = [];
             AllUsers?.map((userData: any) => {
                 item.AssignedTo?.map((AssignedUser: any) => {
                     if (userData?.AssingedToUserId == AssignedUser.Id) {
-                        item. AssignedUsers.push(userData);
+                        item.AssignedUsers.push(userData);
                     }
                 })
             })
@@ -317,20 +318,22 @@ function EditInstitution(item: any) {
                 item.DueDate = moment(item.DueDate).format('DD/MM/YYYY')
                 // setDate(item.DueDate);
             }
-            if (item.Categories != null) {
-                setCategoriesData(item.Categories);
+            if (item.SharewebCategories != null) {
+                setCategoriesData(item.SharewebCategories);
             }
             if (item.Component?.length > 0) {
                 setSmartComponentData(item.Component);
             }
-            if (item.RelevantPortfolio?.length > 0) {
-                setLinkedComponentData(item.RelevantPortfolio)
+            var Rr:any=[]
+            if (item.ServicePortfolio != undefined) {
+                Rr.push(item.ServicePortfolio)
+                setLinkedComponentData(Rr)
             }
             if (item.StartDate != undefined) {
                 item.StartDate = moment(item.StartDate).format('DD/MM/YYYY')
                 //setStartdate(item.StartDate);
             }
-            if (item.component_x0020_link != null){
+            if (item.component_x0020_link != null) {
                 item.component_x0020_link = item.component_x0020_link.Url
                 //setStartdate(item.StartDate);
             }
@@ -389,11 +392,11 @@ function EditInstitution(item: any) {
 
         console.log(smartmetaDetails);
     }
-    const EditLinkedServices = (item: any, title: any) => {
-        setIsComponentPicker(true);
-        setSharewebCategory(item.props);
-    }
-    
+    // const EditLinkedServices = (items: any, title: any) => {
+    //     setIsComponentPicker(true);
+    //     setSharewebCategory(items);
+    // }
+
     React.useEffect(() => {
 
         GetTaskUsers();
@@ -419,10 +422,10 @@ function EditInstitution(item: any) {
 
     },
         []);
-    const EditComponent = (item: any, title: any) => {
+    const EditComponent = (items: any, title: any) => {
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
-        setSharewebComponent(item);
+        setSharewebComponent(items);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     const GetComponents = async () => {
@@ -688,12 +691,39 @@ function EditInstitution(item: any) {
 
         var item: any = {}
         var smartComponentsIds: any[] = [];
+        var RelevantPortfolioIds=''
         var Items = EditData;
         if (smartComponentData != undefined && smartComponentData.length > 0) {
             smartComponentData.map((com: any) => {
                 if (smartComponentData != undefined && smartComponentData.length >= 0) {
                     $.each(smartComponentData, function (index: any, smart: any) {
                         smartComponentsIds.push(smart.Id);
+                    })
+                }
+            })
+        }
+        if(NewArray != undefined && NewArray.length>0){
+            NewArray.map((NeitemA:any)=>{
+                CategoriesData.push(NeitemA)
+            })
+        }
+        var categoriesItem = '';
+       CategoriesData.map((category)=> {
+            if (category.Title != undefined) {
+                categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
+            }
+        })
+        var CategoryID:any=[]
+        CategoriesData.map((category)=> {
+            if (category.Id != undefined) {
+                CategoryID.push(category.Id)
+            }
+        })
+        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            linkedComponentData?.map((com: any) => {
+                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                    $.each(linkedComponentData, function (index: any, smart: any) {
+                        RelevantPortfolioIds=smart.Id
                     })
                 }
             })
@@ -758,13 +788,16 @@ function EditInstitution(item: any) {
 
             ItemRank: ItemRank,
             Priority_x0020_Rank: Items.Priority_x0020_Rank,
-            ComponentId: { "results": smartComponentsIds },
+            ComponentId: { "results": smartComponentsIds},
             Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
             StartDate: Startdate != undefined ? new Date(Startdate).toDateString() : Startdate,
             DueDate: date != undefined ? new Date(date).toDateString() : date,
             CompletedDate: Completiondate != undefined ? new Date(Completiondate).toDateString() : Completiondate,
-           // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
-           Categories: CategoriesData ? CategoriesData : null,
+            // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
+            Categories: categoriesItem ? categoriesItem : null,
+            SharewebCategoriesId: { "results": CategoryID },
+           // ClientCategoryId: { "results": RelevantPortfolioIds },
+            ServicePortfolioId:RelevantPortfolioIds != ''?RelevantPortfolioIds:null,
             Synonyms: JSON.stringify(Items['Synonyms']),
             Package: Items.Package,
             AdminStatus: Items.AdminStatus,
@@ -776,18 +809,18 @@ function EditInstitution(item: any) {
             Admin_x0020_Notes: Items.Admin_x0020_Notes,
             component_x0020_link: {
                 Description: Items.component_x0020_link != undefined ? Items.component_x0020_link : null,
-                 Url: Items.component_x0020_link != undefined ? Items.component_x0020_link : null,
+                Url: Items.component_x0020_link != undefined ? Items.component_x0020_link : null,
             },
-            TechnicalExplanations:PostTechnicalExplanations != undefined && PostTechnicalExplanations != ''?PostTechnicalExplanations:EditData.TechnicalExplanations,
-            Deliverables:PostDeliverables != undefined &&  PostDeliverables != ''?PostDeliverables:EditData.Deliverables,
-            Short_x0020_Description_x0020_On: PostShort_x0020_Description_x0020_On != undefined &&  PostShort_x0020_Description_x0020_On != ''?PostShort_x0020_Description_x0020_On:EditData.Short_x0020_Description_x0020_On,
-            Body:PostBody != undefined &&  PostBody != ''?PostBody:EditData.Body,
+            TechnicalExplanations: PostTechnicalExplanations != undefined && PostTechnicalExplanations != '' ? PostTechnicalExplanations : EditData.TechnicalExplanations,
+            Deliverables: PostDeliverables != undefined && PostDeliverables != '' ? PostDeliverables : EditData.Deliverables,
+            Short_x0020_Description_x0020_On: PostShort_x0020_Description_x0020_On != undefined && PostShort_x0020_Description_x0020_On != '' ? PostShort_x0020_Description_x0020_On : EditData.Short_x0020_Description_x0020_On,
+            Body: PostBody != undefined && PostBody != '' ? PostBody : EditData.Body,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
             // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete, 
 
- 
+
 
             // Categories: Items.Categories
 
@@ -835,26 +868,30 @@ function EditInstitution(item: any) {
     }
     const HtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
         let message: any = Editorvalue; EditData.Body = message;
-        PostBody=EditData.Body
+        PostBody = EditData.Body
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     const SortHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
         let message: any = Editorvalue; EditData.Short_x0020_Description_x0020_On = message;
-        PostShort_x0020_Description_x0020_On =  EditData.Short_x0020_Description_x0020_On
+        PostShort_x0020_Description_x0020_On = EditData.Short_x0020_Description_x0020_On
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     const DeliverablesHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
-        let message: any = Editorvalue; 
+        let message: any = Editorvalue;
         EditData.Deliverables = message;
-        PostDeliverables =  EditData.Deliverables
+        PostDeliverables = EditData.Deliverables
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     const TechnicalExplanationsHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
         let message: any = Editorvalue;
-         EditData.TechnicalExplanations = message;
-          PostTechnicalExplanations =  EditData.TechnicalExplanations
+        EditData.TechnicalExplanations = message;
+        PostTechnicalExplanations = EditData.TechnicalExplanations
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
+    var CheckCategory:any=[]
+    CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199,"ParentId":225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276,"ParentId":225 }, {  "TaxType": "Categories", "Title": "Approval", "Id": 227,"ParentId":225 },
+            { "TaxType": "Categories", "Title": "Immediate", "Id": 228,"parentId":225 });
+
     const DDComponentCallBack = (dt: any) => {
         setTeamConfig(dt)
         console.log(TeamConfig)
@@ -898,62 +935,73 @@ function EditInstitution(item: any) {
         }
     }
     var itemInfo = {
-        Portfolio_x0020_Type:TeamConfigInfo?TeamConfigInfo.Portfolio_x0020_Type:'',
-        Services: TeamConfigInfo?TeamConfigInfo.Services:'',
-        siteUrl: TeamConfigInfo?TeamConfigInfo.siteUrl:'https://hhhhteams.sharepoint.com/sites/HHHH/SP',
-        listName: TeamConfigInfo?TeamConfigInfo.siteType:'',
-        itemID: TeamConfigInfo?TeamConfigInfo.Id:''
+        Portfolio_x0020_Type: TeamConfigInfo ? TeamConfigInfo.Portfolio_x0020_Type : '',
+        Services: TeamConfigInfo ? TeamConfigInfo.Services : '',
+        siteUrl: TeamConfigInfo ? TeamConfigInfo.siteUrl : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP',
+        listName: TeamConfigInfo ? TeamConfigInfo.siteType : '',
+        itemID: TeamConfigInfo ? TeamConfigInfo.Id : ''
     }
-    const deleteCategories=(type:any)=>{
-        if(type == 'EditData.Categories'){
-        EditData.Categories='';
+    const deleteCategories = (id: any) => {
+        CategoriesData.map((catId, index) => {
+            if (id == catId.Id) {
+                CategoriesData.splice(index, 1)
+            }
+        })
+        setCategoriesData(CategoriesData => ([...CategoriesData]));
+
+    }
+    const deleteComponent = (type: any) => {
+        if (type == 'EditData.Component') {
+            EditData.Component = '';
         }
-        else{
-            EditData.smartCategories[0].Title=''
+        else {
+            EditData.smartComponent = ''
         }
         setComponent(EditData => ([...EditData]));
-        
-    }
-    const deleteComponent=(type:any)=>{
-        if(type == 'EditData.Component'){
-        EditData.Component='';
-        }
-        else{
-            EditData.smartComponent=''
-        }
-        setComponent(EditData => ([...EditData]));
-        
+
     }
     const onRenderCustomHeader = (
-      ) => {
+    ) => {
         return (
-          <>
-          <div style={{marginRight:"auto",fontSize:"20px",fontWeight:"600"}}>
-            {`Service-Portfolio > ${EditData.Title}`}
-          </div>
-            <Tooltip />
-          </>
+            <>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                    {`Service-Portfolio > ${EditData.Title}`}
+                </div>
+                <Tooltip />
+            </>
         );
-      };
-      const deleteTask = async () => {
+    };
+    const deleteTask = async () => {
 
-       var confirmDelete= confirm("Are you sure, you want to delete this?")
-        if(confirmDelete){
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-        await web.lists.getByTitle('Master Tasks').items.getById(item.props.Id).delete()
-            .then(i => {
-                console.log(i);
-                setComponent(EditData => ([...EditData]));
-                setModalIsOpenToFalse();
-                item.showProgressBar();
+        var confirmDelete = confirm("Are you sure, you want to delete this?")
+        if (confirmDelete) {
+            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+            await web.lists.getByTitle('Master Tasks').items.getById(item.props.Id).delete()
+                .then(i => {
+                    console.log(i);
+                    setComponent(EditData => ([...EditData]));
+                    setModalIsOpenToFalse();
+                    item.showProgressBar();
 
-            });
+                });
         }
-        
+
+    }
+    var NewArray:any=[]
+    const checkCat=(type:any)=>{
+       
+        CheckCategory.map((catTitle:any)=>{
+            if(type == catTitle.Title){
+                NewArray.push(catTitle)
+            }
+        })
+       
+       
+
     }
     return (
         <>
-            
+
             {console.log("Done")}
             <Panel
                 headerText={`  Service-Portfolio > ${EditData.Title}`}
@@ -984,41 +1032,41 @@ function EditInstitution(item: any) {
                             </ul>
                             <div className="tab-content border border-top-0 clearfix " id="myTabContent">
                                 <div className="tab-pane  show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                              
-                                        <div className="row  px-3 py-2">
-                                            <div className="col-sm-5 ">
-                                                <div className="col-12">                                            
-                                                        <div className="input-group">
-                                                            <label className="form-label  full-width">Title</label>
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.Title != undefined ? EditData.Title : ""} onChange={(e) => EditData.Title = e.target.value} />
-                                                        </div>
+
+                                    <div className="row  px-3 py-2">
+                                        <div className="col-sm-5 ">
+                                            <div className="col-12">
+                                                <div className="input-group">
+                                                    <label className="form-label  full-width">Title</label>
+                                                    <input type="text" className="form-control"
+                                                        defaultValue={EditData.Title != undefined ? EditData.Title : ""} onChange={(e) => EditData.Title = e.target.value} />
                                                 </div>
-                                                
-                                                <div className="mx-0 row ">
+                                            </div>
+
+                                            <div className="mx-0 row ">
                                                 <div className="col-4 ps-0 mt-2">
                                                     <div className="input-group">
-                                                            <label className="form-label full-width">Item Rank</label>
-                                                            <select className="full_width searchbox_height" defaultValue={EditData.ItemRankTitle} onChange={(e) => EditData.ItemRankTitle = e.target.value}>
-                                                                <option>{EditData.ItemRankTitle == undefined ? 'select Item Rank' : EditData.ItemRankTitle}</option>
-                                                                {SharewebItemRank && SharewebItemRank.map(function (h: any, i: any) {
-                                                                    return (
-                                                                        <option key={i} defaultValue={EditData.ItemRankTitle} >{EditData.ItemRankTitle == h.rankTitle ? EditData.ItemRankTitle : h.rankTitle}</option>
-                                                                    )
-                                                                })}
-                                                            </select>
-                                                        </div>
-                                                    </div>                                                   
-                                                    <div className="col-4 ps-0  mt-2">
-                                                        <div className="input-group">
-                                                            <label className="form-label full-width">Deliverable-Synonyms</label>
-
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.Deliverable_x002d_Synonyms != undefined ? EditData.Deliverable_x002d_Synonyms : ""} onChange={(e) => EditData.Deliverable_x002d_Synonyms = e.target.value} />
-                                                        </div>
+                                                        <label className="form-label full-width">Item Rank</label>
+                                                        <select className="full_width searchbox_height" defaultValue={EditData.ItemRankTitle} onChange={(e) => EditData.ItemRankTitle = e.target.value}>
+                                                            <option>{EditData.ItemRankTitle == undefined ? 'select Item Rank' : EditData.ItemRankTitle}</option>
+                                                            {SharewebItemRank && SharewebItemRank.map(function (h: any, i: any) {
+                                                                return (
+                                                                    <option key={i} defaultValue={EditData.ItemRankTitle} >{EditData.ItemRankTitle == h.rankTitle ? EditData.ItemRankTitle : h.rankTitle}</option>
+                                                                )
+                                                            })}
+                                                        </select>
                                                     </div>
-                                                    <div className="col-4 ps-0 pe-0 mt-2 ">
-                                                        {EditData.Portfolio_x0020_Type == 'Component' &&
+                                                </div>
+                                                <div className="col-4 ps-0  mt-2">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width">Deliverable-Synonyms</label>
+
+                                                        <input type="text" className="form-control"
+                                                            defaultValue={EditData.Deliverable_x002d_Synonyms != undefined ? EditData.Deliverable_x002d_Synonyms : ""} onChange={(e) => EditData.Deliverable_x002d_Synonyms = e.target.value} />
+                                                    </div>
+                                                </div>
+                                                <div className="col-4 ps-0 pe-0 mt-2 ">
+                                                    {EditData.Portfolio_x0020_Type == 'Service' &&
                                                         <div className="input-group">
                                                             <label className="form-label full-width">
                                                                 Component Portfolio
@@ -1032,43 +1080,54 @@ function EditInstitution(item: any) {
                                                                 </svg>
                                                             </span>
                                                         </div>
-                                                         }
-                                                           {EditData.Portfolio_x0020_Type == 'Services' &&
-                                                         <div className="input-group">
-                                                        <label className="form-label full-width">
-                                                            Linked Service
-                                                        </label>
-                                                        {
-                                                            linkedComponentData?.length > 0 ? <div>
-                                                                {linkedComponentData?.map((com: any) => {
-                                                                    return (
-                                                                        <>
-                                                                            <div className="d-flex Component-container-edit-task">
-                                                                                <div>
-                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
-                                                                                        {com.Title}
-                                                                                    </a>
-                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
-                                                                                </div>
-                                                                            </div>
-                                                                        </>
-                                                                    )
-                                                                })}
-                                                            </div> :
-                                                                <input type="text" readOnly
-                                                                    className="form-control"
-                                                                />
-                                                        }
-                                                        <span className="input-group-text">
-                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                onClick={(e) => EditLinkedServices(EditData, 'Component')} />
-                                                        </span>
-                                                        </div>
-                                                          }
+                                                    }
+                                                    {EditData.Portfolio_x0020_Type == 'Component' &&
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">
+                                                                Service Portfolio
+                                                            </label>
+                                                            <input type="text"
+                                                                className="form-control" />
+                                                            <span className="input-group-text">
+                                                                <svg onClick={(e) => EditComponent(EditData, 'Componet')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
 
-                                                        <div className="col-sm-11  inner-tabb">
-                                                            <div>
-                                                                {/* {(EditData != undefined && EditData.smartComponent != undefined)?
+                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                                                </svg>
+                                                            </span>
+                                                        </div>
+                                                    }
+                                                    {EditData.Portfolio_x0020_Type == 'Component' &&
+                                                        <div className="input-group">
+
+                                                            {
+                                                                linkedComponentData?.length > 0 ? <div>
+                                                                    {linkedComponentData?.map((com: any) => {
+                                                                        return (
+                                                                            <>
+                                                                                <div className="d-flex Component-container-edit-task">
+                                                                                    <div>
+                                                                                        <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                            {com.Title}
+                                                                                        </a>
+                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </>
+                                                                        )
+                                                                    })}
+                                                                </div> : null
+
+                                                            }
+                                                            {/* <span className="input-group-text">
+                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                onClick={(e) => EditComponent(EditData, 'Component')} />
+                                                        </span> */}
+                                                        </div>
+                                                    }
+
+                                                    <div className="col-sm-11  inner-tabb">
+                                                        <div>
+                                                            {/* {(EditData != undefined && EditData.smartComponent != undefined)?
                                                                 <>
                                                                 {(EditData != undefined && EditData.smartComponent != undefined && EditData.smartComponent.length>0)&& EditData.smartComponent.map((childinew: any) =>{
                                                                 return(
@@ -1101,304 +1160,276 @@ function EditInstitution(item: any) {
                                                                 )}
                                                                 </>
                                                               } */}
-                                                               {smartComponentData?.length > 0 ? null :
-                                                        <>
+                                                            {/* {smartComponentData?.length > 0 ? <>
                                                             <input type="text" ng-model="SearchService"
                                                                 className="form-control"
                                                                 id="{{PortfoliosID}}" autoComplete="off"
                                                             />
-                                                        </>
-                                                    }
-                                                    {smartComponentData ? smartComponentData?.map((com: any) => {
-                                                        return (
-                                                            <>
-                                                                <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                                    <a>
-                                                                        <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
-                                                                    </a>
-                                                                </div>
-                                                            </>
-                                                        )
-                                                    }) : null}
-
-
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                 
-                                                </div>
-                                                <div className="mx-0 row mt-2">
-                                                    <div className="col-sm-4 ps-0 ">
-                                                        <div className="input-group">
-                                                            <label className="form-label  full-width">Start Date</label>
-                                                            <DatePicker className="form-control"
-                                                                selected={Startdate}
-                                                                value={EditData.StartDate}
-                                                                onChange={handleDatestart}
-                                                                dateFormat="dd/MM/yyyy"
-                                                                
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-sm-4 ">
-                                                        <div className="input-group">
-                                                            <label className="form-label  full-width">Due Date</label>
-                                                            <DatePicker className="form-control"
-                                                                selected={date}
-                                                                value={EditData.DueDate}
-                                                                onChange={handleDatedue}
-                                                                dateFormat="dd/MM/yyyy"
-                                                                
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-sm-4 pe-0">
-                                                        <div className="input-group">
-                                                            <label className="form-label  full-width"> Completion Date </label>
-                                                            <DatePicker className="form-control"
-                                                                name="CompletionDate"
-                                                                selected={Completiondate}
-                                                                dateFormat="dd/MM/yyyy"
-                                                                value={EditData.CompletedDate}
-                                                                onChange={handleDate}
-                                                                
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="mx-0 row mt-2 ">
-                                                    <div className="col-sm-4 ps-0 ">
-                                                        <div className="input-group">
-                                                            <label className="form-label  full-width">Synonyms </label>
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.SynonymsTitle} onChange={(e) => EditData.SynonymsTitle = e.target.value} />
-                                                            <span className="input-group-text" onClick={(e) => createSynonyms(EditData)}> <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span>
-                                                            </div>
-                                                            <div className="">
-                                                            {EditData["Synonyms"] != undefined && EditData["Synonyms"].length > 0 && map(EditData["Synonyms"], (obj, index) => {
+                                                        </> :null
+                                                        
+                                                    } */}
+                                                            {smartComponentData ? smartComponentData?.map((com: any) => {
                                                                 return (
                                                                     <>
-                                                                        <div className="block ">
-                                                                            {
-                                                                                obj.Title
-                                                                            }
-                                                                            <a className="input-group-text" onClick={(e) => deleteItem(EditData)}>
-                                                                                <img src="/_layouts/images/delete.gif"></img>
+                                                                        <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
+                                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                            <a>
+                                                                                <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                             </a>
                                                                         </div>
                                                                     </>
                                                                 )
-                                                            })
-                                                            }
-                                                    </div>
-                                                    </div>
+                                                            }) : null}
 
-                                                    <div className="col-sm-4">
-                                                        <div className="input-group">
-                                                            <label className="form-label  full-width">Client Activity </label>
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.Twitter != null ? EditData.Twitter.Description : ""} />
+
                                                         </div>
                                                     </div>
 
-                                                    <div className="col-sm-4 pe-0">
-                                                        <div className="input-group">
-                                                            <label className="form-label  full-width">Package</label>
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.Package != null ? EditData.Package : ""} onChange={(e) => EditData.Package = e.target.value} />
-                                                        </div>
+                                                </div>
+
+                                            </div>
+                                            <div className="mx-0 row mt-2">
+                                                <div className="col-sm-4 ps-0 ">
+                                                    <div className="input-group">
+                                                        <label className="form-label  full-width">Start Date</label>
+                                                        <DatePicker className="form-control"
+                                                            selected={Startdate}
+                                                            value={EditData.StartDate}
+                                                            onChange={handleDatestart}
+                                                            dateFormat="dd/MM/yyyy"
+
+                                                        />
                                                     </div>
                                                 </div>
-                                                <div className="row mb-2 mt-2 ">
-                                                    <div className="col-sm-6">
-                                                        <div className="input-group mb-2">
-                                                            <label className="form-label  full-width">Status</label>
-                                                            <input type="text" className="form-control"
-                                                                value={EditData.AdminStatus} onChange={(e) => ChangeStatus(e, EditData)} />
+                                                <div className="col-sm-4 ">
+                                                    <div className="input-group">
+                                                        <label className="form-label  full-width">Due Date</label>
+                                                        <DatePicker className="form-control"
+                                                            selected={date}
+                                                            value={EditData.DueDate}
+                                                            onChange={handleDatedue}
+                                                            dateFormat="dd/MM/yyyy"
 
-                                                        </div>
-
-                                                        <div className="form-check">
-
-                                                            <input className="form-check-input"
-                                                                name="NotStarted" type="radio" value="Not Started"
-                                                                checked={EditData.AdminStatus === "Not Started" ? true : false}
-                                                                onChange={(e) => setStatus(EditData, 'Not Started')}
-                                                            ></input>
-                                                            <label className="form-check-label">Not Started </label>
-                                                        </div>
-                                                        <div className="form-check">
-
-                                                            <input className="form-check-input"
-                                                                name="NotStarted" type="radio"
-                                                                value="In Preparation"
-                                                                onChange={(e) => setStatus(EditData, 'In Preparation')}
-                                                                checked={EditData.AdminStatus === "In Preparation" ? true : false}></input>
-                                                            <label className="form-check-label"> In Preparation</label>
-                                                        </div>
-                                                        <div className="form-check">
-
-                                                            <input className="form-check-input"
-                                                                name="NotStarted" type="radio"
-                                                                value="In Development"
-                                                                onChange={(e) => setStatus(EditData, 'In Development')}
-                                                                checked={EditData.AdminStatus === "In Development" ? true : false}></input>
-                                                            <label className="form-check-label"> In Development </label>
-                                                        </div>
-                                                        <div className="form-check">
-
-                                                            <input className="form-check-input" name="NotStarted"
-                                                                type="radio" value="Active"
-                                                                onChange={(e) => setStatus(EditData, 'Active')}
-                                                                checked={EditData.AdminStatus === "Active" ? true : false}></input>
-                                                            <label className="form-check-label">Active</label>
-                                                        </div>
-                                                        <div className="form-check">
-
-                                                            <input className="form-check-input"
-                                                                name="NotStarted" type="radio" value="Archived"
-                                                                onChange={(e) => setStatus(EditData, 'Archived')}
-                                                                checked={EditData.AdminStatus === "Archived" ? true : false}></input>
-                                                            <label className="form-check-label">Archived </label>
-                                                        </div>
+                                                        />
                                                     </div>
-                                                    <div className="col-sm-6">
-                                                        <div className="input-group mb-2">
-                                                            <label className="form-label  full-width">Time </label>
-                                                            <input type="text" className="form-control"
-                                                                value={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e => changeTime(e, EditData))} />
-                                                        </div>
+                                                </div>
+                                                <div className="col-sm-4 pe-0">
+                                                    <div className="input-group">
+                                                        <label className="form-label  full-width"> Completion Date </label>
+                                                        <DatePicker className="form-control"
+                                                            name="CompletionDate"
+                                                            selected={Completiondate}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            value={EditData.CompletedDate}
+                                                            onChange={handleDate}
 
-                                                        <div className="form-check">
-
-                                                            <input className="form-check-input" name="radioTime" onChange={(e) => setTime(EditData, '05')} checked={EditData.Mileage === "05" ? true : false}
-                                                                type="radio"></input>
-                                                            <label className="form-check-label">Very Quick</label>
-
-                                                        </div>
-                                                        <div className="form-check">
-
-                                                            <input className="form-check-input" name="radioTime" onChange={(e) => setTime(EditData, '15')} checked={EditData.Mileage === "15" ? true : false}
-                                                                type="radio" ></input>
-
-                                                            <label className="form-check-label">Quick </label>
-                                                        </div>
-                                                        <div className="form-check">
-
-                                                            <input className="form-check-input" name="radioTime" onChange={(e) => setTime(EditData, '60')} checked={EditData.Mileage === "60" ? true : false}
-                                                                type="radio" ></input>
-                                                            <label className="form-check-label">Medium</label>
-                                                        </div>
-                                                        <div className="form-check">
-                                                            <input className="form-check-input" name="radioTime" onChange={(e) => setTime(EditData, "240")} checked={EditData.Mileage === "240" ? true : false}
-                                                                type="radio" ></input>
-                                                            <label className="form-check-label">Long</label>
-                                                        </div>
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="col-sm-3 ">
-                                                <div className="col" title="Priority">
+                                            <div className="mx-0 row mt-2 ">
+                                                <div className="col-sm-4 ps-0 ">
+                                                    <div className="input-group">
+                                                        <label className="form-label  full-width">Synonyms </label>
+                                                        <input type="text" className="form-control"
+                                                            defaultValue={EditData.SynonymsTitle} onChange={(e) => EditData.SynonymsTitle = e.target.value} />
+                                                        <span className="input-group-text" onClick={(e) => createSynonyms(EditData)}> <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img></span>
+                                                    </div>
+                                                    <div className="">
+                                                        {EditData["Synonyms"] != undefined && EditData["Synonyms"].length > 0 && map(EditData["Synonyms"], (obj, index) => {
+                                                            return (
+                                                                <>
+                                                                    <div className="block ">
+                                                                        {
+                                                                            obj.Title
+                                                                        }
+                                                                        <a className="input-group-text" onClick={(e) => deleteItem(EditData)}>
+                                                                            <img src="/_layouts/images/delete.gif"></img>
+                                                                        </a>
+                                                                    </div>
+                                                                </>
+                                                            )
+                                                        })
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div className="col-sm-4">
+                                                    <div className="input-group">
+                                                        <label className="form-label  full-width">Client Activity </label>
+                                                        <input type="text" className="form-control"
+                                                            defaultValue={EditData.Twitter != null ? EditData.Twitter.Description : ""} />
+                                                    </div>
+                                                </div>
+
+                                                <div className="col-sm-4 pe-0">
+                                                    <div className="input-group">
+                                                        <label className="form-label  full-width">Package</label>
+                                                        <input type="text" className="form-control"
+                                                            defaultValue={EditData.Package != null ? EditData.Package : ""} onChange={(e) => EditData.Package = e.target.value} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="row mb-2 mt-2 ">
+                                                <div className="col-sm-6">
                                                     <div className="input-group mb-2">
-                                                        <label className="form-label  full-width">Priority</label>
+                                                        <label className="form-label  full-width">Status</label>
                                                         <input type="text" className="form-control"
-                                                            value={EditData.Priority_x0020_Rank} onChange={(e) => setPriorityNew(e, EditData)} />
+                                                            value={EditData.AdminStatus} onChange={(e) => ChangeStatus(e, EditData)} />
+
                                                     </div>
 
                                                     <div className="form-check">
 
-                                                        <input className="form-check-input" name="radioPriority"
-                                                            type="radio" value="(1) High" onChange={(e) => setPriority(EditData, 8)}
-                                                            checked={EditData.Priority === "(1) High" ? true : false}></input>
-                                                        <label> High</label>
+                                                        <input className="form-check-input"
+                                                            name="NotStarted" type="radio" value="Not Started"
+                                                            checked={EditData.AdminStatus === "Not Started" ? true : false}
+                                                            onChange={(e) => setStatus(EditData, 'Not Started')}
+                                                        ></input>
+                                                        <label className="form-check-label">Not Started </label>
                                                     </div>
                                                     <div className="form-check">
 
-                                                        <input className="form-check-input" name="radioPriority"
-                                                            type="radio" value="(2) Normal" onChange={(e) => setPriority(EditData, 4)}
-                                                            checked={EditData.Priority === "(2) Normal" ? true : false}></input>
-                                                        <label> Normal</label>
+                                                        <input className="form-check-input"
+                                                            name="NotStarted" type="radio"
+                                                            value="In Preparation"
+                                                            onChange={(e) => setStatus(EditData, 'In Preparation')}
+                                                            checked={EditData.AdminStatus === "In Preparation" ? true : false}></input>
+                                                        <label className="form-check-label"> In Preparation</label>
                                                     </div>
                                                     <div className="form-check">
 
-                                                        <input className="form-check-input" name="radioPriority"
-                                                            type="radio" value="(3) Low" onChange={(e) => setPriority(EditData, 1)}
-                                                            checked={EditData.Priority === "(3) Low" ? true : false}></input>
-                                                        <label> Low</label>
+                                                        <input className="form-check-input"
+                                                            name="NotStarted" type="radio"
+                                                            value="In Development"
+                                                            onChange={(e) => setStatus(EditData, 'In Development')}
+                                                            checked={EditData.AdminStatus === "In Development" ? true : false}></input>
+                                                        <label className="form-check-label"> In Development </label>
                                                     </div>
-                                                    <div className="col mt-2">
-                                                <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">Task Users</label>
-                                                    {EditData.AssignedUsers?.map((userDtl: any, index: any) => {
-                                                        return (
-                                                            <div className="TaskUsers" key={index}>
-                                                                <a
-                                                                    target="_blank"
-                                                                    href={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
-                                                                    <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                        on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                        data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
-                                                                        src={userDtl.Item_x0020_Cover.Url ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                                                                    />
-                                                                </a>
-                                                            </div>
-                                                        )
-                                                    })}
+                                                    <div className="form-check">
+
+                                                        <input className="form-check-input" name="NotStarted"
+                                                            type="radio" value="Active"
+                                                            onChange={(e) => setStatus(EditData, 'Active')}
+                                                            checked={EditData.AdminStatus === "Active" ? true : false}></input>
+                                                        <label className="form-check-label">Active</label>
+                                                    </div>
+                                                    <div className="form-check">
+
+                                                        <input className="form-check-input"
+                                                            name="NotStarted" type="radio" value="Archived"
+                                                            onChange={(e) => setStatus(EditData, 'Archived')}
+                                                            checked={EditData.AdminStatus === "Archived" ? true : false}></input>
+                                                        <label className="form-check-label">Archived </label>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6">
+                                                    <div className="input-group mb-2">
+                                                        <label className="form-label  full-width">Time </label>
+                                                        <input type="text" className="form-control"
+                                                            value={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e => changeTime(e, EditData))} />
+                                                    </div>
+
+                                                    <div className="form-check">
+
+                                                        <input className="form-check-input" name="radioTime" onChange={(e) => setTime(EditData, '05')} checked={EditData.Mileage === "05" ? true : false}
+                                                            type="radio"></input>
+                                                        <label className="form-check-label">Very Quick</label>
+
+                                                    </div>
+                                                    <div className="form-check">
+
+                                                        <input className="form-check-input" name="radioTime" onChange={(e) => setTime(EditData, '15')} checked={EditData.Mileage === "15" ? true : false}
+                                                            type="radio" ></input>
+
+                                                        <label className="form-check-label">Quick </label>
+                                                    </div>
+                                                    <div className="form-check">
+
+                                                        <input className="form-check-input" name="radioTime" onChange={(e) => setTime(EditData, '60')} checked={EditData.Mileage === "60" ? true : false}
+                                                            type="radio" ></input>
+                                                        <label className="form-check-label">Medium</label>
+                                                    </div>
+                                                    <div className="form-check">
+                                                        <input className="form-check-input" name="radioTime" onChange={(e) => setTime(EditData, "240")} checked={EditData.Mileage === "240" ? true : false}
+                                                            type="radio" ></input>
+                                                        <label className="form-check-label">Long</label>
+                                                    </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="col-sm-3 ">
+                                            <div className="col" title="Priority">
+                                                <div className="input-group mb-2">
+                                                    <label className="form-label  full-width">Priority</label>
+                                                    <input type="text" className="form-control"
+                                                        value={EditData.Priority_x0020_Rank} onChange={(e) => setPriorityNew(e, EditData)} />
                                                 </div>
-                                                <div className="col">
-                                                    <div className="input-group position-relative">
-                                                        <label className="form-label  full-width">Categories </label>
-                                                        <input type="text" className="form-control"
-                                                            defaultValue={EditData.Facebook != null ? EditData.Facebook.Description : ""} />
-                                                            
+
+                                                <div className="form-check">
+
+                                                    <input className="form-check-input" name="radioPriority"
+                                                        type="radio" value="(1) High" onChange={(e) => setPriority(EditData, 8)}
+                                                        checked={EditData.Priority === "(1) High" ? true : false}></input>
+                                                    <label> High</label>
+                                                </div>
+                                                <div className="form-check">
+
+                                                    <input className="form-check-input" name="radioPriority"
+                                                        type="radio" value="(2) Normal" onChange={(e) => setPriority(EditData, 4)}
+                                                        checked={EditData.Priority === "(2) Normal" ? true : false}></input>
+                                                    <label> Normal</label>
+                                                </div>
+                                                <div className="form-check">
+
+                                                    <input className="form-check-input" name="radioPriority"
+                                                        type="radio" value="(3) Low" onChange={(e) => setPriority(EditData, 1)}
+                                                        checked={EditData.Priority === "(3) Low" ? true : false}></input>
+                                                    <label> Low</label>
+                                                </div>
+                                                <div className="col mt-2">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width  mx-2">Task Users</label>
+                                                        {EditData.AssignedUsers?.map((userDtl: any, index: any) => {
+                                                            return (
+                                                                <div className="TaskUsers" key={index}>
+                                                                    <a
+                                                                        target="_blank"
+                                                                        href={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
+                                                                        <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                            on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
+                                                                            data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                            src={userDtl.Item_x0020_Cover.Url ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                        />
+                                                                    </a>
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col">
+                                                <div className="input-group position-relative">
+                                                    <label className="form-label  full-width">Categories </label>
+                                                    <input type="text" className="form-control"
+                                                        defaultValue={EditData.Facebook != null ? EditData.Facebook.Description : ""} />
+
                                                     <span className="input-group-text"  >
 
-                                       <svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+                                                        <svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
 
-                               <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
 
-                                </svg>
+                                                        </svg>
 
-                         </span>
-                                                    </div>
+                                                    </span>
+                                                </div>
 
 
-                                                    <div className="col-sm-11  inner-tabb">
-                                                        <div>
-                                                            {/* {(EditData.smartCategories != undefined && EditData.smartCategories.length>0)?
-                                                            <>
-                                                             {EditData != undefined && EditData.smartCategories != undefined && EditData.smartCategories.map((childi: any) =>
-                                                                <div className="block bgsiteColor"
-
-                                                                >
-                                                                    <a className="hreflink" target="_blank"  >{childi.Title}</a>
-                                                                    <a className="hreflink"
-                                                                    >
-                                                                        <img src="/_layouts/images/delete.gif" onClick={()=>deleteCategories('EditData.smartCategories')}></img>
-                                                                    </a>
-                                                                </div>
-                                                            )}
-                                                             </>:
-                                                             <>
-                                                             {(EditData.Categories != '' && EditData.Categories != null)&&
-                                                                <div className="block bgsiteColor">
-                                                                    <a className="hreflink" target="_blank"  >{EditData.Categories}</a>
-                                                                    <a className="hreflink"
-                                                                    >
-                                                                        <img src="/_layouts/images/delete.gif" onClick={()=>deleteCategories('EditData.Categories')}></img>
-                                                                    </a>
-                                                                </div>
-                                                                }
-                                                                </>
-                                                          
-                                                          
-                                                           
-                                                            } */}
-                                                            {CategoriesData != "" ?
+                                                <div className="col-sm-11  inner-tabb">
+                                                    {/* <div>
+                                                       
+                                                        {CategoriesData != "" ?
                                                             <div className="Component-container-edit-task d-flex justify-content-between">
                                                                 <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                     {CategoriesData}
@@ -1406,34 +1437,82 @@ function EditInstitution(item: any) {
                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setCategoriesData('')} className="p-1" />
                                                             </div> : null
                                                         }
-                                                           
-                                                            
 
 
+
+
+                                                    </div> */}
+                                                    <div className="col">
+                                                        <div className="col">
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                onClick={()=>checkCat('Phone')}/>
+                                                                <label className="form-check-label">Phone</label>
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onClick={()=>checkCat('Email Notification')} />
+                                                                <label>Email Notification</label>
+
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onClick={()=>checkCat('Approvel')}/>
+                                                                <label>Approvel</label>
+
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input" type="checkbox"  onClick={()=>checkCat('Immediate')}/>
+                                                                <label>Immediate</label>
+                                                            </div>
+                                                            {CategoriesData != undefined ?
+                                                                <div>
+                                                                    {CategoriesData?.map((type: any, index: number) => {
+                                                                        return (
+                                                                            <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                    {type.Title}
+                                                                                </a>
+                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type.Id)} className="p-1" />
+                                                                            </div>
+                                                                        )
+                                                                    })}
+                                                                </div> : null
+                                                            }
                                                         </div>
+
+
                                                     </div>
                                                 </div>
-
                                             </div>
-                                            <div className="col-sm-4  ">
-                                                <CommentCard siteUrl={EditData.siteUrl} userDisplayName={EditData.userDisplayName} listName={EditData.siteType} itemID={EditData.Id}></CommentCard>
+
+                                        </div>
+                                        <div className="col-sm-4  ">
+                                            <CommentCard siteUrl={EditData.siteUrl} userDisplayName={EditData.userDisplayName} listName={EditData.siteType} itemID={EditData.Id}></CommentCard>
 
 
-                                            </div>
-                                            <div className="col-sm-8">
-                                                <div className="input-group mb-2">
-                                                    <label className="form-label  full-width">Url</label>
-                                                    <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ?EditData.component_x0020_link:''}  onChange={(e) => EditData.component_x0020_link = e.target.value}placeholder="Url"></input>
-                                                </div>
+                                        </div>
+                                        <div className="col-sm-8">
+                                            <div className="input-group mb-2">
+                                                <label className="form-label  full-width">Url</label>
+                                                <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ? EditData.component_x0020_link : ''} onChange={(e) => EditData.component_x0020_link = e.target.value} placeholder="Url"></input>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
 
                                 <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
                                     <div className="col-sm-7">
-                                 <TeamConfigurationCard ItemInfo={item.props} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
-                                </div>
+                                        <TeamConfigurationCard ItemInfo={item.props} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                    </div>
                                     <div className="col-sm-7">
 
                                         <section className='accordionbox'>
@@ -1475,7 +1554,7 @@ function EditInstitution(item: any) {
                                                                     </span>
                                                                     {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
                                                                     <HtmlEditorCard editorValue={EditData.Body != undefined ? EditData.Body : ''} HtmlEditorStateChange={HtmlEditorCallBack}></HtmlEditorCard>
-                        
+
                                                                 </div>
                                                             }
 
@@ -1634,7 +1713,7 @@ function EditInstitution(item: any) {
 
                                                     </a> */}
                                                     <div className="card-header p-0 border-bottom-0 " onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                            <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Technical Concept</span></button></div>
+                                                        <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Technical Concept</span></button></div>
 
                                                     {CollapseExpend &&
                                                         <div>
@@ -1658,7 +1737,7 @@ function EditInstitution(item: any) {
 
                                     <div className="col-sm-12">
 
-                                      <ImagesC/>
+                                        <ImagesC />
 
                                     </div>
                                 </div>
@@ -1681,7 +1760,7 @@ function EditInstitution(item: any) {
                                         </span>
                                     </div>
                                     <div className="text-left">
-                                        <a onClick={()=>deleteTask()}>
+                                        <a onClick={() => deleteTask()}>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
 
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
@@ -1698,9 +1777,9 @@ function EditInstitution(item: any) {
                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" /> Go to Profile page
                                             </a>||
                                             <img className="mail-width mx-2"
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
                                             <a href={`mailto:?subject=${('Test')}&body=${EditData.component_x0020_link}`}> Share this task ||</a>
-                                        </span> 
+                                        </span>
                                         <span className="p-1">|</span>
                                         <a className="p-1" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
                                             target="_blank">Open out-of-the-box form</a>
@@ -1715,9 +1794,9 @@ function EditInstitution(item: any) {
 
 
 
-                        {(IsComponent  && item.props.Portfolio_x0020_Type=='Component') && <LinkedComponent props={SharewebCategory} Call={Call}></LinkedComponent>}
-                        {(IsComponent && item.props.Portfolio_x0020_Type=='Services') && <ComponentPortPolioPopup props={SharewebCategory} Call={Call}></ComponentPortPolioPopup>}
-
+                        {(IsComponent && item.props.Portfolio_x0020_Type == 'Component') && <LinkedComponent props={SharewebComponent} Call={Call}></LinkedComponent>}
+                        {(IsComponent && item.props.Portfolio_x0020_Type == 'Service') && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
+                        {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
                     </div>
                 }
             </Panel>
