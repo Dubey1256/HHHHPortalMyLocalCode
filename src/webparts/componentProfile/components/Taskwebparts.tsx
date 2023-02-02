@@ -129,7 +129,7 @@ export default function ComponentTable({ props }: any) {
                     try {
 
                         let AllTasksMatches = [];
-                        var select = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" + filter + ""
+                        var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" + filter + ""
                         AllTasksMatches = await globalCommon.getData(GlobalConstants.SP_SITE_URL, config.listId, select)
                         console.log(AllTasksMatches);
                         Counter++;
@@ -142,7 +142,7 @@ export default function ComponentTable({ props }: any) {
                                 item.siteType = config.Title;
                                 item.childs = [];
                                 item.listId = config.listId;
-                                item.Item_x0020_Type = 'Task';
+                                // item.Item_x0020_Type = 'Task';
                                 item.siteUrl = GlobalConstants.SP_SITE_URL;
                                 if (item.SharewebCategories != undefined) {
                                     if (item.SharewebCategories.length > 0) {
@@ -157,27 +157,10 @@ export default function ComponentTable({ props }: any) {
                         }
                         AllTasks = AllTasks.concat(AllTasksMatches);
                         AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
-                    
+
 
                         if (Counter === (filterarray.length === 1 ? siteConfig.length : (siteConfig.length * filterarray.length))) {
-                            let AllAcivities = $.grep(AllTasks, function (type: any) { return type.SharewebTaskType?.Title == 'Activities' });
-                            if (AllAcivities != undefined && AllAcivities.length > 0) {
-                                AllAcivities.forEach((activ: any) => {
-                                    if (activ.Id != undefined) {
-                                        groupbyTasks(AllTasks, activ);
-                                        AllTasks.forEach((obj: any) => {
-                                            if (obj.Id === activ.Id) {
-                                                obj.show = true;
-                                                obj.childs = activ.childs;
-                                            }
-    
-                                        })
-                                    }
-    
-                                })
-    
-                            }
-                            AllTasks = $.grep(AllTasks, function (type: any) { return type.tagged != true });
+
                             map(AllTasks, (result: any) => {
                                 result.TeamLeaderUser = []
                                 result.CreatedDateImg = []
@@ -238,6 +221,8 @@ export default function ComponentTable({ props }: any) {
                                         result.ClientCategory.push(catego);
                                     })
                                 }
+                                if (result.Id === 1587 || result.Id === 104)
+                                    console.log(result);
                                 result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
                                 if (result['Shareweb_x0020_ID'] == undefined) {
                                     result['Shareweb_x0020_ID'] = "";
@@ -245,29 +230,26 @@ export default function ComponentTable({ props }: any) {
                                 result['Item_x0020_Type'] = 'Task';
 
                                 result.Portfolio_x0020_Type = 'Component';
-                                // if (IsUpdated === 'Service') {
-                                //     if (result['Services'] != undefined && result['Services'].length > 0) {
-                                //         result.Portfolio_x0020_Type = 'Service';
-                                //         findTaggedComponents(result);
-                                //     }
-
-                                // }
-                                // if (IsUpdated === 'Events') {
-                                //     if (result['Events'] != undefined && result['Events'].length > 0) {
-                                //         result.Portfolio_x0020_Type = 'Events';
-                                //         findTaggedComponents(result);
-                                //     }
-
-                                // }
-                                // if (IsUpdated === 'Component') {
-                                //     if (result['Component'] != undefined && result['Component'].length > 0) {
-                                //         result.Portfolio_x0020_Type = 'Component';
-                                //         findTaggedComponents(result);
-                                //     }
-
-                                // }
                                 TasksItem.push(result);
                             })
+                            let AllAcivities = $.grep(AllTasks, function (type: any) { return type.SharewebTaskType?.Title == 'Activities' });
+                            if (AllAcivities != undefined && AllAcivities.length > 0) {
+                                AllAcivities.forEach((activ: any) => {
+                                    if (activ.Id != undefined) {
+                                        groupbyTasks(AllTasks, activ);
+                                        AllTasks.forEach((obj: any) => {
+                                            if (obj.Id === activ.Id) {
+                                                obj.show = false;
+                                                obj.childs = activ.childs;
+                                            }
+
+                                        })
+                                    }
+
+                                })
+
+                            }
+                            AllTasks = $.grep(AllTasks, function (type: any) { return type.tagged != true });
                             TasksItem = (AllTasks);
                             console.log(Response);
                             map(TasksItem, (task: any) => {
@@ -806,7 +788,7 @@ export default function ComponentTable({ props }: any) {
                     result.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                     result.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     DynamicSort(result.childs, 'Shareweb_x0020_ID');
-                    if (result.childs != undefined && result.childs.length > 0)
+                    //if (result.childs != undefined && result.childs.length > 0)
                         result.childsLength = result.childs.length;
                 }
                 FeatureData.push(result);
@@ -819,14 +801,19 @@ export default function ComponentTable({ props }: any) {
 
         $.each(SubComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
+                let flag =true;
                 $.each(FeatureData, function (index: any, featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         subcomp.childsLength++;
+                        subcomp.childsLength += featurecomp['childs'].length
                         subcomp['childs'].unshift(featurecomp);;
+                        flag =false;
                     }
                 })
+                if(flag)
+                subcomp.childsLength =subcomp['childs'].length;
                 DynamicSort(subcomp.childs, 'PortfolioLevel');
             }
         })
@@ -958,10 +945,10 @@ export default function ComponentTable({ props }: any) {
 
         temp.show = true;
         ComponentsData.push(temp);
-        temp.childs = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type === 'Task'));
+        temp.childs = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type === 'Task' &&   sub.childs.length ==0));
         temp.childsLength = temp.childs.length;
         let AllItems: any = [];
-        AllItems = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type != 'Task'));
+        AllItems = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type != 'Task' ||  sub.childs.length >0));
         if (temp.childs != undefined && temp.childs.length > 0)
             AllItems.push(temp);
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
@@ -2328,8 +2315,8 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                             >{subchilditem.Title}
-                                                                                                                                            </a>} 
-                                                                                                                                            {subchilditem.childs != undefined && subchilditem.childs.length >0 &&
+                                                                                                                                            </a>}
+                                                                                                                                            {subchilditem.childs != undefined && subchilditem.childs.length > 0 &&
                                                                                                                                                 <span className='ms-1'>({subchilditem.childsLength})</span>
                                                                                                                                             }
                                                                                                                                             {subchilditem.Short_x0020_Description_x0020_On != null &&
