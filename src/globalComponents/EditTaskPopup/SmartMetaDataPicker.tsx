@@ -3,6 +3,7 @@ import * as $ from 'jquery';
 //import '../../webparts/taskDashboard/components/foundation.scss';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Select } from "@material-ui/core";
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 const Picker = (item: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(false);
@@ -114,7 +115,7 @@ const Picker = (item: any) => {
     var Newrray:any=[]
     const selectPickerData = (item: any) => {
         Newrray.push(item)
-        //setSelect(Newrray)
+       // setSelect(Newrray)
        
 
     }
@@ -136,6 +137,7 @@ const Picker = (item: any) => {
             >
                 <div id="SmartTaxonomyPopup">
                     <div className="modal-body">
+                        
                         <div className="col-sm-12 ActivityBox" ng-show="SmartTaxonomyName==newsmarttaxnomy">
                             <span ng-show="item.Title!=undefined &&MainItem.CompositionSiteType=='EI'&&item.SiteType!=undefined &&item.SiteType=='EI'" className="block clear-assessment mr-4"
                             >
