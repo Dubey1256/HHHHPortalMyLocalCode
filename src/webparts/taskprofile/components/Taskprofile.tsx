@@ -6,16 +6,17 @@ import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
 // import { escape } from '@microsoft/sp-lodash-subset';
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
-import { Modal } from 'office-ui-fabric-react';
+// import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
+
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import RelevantDocuments from './RelevantDocuments'
-import { forEach } from 'lodash';
-import { Item } from '@pnp/sp/items';
+// import { forEach } from 'lodash';
+// import { Item } from '@pnp/sp/items';
 var smartTime: Number = 0                                   ;
 var ClientTimeArray:any=[];
 
@@ -74,11 +75,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     this.GetResult();
   }
-  // smartTime= smartTime.toFixed(1)
-  public async componentDidMount() {
-    //this.GetRes ult()
-    smartTime
-  }
+  
+  // public async componentDidMount() {
+   
+    
+  // }
 
   private gAllDataMatches: any = [];
   private taskResult: any;
@@ -295,17 +296,24 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.setState({
       Result: tempTask
     }, () => {
-      this.loadOtherDetailsForComponents(this.taskResult);
       this.getSmartTime();
+      this.loadOtherDetailsForComponents(this.taskResult);
+   
     });
   }
  
-
+  private sortAlphaNumericAscending = (a:any, b:any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
 
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
     let ImagesInfo: any = [];
+   
     if (Attachments) {
-    
+      AttachmentFiles.map((items:any)=>{
+        var regex = items.FileName.substring(0, 20);
+        items.newFileName = regex;
+      })
+      AttachmentFiles.sort(this.sortAlphaNumericAscending)
+   
       AttachmentFiles.forEach(function (Attach: any) {
         let attachdata :any=[];
         if(BasicImageInfo!=null ||BasicImageInfo!=undefined){
@@ -606,7 +614,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.GetResult();
   }
   private CallBackSumSmartTime(item: any) {
+  if(item.toString().includes('0.0')){
+    smartTime = item*10;
+  }else{
     smartTime = item
+  }
+ 
   }
   private CallBackTimesheet() {
     this.setState({
@@ -1174,7 +1187,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    <div className={this.state.Result["BasicImageInfo"] != null ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 mt-2"}>
+                    <div className={this.state.Result["BasicImageInfo"] != null &&this.state.Result["BasicImageInfo"] .length>0 ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
                         this.state.Result["SharewebTaskType"] == 'Task'|| this.state.Result["SharewebTaskType"]=="Activities") && this.state.Result["FeedBack"] != null &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
@@ -1220,21 +1233,26 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
                               <div className='usericons'>
                                 <span ng-show="attachedFiles.FileName==imageInfo.ImageName" ng-repeat="imageInfo in BasicImageInfo">
+                                <span >
+                                  {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
+                                </span>
+                              
+                                </span>
+                              </div>
+                              <div>
                                   <span >{imgData.UploadeDate}</span>
                                   <span className='round px-1'>
                                     {imgData.UserImage != null &&
                                       <img className='align-self-start' title={imgData.UserName} src={imgData.UserImage} />
                                     }
                                   </span>
-
-                                </span>
-                              </div>
-                              <div>
+                                      </div>
+                              {/* <div>
                                 <span >
                                   {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
                                 </span>
                                 <span>|</span>
-                              </div>
+                              </div> */}
 
                             </div>
 
@@ -1257,7 +1275,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                           
                           <span className="pe-1">{item.AuthorName}</span>
                           <span className="pe-1" >{moment(item.Created).format("DD/MM/YY")}</span>
-                          <div style={{paddingLeft:"30px"}}><span  dangerouslySetInnerHTML={{ __html:item.Body}}></span>
+                          <div style={{paddingLeft:"30px"}} className=" mb-4 text-break"><span  dangerouslySetInnerHTML={{ __html:item.Body}}></span>
                             </div>
                          
                          
@@ -1290,6 +1308,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <div>
               <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
               </div>
+              {/* <div><SmartInformation /></div> */}
                <div>  <RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID}siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments></div>
             
             </div>

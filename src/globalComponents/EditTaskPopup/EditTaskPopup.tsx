@@ -18,6 +18,8 @@ import { RiDeleteBin6Line } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
 import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
+import TimeEntryPopup from './TimeEntryComponent';
+
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -25,6 +27,9 @@ var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
+var tempShareWebTypeData: any = [];
+var tempCategoryData: any;
+
 const EditTaskPopup = (Items: any) => {
     const [images, setImages] = React.useState([]);
     const [TaskImages, setTaskImages] = React.useState([]);
@@ -33,6 +38,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState('');
+    const [ShareWebTypeData, setShareWebTypeData] = React.useState([]);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
@@ -49,6 +55,7 @@ const EditTaskPopup = (Items: any) => {
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
+    const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
     const [composition, setComposition] = React.useState(false);
     const [FolderData, SetFolderData] = React.useState([]);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
@@ -73,31 +80,30 @@ const EditTaskPopup = (Items: any) => {
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
     // }
-    const Call = React.useCallback((propsItems: any, type: any) => {
+    const Call = React.useCallback((PopupItemData: any, type: any) => {
         setIsComponent(false);
         setIsComponentPicker(false);
         if (type == "SmartComponent") {
-            if (propsItems?.smartComponent?.length > 0) {
-                Items.Items.smartComponent = propsItems.smartComponent;
-                // setEditData({ ...EditData, Component: propsItems.smartComponent })
-                setSmartComponentData(propsItems.smartComponent);
-                console.log("Popup component smartComponent ", propsItems.smartComponent)
+            if (PopupItemData?.smartComponent?.length > 0) {
+                Items.Items.smartComponent = PopupItemData.smartComponent;
+                setSmartComponentData(PopupItemData.smartComponent);
+                console.log("Popup component smartComponent ", PopupItemData.smartComponent)
             }
         }
         if (type == "Category") {
-            if (propsItems?.categories != "" && propsItems?.categories != undefined) {
-                Items.Items.Categories = propsItems.categories;
-                // setEditData({ ...EditData, Categories: propsItems.Categories })
-                setCategoriesData(CategoriesData + " " + propsItems.categories);
-                console.log("Popup component Categories", propsItems.categories)
+            if (PopupItemData?.categories != "" && PopupItemData?.categories != undefined) {
+                Items.Items.Categories = PopupItemData.categories;
+                let category: any = tempCategoryData + ";" + PopupItemData.categories[0]?.Title
+                setCategoriesData(category);
+                tempShareWebTypeData.push(PopupItemData.categories[0]);
+                setShareWebTypeData(tempShareWebTypeData);
             }
         }
         if (type == "LinkedComponent") {
-            if (propsItems?.linkedComponent?.length > 0) {
-                Items.Items.linkedComponent = propsItems.linkedComponent;
-                // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-                setLinkedComponentData(propsItems.linkedComponent);
-                console.log("Popup component linkedComponent", propsItems.linkedComponent)
+            if (PopupItemData?.linkedComponent?.length > 0) {
+                Items.Items.linkedComponent = PopupItemData.linkedComponent;
+                setLinkedComponentData(PopupItemData.linkedComponent);
+                console.log("Popup component linkedComponent", PopupItemData.linkedComponent)
             }
         }
 
@@ -279,9 +285,41 @@ const EditTaskPopup = (Items: any) => {
                     item.UploadedImage = saveImage ? saveImage[0] : '';
                     uploadImageFunction(tempData, tempData?.length);
                 }
-
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
+                    tempCategoryData = item.Categories;
+                    let phoneCheck = item.Categories.search("Phone");
+                    let emailCheck = item.Categories.search("Email");
+                    let ImmediateCheck = item.Categories.search("Immediate");
+                    let ApprovalCheck = item.Categories.search("Approval");
+                    if (phoneCheck >= 0) {
+                        item.PhoneStatus = true;
+                    } else {
+                        item.PhoneStatus = false;
+                    }
+                    if (emailCheck >= 0) {
+                        item.EmailStatus = true;
+                    } else {
+                        item.EmailStatus = false;
+                    }
+                    if (ImmediateCheck >= 0) {
+                        item.ImmediateCheck = true;
+                    } else {
+                        item.ImmediateCheck = false;
+                    }
+                    if (ApprovalCheck >= 0) {
+                        item.ApprovalCheck = true;
+                    } else {
+                        item.ApprovalCheck = false
+                    }
+                }
+                if(item.SharewebCategories != undefined && item.SharewebCategories?.length > 0){
+                    let tempArray:any = [];
+                    tempArray = item.SharewebCategories;
+                    setShareWebTypeData(item.SharewebCategories);
+                    tempArray?.map((tempData:any)=>{
+                        tempShareWebTypeData.push(tempData);
+                    })
                 }
                 if (item.Component?.length > 0) {
                     setSmartComponentData(item.Component);
@@ -324,7 +362,6 @@ const EditTaskPopup = (Items: any) => {
         setPercentCompleteCheck(false);
     }
     const setModalIsOpenToFalse = () => {
-
         let callBack = Items.Call
         callBack();
     }
@@ -344,7 +381,7 @@ const EditTaskPopup = (Items: any) => {
     var AssignedToIds: any = [];
     var ResponsibleTeamIds: any = [];
     var TeamMemberIds: any = [];
-    const UpdateTaskInfoFunction = async (child: any) => {
+    const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImage: any = []
         var item: any = {}
         images?.map((imgDtl: any) => {
@@ -449,7 +486,6 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
         }
-
         try {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
@@ -478,7 +514,10 @@ const EditTaskPopup = (Items: any) => {
                 },
             }).then((res: any) => {
                 console.log(res);
-                Items.Call();
+                if (typeFunction != "TimeSheetPopup") {
+                    Items.Call();
+                }
+
             })
         } catch (error) {
             console.log("Error:", error.messages)
@@ -527,7 +566,6 @@ const EditTaskPopup = (Items: any) => {
             setTaskResponsibleTeam(tempArray);
         }
     }, [])
-
     const shareThisTaskFunction = (EmailData: any) => {
         var link = "mailTo:"
             + "?cc:"
@@ -536,16 +574,24 @@ const EditTaskPopup = (Items: any) => {
         window.location.href = link;
     }
     const deleteTaskFunction = async (TaskID: number) => {
+        let deletePost = confirm("Do you really want to delete this Task?")
+        if (deletePost) {
+            deleteItemFunction(TaskID);
+        } else {
+            console.log("Your Task has not been deleted");
+        }
+    }
+    const deleteItemFunction = async (itemId: any) => {
         try {
             if (Items.Items.listId != undefined) {
                 let web = new Web(Items.Items.siteUrl);
-                await web.lists.getById(Items.Items.listId).items.getById(TaskID).delete();
+                await web.lists.getById(Items.Items.listId).items.getById(itemId).delete();
             } else {
                 let web = new Web(Items.Items.siteUrl);
-                await web.lists.getById(Items.Items.listName).items.getById(TaskID).delete();
+                await web.lists.getById(Items.Items.listName).items.getById(itemId).delete();
             }
             Items.Call();
-
+            console.log("Your post has been deleted successfully");
         } catch (error) {
             console.log("Error:", error.message);
         }
@@ -555,11 +601,56 @@ const EditTaskPopup = (Items: any) => {
 
         console.log("Editor Data call back HTML ====", EditorData)
     }, [])
-
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
         SubCommentBoxData = feedBackData;
         console.log("Feedback Array in Edit Sub comp=====", feedBackData)
     }, [])
+    const removeCategoryItem = (TypeCategory: any, TypeId:any) => {
+        let tempString: any = [];
+        CategoriesData.split(";")?.map((type: any, index: number) => {
+            if (type != TypeCategory) {
+                tempString.push(type);
+            }
+        })
+        setCategoriesData(tempString.join(";"));
+        tempCategoryData = tempString.join(";");
+        let tempArray2:any=[];
+        tempShareWebTypeData = [];
+        ShareWebTypeData?.map((dataType:any)=>{
+             if(dataType.Id != TypeId){
+                tempArray2.push(dataType)
+                tempShareWebTypeData.push(dataType);
+             }
+        })
+        setShareWebTypeData(tempArray2);
+    }
+    const StatusAutoSuggestion = (e: any) => {
+
+    }
+    const CategoryChange = (e: any, type: any, Id:any) => {
+        if (e.target.value == "true") {
+            removeCategoryItem(type, Id);
+        } else {
+            let category: any = tempCategoryData + ";" + type;
+            setCategoriesData(category);
+            tempCategoryData = category;
+            let tempObject = {
+                Title:type,
+                Id:Id
+            }
+            ShareWebTypeData.push(tempObject);
+            tempShareWebTypeData.push(tempObject);
+        }
+    }
+    const SaveAndAddTimeSheet = () => {
+        UpdateTaskInfoFunction("TimeSheetPopup");
+        setTimeSheetPopup(true);
+        setModalIsOpen(false);
+    }
+    const closeTimeSheetPopup = () => {
+        setTimeSheetPopup(false);
+        setModalIsOpenToFalse();
+    }
     return (
         <>
             <Panel
@@ -598,6 +689,18 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
             <Panel
+                headerText={`Update Task Status`}
+                isOpen={TimeSheetPopup}
+                type={PanelType.custom}
+                customWidth="850px"
+                onDismiss={closeTimeSheetPopup}
+                isBlocking={false}
+            >
+                <div className="modal-body">
+                    <TimeEntryPopup props={Items.Items} />
+                </div>
+            </Panel>
+            <Panel
                 headerText={`T${EditData.Id} ${EditData.Title}`}
                 type={PanelType.large}
                 isOpen={modalIsOpen}
@@ -606,8 +709,7 @@ const EditTaskPopup = (Items: any) => {
             >
                 <div >
 
-                    <div className="modal-body ">
-                        {console.log("Feedback All  Array=====", FeedBackDescription)}
+                    <div className="modal-body">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
                                 BASIC INFORMATION
@@ -750,7 +852,10 @@ const EditTaskPopup = (Items: any) => {
                                                         <div
                                                             className="form-check">
                                                             <input className="form-check-input"
-                                                                type="checkbox"
+                                                                name="Phone"
+                                                                type="checkbox" defaultChecked={EditData.PhoneStatus}
+                                                                value={EditData.PhoneStatus}
+                                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
                                                             />
                                                             <label className="form-check-label">Phone</label>
                                                         </div>
@@ -758,6 +863,9 @@ const EditTaskPopup = (Items: any) => {
                                                             className="form-check">
                                                             <input className="form-check-input"
                                                                 type="checkbox"
+                                                                defaultChecked={EditData.EmailStatus}
+                                                                value={EditData.EmailStatus}
+                                                                onClick={(e) => CategoryChange(e, "Email", 276)}
                                                             />
                                                             <label>Email Notification</label>
                                                             <div className="form-check ms-2">
@@ -769,20 +877,27 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div
                                                             className="form-check">
-                                                            <input className="form-check-input" type="checkbox" />
+                                                            <input className="form-check-input"
+                                                                type="checkbox"
+                                                                defaultChecked={EditData.ImmediateCheck}
+                                                                value={EditData.ImmediateCheck}
+                                                                onClick={(e) => CategoryChange(e, "Immediate", 228)} />
                                                             <label>Immediate</label>
                                                         </div>
-                                                        {CategoriesData != "" ?
+                                                        {ShareWebTypeData != undefined &&  ShareWebTypeData?.length > 0?
                                                             <div>
-                                                                {(CategoriesData.split(";"))?.map((type: any, index: number) => {
-                                                                    return (
-                                                                        <div className="Component-container-edit-task d-flex my-1 justify-content-between">
-                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
-                                                                                {type}
-                                                                            </a>
-                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setCategoriesData('')} className="p-1" />
-                                                                        </div>
-                                                                    )
+                                                                {ShareWebTypeData?.map((type: any, index: number) => {
+                                                                    if (type.Title != "Phone" && type.Title != "Email" && type.Title != "Immediate") {
+                                                                        return (
+                                                                            <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                    {type.Title}
+                                                                                </a>
+                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => removeCategoryItem(type.Title, type.Id)} className="p-1" />
+                                                                            </div>
+                                                                        )
+                                                                    }
+
                                                                 })}
                                                             </div> : null
                                                         }
@@ -791,7 +906,10 @@ const EditTaskPopup = (Items: any) => {
                                                         <label className="full-width">Approval</label>
                                                         <input
                                                             type="checkbox"
-                                                            className="form-check-input" />
+                                                            className="form-check-input"
+                                                            name="Approval"
+
+                                                        />
                                                     </div>
                                                     <div className="col ps-4">
                                                         <div
@@ -816,35 +934,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-check-input" />
                                                         </div>
                                                     </div>
-                                                    {/* <div className="col mb-2">
-                                                        <div className="input-group">
-                                                            {EditData.Approver?.length > 0 ? null :
-                                                                <>
-                                                                    <input type="text" ng-model="SearchService"
-                                                                        className="form-control"
-                                                                        id="{{PortfoliosID}}" autoComplete="off"
-                                                                    />
-                                                                </>
-                                                            }
-                                                            {smartComponentData ? smartComponentData?.map((com: any) => {
-                                                                return (
-                                                                    <>
-                                                                        <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
-                                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                                            <a>
-                                                                                <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
-                                                                            </a>
-                                                                        </div>
-                                                                    </>
-                                                                )
-                                                            }) : null}
 
-                                                            <span className="input-group-text">
-                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                    onClick={(e) => EditComponent(EditData, 'Component')} />
-                                                            </span>
-                                                        </div>
-                                                    </div> */}
                                                 </div>
                                             </div>
                                             <div className="col-6 ps-0 pe-0 pt-4">
@@ -918,17 +1008,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                {/* <div className="col-12"
-                                                            ng-repeat="item in AllRelevantTasks track by $index">
-                                                            <div className="hhProcesscat">
-                                                                <a className="hreflink" target="_blank"
-                                                                    ng-href="{{pageContext}}/SitePages/Task-Profile.aspx?taskId={{item.Id}}&Site={{item.siteType}}"> item.Title </a>
-                                                                <a className="hreflink"
-                                                                    ng-click="removeAllRelevantTasks(item.Id)">
-                                                                    <img ng-src="/_layouts/images/delete.gif" />
-                                                                </a>
-                                                            </div>
-                                                        </div> */}
+
                                                 <div className="col-12" title="Relevant Portfolio Items">
                                                     <div className="input-group">
                                                         <label className="form-label full-width "> Linked Component Task </label>
@@ -989,109 +1069,22 @@ const EditTaskPopup = (Items: any) => {
                                                             </span>
                                                         </h3>
                                                     </div>
-                                                    {/* {composition === true ?
-                                                                            <div className='spxdropdown-menu'>
-                                                    
-                                                                            <ul>
-                                                                                {  myarray1.map((item: any) =>
-                    
-                                                                                    <li className="dropdown-item">
-                                                                                        <span>
-                                                                                            <img style={{ width: "22px" }} src={item.SiteImages} data-themekey="#" />
-                                                                                        </span>
-                                                                                        <span >
-                                                                                           
-                                                                                            {(item.ClienTimeDescription != undefined) &&
-                                                                                                <span className="ng-binding">
-                                                                                                 
-                    
-                                                                                                    {parseInt(item.ClienTimeDescription)}%
-                    
-                                                                                                </span>
-                                                                                            }
-                                                                                        </span>
-                                                                                        {item.Title == 'EPS' &&
-                                                                                            <span>
-                                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
-                                                                                                    return (
-                                                                                                        <div className="Members-Item">
-                    
-                                                                                                            <div ng-show="client.siteName=='EPS'" className="user-Member-img"   ng-repeat="client in Task.ClientCategory.results">
-                                                                                                                {(client.Title == "Kontakt Verwaltung" || client.Title == " Steuerungsbericht der Direktion" || client.Title == "Shareweb Maintenance" || client.Title == "Newsletter Einbindung" || client.Title == "PSE-Partnerschaften") &&
-                                                                                                                    <span>
-                    
-                                                                                                                        {client.Title}
-                    
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                }) : ""}
-                                                                                            </span>
-                                                                                        }
-                                                                                        {item.Title == 'Education' &&
-                                                                                            <span>
-                                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
-                                                                                                    return (
-                                                                                                        <div className="Members-Item">
-                    
-                                                                                                            <div className="user-Member-img" ng-repeat="client in Task.ClientCategory.results">
-                                                                                                                {(client.Title == "Contact Management") &&
-                                                                                                                    <span>
-                    
-                                                                                                                        {client.Title}
-                    
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                }) : ""}
-                                                                                            </span>
-                                                                                        }
-                                                                                        {item.Title == 'EI' &&
-                                                                                            <span  ng-show="item.Title=='EI'" >
-                                                                                                {myarray2.length != 0 ? myarray2.map((client: any) => {
-                                                                                                    return (
-                                                                                                        <div className="Members-Item">
-                                                                                                            <div ng-show="client.siteName=='EI'" className="user-Member-img"
-                                                                                                                ng-repeat="client in Task.ClientCategory.results">
-                                                                                                                {(client.Title == "Nutzer Verwaltung" || client.Title == "Shareweb Maintenance" || client.Title == "EI fachspezifische Aufgaben" || client.Title == "EI Projekt-Übersicht" || client.Title == "Mithilfe Zugriffsrechte-Konzepts") &&
-                                                                                                                    <span>
-                    
-                                                                                                                        {client.Title}
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                            </div>
-                    
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                }) : ""}
-                                                                                            </span>
-                                                                                        }
-                                                                                    </li>
-                                                                                ) }
-                                                                            </ul>
-                                                                            </div>
-                                                                            : ""}  */}
+
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" placeholder="% Complete" className="form-control px-2"
+                                                <input type="text" placeholder="% Complete" className="form-control px-2" disabled
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
-                                                    onChange={(e) => setEditData({ ...EditData, PercentComplete: e.target.value })} />
+                                                    onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 48 48" fill="none">
                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
                                                     </svg>
                                                 </span>
-                                                {/* {(EditData.PercentComplete?.Title)?.length > 0 ? <span style={
-                                                            { width: '210px', color: "#fff", background: '#000066', padding: '5px' }
-                                                        }> {EditData.PercentComplete ? EditData.PercentComplete.Title : ''}</span> : null} */}
+
                                                 {EditData.PercentComplete != null ?
                                                     <span className="full-width">
                                                         <input type='radio' className="my-2" checked />
@@ -1154,7 +1147,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <a
                                                                     target="_blank"
                                                                     data-interception="off"
-                                                                    href={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
+                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
                                                                     <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                         on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
                                                                         data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
@@ -1332,27 +1325,26 @@ const EditTaskPopup = (Items: any) => {
                         <div className="d-flex justify-content-between py-2">
                             <div>
                                 <div className="">
-                                    Created <span> <b> {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""} </b> </span> by <span className="siteColor mx-1">
-                                        <b>
-                                            {EditData.Author?.Title ? EditData.Author?.Title : ''}
-                                        </b>
+                                    Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
+
+                                        {EditData.Author?.Title ? EditData.Author?.Title : ''}
+
                                     </span>
                                 </div>
                                 <div>
-                                    Last modified <span> <b> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''} </b> </span>
-                                    by
-                                    <span className="siteColor">
-                                        <b> {EditData.Editor?.Title ? EditData.Editor.Title : ''} </b>
+                                    Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                    </span> By <span className="font-weight-normal siteColor">
+                                        {EditData.Editor?.Title ? EditData.Editor.Title : ''}
                                     </span>
                                 </div>
                                 <div>
                                     <a className="hreflink">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                         </svg>
-                                        <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete this item</span>
+                                        <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                                     </a>
-                                    <span> |</span>
+                                    <span> | </span>
                                     <a className="hreflink">
                                         Copy
                                         Task
@@ -1371,30 +1363,30 @@ const EditTaskPopup = (Items: any) => {
                                     <span>
                                         <a className="mx-2" target="_blank" data-interception="off"
                                             href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
-                                            Go to profile page
+                                            Go To Profile Page
                                         </a>
                                     </span> ||
                                     <span>
-                                        <a className="mx-2" >
-                                            Save & Add Timesheet
+                                        <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
+                                            Save & Add Time-Sheet
                                         </a>
                                     </span> ||
 
-                                    <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} >
+                                    <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
                                         <img className="mail-width mx-2"
                                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
-                                        Share this task
+                                        Share This Task
                                     </span> ||
                                     <a target="_blank" className="mx-2" data-interception="off"
                                         href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/HHHH/EditForm.aspx?ID=${EditData.ID}`}>
-                                        Open out-of-the-box form
+                                        Open Out-Of-The-Box Form
                                     </a>
                                     <span >
-                                        <button className="btn btn-primary"
+                                        <button className="btn btn-primary px-3"
                                             onClick={UpdateTaskInfoFunction}>
                                             Save
                                         </button>
-                                        <button type="button" className="btn btn-default mx-1" onClick={Items.Call}>
+                                        <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
                                             Close
                                         </button>
                                     </span>
