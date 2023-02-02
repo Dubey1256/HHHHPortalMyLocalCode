@@ -53,10 +53,10 @@ export default function FroalaCommnetBoxes(textItems: any) {
             }
         })
         Array = [];
-        tempArray?.map((tempDataItem:any)=>{
-             Array.push(tempDataItem);
+        tempArray?.map((tempDataItem: any) => {
+            Array.push(tempDataItem);
         })
-       
+
         if (tempArray?.length == 0) {
             setBtnStatus(false)
         }
@@ -137,15 +137,17 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                 onChange={handleChange}
                             >
                                 <div className="Task-panel d-flex justify-content-end ">
-                                    <span>
-                                        <input className="form-check-input mx-1" type="checkbox"
+                                    <span className="mx-1">
+                                        <input className="form-check-input mx-1"
+                                            type="checkbox"
                                             checked={obj.SeeAbove}
                                             value={obj.SeeAbove}
                                             name='SeeAbove'
                                         />
                                         <label>See Above</label>
                                     </span>
-                                    <span>
+                                    <span> | </span>
+                                    <span className="mx-1">
                                         <input className="form-check-input mx-1" type="checkbox"
                                             checked={obj.Phone}
                                             value={obj.Phone}
@@ -153,15 +155,15 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         />
                                         <label>Phone</label>
                                     </span>
-                                    <span>
-                                        <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mx-1"
-                                        />
+                                    <span> | </span>
+                                    <span className="mx-1">
+                                        <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mx-1" />
                                         <label>
                                             Low Importance
                                         </label>
                                     </span>
-                                    <span> |</span>
-                                    <span>
+                                    <span> | </span>
+                                    <span className="mx-1">
                                         <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
                                             value={obj.HighImportance} className="form-check-input mx-1"
                                         />
@@ -169,21 +171,21 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             High Importance
                                         </label>
                                     </span>
-                                    <span> |</span>
-                                    <span>
+                                    <span> | </span>
+                                    <span className="mx-1">
                                         <input type="checkbox" id="" className="form-check-input mx-1"
                                             name='Completed' checked={obj.Completed} value={obj.Completed} />
                                         <label>
                                             Mark As Completed
                                         </label>
                                     </span>
-                                    <span> |</span>
-                                    <span className="form-check">
-                                        <span onClick={() => postBtnHandle(i)}> Add Comment </span>
+                                    <span> | </span>
+                                    <span className="mx-1">
+                                        <span className="hreflink" style={{color:"#000066"}} onClick={() => postBtnHandle(i)}> Add Comment </span>
                                     </span>
-                                    <span> |</span>
-                                    <span className="">
-                                        <a className="ps-2"
+                                    <span> | </span>
+                                    <span className="mx-1">
+                                        <a className="ps-1"
                                             style={{ cursor: "pointer" }} target="_blank"
                                             onClick={() => RemoveItem(obj)}
                                         ><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
@@ -198,7 +200,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         <textarea
                                             style={{ width: "100%" }}
                                             className="form-control"
-                                            defaultValue={obj.Title}
+                                            defaultValue={obj.Title+" "+(obj.SeeAbove ? "See" + obj.taskIndex : "")}
                                             name='Title'
                                         ></textarea>
                                     </div>
