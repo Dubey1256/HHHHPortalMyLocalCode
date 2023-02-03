@@ -3,6 +3,7 @@ import * as $ from 'jquery';
 //import '../../webparts/taskDashboard/components/foundation.scss';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
+import { ImPriceTags } from 'react-icons/im';
 import { Select } from "@material-ui/core";
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 const Picker = (item: any) => {
@@ -26,7 +27,7 @@ const Picker = (item: any) => {
         item.props.categories = [];
         item.props.smartCategories = [];
         var title: any = {}
-       // title.Title = select;
+        // title.Title = select;
         item.props.smartCategories.push(title);
         item.props.categories = Newrray;
         Example(item, 'Category');
@@ -112,14 +113,14 @@ const Picker = (item: any) => {
         });
         return flag;
     }
-    var Newrray:any=[]
+    var Newrray: any = []
     const selectPickerData = (item: any) => {
         Newrray.push(item)
-       // setSelect(Newrray)
-       
+        // setSelect(Newrray)
+
 
     }
-    function Example(callBack: any, type:any) {
+    function Example(callBack: any, type: any) {
         item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
@@ -136,17 +137,8 @@ const Picker = (item: any) => {
                 isBlocking={false}
             >
                 <div id="SmartTaxonomyPopup">
-                    <div className="modal-body">
-                        
-                        <div className="col-sm-12 ActivityBox" ng-show="SmartTaxonomyName==newsmarttaxnomy">
-                            <span ng-show="item.Title!=undefined &&MainItem.CompositionSiteType=='EI'&&item.SiteType!=undefined &&item.SiteType=='EI'" className="block clear-assessment mr-4"
-                            >
-                                {Newrray}<a className="hreflink"
-                                    ng-click="removeSmartArray(item.Id)"> <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" /></a>
-                            </span>
-
-                        </div>
-                        <table className="ms-dialogHeaderDescription">
+                    <div className="modal-body clearfix">
+                        {/* <table className="ms-dialogHeaderDescription">
                             <tbody>
                                 <tr id="addNewTermDescription" className="">
                                     <td>New items are added under the currently selected item.</td>
@@ -168,50 +160,93 @@ const Picker = (item: any) => {
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
-                        <div className="col-sm-12">
-                           
-                                <ul className="categories-menu">
-                                    {AllCategories.map(function (item: any) {
-                                        return (
-                                            <>
+                        </table> */}
+                        <section> 
+                            <div className="row">
+                                <div className="d-flex text-muted pt-3 showCateg">
+                                    <ImPriceTags/>
+                                    <div className="pb-3 mb-0">
+                                        <div id="addNewTermDescription">
+                                            <p className="mb-1"> New items are added under the currently selected item.
+                                                <span><a className="hreflink" ng-click="gotomanagetaxonomy();"> Add New Item </a></span>
+                                            </p>
+                                        </div>
+                                        <div id="SendFeedbackTr">
+                                            <p className="mb-1">Make a request or send feedback to the Term Set manager.
+                                                <span><a className="hreflink" ng-click="sendFeedback();"> Send Feedback </a></span>
+                                            </p>
+                                        </div>
+                                        {/* <div className="block col p-1"> {select}</div> */}
+                                    </div>
+                                    <div className="mx-auto">
+                                        <button type="button" className="btn btn-primary" onClick={saveCategories}>
+                                            OK
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div className="mb-3">
+                            <div className="mb-2 col-sm-12 p-0">
+                                <input type="text" placeholder="Search here" id="txtnewsmartpicker" className="form-control  searchbox_height" />
+                            </div>
+                            <div className="col-sm-12 ActivityBox" ng-show="SmartTaxonomyName==newsmarttaxnomy">
+                                <span>
+                                    <a className="hreflink" ng-click="removeSmartArray(item.Id)"> {select}
+                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"/></a>
+                                </span>
+                            </div>
+                        </div>
+                        <div className='col-sm-12 categScroll'>
 
-                                                <li>
+                            <ul className="categories-menu p-0">
+                                {AllCategories.map(function (item: any) {
+                                    return (
+                                        <>
+                                            <li>
 
-                                                    {item.Item_x005F_x0020_Cover != null &&
-                                                        <a className="hreflink" ng-click="selectnewItem(item);" onClick={() => selectPickerData(item)}>
-                                                            <img className="flag_icon"
-                                                                style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
-                                                            {item.Title}
-                                                        </a>
-                                                    }
+                                                {item.Item_x005F_x0020_Cover != null &&
+                                                    <a className="hreflink" ng-click="selectnewItem(item);" onClick={() => selectPickerData(item)}>
+                                                        <img className="flag_icon"
+                                                            style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
+                                                        {item.Title}
+                                                    </a>
+                                                }
 
 
 
-                                                    <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
-                                                        {item.childs.map(function (child1: any) {
-                                                            return (
-                                                                <>
-                                                                    <li>
+                                                <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
+                                                    {item.childs.map(function (child1: any) {
+                                                        return (
+                                                            <>
+                                                                <li>
 
-                                                                        {child1.Item_x005F_x0020_Cover != null &&
-                                                                            <a className="hreflink" ng-click="selectnewItem(child1);" onClick={() => selectPickerData(child1)}>
-                                                                                <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
-                                                                                    style={{ height: "12px", width: "18px;" }}
-                                                                                    src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title} <span ng-show="child1.Description1 != null" className="project-tool top-assign">
-                                                                                    <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                    <span className="tooltipte">
-                                                                                        <span className="tooltiptext">
-                                                                                            <div className="tooltip_Desc">
-                                                                                                <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
-                                                                                            </div>
-                                                                                        </span>
+                                                                    {child1.Item_x005F_x0020_Cover != null &&
+                                                                        <a className="hreflink" ng-click="selectnewItem(child1);" onClick={() => selectPickerData(child1)}>
+                                                                            <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
+                                                                                style={{ height: "12px", width: "18px;" }}
+                                                                                src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title} 
+                                                                                <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+
+                                                                                    <div className="popover__content">
+                                                                                    <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {/* <span ng-show="child1.Description1 != null" className="project-tool top-assign">
+                                                                                <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                <span className="tooltipte">
+                                                                                    <span className="tooltiptext">
+                                                                                        <div className="tooltip_Desc">
+                                                                                            <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
+                                                                                        </div>
                                                                                     </span>
                                                                                 </span>
-                                                                            </a>
-                                                                        }
+                                                                            </span> */}
+                                                                        </a>
+                                                                    }
 
-                                                                        {/* <ul ng-if="child1.childs.length>0" className="sub-menu clr2 mar0 padL-0">
+                                                                    {/* <ul ng-if="child1.childs.length>0" className="sub-menu clr2 mar0 padL-0">
                                             <li ng-repeat="child2 in child1.childs|orderBy:'Title'">
                                                 <a className="hreflink" ng-click="selectnewItem(child2);">
                                                     <img ng-if="child2.Item_x005F_x0020_Cover!=undefined"
@@ -251,17 +286,17 @@ const Picker = (item: any) => {
                                                 </ul>
                                             </li>
                                         </ul> */}
-                                                                    </li>
-                                                                </>
-                                                            )
-                                                        })}
-                                                    </ul>
-                                                </li>
-                                            </>
-                                        )
-                                    })}
-                                </ul>
-                           
+                                                                </li>
+                                                            </>
+                                                        )
+                                                    })}
+                                                </ul>
+                                            </li>
+                                        </>
+                                    )
+                                })}
+                            </ul>
+
                         </div>
 
                     </div>
