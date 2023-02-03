@@ -232,15 +232,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    taskDetails.array=array2.concat(taskDetails["Team_x0020_Members"].filter((item:any)=>array2.Id!=item.Id))
     console.log(taskDetails.array);
    }
-    // taskDetails["AssignedTo"].map((item:any,index:any)=>{
-    //   taskDetails["Team_x0020_Members"].map((workingMember:any,index:any)=>{
-    //     if(workingMember.Id!=item.Id){
-    //       item.workingMember=false;
-    //       taskDetails.array.push(item);
-    //     }
-
-    //   })
-    // });
+   var OffshoreComments:any=[];
+   if(taskDetails["OffshoreComments"] != null){
+    OffshoreComments=JSON.parse(taskDetails["OffshoreComments"])
+   }
     console.log(taskDetails)
     console.log(category);
     taskDetails["Categories"]=category;
@@ -254,7 +249,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SiteIcon: this.GetSiteIcon(this.state.listName),
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      OffshoreComments:taskDetails["OffshoreComments"] != null && JSON.parse(taskDetails["OffshoreComments"]),
+      OffshoreComments:OffshoreComments.length>0?OffshoreComments.reverse():null,
       OffshoreImageUrl:taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
       AssignedTo:taskDetails["AssignedTo"]!=null?this.GetUserObjectFromCollection(taskDetails["AssignedTo"]):null,
       ClientCategory:taskDetails["ClientCategory"],
@@ -301,7 +296,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    
     });
   }
- 
+//  private shortBackgroundComment=(a:any,b:any)=>a.Created-b.Created;
   private sortAlphaNumericAscending = (a:any, b:any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
 
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
@@ -364,7 +359,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let web = new Web(this.props.siteUrl);
     let taskUsers = [];
     taskUsers = await web.lists
-      .getById(GlobalConstants.TASK_USERS_LISTID)
+      .getByTitle("Task Users")
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover','Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
@@ -383,18 +378,21 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
  
   private async GetSmartMetaData(ClientCategory:any,ClientTime:any) {
      let array2:any=[];
-     if(ClientTime==null||ClientTimeArray==undefined){
-     var siteComp :any= {};
-      siteComp.SiteName=this.state.listName,
-      siteComp.ClienTimeDescription = 100,
-      siteComp.SiteIcon=this.state.listName
-      ClientTimeArray.push(siteComp);
-     }
-    
-     else{
-      ClientTimeArray= JSON.parse(ClientTime);
-      console.log(ClientTimeArray);
-     }
+   
+      if((ClientTime==null&&ClientTimeArray.length==0)){
+        var siteComp :any= {};
+         siteComp.SiteName=this.state.listName,
+         siteComp.ClienTimeDescription = 100,
+         siteComp.SiteIcon=this.state.listName
+         ClientTimeArray.push(siteComp);
+        }
+       
+        else if(ClientTime!=null){
+         ClientTimeArray= JSON.parse(ClientTime);
+         console.log(ClientTimeArray);
+        }
+ 
+   
 
     
     let web = new Web(this.props.siteUrl);
@@ -522,7 +520,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         'Name': senderObject[0].Email,
         'Suffix': senderObject[0].Suffix,
         'Title': senderObject[0].Title,
-        'userImage': senderObject[0].Item_x0020_Cover.Url
+        'userImage': senderObject[0]?.Item_x0020_Cover?.Url
       })
     }
     return userDeatails;
@@ -614,11 +612,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.GetResult();
   }
   private CallBackSumSmartTime(item: any) {
-  if(item.toString().includes('0.0')){
-    smartTime = item*10;
-  }else{
+ 
     smartTime = item
-  }
+ 
  
   }
   private CallBackTimesheet() {
@@ -1242,7 +1238,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               <div>
                                   <span >{imgData.UploadeDate}</span>
                                   <span className='round px-1'>
-                                    {imgData.UserImage != null &&
+                                    {imgData.UserImage !== null &&
                                       <img className='align-self-start' title={imgData.UserName} src={imgData.UserImage} />
                                     }
                                   </span>

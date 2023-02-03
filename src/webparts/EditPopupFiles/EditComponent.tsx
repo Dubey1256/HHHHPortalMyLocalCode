@@ -34,11 +34,13 @@ var Assin: any = []
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
-
+var Backupdata:any=[]
+var BackupCat:any=''
 function EditInstitution(item: any) {
     // Id:any
 
     const [CompoenetItem, setComponent] = React.useState([]);
+    const [update, setUpdate] = React.useState(0);
     const [EditData, setEditData] = React.useState<any>({});
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
@@ -52,6 +54,7 @@ function EditInstitution(item: any) {
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [TeamConfig, setTeamConfig] = React.useState()
     const [date, setDate] = React.useState(undefined);
+    const [checkedCat, setcheckedCat] = React.useState(false);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [Startdate, setStartdate] = React.useState(undefined);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
@@ -106,13 +109,18 @@ function EditInstitution(item: any) {
                 var title: any = {};
                 title.Title = item1.categories;
                 item1.categories.map((itenn:any)=>{
-                    CategoriesData.push(itenn)
+                    if (!isItemExists(CategoriesData, itenn.Id)) {
+                        CategoriesData.push(itenn);
+                    }
+                    
                 })
                 item1.SharewebCategories.map((itenn:any)=>{
                     CategoriesData.push(itenn)
                 })
+               
+                Backupdata = CategoriesData
                 setCategoriesData(CategoriesData)
-                item.props.smartCategories = item1.smartCategories;
+                //item.props.smartCategories = item1.smartCategories;
                 //  item.props.smartCategories.push(title);
 
             }
@@ -125,10 +133,32 @@ function EditInstitution(item: any) {
                 console.log("Popup component linkedComponent", item1.linkedComponent)
             }
         }
+        if (Backupdata != undefined){
+          Backupdata.forEach(function(type:any){
+            CheckCategory.forEach(function(val:any){
+                if(type.Id == val.Id){
+                BackupCat = type.Id
+                setcheckedCat(true)
+                }
+              })
+             
+          })
+          setUpdate(update+2)
+        }
         setIsComponentPicker(false);
         setIsComponent(false);
         // setComponent(CompoenetItem => ([...CompoenetItem]));
     }, []);
+    var isItemExists = function (arr: any, Id: any) {
+        var isExists = false;
+        $.each(arr, function (index: any, items: any) {
+            if (items.ID === Id) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
+    }
     const GetTaskUsers = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let taskUsers = [];
@@ -136,7 +166,7 @@ function EditInstitution(item: any) {
             .getByTitle('Task Users')
             .items
             .top(4999)
-            .get();
+            .get(); 
         AllUsers = taskUsers;
         var UpdatedData: any = {}
         AllUsers.forEach(function (taskUser: any) {
@@ -897,7 +927,7 @@ function EditInstitution(item: any) {
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     var CheckCategory:any=[]
-    CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199,"ParentId":225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276,"ParentId":225 }, {  "TaxType": "Categories", "Title": "Approvell", "Id": 227,"ParentId":225 },
+    CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199,"ParentId":225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276,"ParentId":225 }, {  "TaxType": "Categories", "Title": "Approval", "Id": 227,"ParentId":225 },
             { "TaxType": "Categories", "Title": "Immediate", "Id": 228,"parentId":225 });
 
     const DDComponentCallBack = (dt: any) => {
@@ -999,6 +1029,7 @@ function EditInstitution(item: any) {
     const checkCat=(type:any)=>{
        
         CheckCategory.map((catTitle:any)=>{
+            setcheckedCat(false)
             if(type == catTitle.Title){
                 NewArray.push(catTitle)
             }
@@ -1454,14 +1485,32 @@ function EditInstitution(item: any) {
                                                     </div> */}
                                                     <div className="col">
                                                         <div className="col">
-                                                            <div
+                                                          
+                                                            {CheckCategory.map((type:any)=>{
+                                                                return(
+                                                                    <>
+                                                                    
+                                                                 <div className="form-check">
+                                                                 <input className="form-check-input" checked={BackupCat==type.Id?checkedCat:false}
+                                                                     type="checkbox"
+                                                                 onClick={()=>checkCat(type.Title)}/>
+                                                                 <label className="form-check-label">{type.Title}</label>
+                                                                </div>
+                                                             </>
+                                                                )
+                                                                
+                                                           
+                                                               
+                                                            
+                                                        })}
+                                                            {/* <div
                                                                 className="form-check">
                                                                 <input className="form-check-input"
                                                                     type="checkbox"
                                                                 onClick={()=>checkCat('Phone')}/>
                                                                 <label className="form-check-label">Phone</label>
-                                                            </div>
-                                                            <div
+                                                            </div> */}  
+                                                            {/* <div
                                                                 className="form-check">
                                                                 <input className="form-check-input"
                                                                     type="checkbox"
@@ -1481,17 +1530,22 @@ function EditInstitution(item: any) {
                                                                 className="form-check">
                                                                 <input className="form-check-input" type="checkbox"  onClick={()=>checkCat('Immediate')}/>
                                                                 <label>Immediate</label>
-                                                            </div>
+                                                            </div> */}
                                                             {CategoriesData != undefined ?
                                                                 <div>
                                                                     {CategoriesData?.map((type: any, index: number) => {
                                                                         return (
+                                                                            <>
+                                                                            {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") && 
+                                                                          
                                                                             <div className="Component-container-edit-task d-flex my-1 justify-content-between">
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                     {type.Title}
                                                                                 </a>
                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type.Id)} className="p-1" />
                                                                             </div>
+                                                                        }
+                                                                        </>
                                                                         )
                                                                     })}
                                                                 </div> : null
