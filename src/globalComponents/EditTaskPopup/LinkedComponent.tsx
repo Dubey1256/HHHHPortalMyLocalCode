@@ -2,6 +2,7 @@ import * as React from "react";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Version } from '@microsoft/sp-core-library';
+import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
@@ -154,12 +155,22 @@ const LinkedComponent = (item: any) => {
         setComponentsData(ComponentsData);
         setModalIsOpen(true)
     }
+    const onRenderCustomHeader = (
+        ) => {
+            return (
+                <>
+                   
+                    <Tooltip />
+                </>
+            );
+        };
     return (
         <Panel
-            headerText={`Select Components`}
+            headerText={`Select Services`}
             type={PanelType.large}
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
+            onRenderHeader={onRenderCustomHeader}
             isBlocking={false}
         >
             <div className="serviepannelgreena">
