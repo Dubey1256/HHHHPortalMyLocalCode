@@ -59,10 +59,14 @@ export default function FroalaCommnetBoxes(textItems: any) {
 
         if (tempArray?.length == 0) {
             setBtnStatus(false)
+            setTimeout(() => {
+                callBack("delete");
+            }, 1000);
+        } else {
+            setTimeout(() => {
+                callBack(tempArray);
+            }, 1000);
         }
-        setTimeout(() => {
-            callBack(tempArray);
-        }, 1000);
         setState(tempArray);
     }
 
@@ -181,7 +185,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                     </span>
                                     <span> | </span>
                                     <span className="mx-1">
-                                        <span className="hreflink" style={{color:"#000066"}} onClick={() => postBtnHandle(i)}> Add Comment </span>
+                                        <span className="hreflink" style={{ color: "#000066" }} onClick={() => postBtnHandle(i)}> Add Comment </span>
                                     </span>
                                     <span> | </span>
                                     <span className="mx-1">
@@ -200,7 +204,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         <textarea
                                             style={{ width: "100%" }}
                                             className="form-control"
-                                            defaultValue={obj.Title+" "+(obj.SeeAbove ? "See" + obj.taskIndex : "")}
+                                            defaultValue={obj.Title + " " + (obj.SeeAbove ? "See" + obj.taskIndex : "")}
                                             name='Title'
                                         ></textarea>
                                     </div>
