@@ -490,7 +490,7 @@ export default function ComponentTable({ props }: any) {
 
         var arrayfilter: any = [];
         const Itmes: any = [];
-        const chunkSize = 25;
+        const chunkSize = 23;
         for (let i = 0; i < AllComponetsData.length; i += chunkSize) {
             const chunk = AllComponetsData.slice(i, i + chunkSize);
             if (chunk != undefined && chunk.length > 0) {
@@ -789,7 +789,7 @@ export default function ComponentTable({ props }: any) {
                     result.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     DynamicSort(result.childs, 'Shareweb_x0020_ID');
                     //if (result.childs != undefined && result.childs.length > 0)
-                        result.childsLength = result.childs.length;
+                    result.childsLength = result.childs.length;
                 }
                 FeatureData.push(result);
             }
@@ -801,29 +801,44 @@ export default function ComponentTable({ props }: any) {
 
         $.each(SubComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
-                let flag =true;
+                if (subcomp['childs'] != undefined && subcomp['childs'].length > 0) {
+                    let Tasks = subcomp['childs'].filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Task'));
+                    let Features = subcomp['childs'].filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Feature'));
+                    subcomp['childs'] = [];
+                    DynamicSort(Tasks, 'Shareweb_x0020_ID');
+                    subcomp['childs'] = Features.concat(Tasks);
+                    subcomp.childsLength = Tasks.length;
+                }
                 $.each(FeatureData, function (index: any, featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
                         subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                         subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                         subcomp.childsLength++;
-                       // subcomp.childsLength += featurecomp['childs'].length
+                        if (featurecomp['childs'] != undefined && featurecomp['childs'].length > 0) {
+                            let Tasks = featurecomp['childs'].filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Task'));
+                            featurecomp['childs'] = [];
+                            DynamicSort(Tasks, 'Shareweb_x0020_ID');
+                            featurecomp['childs'] = Tasks;
+                        }
                         subcomp['childs'].unshift(featurecomp);;
-                        flag =false;
                     }
                 })
-                if(flag)
-                subcomp.childsLength =subcomp['childs'].length;
+
                 DynamicSort(subcomp.childs, 'PortfolioLevel');
             }
         })
         if (ComponentsData != undefined && ComponentsData.length > 0) {
             $.each(ComponentsData, function (index: any, subcomp: any) {
+                // if (subcomp['childs'] != undefined && subcomp['childs'].length > 0) {
+                //     let Tasks = subcomp['childs'].filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Task'));
+                //     let Features = subcomp['childs'].filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Feature'));
+                //     subcomp['childs'] = [];
+                //     DynamicSort(Tasks, 'Shareweb_x0020_ID');
+                //     subcomp['childs'] = Features.concat(Tasks);
+                // }
                 if (subcomp.Title != undefined) {
                     $.each(SubComponentsData, function (index: any, featurecomp: any) {
                         if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                            // subcomp.downArrowIcon  = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png' ;
-                            //  subcomp.RightArrowIcon = IsUpdated !=undefined && IsUpdated=='Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png': 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png' ;
                             subcomp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                             subcomp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                             subcomp.childsLength++;
@@ -945,10 +960,10 @@ export default function ComponentTable({ props }: any) {
 
         temp.show = true;
         ComponentsData.push(temp);
-        temp.childs = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type === 'Task' &&   sub.childs.length ==0));
+        temp.childs = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type === 'Task' && sub.childs.length == 0));
         temp.childsLength = temp.childs.length;
         let AllItems: any = [];
-        AllItems = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type != 'Task' ||  sub.childs.length >0));
+        AllItems = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type != 'Task' || sub.childs.length > 0));
         if (temp.childs != undefined && temp.childs.length > 0)
             AllItems.push(temp);
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
@@ -1668,25 +1683,25 @@ export default function ComponentTable({ props }: any) {
 
                                     } {'>'}  {(props.Parent.ItemType != undefined && props.Parent.ItemType == "SubComponent") &&
                                         <a target='_blank' data-interception="off"
-                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />
+                                            href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png"} />
                                         </a>
-                                    }  {'>'}  <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{props.Title}</a>
+                                    }  {'>'}  <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"} />    <a>{props.Title}</a>
                                 </>
                             }
                             {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type == 'Feature' &&
                                 <>
                                     {props.Parent != undefined &&
                                         <a target='_blank' data-interception="off"
-                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+                                            href={GlobalConstants.MAIN_SITE_URL + `/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"} />
                                         </a>
                                     } {'>'} {(props.Parent.ItemType != undefined && props.Parent.ItemType == "SubComponent") &&
                                         <a target='_blank' data-interception="off"
-                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' title={props.Parent.Title} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />
+                                            href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${props.Parent.Id}`}>
+                                            <img className='client-icons' title={props.Parent.Title} src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png"} />
                                         </a>
-                                    }  {'>'}  <img className='client-icons' title={props.Title} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" />    <a>{props.Title}</a>
+                                    }  {'>'}  <img className='client-icons' title={props.Title} src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"} />    <a>{props.Title}</a>
                                 </>
                             }
                         </span>
@@ -1949,7 +1964,7 @@ export default function ComponentTable({ props }: any) {
                                 </thead>
                                 <tbody>
                                     <div id="SpfxProgressbar" style={{ display: "none" }}>
-                                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                        <img id="sharewebprogressbar-image" src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/32/loading_apple.gif"} alt="Loading..." />
                                     </div>
                                     {data != undefined && data.length > 0 && data && data.map(function (item, index) {
 
@@ -1994,7 +2009,7 @@ export default function ComponentTable({ props }: any) {
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                         >{item.Title}
                                                                         </a>}
-                                                                        {item.childs != undefined &&
+                                                                        {item.childs != undefined && item.childs.length > 0 &&
                                                                             <span>{item.childs.length == 0 ? "" : <span className='ms-1'>({item.childsLength})</span>}</span>
                                                                         }
                                                                         {item.Short_x0020_Description_x0020_On != null &&
@@ -2094,14 +2109,14 @@ export default function ComponentTable({ props }: any) {
                                                                                             </td>
                                                                                             <td style={{ width: "23%" }}>
                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
+                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
-                                                                                                {childitem.childs != undefined &&
+                                                                                                {childitem.childs != undefined && childitem.childs.length > 0 &&
                                                                                                     <span className='ms-1'>({childitem.childsLength})</span>
                                                                                                 }
                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -2159,7 +2174,7 @@ export default function ComponentTable({ props }: any) {
                                                                                             <td style={{ width: "7%" }}>
                                                                                                 <div></div>
                                                                                             </td>
-                                                                                            <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                            <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                             <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
                                                                                                 {childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                         </tr>
@@ -2204,14 +2219,14 @@ export default function ComponentTable({ props }: any) {
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "23%" }}>
                                                                                                                         {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
+                                                                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
-                                                                                                                        {childinew.childs != undefined &&
+                                                                                                                        {childinew.childs != undefined && childinew.childs.length > 0 &&
                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
                                                                                                                         }
                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
@@ -2225,7 +2240,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                             //     </span>
                                                                                                                             // </span>
                                                                                                                             <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                <img src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"} />
                                                                                                                                 <div className="popover__content">
                                                                                                                                     {childinew.Short_x0020_Description_x0020_On}
                                                                                                                                 </div>
@@ -2258,7 +2273,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                         return (
                                                                                                                             <span>
                                                                                                                                 {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                                     <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                                 </a>
@@ -2266,7 +2281,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                         )
                                                                                                                     }) : ""}</td>
                                                                                                                     <td style={{ width: "7%" }}></td>
-                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} />}
                                                                                                                         {childinew.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
                                                                                                                 </tr>
@@ -2309,11 +2324,11 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "23%" }}>
                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
+                                                                                                                                                href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined && subchilditem.childs.length > 0 &&
@@ -2330,7 +2345,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                 //     </span>
                                                                                                                                                 // </span>
                                                                                                                                                 <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                                    <img src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"} />
                                                                                                                                                     <div className="popover__content">
                                                                                                                                                         {subchilditem.Short_x0020_Description_x0020_On}
                                                                                                                                                     </div>
@@ -2364,7 +2379,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                             return (
                                                                                                                                                 <span>
                                                                                                                                                     {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                                    <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                                    <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                                                         <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                                                     </a>

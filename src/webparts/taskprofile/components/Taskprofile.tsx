@@ -232,15 +232,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    taskDetails.array=array2.concat(taskDetails["Team_x0020_Members"].filter((item:any)=>array2.Id!=item.Id))
     console.log(taskDetails.array);
    }
-    // taskDetails["AssignedTo"].map((item:any,index:any)=>{
-    //   taskDetails["Team_x0020_Members"].map((workingMember:any,index:any)=>{
-    //     if(workingMember.Id!=item.Id){
-    //       item.workingMember=false;
-    //       taskDetails.array.push(item);
-    //     }
-
-    //   })
-    // });
+   var OffshoreComments=taskDetails["OffshoreComments"] != null && JSON.parse(taskDetails["OffshoreComments"]);
     console.log(taskDetails)
     console.log(category);
     taskDetails["Categories"]=category;
@@ -254,7 +246,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SiteIcon: this.GetSiteIcon(this.state.listName),
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      OffshoreComments:taskDetails["OffshoreComments"] != null && JSON.parse(taskDetails["OffshoreComments"]),
+      OffshoreComments:OffshoreComments!=null?OffshoreComments.reverse():"",
       OffshoreImageUrl:taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
       AssignedTo:taskDetails["AssignedTo"]!=null?this.GetUserObjectFromCollection(taskDetails["AssignedTo"]):null,
       ClientCategory:taskDetails["ClientCategory"],
@@ -301,7 +293,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    
     });
   }
- 
+
   private sortAlphaNumericAscending = (a:any, b:any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
 
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
@@ -383,7 +375,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
  
   private async GetSmartMetaData(ClientCategory:any,ClientTime:any) {
      let array2:any=[];
-     if(ClientTime==null||ClientTimeArray==undefined){
+     if((ClientTime==null||ClientTimeArray==undefined)&&this.count==0){
      var siteComp :any= {};
       siteComp.SiteName=this.state.listName,
       siteComp.ClienTimeDescription = 100,
@@ -614,11 +606,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.GetResult();
   }
   private CallBackSumSmartTime(item: any) {
-  if(item.toString().includes('0.0')){
-    smartTime = item*10;
-  }else{
+ 
     smartTime = item
-  }
+ 
  
   }
   private CallBackTimesheet() {
