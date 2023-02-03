@@ -730,6 +730,7 @@ function CreateTaskComponent() {
         { field: 'Title', headerName: 'Title', width: 250 },
         { field: 'TaskDueDate', headerName: 'Due Date', width: 120 },
         { field: 'CreateDate', headerName: 'Created', width: 120 },
+        { field: 'ModifiedDate', headerName: 'Modified', width: 120 },
     ];
 
     return (

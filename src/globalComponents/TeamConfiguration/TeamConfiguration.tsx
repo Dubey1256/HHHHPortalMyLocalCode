@@ -1,6 +1,7 @@
 import React from 'react';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
+import Tooltip from '../Tooltip';
 
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
@@ -381,8 +382,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             <>
                 <div className="col">
                     <div className="col bg-ee p-1">
-                        <div ng-if="teamUserExpanded" className="col-sm-11" ng-click="forCollapse()">
-                            <span className="txtSizeClr">Select Team Members</span>
+                        <div ng-if="teamUserExpanded" className="d-flex justify-content-between align-items-center" ng-click="forCollapse()">
+                            <span>Select Team Members</span>
+                            <span><Tooltip/></span>
                         </div>
                     </div>
 
@@ -461,11 +463,14 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     </div>
                                 </div>
                             </div>
+                            {(this.props.ItemInfo.Item_x0020_Type != 'Component' && this.props.ItemInfo.Item_x0020_Type != 'SubComponent' && this.props.ItemInfo.Item_x0020_Type != 'Feature') && 
                             <div className='col-sm-3'>
                                 <h6 >Working Members</h6>
                                 <div className="col"
                                     onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers)}
                                     onDragOver={(e) => e.preventDefault()}>
+
+                                      
                                     <div className="working-box p-1" >
                                         <div className='d-flex'>
                                             {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
@@ -476,12 +481,15 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                     draggable
                                                     onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
                                                     onDragOver={(e) => e.preventDefault()} ></div>
-                                            })
+                                            }) 
                                             }
                                         </div>
+                                        
                                     </div>
+                                    
                                 </div>
                             </div>
+                             }
                             <div className="col-sm-2">
                                 <div>
                                     <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}

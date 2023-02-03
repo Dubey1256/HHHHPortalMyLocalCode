@@ -1602,7 +1602,7 @@ function ComponentTable(SelectedProp: any) {
     function AddItem() {
     }
     return (
-        <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component serviepannelgreena' : 'app component')}>
+        <div id="ExandTableIds" className= {IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
 
             {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
             {/* <Modal
@@ -1820,8 +1820,8 @@ function ComponentTable(SelectedProp: any) {
 
                                                 <td valign="top">
                                                     <fieldset>
-                                                        <legend>{item != 'teamSites' && <span className="mparent">{item}</span>}</legend>
-                                                        <legend>{item == 'teamSites' && <span className="mparent">Sites</span>}</legend>
+                                                        {item != 'teamSites' && <legend><span className="mparent">{item}</span></legend>}
+                                                        {item == 'teamSites' && <legend><span className="mparent">Sites</span></legend>}
                                                     </fieldset>
                                                     {filterItems.map(function (ItemType, index) {
                                                         return (
@@ -1858,7 +1858,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                 </div>
                                                                             }
                                                                             <ul id="id_{ItemType.Id}"
-                                                                                className="m-0">
+                                                                                className="m-0 ps-3 pe-2">
                                                                                 <span>
                                                                                     {ItemType.show && (
                                                                                         <>
@@ -1926,7 +1926,7 @@ function ComponentTable(SelectedProp: any) {
                                     })}
                                 </tr>
                             </table>
-                            <div className="text-end">
+                            <div className="text-end mt-3">
                                 <button type="button" className="btn btn-primary"
                                     title="Smart Filter" onClick={() => Updateitem()}>
                                     Update Filters
@@ -1999,11 +1999,9 @@ function ComponentTable(SelectedProp: any) {
                                             Restructure
                                         </button> */}
                                         <button className="btn border bg-white" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="true" data-bs-reference="parent">
-                                            {/* <svg className="svg-inline--fa fa-ellipsis fs--2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="ellipsis" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200C94.93 200 120 225.1 120 256zM280 256C280 286.9 254.9 312 224 312C193.1 312 168 286.9 168 256C168 225.1 193.1 200 224 200C254.9 200 280 225.1 280 256zM328 256C328 225.1 353.1 200 384 200C414.9 200 440 225.1 440 256C440 286.9 414.9 312 384 312C353.1 312 328 286.9 328 256z"></path></svg>
-                                             */}
                                              <RxDotsVertical/>
                                         </button>
-                                        <ul className="dropdown-menu dropdown-menu-end show" style={{"position":"absolute","inset":"auto 0px 0px auto","margin":"0px", "transform":"translate(-36px, -1657px)"}} data-popper-placement="top-end">
+                                        <ul className="dropdown-menu dropdown-menu-end" style={{"position":"absolute","inset":"auto 0px 0px auto","margin":"0px", "transform":"translate(-36px, -1657px)"}} data-popper-placement="top-end">
                                             <li  onClick={addModal}><a className="dropdown-item" href="#">Add Structure</a></li>
                                             <li ng-click="openActivity()"><a className="dropdown-item" href="#">Add Activity-Task</a></li>
                                             <li  ng-click="openRestructure()"><a className="dropdown-item" href="#">Restructure</a></li>
@@ -2022,10 +2020,6 @@ function ComponentTable(SelectedProp: any) {
                                         <a className='expand'>
                                             <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                                         </a>
-
-                                        {/* <span>
-                                        <ExpandTable/>
-                                        </span> */}
                                     </span>
                                 </div>
                                 <div className="col-sm-12 p-0 smart">
@@ -2126,11 +2120,8 @@ function ComponentTable(SelectedProp: any) {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
                                                     <div id="SpfxProgressbar" className="align-items-center" style={{ display: "none" }}>
-
                                                         <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-
                                                     </div>
                                                     {data.length > 0 && data && data.map(function (item, index) {
                                                         if (item.flag == true) {

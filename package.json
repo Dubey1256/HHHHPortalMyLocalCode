@@ -39,6 +39,7 @@
     "file-saver": "^2.0.5",
     "immutable": "^4.1.0",
     "material-table": "^2.0.3",
+    "moment-timezone": "^0.5.40",
     "office-ui-fabric-react": "^7.199.1",
     "react": "17.0.1",
     "react-autosuggest": "^10.1.0",
