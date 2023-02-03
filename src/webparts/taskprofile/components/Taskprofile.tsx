@@ -232,7 +232,15 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    taskDetails.array=array2.concat(taskDetails["Team_x0020_Members"].filter((item:any)=>array2.Id!=item.Id))
     console.log(taskDetails.array);
    }
-   var OffshoreComments=taskDetails["OffshoreComments"] != null && JSON.parse(taskDetails["OffshoreComments"]);
+    // taskDetails["AssignedTo"].map((item:any,index:any)=>{
+    //   taskDetails["Team_x0020_Members"].map((workingMember:any,index:any)=>{
+    //     if(workingMember.Id!=item.Id){
+    //       item.workingMember=false;
+    //       taskDetails.array.push(item);
+    //     }
+
+    //   })
+    // });
     console.log(taskDetails)
     console.log(category);
     taskDetails["Categories"]=category;
@@ -246,7 +254,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SiteIcon: this.GetSiteIcon(this.state.listName),
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      OffshoreComments:OffshoreComments!=null?OffshoreComments.reverse():"",
+      OffshoreComments:taskDetails["OffshoreComments"] != null && JSON.parse(taskDetails["OffshoreComments"]),
       OffshoreImageUrl:taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
       AssignedTo:taskDetails["AssignedTo"]!=null?this.GetUserObjectFromCollection(taskDetails["AssignedTo"]):null,
       ClientCategory:taskDetails["ClientCategory"],
