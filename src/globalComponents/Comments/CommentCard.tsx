@@ -13,7 +13,7 @@ import mentionClass from './mention.module.scss';
 import { sp } from "@pnp/sp";
 import Tooltip from '../Tooltip';
 import "@pnp/sp/sputilities";
-
+import * as moment from "moment-timezone";
 import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 
@@ -222,7 +222,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       let temp = {
         AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
         AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
-        Created: (new Date().toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',', ''),
+        Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Description: txtComment,
         Header: this.GetMentionValues(),
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
@@ -616,9 +616,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             </div>
                           </div>
 
-                          <div className="col mt-1 px-4">
-                            {cmtData.Header != '' && <h6 className="userid pt-2"><a className="ng-binding">{cmtData.Header}</a></h6>}
-                            <p className="media-text"><span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></p>
+                          <div className="media-text">
+                            {cmtData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{cmtData.Header}</a></h6>}
+                            <p className='m-0'><span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></p>
                           </div>
 
                         </div>
@@ -701,7 +701,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       <div>
                         <div className='d-flex justify-content-between align-items-center'>
                           <span className='comment-date'>
-                            <span className='round  pe-1'> <img className='pe-1' style={{ height: '35px', width: '35px' }} title={cmtData.AuthorName}
+                            <span className='round  pe-1'> <img className='align-self-start me-1' style={{ height: '35px', width: '35px' }} title={cmtData.AuthorName}
                               src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ?
                                 cmtData.AuthorImage :
                                 "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
@@ -723,11 +723,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
                         </div>
 
-                        <div className="col px-4">
-                          <h6 className='userid pt-2 m-0'>   {cmtData.Header != '' && <b>{cmtData.Header}</b>}</h6>
-                          <p id="pageContent" className='media-text '>  <span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></p>
+                        <div className="media-text">
+                          <h6 className='userid m-0 fs-6'>   {cmtData.Header != '' && <b>{cmtData.Header}</b>}</h6>
+                          <p className='m-0' id="pageContent">  <span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></p>
                         </div>
-
                       </div>
                     </div>
                   })}

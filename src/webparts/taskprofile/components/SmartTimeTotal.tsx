@@ -10,7 +10,8 @@ const SmartTimeTotalFunction=(item:any)=>{
     const [AllUser, setAllUser] = React.useState([])
     const [smartTimeTotal,setsmartTimeTotal] = React.useState(null);
     const [AdditionalTime, setAdditionalTime] = React.useState([]);
-    const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
+    const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
+    const[isModalOpen,setisModalOpen]=React.useState(false);
     const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
     var changeTime = 0;
     var NewParentId: any = ''
@@ -312,27 +313,14 @@ const SmartTimeTotalFunction=(item:any)=>{
             }
         })
         var TotalTime =0.0;
-
+        
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { 
             if(type.AdditionalTime!=undefined&&type.AdditionalTime.length>0){
-
+              
                 $.each(type.AdditionalTime,function(index:any,time:any){
-                    
-                  if(time.TaskTime.toString().includes('.')){
-               var Time=parseInt(time.TaskTime.toString().split('.')[0])+(parseInt(time.TaskTime.toString().split('.')[1]))/100 ;
-                 TotalTime =  TotalTime + Time;
-                 console.log("SMARTTIMETOTALDECIMAL",TotalTime)
-                    }
-
-                    else{var Time = parseInt(time.TaskTime)
-
-                        TotalTime =  TotalTime + Time
-
-                        console.log("SMARTTIMETOTALNormal",TotalTime)}
-
-                   
-
-                })
+                    TotalTime=TotalTime+parseFloat(time.TaskTime);
+                  })
+                
                 item.CallBackSumSmartTime(TotalTime);
                 setsmartTimeTotal(TotalTime);
 
@@ -426,11 +414,24 @@ const SmartTimeTotalFunction=(item:any)=>{
                 }
             }
         })
+        
+       
     }
     return(
         <div>
-     
-        </div>
+            {/* <span><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}   onMouseOver={(e) => setisModalOpen(true)}
+                                onMouseOut={(e) => setisModalOpen(false)}/></span>
+
+
+                               {isModalOpen?  <div className='imghover' >
+          <div className="popup">
+            <div className="parentDiv">
+              <span style={{ color: 'white' }}>{item.Title}</span>
+               
+            </div>
+          </div>
+        </div>:null}  */}
+              </div>
     )
 
 }

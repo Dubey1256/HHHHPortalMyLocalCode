@@ -897,7 +897,7 @@ function EditInstitution(item: any) {
         console.log("Editor Data call back ====", Editorvalue)
     }, [])
     var CheckCategory:any=[]
-    CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199,"ParentId":225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276,"ParentId":225 }, {  "TaxType": "Categories", "Title": "Approvel", "Id": 227,"ParentId":225 },
+    CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199,"ParentId":225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276,"ParentId":225 }, {  "TaxType": "Categories", "Title": "Approvell", "Id": 227,"ParentId":225 },
             { "TaxType": "Categories", "Title": "Immediate", "Id": 228,"parentId":225 });
 
     const DDComponentCallBack = (dt: any) => {
