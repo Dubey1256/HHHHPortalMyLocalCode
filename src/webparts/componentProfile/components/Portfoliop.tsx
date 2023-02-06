@@ -406,14 +406,14 @@ function Portfolio({ ID }: any) {
                                 )
                             })}
                         </ul>
-                        <span className="text-end"><a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-Old.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
-                    </div>
+                        </div>
                 </div>
                 <div className='col'>
                     <div className='p-0' style={{ verticalAlign: "top" }}>
                         {data.map(item =>
                             <>
-                                <h2 className='heading'>
+                                <h2 className='heading d-flex justify-content-between align-items-center'>
+                                    <span>
                                     {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type == 'SubComponent' &&
                                         <>
                                             <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
@@ -459,6 +459,9 @@ function Portfolio({ ID }: any) {
 
 
                                         </>}
+                                        </span>
+                                        <span className="text-end fs-6"><a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-Old.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
+                                        
                                 </h2>
 
                             </>
@@ -650,7 +653,7 @@ function Portfolio({ ID }: any) {
                                                 {item.Short_x0020_Description_x0020_On !== null &&
                                                     <div className="card shadow-none  mb-2">
                                                         <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                                 <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
                                                             <div className="accordion-collapse collapse show"  >
                                                                 {item.show &&
@@ -674,7 +677,7 @@ function Portfolio({ ID }: any) {
 
                                                 <div className="card shadow-none Qapannel  mb-2">
 
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                         <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Question  Description</span></button></div>
 
 
@@ -685,7 +688,7 @@ function Portfolio({ ID }: any) {
                                                        <div className='px-2 my-2'>
                                                             {AllQuestion.map(item =>
                                                                 <div id="t_draggable1" className='mb-2'>
-                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                                         <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  {item.Title}</span></button></div>
                                                                     <div className="accordion-collapse collapse show"  >
                                                                         {item.showQues &&
@@ -713,7 +716,7 @@ function Portfolio({ ID }: any) {
                                                 {item.Background !== null &&
                                                     <div className="card shadow-none  mb-2">
                                                         <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen1(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen1(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                                 <span className="sign">{item.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
                                                             <div className="accordion-collapse collapse show" >
                                                                 {item.showl &&
@@ -731,7 +734,7 @@ function Portfolio({ ID }: any) {
                                                 {item.Idea !== null &&
                                                     <div className="card shadow-none mb-2">
                                                         <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                                 <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Idea</span></button></div>
                                                             <div className="accordion-collapse collapse show"  >
                                                                 {item.shows &&
@@ -749,7 +752,7 @@ function Portfolio({ ID }: any) {
                                                 {item.ValueAdded !== null &&
                                                     <div className="card shadow-none mb-2">
                                                         <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen4(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen4(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                                 <span className="sign">{item.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
                                                             <div className="accordion-collapse collapse show"  >
                                                                 {item.showj &&
@@ -767,7 +770,7 @@ function Portfolio({ ID }: any) {
                                                 {item.Help_x0020_Information !== null &&
                                                     <div className="card shadow-none mb-2">
                                                         <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen7(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen7(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                                 <span className="sign">{item.showhelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Help Information</span></button></div>
                                                             <div className="accordion-collapse collapse show"  >
                                                                 {item.showhelp &&
@@ -785,7 +788,7 @@ function Portfolio({ ID }: any) {
                                                 {item.Deliverables !== null &&
                                                     <div className="card shadow-none mb-2">
                                                         <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen5(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen5(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                                 <span className="sign">{item.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
                                                             <div className="accordion-collapse collapse show"  >
                                                                 {item.showm &&
