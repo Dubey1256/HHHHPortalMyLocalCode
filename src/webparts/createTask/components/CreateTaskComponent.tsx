@@ -15,6 +15,8 @@ var siteConfig: any = []
 var SitesTypes: any = []
 var AllComponents: any = []
 var relevantTask: any = [];
+var taskUsers:any =[];
+
 function CreateTaskComponent() {
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [siteType, setSiteType] = React.useState([])
@@ -33,24 +35,25 @@ function CreateTaskComponent() {
         dueDate: false,
 
     });
-    const [taskUsers, setTaskuser] = React.useState([]);
+   const [relevantTasks, setRelevantTasks] :any= React.useState([]);
     const [isActiveCategory, setIsActiveCategory] = React.useState(false);
     // const [isActiveCategory, setIsActiveCategory] = React.useState({});
     const [activeCategory, setActiveCategory] = React.useState([]);
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
-    const [taskUrl, setTaskUrl] = React.useState('');
+    // const [taskUrl, setTaskUrl] = React.useState('');
     const [burgerMenuTaskDetails, setBurgerMenuTaskDetails] = React.useState({
         ComponentID: undefined,
         Siteurl: undefined,
     });
-    const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: '', dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
+    const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     React.useEffect(() => {
+        LoadTaskUsers();
         GetComponents();
         GetSmartMetadata();
-        LoadTaskUsers();
-
-
     }, [])
+    React.useEffect(() => {
+        LoadTaskUsers();
+    }, [relevantTasks])
 
     const GetComponents = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -190,7 +193,7 @@ function CreateTaskComponent() {
                 let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD/MM/YYYY');
                 saveValue.taskName = setTaskTitle;
                 saveValue.taskUrl = paramSiteUrl;
-                setTaskUrl(paramSiteUrl);
+             //  setTaskUrl(paramSiteUrl);
                 setSave(saveValue);
                 let e = {
                     target: {
@@ -199,64 +202,155 @@ function CreateTaskComponent() {
                 }
                 UrlPasteTitle(e);
             }
+            let count=0
             let query = "Categories,AssignedTo/Title,AssignedTo/Name,Component/Id,Priority_x0020_Rank,SharewebTaskType/Id,SharewebTaskType/Title,Component/Title,Services/Id,Services/Title,AssignedTo/Id,AttachmentFiles/FileName,component_x0020_link/Url,FileLeafRef,SharewebTaskLevel1No,SharewebTaskLevel2No,Title,Id,Priority_x0020_Rank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,SharewebTaskType,Component,Services,Author,Editor&$orderby=Modified desc&$filter=Component/Id eq  '" + paramComponentId + "'"
-            loadRelevantTask(query);
+            try {
+                
+                SitesTypes.map(async (site: any) => {
+                    let SiteTaskTaggedToComp: any[] = []
+                    await globalCommon.getData(site?.siteUrl?.Url, site?.listId, query).then((data: any) => {
+                        data.map((item: any) => {
+                            count++;
+                            item.siteCover=site?.Item_x005F_x0020_Cover?.Url
+                            item.siteType = site.siteName;
+                            item.TaskName = item.Title;
+                            taskUsers.map((user:any)=>{
+                                if(user?.AssingedToUser?.Id==item.Author.Id){
+                                    item.AuthorCover=user?.Item_x0020_Cover?.Url
+                                }
+                                if(user?.AssingedToUser?.Id==item.Editor.Id){
+                                    item.EditorCover=user?.Item_x0020_Cover?.Url
+                                }
+        
+                            })
+                            
+                            item.Author = item.Author.Title;
+                            item.Editor = item.Editor.Title;
+                            item.PercentComplete = item?.PercentComplete * 100;
+                            item.Priority = item.Priority_x0020_Rank * 1;
+                            if (item.Categories == null)
+                                item.Categories = '';
+                            //type.Priority = type.Priority.split('')[1];
+                            //type.Component = type.Component.results[0].Title,
+                            item.ComponentTitle = '';
+                            if (item?.Component?.results?.length > 0) {
+                                item.Component.results.map((comResult: any) => {
+                                    item.ComponentTitle = comResult.Title + ';' + item.ComponentTitle;
+                                })
+                            }
+                            else {
+                                item.ComponentTitle = '';
+                            }
+        
+                            if (item?.Component?.results?.length > 0) {
+                                item['Portfoliotype'] = 'Component';
+                            }
+                            if (item?.Services?.results?.length > 0) {
+                                item['Portfoliotype'] = 'Service';
+                            }
+                            if (item?.Component?.results?.length > 0 && item?.Services?.results?.length > 0) {
+                                item['Portfoliotype'] = 'Component';
+                            }
+        
+                            item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
+        
+                            item.TaskDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
+                            if (item.TaskDueDate == "Invalid date"||item.TaskDueDate ==undefined) {
+                                item.TaskDueDate = '';
+                            }
+                            item.CreateDate = moment(item?.Created).format('DD/MM/YYYY');
+                            item.CreatedSearch= item.CreateDate +'' +item.Author;
+                            item.DateModified = item.Modified;
+                            item.ModifiedDate = moment(item?.Modified).format('DD/MM/YYYY');
+                            item.ModifiedSearch= item.ModifiedDate+'' +item.Editor;
+                            if (item.siteType != 'Offshore Tasks') {
+                               try {
+                                SiteTaskTaggedToComp.push(item);
+                               } catch (error) {
+                                console.log(error.message)
+                               }
+                            }
+                        })
+                    })
+                    // if(count==SitesTypes.length)
+                    setRelevantTasks(...relevantTasks,SiteTaskTaggedToComp)
+                })
+             } catch (error) {
+                console.log(error.message)
+             }
+          
+
         }
 
 
     }
     const loadRelevantTask = async (query: any) => {
-        let SiteTaskTaggedToComp: any[] = []
-        SitesTypes.map(async (site: any) => {
-            await globalCommon.getData(site?.siteUrl?.Url, site?.listId, query).then((data: any) => {
-                data.map((item: any) => {
+    //  try {
+    //     SitesTypes.map(async (site: any) => {
+    //         await globalCommon.getData(site?.siteUrl?.Url, site?.listId, query).then((data: any) => {
+    //             data.map((item: any) => {
+    //                 item.siteCover=site?.Item_x005F_x0020_Cover?.Url
+    //                 item.siteType = site.siteName;
+    //                 item.TaskName = item.Title;
+    //                 taskUsers.map((user:any)=>{
+    //                     if(user?.AssingedToUser?.Id==item.Author.Id){
+    //                         item.AuthorCover=user?.Item_x0020_Cover?.Url
+    //                     }
+    //                     if(user?.AssingedToUser?.Id==item.Editor.Id){
+    //                         item.EditorCover=user?.Item_x0020_Cover?.Url
+    //                     }
 
-                    item.siteType = site.siteName;
-                    item.TaskName = item.Title;
-                    item.Author = item.Author.Title;
-                    item.Editor = item.Editor.Title;
-                    item.PercentComplete = item?.PercentComplete * 100;
-                    item.Priority = item.Priority_x0020_Rank * 1;
-                    if (item.Categories == null)
-                        item.Categories = '';
-                    //type.Priority = type.Priority.split('')[1];
-                    //type.Component = type.Component.results[0].Title,
-                    item.ComponentTitle = '';
-                    if (item?.Component?.results?.length > 0) {
-                        item.Component.results.map((comResult: any) => {
-                            item.ComponentTitle = comResult.Title + ';' + item.ComponentTitle;
-                        })
-                    }
-                    else {
-                        item.ComponentTitle = '';
-                    }
+    //                 })
+                    
+    //                 item.Author = item.Author.Title;
+    //                 item.Editor = item.Editor.Title;
+    //                 item.PercentComplete = item?.PercentComplete * 100;
+    //                 item.Priority = item.Priority_x0020_Rank * 1;
+    //                 if (item.Categories == null)
+    //                     item.Categories = '';
+    //                 //type.Priority = type.Priority.split('')[1];
+    //                 //type.Component = type.Component.results[0].Title,
+    //                 item.ComponentTitle = '';
+    //                 if (item?.Component?.results?.length > 0) {
+    //                     item.Component.results.map((comResult: any) => {
+    //                         item.ComponentTitle = comResult.Title + ';' + item.ComponentTitle;
+    //                     })
+    //                 }
+    //                 else {
+    //                     item.ComponentTitle = '';
+    //                 }
 
-                    if (item?.Component?.results?.length > 0) {
-                        item['Portfoliotype'] = 'Component';
-                    }
-                    if (item?.Services?.results?.length > 0) {
-                        item['Portfoliotype'] = 'Service';
-                    }
-                    if (item?.Component?.results?.length > 0 && item?.Services?.results?.length > 0) {
-                        item['Portfoliotype'] = 'Component';
-                    }
+    //                 if (item?.Component?.results?.length > 0) {
+    //                     item['Portfoliotype'] = 'Component';
+    //                 }
+    //                 if (item?.Services?.results?.length > 0) {
+    //                     item['Portfoliotype'] = 'Service';
+    //                 }
+    //                 if (item?.Component?.results?.length > 0 && item?.Services?.results?.length > 0) {
+    //                     item['Portfoliotype'] = 'Component';
+    //                 }
 
-                    item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
+    //                 item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
 
-                    item.TaskDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
-                    if (item.TaskDueDate == "Invalid date") {
-                        item.TaskDueDate = '';
-                    }
-                    item.CreateDate = moment(item?.Created).format('DD/MM/YYYY');
-                    item.DateModified = item.Modified;
-                    item.ModifiedDate = moment(item?.Modified).format('DD/MM/YYYY');
-                    if (item.siteType != 'Offshore Tasks') {
-                        relevantTask.push(item);
-                    }
-                })
-            })
-        })
-
+    //                 item.TaskDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
+    //                 if (item.TaskDueDate == "Invalid date"||item.TaskDueDate ==undefined) {
+    //                     item.TaskDueDate = '';
+    //                 }
+    //                 item.CreateDate = moment(item?.Created).format('DD/MM/YYYY');
+    //                 item.CreatedSearch= item.CreateDate +'' +item.Author;
+    //                 item.DateModified = item.Modified;
+    //                 item.ModifiedDate = moment(item?.Modified).format('DD/MM/YYYY');
+    //                 item.ModifiedSearch= item.ModifiedDate+'' +item.Editor;
+    //                 if (item.siteType != 'Offshore Tasks') {
+    //                     SiteTaskTaggedToComp.push(item);
+    //                 }
+    //             })
+    //         })
+            
+    //     })
+    //  } catch (error) {
+    //     console.log(error.message)
+    //  }
     }
     const GetSmartMetadata = async () => {
         var TaskTypes: any = []
@@ -314,8 +408,8 @@ function CreateTaskComponent() {
     }
 
     let LoadTaskUsers = async () => {
-        let AllTaskUsers = globalCommon.loadTaskUsers();
-        setTaskuser(await AllTaskUsers);
+        let AllTaskUsers = await globalCommon.loadTaskUsers();
+        taskUsers=AllTaskUsers;
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];
@@ -455,17 +549,16 @@ function CreateTaskComponent() {
                         PercentComplete: 0,
                         component_x0020_link: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
-                            Description: taskUrl.length > 0 ? taskUrl : null,
-                            Url: taskUrl.length > 0 ? taskUrl : null,
+                            Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
+                            Url: save.taskUrl?.length > 0 ? save.taskUrl : null,
                         },
-                        DueDate: save.DueDate,
-                        ComponentId: { "results": (selectedComponent !== undefined && selectedComponent.length > 0) ? selectedComponent : [] },
-                        Mileage: save.Mileage,
-                        ServicesId: { "results": (selectedService !== undefined && selectedService.length > 0) ? selectedService : [] },
-                        AssignedToId: { "results": AssignedToIds },
-                        SharewebCategoriesId: { "results": sharewebCat },
-                        Team_x0020_MembersId: { "results": TeamMembersIds },
-
+                         DueDate: save.DueDate,
+                         ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
+                         Mileage: save.Mileage,
+                         ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
+                         AssignedToId: { "results": AssignedToIds },
+                         SharewebCategoriesId: { "results": sharewebCat },
+                         Team_x0020_MembersId: { "results": TeamMembersIds },
                     }).then((data) => {
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
@@ -480,16 +573,17 @@ function CreateTaskComponent() {
         }
     }
 
-    const urlChange = (e: any) => {
-        setTaskUrl(e.target.value)
-        UrlPasteTitle(e)
-    }
+    // const urlChange = (e: any) => {
+    //    // setTaskUrl(e.target.value)
+    //     UrlPasteTitle(e)
+    // }
 
     const UrlPasteTitle = (e: any) => {
         let selectedSiteTitle = ''
         var testarray = e.target.value.split('&');
         let TestUrl = e.target.value;
-
+        let saveValue=save;
+        saveValue.taskUrl=TestUrl;
         // TestUrl = $scope.component_x0020_link;
         var item = '';
         if (TestUrl !== undefined) {
@@ -640,7 +734,8 @@ function CreateTaskComponent() {
             //if (item !== undefined && getLatestSiteName.toLowerCase() === item.toLowerCase())
             //$scope.selectedsiteMetadata(item);
         }
-        setSave({ ...save, siteType: selectedSiteTitle })
+        saveValue.siteType=selectedSiteTitle;
+        setSave(saveValue)
         if (selectedSiteTitle !== undefined) {
             setIsActive({ ...isActive, siteType: true });
         }
@@ -726,11 +821,34 @@ function CreateTaskComponent() {
     }
 
     const columns: GridColDef[] = [
+        { field: 'siteType', headerName: 'Site', width: 60 ,   renderCell: (params) => <img className="client-icons" src={params?.row?.siteCover} />},
         { field: 'Shareweb_x0020_ID', headerName: 'Task Id', width: 100 },
-        { field: 'Title', headerName: 'Title', width: 250 },
+        { field: 'Title', headerName: 'Title', width: 250,renderCell: (params)=>{
+            return (
+            <div>{params?.row?.AuthorCover!=undefined?<img className="client-icons" title={params?.row?.Author} src={params?.row?.AuthorCover} alt='' />:''}
+                <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
+            </div>
+            )
+          } },
         { field: 'TaskDueDate', headerName: 'Due Date', width: 120 },
-        { field: 'CreateDate', headerName: 'Created', width: 120 },
-        { field: 'ModifiedDate', headerName: 'Modified', width: 120 },
+        { field: 'CreatedSearch', headerName: 'Created', width: 120 ,renderCell: (params)=>{
+            return (
+              <div>
+                {params?.row?.AuthorCover!=undefined?<img className="client-icons" title={params?.row?.Author} src={params?.row?.AuthorCover} alt='' />:''}
+                
+                {params.row.CreateDate}
+              </div>
+            )
+          }},
+        { field: 'ModifiedSearch', headerName: 'Modified', width: 120, renderCell: (params)=>{
+            return (
+              <div>
+                {params?.row?.EditorCover!=undefined?<img className="client-icons" title={params?.row?.Editor} src={params?.row?.EditorCover} alt='' />:''}
+                
+                {params.row.ModifiedDate}
+              </div>
+            )
+          } },
     ];
 
     return (
@@ -738,7 +856,7 @@ function CreateTaskComponent() {
             <div className='Create-taskpage'>
                 <div className='row'>
                     <div className='col-sm-12'>
-                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a target='_blank' href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx" style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
+                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a data-interception="off" target='_blank' href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx" style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
                     </div>
                     <div className='col-sm-6'>
                         <label className='full-width'>Task Name</label>
@@ -824,20 +942,18 @@ function CreateTaskComponent() {
                 </div>
                 <div className='row mt-2'>
                     <div className='col-sm-12'>
-                        <input type="text" placeholder='Enter task Url' value={taskUrl} className='col-sm-12' onChange={(e) => urlChange(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
+                        <input type="text" placeholder='Enter task Url' value={save.taskUrl} className='col-sm-12' onChange={(e) =>  UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
 
                     </div>
                 </div>
-                {relevantTask.length > 0 ?
+                <div className={relevantTasks.length > 0?' mb-5 mt-2 fxhg':'' }>
+                {relevantTasks.length > 0 ?
                     <> 
-                        <div className=' mb-5 mt-2 fxhg'>
-                        <label >Component Tasks({relevantTask.length}) </label>
-                            <DataGrid rows={relevantTask} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} />
-                        </div>
-                    </>
-                    : ''
+                    <label >Component Tasks({relevantTasks.length}) </label>
+                        <DataGrid rows={relevantTasks} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} />
+                    </>:''
                 }
-
+                </div>
                 {/*---------------- Sites -------------
             -------------------------------*/}
                 <div className='row mt-2'>
