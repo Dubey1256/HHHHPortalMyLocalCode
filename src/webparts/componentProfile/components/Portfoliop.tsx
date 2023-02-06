@@ -27,7 +27,8 @@ import ComponentTable from './Taskwebparts';
 
 var TeamMembers: any = [];
 var AssigntoMembers: any = [];
-
+var AllQuestion: any[] = [];
+var AllHelp:any[] = [];
 var AllTeamMember:any = [];
 var AssignTeamMember:any = [];
 function Portfolio({ ID }: any) {
@@ -40,12 +41,15 @@ function Portfolio({ ID }: any) {
     const [dataj, setdataj] = React.useState([])
     const [datams, setdatams] = React.useState([])
     const [datamb, setdatamb] = React.useState([])
+    const [datahelp, setdatahelp] = React.useState([])
+    const [dataQues, setdataQues] = React.useState([])
     const [FolderData, SetFolderData] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [showBlock, setShowBlock] = React.useState(false);
     const [IsTask, setIsTask] = React.useState(false);
     const [AllTaskuser, setAllTaskuser] = React.useState([]);
+    const [questionandhelp,setquestionandhelp] = React.useState([])
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
         setIsActive(false);
@@ -84,6 +88,18 @@ function Portfolio({ ID }: any) {
         item.showm = item.showb = item.showb == true ? false : true;
         setdatamb(datamb => ([...datamb]));
     };
+    const handleOpen7 = (item: any) => {
+        setIsActive(current => !current);
+        setIsActive(true);
+        item.showhelp = item.showhelp = item.showhelp == true ? false : true;
+        setdatahelp(datahelp => ([...datahelp]));
+    };
+    const handleOpen8 = (item: any) => {
+        setIsActive(current => !current);
+        setIsActive(true);
+        item.showQues = item.showQues = item.showQues == true ? false : true;
+        setdataQues(dataQues => ([...dataQues]));
+    };
     React.useEffect(() => {
         var folderId: any = "";
         var url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
@@ -99,9 +115,38 @@ function Portfolio({ ID }: any) {
                 success: function (data) {
                     response = response.concat(data.d.results);
                     response.map((item: any) => {
-                        if (item.FolderID != undefined) {
-                            folderId = item.FolderID;
-                            var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+                        // if (item.FolderID != undefined) {
+                        //     folderId = item.FolderID;
+                        //     var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+                        //     $.ajax({
+                        //         url: urln,
+                        //         method: "GET",
+                        //         headers: {
+                        //             "Accept": "application/json; odata=verbose"
+                        //         },
+                        //         success: function (data) {
+                        //             responsen = responsen.concat(data.d.results);
+                        //             if (data.d.__next) {
+                        //                 urln = data.d.__next;
+                        //             } else SetFolderData(responsen);
+                        //             // console.log(responsen);
+                        //         },
+                        //         error: function (error) {
+                        //             console.log(error);
+                        //             // error handler code goes here
+                        //         }
+                        //     });
+                        // }
+                        if(item.Portfolio_x0020_Type != undefined){
+                            var filter = '';
+                            if (item.Portfolio_x0020_Type  == 'Component') {
+                                filter += "(Components / Id eq " + ID + ")";
+                            }
+                            else if (item.Portfolio_x0020_Type  == 'Service') {
+                                filter += "(Service / Id eq " + ID + ")";
+                            }
+                            
+                            var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('9cf872fc-afcd-42a5-87c0-aab0c80c5457')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,Components/Id,Components/Title,Components/ItemType,Service/Id,Service/Title,Service/ItemType,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo,Components,Service&$filter=${filter}`;
                             $.ajax({
                                 url: urln,
                                 method: "GET",
@@ -109,18 +154,29 @@ function Portfolio({ ID }: any) {
                                     "Accept": "application/json; odata=verbose"
                                 },
                                 success: function (data) {
+                                    
+            if (data != undefined) {
+                data.d.results.forEach( function (item:any) {
+                    if (item.ItemType == 'Question')
+                        AllQuestion.unshift(item);
+                    else if (item.ItemType == 'Help')
+                        AllHelp.unshift(item);
+                })
+            }
                                     responsen = responsen.concat(data.d.results);
                                     if (data.d.__next) {
                                         urln = data.d.__next;
-                                    } else SetFolderData(responsen);
-                                    // console.log(responsen);
+                                    } else setquestionandhelp(responsen);
+                                    // console.log("Data of question help"+responsen);
                                 },
                                 error: function (error) {
                                     console.log(error);
                                     // error handler code goes here
                                 }
                             });
+                        
                         }
+
                         // console.log(folderId)
                     })
                     if (data.d.__next) {
@@ -143,6 +199,9 @@ function Portfolio({ ID }: any) {
     },
         []);
 
+
+         
+    
     // Get All User
      
     const getTaskUser=async()=>{
@@ -307,6 +366,8 @@ function Portfolio({ ID }: any) {
     
     setShowBlock(false)
   }
+
+
     return (
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
             {/* breadcrumb & title */}
@@ -369,7 +430,7 @@ function Portfolio({ ID }: any) {
 
 {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type=='Feature'&& 
                                 <>
-                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
+                                     <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{item.Title}</a>   <span style={{paddingLeft:"3%"}}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /> 
                   
                                      </span>
                                   </>   
@@ -604,6 +665,45 @@ function Portfolio({ ID }: any) {
                                                 </div>
                                             </div>
                                         } </>)}
+
+                                        {/* Question description */}
+                                {AllQuestion != undefined && AllQuestion.length != 0 && data.map(item =>
+                                    <>
+                                           
+                                           
+                                            <div className="card shadow-none  mb-2">
+                                            
+                                              <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Question  Description</span></button></div>
+                                            
+                                           
+                                                       
+                                                
+                                                        {item.showQues &&
+                                                        <>
+                                                        {AllQuestion.map(item =>
+                                                <div id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  {item.Title}</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.showQues &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                
+                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
+                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                    </p>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            
+                                                )}
+                                                </>
+                                                    }</div>
+                                                    </>
+                                              )} 
+
                                 {/* Background */}
                                 {data.map(item =>
                                     <>
@@ -652,6 +752,24 @@ function Portfolio({ ID }: any) {
                                                         {item.showj &&
                                                             <div className="accordion-body pt-1" id="testDiv1">
                                                                 <p className="m-0" dangerouslySetInnerHTML={{ __html: item.ValueAdded }}></p>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }</>)}
+                                        {/* Help Information Help_x0020_Information */}
+                                        {data.map(item =>
+                                    <>
+                                        {item.Help_x0020_Information !== null &&
+                                            <div className="card shadow-none mb-2">
+                                                <div className="accordion-item border-0" id="t_draggable1">
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen7(item)}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="sign">{item.showhelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Help Information</span></button></div>
+                                                    <div className="accordion-collapse collapse show"  >
+                                                        {item.showhelp &&
+                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Help_x0020_Information }}></p>
                                                             </div>
                                                         }
                                                     </div>
