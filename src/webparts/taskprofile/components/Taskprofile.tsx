@@ -301,7 +301,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    
     });
   }
- 
+
   private sortAlphaNumericAscending = (a:any, b:any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
 
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
@@ -383,7 +383,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
  
   private async GetSmartMetaData(ClientCategory:any,ClientTime:any) {
      let array2:any=[];
-     if(ClientTime==null||ClientTimeArray==undefined){
+     if((ClientTime==null||ClientTimeArray==undefined)&&this.count==0){
      var siteComp :any= {};
       siteComp.SiteName=this.state.listName,
       siteComp.ClienTimeDescription = 100,
@@ -614,11 +614,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.GetResult();
   }
   private CallBackSumSmartTime(item: any) {
-  if(item.toString().includes('0.0')){
-    smartTime = item*10;
-  }else{
+ 
     smartTime = item
-  }
+ 
  
   }
   private CallBackTimesheet() {

@@ -17,6 +17,18 @@ const CommentBoxComponent = (commentData: any) => {
             let temp = commentData.data;
             data.push(temp[0])
             Array.push(temp[0])
+        } else {
+            const object = {
+                Completed: "",
+                Title: "",
+                text: "",
+                SeeAbove: '',
+                Phone: '',
+                LowImportance: '',
+                HighImportance: ''
+            };
+            data.push(object);
+            Array.push(object)
         }
         setCommentArray(data);
     }, [])
@@ -30,6 +42,9 @@ const CommentBoxComponent = (commentData: any) => {
             copy[id] = obj;
             setCommentArray(copy);
             Array = copy;
+        }
+        if(e.target.matches("Editor")){
+            let data = e.target.value;
         }
         setTimeout(() => {
             CallBack(Array);
@@ -105,7 +120,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             value={obj.HighImportance} className="form-check-input mx-1"
                                         />
                                         <label>
-                                            High Importance 
+                                            High Importance
                                         </label>
                                     </span>
                                     <span> | </span>
@@ -113,14 +128,14 @@ const CommentBoxComponent = (commentData: any) => {
                                         <input type="checkbox" id="" className="form-check-input mx-1"
                                             name='Completed' checked={obj.Completed} value={obj.Completed} />
                                         <label>
-                                             Mark As Completed
+                                            Mark As Completed
                                         </label>
                                     </span>
                                     <span> | </span>
                                     <span className="mx-1">
-                                        <span className="hreflink" style={{color:"#000066"}} onClick={() => postBtnHandle(i)}>Add Comment </span>
+                                        <span className="hreflink" style={{ color: "#000066" }} onClick={() => postBtnHandle(i)}>Add Comment </span>
                                     </span>
-                                  
+
                                 </div>
                                 <div className="d-flex">
                                     <span className="border p-1 me-1">{i + 1}</span>

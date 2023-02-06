@@ -6,21 +6,24 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { ImPriceTags } from 'react-icons/im';
 import { Select } from "@material-ui/core";
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
+
+var Newrray: any = []
 const Picker = (item: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
-    const [select, setSelect] = React.useState([]);
+    const [select, setSelect] = React.useState('');
 
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
 
-    }
+    } 
     React.useEffect(() => {
         loadGmBHTaskUsers();
     }, [])
     const closePopupSmartTaxanomy = () => {
         //Example(item);
         setPopupSmartTaxanomy(false)
+        item.Call();
 
     }
     const saveCategories = () => {
@@ -113,18 +116,33 @@ const Picker = (item: any) => {
         });
         return flag;
     }
-    var Newrray: any = []
+    
     const selectPickerData = (item: any) => {
         Newrray.push(item)
-        // setSelect(Newrray)
+        //setSelect(Newrray)
+        showSelectedData(Newrray)
 
 
+    }
+    const showSelectedData =(itemss:any)=>{
+        var categoriesItem = '';
+        itemss.forEach(function(val:any){
+            if (val.Title != undefined) {
+                categoriesItem = categoriesItem == "" ? val.Title : categoriesItem + ';' + val.Title;
+            }
+        })
+        setSelect(categoriesItem)
     }
     function Example(callBack: any, type: any) {
         item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
         setPopupSmartTaxanomy(false)
+    }
+    const deleteSelectedCat=()=>{
+        Newrray = []
+        setSelect('')
+       
     }
     return (
         <>
@@ -190,12 +208,21 @@ const Picker = (item: any) => {
                             <div className="mb-2 col-sm-12 p-0">
                                 <input type="text" placeholder="Search here" id="txtnewsmartpicker" className="form-control  searchbox_height" />
                             </div>
-                            <div className="col-sm-12 ActivityBox" ng-show="SmartTaxonomyName==newsmarttaxnomy">
+
+                                   
+                                    <div className="col-sm-12 ActivityBox">
+                                    <span>
+                                        <a className="hreflink block" ng-click="removeSmartArray(item.Id)"> {select}
+                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={()=>deleteSelectedCat()}/></a>
+                                    </span>
+                                </div>
+                              
+                            {/* <div className="col-sm-12 ActivityBox" ng-show="SmartTaxonomyName==newsmarttaxnomy">
                                 <span>
                                     <a className="hreflink" ng-click="removeSmartArray(item.Id)"> {select}
                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"/></a>
                                 </span>
-                            </div>
+                            </div> */}
                         </div>
                         <div className='col-sm-12 categScroll'>
 
