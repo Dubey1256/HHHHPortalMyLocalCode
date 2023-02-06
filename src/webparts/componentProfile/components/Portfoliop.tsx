@@ -405,7 +405,7 @@ function Portfolio({ ID }: any) {
                                 )
                             })}
                         </ul>
-                        <span className="text-end"><a target='_blank' data-interception="off"  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
+                        <span className="text-end"><a target='_blank' data-interception="off"  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-Old.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
                     </div>
                 </div>
                 <div className='col'>
