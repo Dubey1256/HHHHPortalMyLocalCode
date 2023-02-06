@@ -672,7 +672,7 @@ function Portfolio({ ID }: any) {
                                             <>
 
 
-                                                <div className="card shadow-none  mb-2">
+                                                <div className="card shadow-none Qapannel  mb-2">
 
                                                     <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                         <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Question  Description</span></button></div>
@@ -682,8 +682,9 @@ function Portfolio({ ID }: any) {
 
                                                     {item.showQues &&
                                                         <>
+                                                       <div className='px-2 my-2'>
                                                             {AllQuestion.map(item =>
-                                                                <div id="t_draggable1">
+                                                                <div id="t_draggable1" className='mb-2'>
                                                                     <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
                                                                         <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  {item.Title}</span></button></div>
                                                                     <div className="accordion-collapse collapse show"  >
@@ -700,6 +701,7 @@ function Portfolio({ ID }: any) {
                                                                 </div>
 
                                                             )}
+                                                            </div>
                                                         </>
                                                     }</div>
                                             </>
@@ -832,6 +834,8 @@ function Portfolio({ ID }: any) {
                                                             <ul>
                                                                 {myarray1.map((items: any) =>
                                                                     <li className="dropdown-item">
+                                                                        {items.Title != 'Gender'&&
+                                                                        <>
                                                                         <span>
                                                                             <img style={{ width: "22px" }} title={items.Title} src={items.SiteImages} data-themekey="#" />
                                                                         </span>
@@ -927,6 +931,7 @@ function Portfolio({ ID }: any) {
                                                                                 }) : ""}
                                                                             </span>
                                                                         }
+                                                                        </>}
                                                                     </li>
                                                                 )}
                                                             </ul>
