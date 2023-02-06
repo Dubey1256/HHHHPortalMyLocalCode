@@ -11,10 +11,12 @@ import CommentCard from '../../../globalComponents/Comments/CommentCard';
 
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
+import * as globalCommon from '../../../globalComponents/globalCommon'
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import RelevantDocuments from './RelevantDocuments'
+import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
 var smartTime: Number = 0                                   ;
@@ -35,7 +37,7 @@ export interface ITaskprofileState {
   showPopup: any;
   maincollection: any;
   SharewebTimeComponent: any;
-  
+  isopenversionHistory:boolean;
   smarttimefunction: boolean;
 }
 
@@ -65,7 +67,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       updateComment: false,
       showComposition: true,
       isOpenEditPopup: false,
-  
+      isopenversionHistory:false,
       isTimeEntry: false,
       showPopup: 'none',
       maincollection: [],
@@ -197,7 +199,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "DueDate","AssignedTo/Id","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "DueDate","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("Team_x0020_Members","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
 
@@ -205,6 +207,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     taskDetails["siteType"] = this.state.listName;
     taskDetails["siteUrl"] = this.props.siteUrl;
     console.log(taskDetails);
+    taskDetails.TaskId= globalCommon.getTaskId(taskDetails);
     var category=""
 
     taskDetails["SharewebCategories"].map((item:any,index:any)=>{
@@ -256,7 +259,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       siteType: taskDetails["siteType"],
       listName: taskDetails["listName"],
       siteUrl: taskDetails["siteUrl"],
-      TaskId: "T" + taskDetails["ID"],
+      TaskId: taskDetails["TaskId"],
       Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"],
       Categories: taskDetails["Categories"],
@@ -366,7 +369,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .expand('AssingedToUser')
       .get();
       taskUsers.map((item:any,index:any)=>{
-        if(this.props.userDisplayName===item.Title&&item.Company=="Smalsus"){
+        if(this.props.Context._pageContext._user.loginName===item.Email&&item.Company=="Smalsus"){
          this.backGroundComment=true;
         }
       })
@@ -598,7 +601,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     });
 
   }
-
+ private openVersionHistory(){
+  
+  this.setState({
+    isopenversionHistory: true
+  })
+ }
   private OpenEditPopUp() {
     this.setState({
       isOpenEditPopup: true
@@ -1292,8 +1300,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </div>
                       <div>Last modified <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
                       </div>
+                      <div> {this.state.itemID?<VersionHistoryPopup taskId={this.state.itemID}listId={this.state.Result.listId} isOpen={this.state.isopenversionHistory}/>:''}</div>
                     </div>
+                   
+                  
                   }
+              
 
                 </div>
 
@@ -1320,7 +1332,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
           </div>
         </div>
-
+       
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} Call={() => { this.CallBack() }} /> : ''}
         {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''}
       

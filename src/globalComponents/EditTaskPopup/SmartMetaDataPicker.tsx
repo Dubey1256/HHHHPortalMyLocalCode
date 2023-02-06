@@ -131,13 +131,17 @@ const Picker = (item: any) => {
     const showSelectedData =(itemss:any)=>{
         var categoriesItem:any = []
         itemss.forEach(function(val:any){
+           
             if (val.Title != undefined) {
+                (!isItemExists(itemss,val.Id))
                 categoriesItem.push(val);
             }
         })
         setSelect(categoriesItem)
     }
     function Example(callBack: any, type: any) {
+        Newrray = []
+        setSelect([])
         item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {

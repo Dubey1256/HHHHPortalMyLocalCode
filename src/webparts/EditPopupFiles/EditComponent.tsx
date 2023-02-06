@@ -54,6 +54,7 @@ function EditInstitution(item: any) {
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [TeamConfig, setTeamConfig] = React.useState()
     const [date, setDate] = React.useState(undefined);
+    const [siteDetails, setsiteDetails] = React.useState([]);
     const [checkedCat, setcheckedCat] = React.useState(false);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [Startdate, setStartdate] = React.useState(undefined);
@@ -118,7 +119,7 @@ function EditInstitution(item: any) {
                     CategoriesData.push(itenn)
                 })
                
-                Backupdata = CategoriesData
+              //  Backupdata = CategoriesData
                 setCategoriesData(CategoriesData)
                 //item.props.smartCategories = item1.smartCategories;
                 //  item.props.smartCategories.push(title);
@@ -133,8 +134,8 @@ function EditInstitution(item: any) {
                 console.log("Popup component linkedComponent", item1.linkedComponent)
             }
         }
-        if (Backupdata != undefined){
-          Backupdata.forEach(function(type:any){
+        if (CategoriesData != undefined){
+            CategoriesData.forEach(function(type:any){
             CheckCategory.forEach(function(val:any){
                 if(type.Id == val.Id){
                 BackupCat = type.Id
@@ -258,6 +259,7 @@ function EditInstitution(item: any) {
             item.Priority = '(1) High';
         }
     }
+   
     var getMasterTaskListTasks = async function () {
         //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -328,6 +330,20 @@ function EditInstitution(item: any) {
 
                 }
             }
+            item.Sitestagging = JSON.parse(item.Sitestagging)
+            item.Sitestagging.forEach(function(site:any){
+                siteDetail.forEach(function (siteDetail:any) {
+                siteDetail.isEditableSiteDate = false;
+                if (siteDetail.Title == site.Title) {
+                    siteDetail.Date = site.Date;
+                    siteDetail.ClienTimeDescription = site.ClienTimeDescription;
+                    siteDetail.Selected = true;
+                    siteDetail.flag = true;
+
+                }
+            })
+        })
+
             item.AssignedUsers = [];
             AllUsers?.map((userData: any) => {
                 item.AssignedTo?.map((AssignedUser: any) => {
@@ -358,6 +374,17 @@ function EditInstitution(item: any) {
             }
             if (item.SharewebCategories != null) {
                 setCategoriesData(item.SharewebCategories);
+            }
+            if (item.SharewebCategories != null){
+                item.SharewebCategories.forEach(function(type:any){
+                CheckCategory.forEach(function(val:any){
+                    if(type.Id == val.Id){
+                    BackupCat = type.Id
+                    setcheckedCat(true)
+                    }
+                  })
+                 
+              })
             }
             if (item.Component?.length > 0) {
                 setSmartComponentData(item.Component);
@@ -415,6 +442,8 @@ function EditInstitution(item: any) {
 
     var Item: any = '';
     const TaskItemRank: any = [];
+    const site: any = [];
+    const siteDetail: any = [];
     const GetSmartmetadata = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let smartmetaDetails = [];
@@ -423,12 +452,29 @@ function EditInstitution(item: any) {
             .getByTitle('SmartMetadata')
             .items
             //.getById(this.state.itemID)
-            .select("ID", "Title")
+            .select("ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable")
+            .expand("Parent")
             .top(4999)
-            .filter("TaxType eq 'Categories'")
             .get()
 
+
         console.log(smartmetaDetails);
+        if(smartmetaDetails != undefined){
+            smartmetaDetails.forEach(function(val:any){
+                if((val.TaxType == 'Sites')){
+                    site.push(val) 
+
+                }
+
+            })
+            site.forEach(function(val:any){
+                if((val.listId != undefined && val.Title != 'Master Tasks' &&  val.Title != 'Small Projects' && val.Title != 'Foundation' && val.Title != 'Offshore Tasks' && val.Title != 'DRR' && val.Title != 'Health' && val.Title != 'Gender')){
+                  siteDetail.push(val)
+                }
+            })
+        }
+        setsiteDetails(siteDetail)
+        getMasterTaskListTasks();
     }
     // const EditLinkedServices = (items: any, title: any) => {
     //     setIsComponentPicker(true);
@@ -444,8 +490,8 @@ function EditInstitution(item: any) {
                 if (Item.siteType == 'HTTPS:') {
                     Item.siteType = 'HHHH';
                 }
-                GetSmartmetadata();
-                getMasterTaskListTasks();
+                 GetSmartmetadata();
+               
                 ListId = 'ec34b38f-0669-480a-910c-f84e92e58adf';
                 CurrentSiteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/';
                 TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);

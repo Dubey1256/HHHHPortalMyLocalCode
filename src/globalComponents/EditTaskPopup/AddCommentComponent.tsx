@@ -2,8 +2,8 @@ import * as React from "react";
 import { useState, useEffect } from 'react';
 import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
-import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-import { SystemUpdateTwoTone } from "@material-ui/icons";
+import { Panel, PanelType } from 'office-ui-fabric-react';
+
 
 
 const AddCommentComponent = (FbData: any) => {
@@ -12,7 +12,11 @@ const AddCommentComponent = (FbData: any) => {
     const [postTextInput, setPostTextInput] = useState('');
     const [currentUserData, setCurrentUserData] = useState([]);
     const [editPostPanel, setEditPostPanel] = useState(false);
-    const [updateComment, setUpdateComment] = useState('');
+    const [updateComment, setUpdateComment] = useState({
+        Title: "",
+        Index: "",
+        SubTextIndex: ""
+    });
     var Array: any = [];
     useEffect(() => {
         console.log(FeedBackData);
@@ -26,7 +30,12 @@ const AddCommentComponent = (FbData: any) => {
     }, [])
 
     const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any) => {
-        setUpdateComment(comment);
+        const commentDetails = {
+            Title: comment,
+            Index: indexOfUpdateElement,
+            SubTextIndex: indexOfSubtext
+        }
+        setUpdateComment(commentDetails);
         setEditPostPanel(true);
     }
     const clearComment = (isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any) => {
@@ -39,11 +48,9 @@ const AddCommentComponent = (FbData: any) => {
         setFeedBackArray(tempArray);
         FbData.callBack(isSubtextComment, tempArray, indexOfDeleteElement);
     }
-
     const handleChangeInput = (e: any) => {
         setPostTextInput(e.target.value)
     }
-
     const PostButtonClick = (status: any, Index: any) => {
         let txtComment = postTextInput;
         if (txtComment != '') {
@@ -54,7 +61,6 @@ const AddCommentComponent = (FbData: any) => {
                 Title: txtComment
             };
             FeedBackArray.push(temp);
-
         }
         FbData.callBack(status, FeedBackArray, Index);
     }
@@ -74,15 +80,13 @@ const AddCommentComponent = (FbData: any) => {
             }
         }
     }
-
     const editPostCloseFunction = () => {
         setEditPostPanel(false);
     }
-
-    const updateCommentFunction = () => {
-
+    const updateCommentFunction = (e:any, CommentData:any) => {
+        FeedBackArray[CommentData.Index].Title = e.target.value;
+        FbData.callBack(true, FeedBackArray, 0);
     }
-
     return (
         <div>
             <section className="previous-FeedBack-section">
@@ -92,13 +96,15 @@ const AddCommentComponent = (FbData: any) => {
                             return (
                                 <div>
                                     <div className="col d-flex add_cmnt my-1">
-                                        <div className="col-1 p-0">
-                                            <img className="AssignUserPhoto1" src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
+                                        <div className="">
+                                            <img style={{width: "40px", borderRadius: "50%",height: "40px", margin:"5px"}} src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
                                                 commentDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                         </div>
-                                        <div className="col-11 pe-0" >
+                                        <div className="col-11 pe-0 mt-2 ms-1" >
                                             <div className='d-flex justify-content-between align-items-center'>
+                                                <span className="siteColor font-weight-normal">
                                                 {commentDtl.AuthorName} - {commentDtl.Created}
+                                                </span>
                                                 <span>
                                                     <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
                                                     <a className="ps-1" onClick={() => clearComment(true, index, 0)}><img src='/_layouts/images/delete.gif'></img></a>
@@ -142,17 +148,16 @@ const AddCommentComponent = (FbData: any) => {
                 >
                     <div className="parentDiv">
                         <div style={{ width: '99%', marginTop: '2%', padding: '2%' }}>
-                            <textarea id="txtUpdateComment" rows={6} onChange={(e) => setUpdateComment(e.target.value)} style={{ width: '100%', marginLeft: '3px' }} defaultValue={updateComment ? updateComment : ''}>
+                            <textarea id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e, updateComment)} style={{ width: '100%', marginLeft: '3px' }} defaultValue={updateComment ? updateComment.Title : ''}>
                             </textarea>
                         </div>
                         <footer className="float-end">
-                            <button className="btn btnPrimary" onClick={updateCommentFunction}>
+                            <button className="btn btnPrimary" onClick={editPostCloseFunction}>
                                 Save
                             </button>
                             <button className='btn btn-default mx-1' onClick={editPostCloseFunction}>
                                 Cancel
                             </button>
-
                         </footer>
                     </div>
                 </Panel>

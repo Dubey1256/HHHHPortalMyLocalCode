@@ -151,7 +151,7 @@ function ComponentTable(SelectedProp: any) {
             map(maidataBackup, (item) => {
 
                 map(state, (select) => {
-                    if (select.Selected)
+                   // if (select.Selected)
                         switch (select.TaxType) {
                             case 'Portfolio':
                                 if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
@@ -200,26 +200,35 @@ function ComponentTable(SelectedProp: any) {
                                 break;
 
                             case 'Priority':
-                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                    item.flag = true
-                                    PriorityItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                            child.flag = true
+                                // if (item.Priority != null && item.Priority_x0020_Rank == select.Title) {
+                                //    item.flag = true
+                                //     PriorityItems.push(item);
+                                // }
+                                if(item.Priority != null){
+                                  
+                                        if(item.Priority == select.Title){
                                             PriorityItems.push(item);
                                         }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                                    child.flag = true
-                                                    PriorityItems.push(item);
-                                                }
-                                            })
-                                        }
-                                    })
+                                  
                                 }
+                                // if (item.childs != undefined && item.childs.length > 0) {
+                                //     map(item.childs, (child) => {
+                                //         if (child.Priority_x0020_Rank != null && child.Priority_x0020_Rank == select.Title) {
+                                //             child.flag = true
+                                //             PriorityItems.push(item);
+                                //         }
+                                //         if (child.childs != undefined && child.childs.length > 0) {
+                                //             map(child.childs, (subchild) => {
+                                //                 if (subchild.Priority_x0020_Rank != null && subchild.Priority_x0020_Rank == select.Title) {
+                                //                     child.flag = true
+                                //                     PriorityItems.push(item);
+                                //                 }
+                                //             })
+                                //         } 
+                                //     })
+                                   // setData(PriorityItems)
+                               // }
+                                
                                 break;
 
                             case 'Sites':
@@ -275,7 +284,7 @@ function ComponentTable(SelectedProp: any) {
 
         }
         if (state.length > 0)
-            setData(CategoryItems)
+            setData(PriorityItems)
 
 
     }
@@ -1752,13 +1761,13 @@ function ComponentTable(SelectedProp: any) {
 
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
-                    <h2 className="alignmentitle ng-binding d-flex heading ps-0">
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
+                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div>Service Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div>Event Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio-Old.aspx"} >Old Event Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div>Component Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a></div>}
                     </h2>
                 </div>
                 <div className="bg-wihite border p-2">
@@ -2162,7 +2171,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
                                                                                     <td style={{ width: "22%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
@@ -2261,7 +2270,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                             <td style={{ width: "22%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -2368,7 +2377,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -2473,7 +2482,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                                         <td style={{ width: "22%" }}>
                                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
