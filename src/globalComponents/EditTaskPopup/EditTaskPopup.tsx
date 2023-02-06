@@ -139,6 +139,7 @@ const EditTaskPopup = (Items: any) => {
         }
 
     }, []);
+
     function EditComponentCallback() {
         Items.Items.Call();
     }
@@ -383,11 +384,101 @@ const EditTaskPopup = (Items: any) => {
             console.log("Error :", error.message);
         }
     }
-    const PercentCompleted = (StatusData: any) => {
+   const PercentCompleted = (StatusData: any) => {
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
         setPercentCompleteCheck(false);
+        if (StatusData.value == 80) {
+            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
+            } else {
+                setWorkingMember(143);
+            }
+            EditData.IsTodaysTask = false;
+            EditData.CompletedDate = undefined;
+        }
+
+        if (StatusData.value == 5) {
+            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+            } else {
+                setWorkingMember(156);
+            }
+            EditData.CompletedDate = undefined;
+
+        }
+        if (StatusData.value == 10) {
+            EditData.CompletedDate = undefined;
+            if (EditData.StartDate == undefined) {
+                EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+            }
+            EditData.IsTodaysTask = true;
+            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+            } else {
+                setWorkingMember(156);
+            }
+        }
+        if (StatusData.value == 70) {
+            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+            } else {
+                setWorkingMember(156);
+            }
+        }
+
+        if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
+            setWorkingMember(9);
+        }
+        if (StatusData.value == 90) {
+            if (EditData.siteType == 'Offshore Tasks') {
+                setWorkingMember(36);
+            } else {
+                setWorkingMember(42);
+            }
+            EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
+        }
+
+    }
+
+    const setWorkingMember = (statusId: any) => {
+        taskUsers.map((dataTask: any) => {
+            if (dataTask.AssingedToUserId == statusId) {
+                let tempArray: any = [];
+                tempArray.push(dataTask)
+                EditData.TaskAssignedUsers = tempArray;
+                let updateUserArray: any = [];
+                updateUserArray.push(tempArray[0].AssingedToUser)
+                setTaskAssignedTo(updateUserArray);
+            }
+        })
+    }
+
+    const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
+        filterArray.map((TeamItems: any) => {
+            taskUsers?.map((TaskUserData: any) => {
+                if (TeamItems.Id == TaskUserData.AssingedToUserId) {
+                    if (TaskUserData.TimeCategory == filterType) {
+                        let tempArray: any = [];
+                        tempArray.push(TaskUserData)
+                        EditData.TaskAssignedUsers = tempArray;
+                        let updateUserArray1: any = [];
+                        updateUserArray1.push(tempArray[0].AssingedToUser)
+                        setTaskAssignedTo(updateUserArray1);
+                    }
+                    else {
+                        setWorkingMember(StatusID);
+                    }
+                }
+            })
+        })
     }
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)

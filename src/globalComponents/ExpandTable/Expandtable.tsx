@@ -66,7 +66,7 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("fifty")}
                   // props.prop("fifty")}
-                  className="card p-5 text-light fw-bold col-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"
+                  className="card p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"
                   id={props.prop1 == "fifty" ? "boxtrue" : "boxfalse"}
                 >
                   50%
@@ -75,7 +75,7 @@ const ExpndTable = (props: any) => {
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => showExpended("sixty")}
-                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
+                  className="card p-5 text-light fw-bold expandtiles  rounded-0  m-2 d-flex align-items-center justify-content-center"
                   id={props.prop1 == "sixty" ? "boxtrue" : "boxfalse"}
                 >
                   60%

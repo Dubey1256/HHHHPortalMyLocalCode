@@ -151,7 +151,7 @@ function ComponentTable(SelectedProp: any) {
             map(maidataBackup, (item) => {
 
                 map(state, (select) => {
-                    if (select.Selected)
+                   // if (select.Selected)
                         switch (select.TaxType) {
                             case 'Portfolio':
                                 if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
@@ -200,26 +200,35 @@ function ComponentTable(SelectedProp: any) {
                                 break;
 
                             case 'Priority':
-                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                    item.flag = true
-                                    PriorityItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                            child.flag = true
+                                // if (item.Priority != null && item.Priority_x0020_Rank == select.Title) {
+                                //    item.flag = true
+                                //     PriorityItems.push(item);
+                                // }
+                                if(item.Priority != null){
+                                  
+                                        if(item.Priority == select.Title){
                                             PriorityItems.push(item);
                                         }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                                    child.flag = true
-                                                    PriorityItems.push(item);
-                                                }
-                                            })
-                                        }
-                                    })
+                                  
                                 }
+                                // if (item.childs != undefined && item.childs.length > 0) {
+                                //     map(item.childs, (child) => {
+                                //         if (child.Priority_x0020_Rank != null && child.Priority_x0020_Rank == select.Title) {
+                                //             child.flag = true
+                                //             PriorityItems.push(item);
+                                //         }
+                                //         if (child.childs != undefined && child.childs.length > 0) {
+                                //             map(child.childs, (subchild) => {
+                                //                 if (subchild.Priority_x0020_Rank != null && subchild.Priority_x0020_Rank == select.Title) {
+                                //                     child.flag = true
+                                //                     PriorityItems.push(item);
+                                //                 }
+                                //             })
+                                //         } 
+                                //     })
+                                   // setData(PriorityItems)
+                               // }
+                                
                                 break;
 
                             case 'Sites':
@@ -275,7 +284,7 @@ function ComponentTable(SelectedProp: any) {
 
         }
         if (state.length > 0)
-            setData(CategoryItems)
+            setData(PriorityItems)
 
 
     }
