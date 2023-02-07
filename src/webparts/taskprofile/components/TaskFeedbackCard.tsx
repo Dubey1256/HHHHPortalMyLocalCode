@@ -1,8 +1,10 @@
 import * as React from 'react';
 //import styles from './Taskprofile.module.scss';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
-import * as moment from 'moment';
+// import * as moment from 'moment';
 import {Modal} from '@fluentui/react';
+import * as moment from "moment-timezone";
+// import * as moment from "moment-timezone";
 var sunchildcomment:any;
 export interface ITaskFeedbackProps {
     fullfeedback: any;
@@ -27,6 +29,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
  
   constructor(props: ITaskFeedbackProps) {
     super(props);
+    
+   
     this.state = {
         showcomment : 'none',
         showcomment_subtext : 'none',
@@ -78,7 +82,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         // Created: new Date().toLocaleString('default',{ month: 'short',day:'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        Created:moment(date).format("DD MMM YYYY HH:mm"),
+        Created:moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Title:txtComment
       };
       //Add object in feedback
@@ -108,8 +112,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         // Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        Created: moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
-        Title:txtComment
+        Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
       };
       //Add object in feedback
       
@@ -174,7 +177,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       let temp = {
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
-        Created:moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm A'),
+        Created:moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Title:txtComment
       };
            if(this.state.updateCommentText.isSubtextComment){
@@ -236,7 +239,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             </div>
 
             <div className="border p-2 full-width text-break">
-              <span  dangerouslySetInnerHTML={{ __html: this.state.fbData['Title'] }}></span>
+           
+              <span  dangerouslySetInnerHTML={{ __html: this.state.fbData.Title}}></span>
               <div className="col">
               {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments'].map( (fbComment:any,k:any)=> {
                 return <div className="col d-flex add_cmnt my-1">
@@ -289,8 +293,18 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
               }
               </li>
               <li>
-              {fbSubData.Completed != null && fbSubData.Completed &&
+              {fbSubData.HighImportance != null && fbSubData.HighImportance &&
                 <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+              }
+              </li>
+              <li>
+              {fbSubData.LowImportance != null && fbSubData.LowImportance &&
+                <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+              }
+              </li>
+              <li>
+              {fbSubData.Phone != null && fbSubData.Phone &&
+                <span className="ng-scope"><img className="wid10" style={{width:'10px'}} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
               }
               </li>
               </ul>

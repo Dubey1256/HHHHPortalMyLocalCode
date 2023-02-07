@@ -18,6 +18,8 @@ import { RiDeleteBin6Line } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
 import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
+import VersionHistoryPopup from "../../webparts/taskprofile/components/VersionHistory";
+import { version } from "react-dom";
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -1332,9 +1334,7 @@ const EditTaskPopup = (Items: any) => {
                                     <span > | </span>
                                     <a className="hreflink"> Move Task</a> |
                                     <span>
-                                        <img className="hreflink" title="Version History"
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Version_HG.png"
-                                        />
+                                       <VersionHistoryPopup taskId={EditData.Id} listId={EditData.listId} />
                                     </span>
                                 </div>
                             </div>
@@ -1378,6 +1378,7 @@ const EditTaskPopup = (Items: any) => {
                     </ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} Call={Call}></Picker>}
                     {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call}></LinkedComponent>}
+               
                 </div>
             </Panel>
         </>

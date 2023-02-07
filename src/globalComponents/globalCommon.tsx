@@ -2,12 +2,14 @@ import * as React from "react";
 import { useEffect, useState } from 'react';
 import { Web } from "sp-pnp-js";
 import * as moment from 'moment';
+import { GlobalConstants } from '../globalComponents/LocalCommon';
+
 
 export const getData = async (url:any,listId:any,query:any) => {
     const web = new Web(url);
     let result;
     try {
-        result = (await web.lists.getById(listId).items.select(query).get());
+        result = (await web.lists.getById(listId).items.select(query).getAll());
     }
     catch (error) {
         return Promise.reject(error);
@@ -185,7 +187,7 @@ export const getTaskId=(item: any)=> {
 }
 
 export const loadTaskUsers= async ()=> {
-    let taskUser  = undefined;
+    let taskUser;
     try {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         taskUser = await web.lists
@@ -199,4 +201,35 @@ export const loadTaskUsers= async ()=> {
         return Promise.reject(error);
     }
     return taskUser;
+}
+export const parseJSON = (jsonItem: any) => {
+    var json = [];
+    try {
+        json = JSON.parse(jsonItem);
+    } catch (err) {
+        console.log(err);
+    }
+    return json;
+};
+export const  GetIconImageUrl =(listName: any, listUrl: any, Item: any) =>{
+    var IconUrl = '';
+    if (listName != undefined) {
+        let TaskListsConfiguration = parseJSON(GlobalConstants.LIST_CONFIGURATIONS_TASKS);
+        let TaskListItem = TaskListsConfiguration.filter(function (filterItem: any) {
+            let SiteRelativeUrl = filterItem.siteUrl;
+            return (filterItem.Title.toLowerCase() == listName.toLowerCase() && SiteRelativeUrl.toLowerCase() == (listUrl).toLowerCase());
+        });
+        if (TaskListItem.length > 0) {
+            if (Item == undefined) {
+                IconUrl = TaskListItem[0].ImageUrl;
+            }
+            else if (TaskListItem[0].ImageInformation != undefined) {
+                var IconUrlItem = (TaskListItem[0].ImageInformation.filter(function (index: any, filterItem: any) { return filterItem.ItemType == Item.Item_x0020_Type && filterItem.PortfolioType == Item.Portfolio_x0020_Type }));
+                if (IconUrlItem != undefined && IconUrlItem.length > 0) {
+                    IconUrl = IconUrlItem[0].ImageUrl;
+                }
+            }
+        }
+    }
+    return IconUrl;
 }
