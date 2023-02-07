@@ -10,12 +10,17 @@ import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { Item } from '@pnp/sp/items';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-var AllMetadata: any = []
-var siteConfig: any = []
-var SitesTypes: any = []
-var AllComponents: any = []
-var relevantTask: any = [];
-function CreateTaskComponent() {
+let AllMetadata: any = []
+let siteConfig: any = []
+let AssignedToUsers: any = []
+let SitesTypes: any = []
+let AllComponents: any = []
+let taskUsers: any = [];
+let loggedInUser: any;
+let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
+let Isapproval;
+function CreateTaskComponent(props: any) {
+
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [siteType, setSiteType] = React.useState([])
     const [TaskTypes, setTaskTypes] = React.useState([])
@@ -33,24 +38,25 @@ function CreateTaskComponent() {
         dueDate: false,
 
     });
-    const [taskUsers, setTaskuser] = React.useState([]);
+    const [relevantTasks, setRelevantTasks]: any = React.useState([]);
     const [isActiveCategory, setIsActiveCategory] = React.useState(false);
     // const [isActiveCategory, setIsActiveCategory] = React.useState({});
     const [activeCategory, setActiveCategory] = React.useState([]);
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
-    const [taskUrl, setTaskUrl] = React.useState('');
+    // const [taskUrl, setTaskUrl] = React.useState('');
     const [burgerMenuTaskDetails, setBurgerMenuTaskDetails] = React.useState({
         ComponentID: undefined,
         Siteurl: undefined,
     });
-    const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: '', dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
+    const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     React.useEffect(() => {
+        LoadTaskUsers();
         GetComponents();
         GetSmartMetadata();
-        LoadTaskUsers();
-
-
     }, [])
+    React.useEffect(() => {
+        LoadTaskUsers();
+    }, [relevantTasks])
 
     const GetComponents = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -160,9 +166,10 @@ function CreateTaskComponent() {
     }
     const fetchBurgerMenuDetails = async () => {
         const params = new URLSearchParams(window.location.search);
+
         AllComponents = await GetComponents();
         let paramSiteUrl = params.get("Siteurl");
-        let paramComponentId = params.get('Component');
+        let paramComponentId = params.get('ComponentID');
         let paramType = params.get('Type');
         let paramServiceId = params.get('ServiceID');
         let previousTaggedTaskToComp: any[] = []
@@ -176,6 +183,13 @@ function CreateTaskComponent() {
             ComponentID: paramComponentId,
             Siteurl: paramSiteUrl
         })
+        if (paramSiteUrl != undefined) {
+            let baseUrl = window.location.href;
+            if (baseUrl.indexOf('CreateTaskSpfx') > -1) {
+                let QueryString = baseUrl.split("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTaskSpfx.aspx")[1]
+                oldTaskIrl = oldTaskIrl + QueryString
+            }
+        }
         if (paramComponentId != undefined) {
             let setComponent: any = [];
             AllComponents.map((item: any) => {
@@ -190,7 +204,7 @@ function CreateTaskComponent() {
                 let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD/MM/YYYY');
                 saveValue.taskName = setTaskTitle;
                 saveValue.taskUrl = paramSiteUrl;
-                setTaskUrl(paramSiteUrl);
+                //  setTaskUrl(paramSiteUrl);
                 setSave(saveValue);
                 let e = {
                     target: {
@@ -199,63 +213,94 @@ function CreateTaskComponent() {
                 }
                 UrlPasteTitle(e);
             }
+
             let query = "Categories,AssignedTo/Title,AssignedTo/Name,Component/Id,Priority_x0020_Rank,SharewebTaskType/Id,SharewebTaskType/Title,Component/Title,Services/Id,Services/Title,AssignedTo/Id,AttachmentFiles/FileName,component_x0020_link/Url,FileLeafRef,SharewebTaskLevel1No,SharewebTaskLevel2No,Title,Id,Priority_x0020_Rank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=AssignedTo,AttachmentFiles,SharewebTaskType,Component,Services,Author,Editor&$orderby=Modified desc&$filter=Component/Id eq  '" + paramComponentId + "'"
-            loadRelevantTask(query);
+            loadRelevantTask(query)
         }
 
 
     }
     const loadRelevantTask = async (query: any) => {
-        let SiteTaskTaggedToComp: any[] = []
-        SitesTypes.map(async (site: any) => {
-            await globalCommon.getData(site?.siteUrl?.Url, site?.listId, query).then((data: any) => {
-                data.map((item: any) => {
+        try {
+            let SiteTaskTaggedToComp: any[] = []
+            let count = 0
+            SitesTypes.map(async (site: any) => {
+                await globalCommon.getData(site?.siteUrl?.Url, site?.listId, query).then((data: any) => {
+                    data.map((item: any) => {
 
-                    item.siteType = site.siteName;
-                    item.TaskName = item.Title;
-                    item.Author = item.Author.Title;
-                    item.Editor = item.Editor.Title;
-                    item.PercentComplete = item?.PercentComplete * 100;
-                    item.Priority = item.Priority_x0020_Rank * 1;
-                    if (item.Categories == null)
-                        item.Categories = '';
-                    //type.Priority = type.Priority.split('')[1];
-                    //type.Component = type.Component.results[0].Title,
-                    item.ComponentTitle = '';
-                    if (item?.Component?.results?.length > 0) {
-                        item.Component.results.map((comResult: any) => {
-                            item.ComponentTitle = comResult.Title + ';' + item.ComponentTitle;
+                        item.siteCover = site?.Item_x005F_x0020_Cover?.Url
+                        item.siteType = site.siteName;
+                        item.TaskName = item.Title;
+                        taskUsers.map((user: any) => {
+                            if (user?.AssingedToUser?.Id == item.Author.Id) {
+                                item.AuthorCover = user?.Item_x0020_Cover?.Url
+                            }
+                            if (user?.AssingedToUser?.Id == item.Editor.Id) {
+                                item.EditorCover = user?.Item_x0020_Cover?.Url
+                            }
+
                         })
-                    }
-                    else {
+
+                        item.Author = item.Author.Title;
+                        item.Editor = item.Editor.Title;
+                        item.PercentComplete = item?.PercentComplete * 100;
+                        item.Priority = item.Priority_x0020_Rank * 1;
+                        if (item.Categories == null)
+                            item.Categories = '';
+                        //type.Priority = type.Priority.split('')[1];
+                        //type.Component = type.Component.results[0].Title,
                         item.ComponentTitle = '';
-                    }
+                        if (item?.Component?.results?.length > 0) {
+                            item.Component.results.map((comResult: any) => {
+                                item.ComponentTitle = comResult.Title + ';' + item.ComponentTitle;
+                            })
+                        }
+                        else {
+                            item.ComponentTitle = '';
+                        }
 
-                    if (item?.Component?.results?.length > 0) {
-                        item['Portfoliotype'] = 'Component';
-                    }
-                    if (item?.Services?.results?.length > 0) {
-                        item['Portfoliotype'] = 'Service';
-                    }
-                    if (item?.Component?.results?.length > 0 && item?.Services?.results?.length > 0) {
-                        item['Portfoliotype'] = 'Component';
-                    }
+                        if (item?.Component?.results?.length > 0) {
+                            item['Portfoliotype'] = 'Component';
+                        }
+                        if (item?.Services?.results?.length > 0) {
+                            item['Portfoliotype'] = 'Service';
+                        }
+                        if (item?.Component?.results?.length > 0 && item?.Services?.results?.length > 0) {
+                            item['Portfoliotype'] = 'Component';
+                        }
 
-                    item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
+                        item.Shareweb_x0020_ID = globalCommon.getTaskId(item);
 
-                    item.TaskDueDate = moment(item?.DueDate).format('DD/MM/YYYY');
-                    if (item.TaskDueDate == "Invalid date") {
-                        item.TaskDueDate = '';
-                    }
-                    item.CreateDate = moment(item?.Created).format('DD/MM/YYYY');
-                    item.DateModified = item.Modified;
-                    item.ModifiedDate = moment(item?.Modified).format('DD/MM/YYYY');
-                    if (item.siteType != 'Offshore Tasks') {
-                        relevantTask.push(item);
-                    }
+                        item.TaskDueDate = moment(item?.DueDate).format('YYYY-MM-DD');
+                        if (item.TaskDueDate == "Invalid date" || item.TaskDueDate == undefined) {
+                            item.TaskDueDate = '';
+                        }
+                        item.CreateDate = moment(item?.Created).format('YYYY-MM-DD');
+                        item.CreatedSearch = item.CreateDate + '' + item.Author;
+                        item.DateModified = item.Modified;
+                        item.ModifiedDate = moment(item?.Modified).format('YYYY-MM-DD');
+                        item.ModifiedSearch = item.ModifiedDate + '' + item.Editor;
+                        if (item.siteType != 'Offshore Tasks') {
+                            try {
+                                SiteTaskTaggedToComp.push(item);
+                            } catch (error) {
+                                console.log(error.message)
+                            }
+                        }
+                    })
                 })
+                count++;
+                if (count == SitesTypes.length - 1) {
+                    console.log("inside Set Task")
+                    setRelevantTasks(SiteTaskTaggedToComp)
+                }
+
+
             })
-        })
+        } catch (error) {
+            console.log(error.message)
+        }
+
 
     }
     const GetSmartMetadata = async () => {
@@ -314,8 +359,35 @@ function CreateTaskComponent() {
     }
 
     let LoadTaskUsers = async () => {
-        let AllTaskUsers = globalCommon.loadTaskUsers();
-        setTaskuser(await AllTaskUsers);
+        let AllTaskUsers = await globalCommon.loadTaskUsers();
+        taskUsers = AllTaskUsers;
+        let UserIds;
+        AllTaskUsers.map((item: any) => {
+            if (props?.pageContext?.user?.loginName == item.Email || props?.pageContext?.user?.loginName == item?.AssingedToUser?.EMail) {
+                loggedInUser = item;
+            }
+        })
+        let CurrentUserId = loggedInUser.AssingedToUserId;
+        AllTaskUsers.map((user: any) => {
+            if (user.IsApprovalMail == 0)
+                user.IsApprovalMail = undefined;
+            if (user.AssingedToUserId == CurrentUserId && (user.IsApprovalMail == undefined || user.IsApprovalMail == null || user.IsApprovalMail == '')) {
+                Isapproval = 'decide case by case';
+            }
+            if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all') {
+                Isapproval = 'approve all';
+            }
+            if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all but selected items') {
+                Isapproval = 'approve all but selected items';
+                user.SelectedCategoriesItems = []
+                if (user.CategoriesItemsJson != undefined && user.CategoriesItemsJson != null && user.CategoriesItemsJson != '') {
+                    user.SelectedCategoriesItems = JSON.parse(user.CategoriesItemsJson);
+                }
+            }
+            if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'decide case by case') {
+                Isapproval = 'decide case by case';
+            }
+        })
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];
@@ -351,6 +423,11 @@ function CreateTaskComponent() {
         console.log(data)
     }
     const createTask = async () => {
+        let currentUserId = loggedInUser?.AssingedToUserId
+        var AssignedToIds: any[] = [];
+        let MailArrayTitle: any[] = [];
+        let AssignedIds: any = [];
+        let Tasks: any = []
         if (save.taskName.length <= 0) {
             alert("Please Enter The Task Name")
         } else if (save.siteType.length <= 0) {
@@ -366,7 +443,7 @@ function CreateTaskComponent() {
                         } else {
                             CategoryTitle += item.Title + ';';
                         }
-
+                        MailArrayTitle.push(item)
                     }
                 })
 
@@ -390,12 +467,28 @@ function CreateTaskComponent() {
                 })
             }
 
+            AssignedToUsers.map((user: any) => {
+                AssignedToIds.push(user.AssingedToUserId);
+            });
             if (TeamMembersIds.length > 0) {
                 TeamMembersIds.map((workingMember: any) => {
                     if (workingMember === 48 || workingMember === 49) {
                         AssignedToIds.push(workingMember);
                     }
                 })
+            }
+            let RecipientMail: any = []
+            if (MailArrayTitle != undefined && MailArrayTitle.length > 0) {
+                RecipientMail = [];
+                MailArrayTitle.map((MailName: any) => {
+                    if (MailName != 'Design') {
+                        taskUsers.map((User: any) => {
+                            if (User.Title != undefined && MailName.Title != undefined && User.Title.toLowerCase().indexOf(MailName.Title.toLowerCase()) > -1 && User.ItemType != 'Group') {
+                                RecipientMail.push(User);
+                            }
+                        });
+                    }
+                });
             }
 
             try {
@@ -418,6 +511,12 @@ function CreateTaskComponent() {
                             })
                         }
                     })
+                }
+                let CopyUrl;
+                if (save.taskUrl != undefined && save.taskUrl.length > 255) {
+                    CopyUrl = save.taskUrl
+                    save.taskUrl = save.taskUrl.slice(0, 255)
+
                 }
                 let selectedSite: any;
                 let priority: any;
@@ -444,29 +543,113 @@ function CreateTaskComponent() {
                             priority = '(3) Low';
                         }
                     }
-                    var AssignedToIds: any[] = [];
 
+                    if (smartComponentData[0]?.Id != undefined) {
 
-                    let web = new Web(selectedSite?.siteUrl?.Url);
-                    await web.lists.getById(selectedSite?.listId).items.add({
-                        Title: save.taskName,
-                        Priority_x0020_Rank: priorityRank,
-                        Priority: priority,
+                        var query = "SiteCompositionSettings,Sitestagging&$top=1&$filter=Id eq " + smartComponentData[0]?.Id;
+                        const web = new Web(GlobalConstants.SP_SITE_URL);
+                        await web.lists.getById(GlobalConstants.MASTER_TASKS_LISTID).items.select(query).get().then((data: any) => {
+                            Tasks = data.data;
+                        });
+                    }
+
+                    //Latest code for Creating Task
+
+                    var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
+                    var item = {
+                        "Title": save.taskName,         
+                        "Priority": priority,
+                        "Categories": CategoryTitle,
+                        "DueDate": save.DueDate,
+                        "Mileage": save.Mileage,
                         PercentComplete: 0,
+                        ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
+                        ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
+                        Responsible_x0020_TeamId: { "results": AssignedIds },
+                        Team_x0020_MembersId: { "results": TeamMembersIds },
+                        // SharewebComponentId: { "results": $scope.SharewebComponent },
+                        SharewebCategoriesId: { "results": sharewebCat },
+                        // LinkServiceTaskId: { "results": $scope.SaveServiceTaskItemId },
+                        "Priority_x0020_Rank": priorityRank,
+                        SiteCompositionSettings: '',
+                        AssignedToId: { "results": AssignedToIds },
+                        SharewebTaskTypeId: 2,
+                        ClientTime: '',
                         component_x0020_link: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
-                            Description: taskUrl.length > 0 ? taskUrl : null,
-                            Url: taskUrl.length > 0 ? taskUrl : null,
+                            Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
+                            Url: save.taskUrl?.length > 0 ? save.taskUrl : null,
                         },
-                        DueDate: save.DueDate,
-                        ComponentId: { "results": (selectedComponent !== undefined && selectedComponent.length > 0) ? selectedComponent : [] },
-                        Mileage: save.Mileage,
-                        ServicesId: { "results": (selectedService !== undefined && selectedService.length > 0) ? selectedService : [] },
-                        AssignedToId: { "results": AssignedToIds },
-                        SharewebCategoriesId: { "results": sharewebCat },
-                        Team_x0020_MembersId: { "results": TeamMembersIds },
+                    };
+                    if (CategoryTitle?.toLowerCase().indexOf('approval') > -1)
+                        item.PercentComplete = 0;
+                    if (AssignedIds.length > 0) {
+                        var ResponsibleTeam = AssignedIds;
+                        if (!(CategoryTitle?.toLowerCase().indexOf('bug') > -1)) {
+                            if (currentUserId == 23 || currentUserId == 41) {
+                                ResponsibleTeam.push(14);
+                            }
+                            else if (currentUserId == 27 || currentUserId == 20 || currentUserId == 17 || currentUserId == 16 || currentUserId == 42 || currentUserId == 19 || currentUserId == 44 || currentUserId == 46 || currentUserId == 45 || currentUserId == 43 || currentUserId == 47 || currentUserId == 25 || currentUserId == 54 || currentUserId == 52 || currentUserId == 28 || currentUserId == 49 || currentUserId == 48 || currentUserId == 51 || currentUserId == 50 || currentUserId == 18) {
+                                ResponsibleTeam.push(10);
+                            }
+                        }
+                        item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
+                    }
+                    else {
+                        ResponsibleTeam = [];
+                        if (!(CategoryTitle?.toLowerCase().indexOf('bug') > -1)) {
+                            if (currentUserId == 23 || currentUserId == 41) {
+                                ResponsibleTeam.push(14);
+                            }
+                            else if (currentUserId == 27 || currentUserId == 20 || currentUserId == 17 || currentUserId == 16 || currentUserId == 42 || currentUserId == 19 || currentUserId == 44 || currentUserId == 46 || currentUserId == 45 || currentUserId == 43 || currentUserId == 47 || currentUserId == 25 || currentUserId == 54 || currentUserId == 52 || currentUserId == 28 || currentUserId == 49 || currentUserId == 48 || currentUserId == 51 || currentUserId == 50 || currentUserId == 18) {
+                                ResponsibleTeam.push(10);
+                            }
+                        }
+                        item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
+                    }
+                    if (Tasks != undefined && save.siteType == 'Shareweb') {
+                        item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings;
+                        item.ClientTime = Tasks[0]?.Sitestagging;
+                    }
 
-                    }).then((data) => {
+
+
+                    //Code End
+
+                    //Old itm Code 
+                    // {
+                    //     Title: save.taskName,
+                    //     Priority_x0020_Rank: priorityRank,
+                    //     Priority: priority,
+                    //     PercentComplete: 0,
+                    //     component_x0020_link: {
+                    //         __metadata: { 'type': 'SP.FieldUrlValue' },
+                    //         Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
+                    //         Url: save.taskUrl?.length > 0 ? save.taskUrl : null,
+                    //     },
+                    //     DueDate: save.DueDate,
+                    //     ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
+                    //     Mileage: save.Mileage,
+                    //     ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
+                    //     AssignedToId: { "results": AssignedToIds },
+                    //     SharewebCategoriesId: { "results": sharewebCat },
+                    //     Team_x0020_MembersId: { "results": TeamMembersIds },
+                    // }
+                    //Code End
+                    let web = new Web(selectedSite?.siteUrl?.Url);
+                    await web.lists.getById(selectedSite?.listId).items.add(item).then((data) => {
+                        let newTitle = data?.data?.Title
+                        let CreatedTaskID=data?.data?.Id
+                        if(CategoryTitle?.indexOf('Immediate')>-1||CategoryTitle?.indexOf( "Email Notification")>-1){
+                            let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
+                            var postData = {
+                                __metadata: { 'type': 'SP.Data.ImmediateNotificationsListItem' },
+                                "Title": newTitle,
+                                "TaskId": CreatedTaskID.toString(),
+                                "Site": save.siteType
+                            };
+                            createTaskByListId(selectedSite?.siteUrl?.Url,listID,postData,save.siteType)
+                        }
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
@@ -479,17 +662,48 @@ function CreateTaskComponent() {
             }
         }
     }
-
-    const urlChange = (e: any) => {
-        setTaskUrl(e.target.value)
-        UrlPasteTitle(e)
+    var createTaskByListId = function (siteUrl:any, listId:any, postData:any, siteName:any ) {
+  
+    var currentUserId = loggedInUser.AssingedToUserId
+    if (postData.Categories != undefined && (postData.Categories.toLowerCase().indexOf('approval') > -1)) {
+       globalCommon.makePostDataForApprovalProcess(postData)
+            .then(function (Data:any) {
+                globalCommon.addData(siteUrl, listId, Data.postData)
+                    .then(function (response:any) {
+                        response.d['Author'] = { Id: currentUserId };
+                        Promise.resolve(response);
+                    },
+                        function (error:any) {
+                            Promise.reject(error);
+                        });
+            },
+                function (error:any) {
+                    Promise.reject(error);
+                });
     }
+    else {
+        globalCommon.addData(siteUrl, listId, postData)
+            .then(function (response) {
+                Promise.resolve(response);
+            },
+                function (error) {
+                    Promise.reject(error);
+                });
+    }
+    return Promise;
+};
+
+    // const urlChange = (e: any) => {
+    //    // setTaskUrl(e.target.value)
+    //     UrlPasteTitle(e)
+    // }
 
     const UrlPasteTitle = (e: any) => {
         let selectedSiteTitle = ''
         var testarray = e.target.value.split('&');
         let TestUrl = e.target.value;
-
+        let saveValue = save;
+        saveValue.taskUrl = TestUrl;
         // TestUrl = $scope.component_x0020_link;
         var item = '';
         if (TestUrl !== undefined) {
@@ -640,7 +854,8 @@ function CreateTaskComponent() {
             //if (item !== undefined && getLatestSiteName.toLowerCase() === item.toLowerCase())
             //$scope.selectedsiteMetadata(item);
         }
-        setSave({ ...save, siteType: selectedSiteTitle })
+        saveValue.siteType = selectedSiteTitle;
+        setSave(saveValue)
         if (selectedSiteTitle !== undefined) {
             setIsActive({ ...isActive, siteType: true });
         }
@@ -695,7 +910,7 @@ function CreateTaskComponent() {
 
     }
 
-    const selectSubTaskCategory = (title: undefined, Id: any, item: any) => {
+    const selectSubTaskCategory = (title: any, Id: any, item: any) => {
 
 
         let activeCategoryArray = activeCategory;
@@ -715,6 +930,36 @@ function CreateTaskComponent() {
                     setActiveTile("dueDate", "dueDate", 'Today');
                 }
             }
+            if (title == 'Feedback' || title == 'Quality Control') {
+                var flag = true;
+                taskUsers.map((User: any) => {
+                    if (User.Role == 'QA') {
+                        AssignedToUsers.filter((item: any) => item.Id != User.Id)
+                        AssignedToUsers.push(User);
+                        flag = false;
+                    }
+                });
+            }
+            if (title.indexOf('Design') > -1) {
+                var flag = true;
+                taskUsers.map((User: any) => {
+                    if (User.Role == 'Developer' && User.Title == 'Design Team') {
+                        AssignedToUsers.filter((item: any) => item.Id != User.Id)
+                        AssignedToUsers.push(User);
+                        flag = false;
+                    }
+                });
+            }
+            if (title.indexOf('Support') > -1) {
+                var flag = true;
+                taskUsers.map((User: any) => {
+                    if (User.Role == 'Developer' && User.Title == 'Support') {
+                        AssignedToUsers.filter((item: any) => item.Id != User.Id)
+                        AssignedToUsers.push(User);
+                        flag = false;
+                    }
+                });
+            }
             item.ActiveTile = !item.ActiveTile;
             activeCategoryArray.push(title);
             SharewebCategories.push(Id)
@@ -726,21 +971,50 @@ function CreateTaskComponent() {
     }
 
     const columns: GridColDef[] = [
+        { field: 'siteType', headerName: 'Site', width: 60, renderCell: (params) => <img className="client-icons" src={params?.row?.siteCover} /> },
         { field: 'Shareweb_x0020_ID', headerName: 'Task Id', width: 100 },
-        { field: 'Title', headerName: 'Title', width: 250 },
+        {
+            field: 'Title', headerName: 'Title', width: 250, renderCell: (params) => {
+                return (
+                    <div>
+                        <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
+                    </div>
+                )
+            }
+        },
         { field: 'TaskDueDate', headerName: 'Due Date', width: 120 },
-        { field: 'CreateDate', headerName: 'Created', width: 120 },
-        { field: 'ModifiedDate', headerName: 'Modified', width: 120 },
+        {
+            field: 'Created', headerName: 'Created', width: 120, renderCell: (params) => {
+                return (
+                    <div>
+                        {params?.row?.AuthorCover != undefined ? <img className="client-icons" title={params?.row?.Author} src={params?.row?.AuthorCover} alt='' /> : ''}
+
+                        {params.row.CreateDate}
+                    </div>
+                )
+            }
+        },
+        {
+            field: 'Modified', headerName: 'Modified', width: 120, renderCell: (params) => {
+                return (
+                    <div>
+                        {params?.row?.EditorCover != undefined ? <img className="client-icons" title={params?.row?.Editor} src={params?.row?.EditorCover} alt='' /> : ''}
+
+                        {params.row.ModifiedDate}
+                    </div>
+                )
+            }
+        },
     ];
 
     return (
         <> <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='Create-taskpage'>
                 <div className='row'>
-                    <div className='col-sm-12 p-0'>
-                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a target='_blank' href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx" style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
+                    <div className='col-sm-12'>
+                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a data-interception="off" target='_blank' href={oldTaskIrl} style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
                     </div>
-                    <div className='col-sm-6 ps-0'>
+                    <div className='col-sm-6'>
                         <label className='full-width'>Task Name</label>
                         <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => setSave({ ...save, taskName: e.target.value })}></input>
                     </div>
@@ -757,7 +1031,7 @@ function CreateTaskComponent() {
                         }
                     </div>
 
-                    <div className='col-sm-4 pe-0'>{
+                    <div className='col-sm-4'>{
                         save.portfolioType === 'Component' ?
                             <div className="input-group">
                                 <label className="form-label full-width">Component Portfolio</label>
@@ -823,24 +1097,22 @@ function CreateTaskComponent() {
                     </div>
                 </div>
                 <div className='row mt-2'>
-                    <div className='col-sm-12 p-0'>
-                        <input type="text" placeholder='Enter task Url' value={taskUrl} className='col-sm-12' onChange={(e) => urlChange(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
+                    <div className='col-sm-12'>
+                        <input type="text" placeholder='Enter task Url' value={save.taskUrl} className='col-sm-12' onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
 
                     </div>
                 </div>
-                {relevantTask.length > 0 ?
-                    <> 
-                        <div className=' mb-5 mt-2 fxhg'>
-                        <label >Component Tasks({relevantTask.length}) </label>
-                            <DataGrid rows={relevantTask} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} />
-                        </div>
-                    </>
-                    : ''
-                }
-
+                <div className={relevantTasks.length > 0 ? ' mb-5 mt-2 fxhg' : ''}>
+                    {relevantTasks.length > 0 ?
+                        <>
+                            <label >Component Tasks({relevantTasks.length}) </label>
+                            <DataGrid rows={relevantTasks} columns={columns} getRowId={(row: any) => row.Shareweb_x0020_ID} />
+                        </> : ''
+                    }
+                </div>
                 {/*---------------- Sites -------------
             -------------------------------*/}
-                <div className='row mt-2 border'>
+                <div className='row mt-2'>
                     <fieldset>
                         <legend className="border-bottom fs-6 ">Sites</legend>
                         <ul className="quick-actions ">
@@ -868,7 +1140,7 @@ function CreateTaskComponent() {
                 </div>
                 {/*---- Task Categories ---------
             -------------------------------*/}
-                <div className='row mt-2 border'>
+                <div className='row mt-2'>
                     <fieldset >
                         <legend className="border-bottom fs-6">Task Categories</legend>
                         <div className="row " style={{ width: "100%" }}>
@@ -915,7 +1187,7 @@ function CreateTaskComponent() {
                 </div>
                 {/*-----Priority Rank --------
             -------------------------------*/}
-                <div className='row mt-2 border'>
+                <div className='row mt-2'>
                     <fieldset>
                         <legend className="border-bottom fs-6">Priority Rank</legend>
                         <dl className="row px-2 text-center">
@@ -945,8 +1217,8 @@ function CreateTaskComponent() {
                 </div>
                 {/*-----Time --------
             -------------------------------*/}
-                <div className='row mt-2 border'>
-                <fieldset>
+                <div className='row mt-2'>
+
                     <legend className="border-bottom fs-6">Time</legend>
                     <div className="row justify-content-md-center subcategoryTasks">
                         {Timing.map((item: any) => {
@@ -970,15 +1242,14 @@ function CreateTaskComponent() {
                         })}
 
                     </div>
-                    </fieldset>
+
                 </div>
                 {/*-----Due date --------
             -------------------------------*/}
-                <div className='row mt-2 border'>
-                    <fieldset>
+                <div className='row mt-2'>
 
                     <legend className="border-bottom fs-6">Due Date</legend>
-                    <div className="row justify-content-md-center text-center mb-2">
+                    <div className="row justify-content-md-center text-center">
                         <div className={isActive.dueDate && save.dueDate === 'Today' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
                             <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
                         </div>
@@ -987,7 +1258,7 @@ function CreateTaskComponent() {
                         <div className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a className='text-decoration-none text-white'>Next Week</a> </div>
                         <div className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a className='text-decoration-none text-white'>This Month</a> </div>
                     </div>
-                    </fieldset>
+
                 </div>
                 <div className='col text-end mt-3'>
                     {
