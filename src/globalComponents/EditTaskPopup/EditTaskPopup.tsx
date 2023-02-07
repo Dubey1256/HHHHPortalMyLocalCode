@@ -22,6 +22,7 @@ import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
 import TimeEntryPopup from './TimeEntryComponent';
 import VersionHistory from "../VersionHistroy/VersionHistory";
+import Tooltip from "../Tooltip";
 
 
 var AllMetaData: any = []
@@ -405,14 +406,15 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (StatusData.value == 5) {
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-            } else {
-                setWorkingMember(156);
-            }
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+            // } else {
+            //     setWorkingMember(156);
+            // }
             EditData.CompletedDate = undefined;
+            EditData.IsTodaysTask = false;
         }
         if (StatusData.value == 10) {
             EditData.CompletedDate = undefined;
@@ -420,22 +422,22 @@ const EditTaskPopup = (Items: any) => {
                 EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
             }
             EditData.IsTodaysTask = true;
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-            } else {
-                setWorkingMember(156);
-            }
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+            // } else {
+            //     setWorkingMember(156);
+            // }
         }
         if (StatusData.value == 70) {
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-            } else {
-                setWorkingMember(156);
-            }
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+            // } else {
+            //     setWorkingMember(156);
+            // }
         }
 
         if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
@@ -857,6 +859,20 @@ const EditTaskPopup = (Items: any) => {
         setImageCustomizePopup(false)
     }
 
+   
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft:'20px' }}>
+                    <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
+                    <span>
+                        {`${EditData.TaskId} ${EditData.Title}`}
+                    </span>
+                </div>
+                <Tooltip />
+            </>
+        );
+    };
 
     return (
         <>
@@ -899,29 +915,30 @@ const EditTaskPopup = (Items: any) => {
             {/* ***************** this is Save And Time Sheet panel *********** */}
 
             <Panel
-                headerText={`Update Task Status`}
+                onRenderHeader={onRenderCustomHeaderMain}
                 isOpen={TimeSheetPopup}
                 type={PanelType.custom}
                 customWidth="850px"
                 onDismiss={closeTimeSheetPopup}
                 isBlocking={false}
             >
-                <div className="modal-body">
+                <div className="modal-body mt-2">
                     <TimeEntryPopup props={Items.Items} />
                 </div>
             </Panel>
             {/* ***************** this is Main Panel *********** */}
 
             <Panel
-                headerText={`${EditData.TaskId} ${EditData.Title}`}
+                
                 type={PanelType.large}
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
+                onRenderHeader={onRenderCustomHeaderMain}
                 isBlocking={false}
             >
                 <div >
 
-                    <div className="modal-body">
+                    <div className="modal-body mt-2">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
                                 BASIC INFORMATION
@@ -1618,14 +1635,14 @@ const EditTaskPopup = (Items: any) => {
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
             <Panel
-                headerText={`${EditData.TaskId} ${EditData.Title}`}
                 isOpen={ImageComparePopup}
                 type={PanelType.custom}
                 customWidth="100%"
+                onRenderHeader={onRenderCustomHeaderMain}
                 onDismiss={ImageCompareFunctionClosePopup}
                 isBlocking={false}
             >
-                <div className="modal-body">
+                <div className="modal-body mt-2">
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
@@ -1635,10 +1652,14 @@ const EditTaskPopup = (Items: any) => {
                     <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                         <div className="tab-pane show active" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="IMAGEINFORMATION">
                             <div className="image-section row">
-                                <div className="single-image-section col-sm-6">
+                                <div className="single-image-section col-sm-6 p-2" style={{
+                                    border: "2px solid #ccc"
+                                }}>
                                     <img src={compareImageArray?.length > 0 ? compareImageArray[0].ImageUrl : ""} className='img-fluid' />
                                 </div>
-                                <div className="slider-image-section col-sm-6">
+                                <div className="slider-image-section col-sm-6 p-2" style={{
+                                    border: "2px solid #ccc"
+                                }}>
                                     <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
@@ -1746,14 +1767,14 @@ const EditTaskPopup = (Items: any) => {
             </Panel>
             {/* ***************** this is Image customize panel *********** */}
             <Panel
-                headerText={`${EditData.TaskId} ${EditData.Title}`}
+                onRenderHeader={onRenderCustomHeaderMain}
                 isOpen={ImageCustomizePopup}
                 type={PanelType.custom}
                 customWidth="100%"
                 onDismiss={ImageCustomizeFunctionClosePopup}
                 isBlocking={false}
             >
-                <div className="modal-body">
+                <div className="modal-body mt-2">
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
@@ -1763,7 +1784,9 @@ const EditTaskPopup = (Items: any) => {
                     <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                         <div className="tab-pane show active" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="IMAGEINFORMATION">
                             <div className="image-section row">
-                                <div className="slider-image-section col-sm-6">
+                                <div className="slider-image-section col-sm-6 p-2" style={{
+                                    border: "2px solid #ccc"
+                                }}>
                                     <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
@@ -1785,9 +1808,11 @@ const EditTaskPopup = (Items: any) => {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="comment-section col-sm-6" style={{
+                                <div className="comment-section col-sm-6 p-2" style={{
                                     overflowY: "auto",
-                                    height: "600px"
+                                    height: "600px",
+                                    overflowX: "hidden",
+                                    border: "2px solid #ccc"
                                 }}>
                                     <div>
                                         {EditData.Title != null ? <>
