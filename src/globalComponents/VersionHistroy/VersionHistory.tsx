@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Button, Modal, Table } from 'react-bootstrap';
-import './VersionHistoryPopup.css'
+import './VersionHistory.scss'
 import * as  $ from 'jquery';
 import { FontSizes, Panel, PanelType } from 'office-ui-fabric-react';
 
