@@ -233,3 +233,520 @@ export const  GetIconImageUrl =(listName: any, listUrl: any, Item: any) =>{
     }
     return IconUrl;
 }
+export const makePostDataForApprovalProcess =  async (postData:any)=> {
+    await loadTaskUsers().then(function (data) {
+            var TaskUsers = data;
+            var UserManager: any[] = [];
+            TaskUsers.map((user:any)=> {
+                if (user?.Approver?.results?.length > 0) {
+                    user.Approver.results.map((approver:any)=> {
+                        UserManager.push(approver?.Id)
+                    })
+                }
+            })
+            var Item = {TaskUsers:'',postData:''};
+            if ((postData?.Categories?.toLowerCase().indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
+                //postData.PercentComplete = 0.01;
+                //postData.Status = "For Approval";
+                var isAvailable = false;
+                if (postData?.Responsible_x0020_TeamId?.results?.length > 0) {
+                    postData.Responsible_x0020_TeamId.results.map((user:any)=> {
+                      UserManager.map((ID:any)=> {
+                            if (ID == user) {
+                                isAvailable = true;
+                            }
+                        })
+                    })
+                }
+                if (!isAvailable) {
+                    var TeamMembersID: any[] = [];
+                    if (postData?.Team_x0020_MembersId?.results?.length > 0) {
+                        postData.Team_x0020_MembersId.results((user:any)=> {
+                            UserManager.map((ID:any)=> {
+                                if (ID == user) {
+                                    TeamMembersID.push(user);
+                                }
+                            })
+                        })
+                    }
+                    UserManager.map((ID:any)=> {
+                        TeamMembersID.push(ID);
+                    })
+                    postData.Team_x0020_MembersId = { results: TeamMembersID };
+                }
+                if ( postData?.AssignedToId?.results?.length > 0 && UserManager?.length > 0) {
+                    UserManager.map((ID:any)=> {
+                        postData.AssignedToId.results.push(ID);
+                    })
+                }
+                else {
+                    postData.AssignedToId = { results: UserManager };
+                }
+            }
+            Item.TaskUsers = TaskUsers;
+            Item.postData = postData;
+            Promise.resolve(Item);
+        },
+            function (error) {
+                Promise.reject(error)
+            });
+    return Promise;
+    
+}
+
+
+// var sendImmediateEmailNotifications = function (itemId, siteUrl, listId, item, RecipientMail, isLoadNotification, rootSite) {
+//     GetImmediateTaskNotificationEmails(item, isLoadNotification, rootSite)
+//         .then(function (ToEmails) {
+//             if (isLoadNotification == false)
+//                 ToEmails = [];
+//             if (RecipientMail != undefined && RecipientMail.Email != undefined && ToEmails.length == 0) {
+//                 ToEmails.push(RecipientMail.Email)
+//             }
+//             if (ToEmails.length > 0) {
+//                 var query = '';
+//                 query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,component_x0020_link,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,SharewebTaskType/Id,SharewebTaskType/Title,Shareweb_x0020_ID,CompletedDate,SharewebTaskLevel1No,SharewebTaskLevel2No&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,SharewebCategories,SharewebTaskType,Services,Events&$filter=Id eq " + itemId;
+//                 SharewebListService.getRequest(siteUrl, "/getbyid('" + listId + "')/items?$select=" + query)
+//                     .then(function (data) {
+//                         angular.forEach(data.d.results, function (item) {
+//                             item.PercentageCompleted = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
+//                             item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
+//                             if (item.PercentageCompleted != undefined) {
+//                                 item.PercentageCompleted = parseInt((item.PercentageCompleted).toFixed(0));
+//                             }
+//                             if (item.PercentComplete != undefined) {
+//                                 item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+//                             }
+//                             item.taskLeader = 'None';
+//                             if (item.AssignedTo != undefined && item.AssignedTo.results != undefined && item.AssignedTo.results.length > 0)
+//                                 item.taskLeader = getMultiUserValues(item);
+//                         })
+//                         var UpdateItem = angular.copy(data.d.results[0]);
+//                         if (item != undefined && item.PercentComplete != undefined) {
+//                             item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
+//                             item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+//                             item.PercentageCompleted = item.PercentComplete;
+//                         }
+//                         if (item != undefined && item.siteType != undefined) {
+//                             item.siteType = item.siteType.replace(/_x0020_/g, ' ');
+//                         }
+//                         var siteType = getListNameFromItemProperties(UpdateItem);
+//                         UpdateItem.siteType = '';
+//                         if (UpdateItem.siteType == '') {
+//                             if (siteType != undefined) {
+//                                 siteType = siteType.replace(/_x0020_/g, '%20');
+//                             }
+//                             UpdateItem.siteType = siteType;
+//                         }
+//                         UpdateItem.Shareweb_x0020_ID = getSharewebId(UpdateItem);
+//                         if (UpdateItem.Author != undefined) {
+//                             UpdateItem.Author1 = '';
+//                             UpdateItem.Author1 = UpdateItem.Author.Title;
+//                         } else
+//                             UpdateItem.Editor1 = '';
+//                         if (UpdateItem.Editor != undefined) {
+//                             UpdateItem.Editor1 = '';
+//                             UpdateItem.Editor1 = UpdateItem.Editor.Title;
+//                         } else
+//                             UpdateItem.Editor1 = '';
+//                         if (UpdateItem.component_x0020_link != undefined && UpdateItem.component_x0020_link.Url != undefined)
+//                             UpdateItem.URL = UpdateItem.component_x0020_link.Url;
+//                         else
+//                             UpdateItem.URL = '';
+
+//                         if (UpdateItem.DueDate != undefined)
+//                             UpdateItem.DueDate = ConvertLocalTOServerDate(UpdateItem.DueDate, 'DD-MMM-YYYY');
+//                         else
+//                             UpdateItem.DueDate = '';
+//                         if (UpdateItem.StartDate != undefined)
+//                             UpdateItem.StartDate = ConvertLocalTOServerDate(UpdateItem.StartDate, 'DD-MMM-YYYY');
+//                         else
+//                             UpdateItem.StartDate = '';
+//                         if (UpdateItem.CompletedDate != undefined)
+//                             UpdateItem.CompletedDate = ConvertLocalTOServerDate(UpdateItem.CompletedDate, 'DD-MMM-YYYY');
+//                         else
+//                             UpdateItem.CompletedDate = '';
+
+//                         if (UpdateItem.Created != undefined)
+//                             UpdateItem.Created = ConvertLocalTOServerDate(UpdateItem.Created, 'DD-MMM-YYYY');
+//                         else
+//                             UpdateItem.Created = '';
+//                         if (UpdateItem.Modified != undefined)
+//                             UpdateItem.Modified = ConvertLocalTOServerDate(UpdateItem.Modified, 'DD-MMM-YYYY');
+//                         else
+//                             UpdateItem.Modified = '';
+//                         if (UpdateItem.PercentComplete != undefined)
+//                             UpdateItem.PercentComplete = UpdateItem.PercentComplete;
+//                         else
+//                             UpdateItem.PercentComplete = '';
+//                         if (UpdateItem.Priority != undefined)
+//                             UpdateItem.Priority = UpdateItem.Priority;
+//                         else
+//                             UpdateItem.Priority = '';
+//                         if (UpdateItem.Body != undefined)
+//                             UpdateItem.Body = $.parseHTML(UpdateItem.Body)[0].textContent;
+//                         else
+//                             UpdateItem.Body = '';
+//                         if (UpdateItem.Title != undefined)
+//                             UpdateItem.Title = UpdateItem.Title;
+//                         else
+//                             UpdateItem.Title = '';
+//                         UpdateItem.AssignedToTitle = '';
+//                         if (UpdateItem.AssignedTo.results != undefined) {
+//                             angular.forEach(UpdateItem.AssignedTo.results, function (item) {
+//                                 UpdateItem.AssignedToTitle += item.Title + ';';
+//                             })
+//                         }
+//                         UpdateItem.ComponentName = '';
+//                         if (UpdateItem.Component.results != undefined) {
+//                             angular.forEach(UpdateItem.Component.results, function (item) {
+//                                 UpdateItem.ComponentName += item.Title + ';';
+//                             })
+//                         }
+//                         UpdateItem.Category = '';
+//                         UpdateItem.Categories = '';
+//                         if (UpdateItem.SharewebCategories.results != undefined) {
+//                             angular.forEach(UpdateItem.SharewebCategories.results, function (item) {
+//                                 UpdateItem.Categories += item.Title + ';';
+//                                 UpdateItem.Category += item.Title + ',';
+//                             })
+//                         }
+//                         var pos = UpdateItem.Category.lastIndexOf(',');
+//                         UpdateItem.Category = UpdateItem.Category.substring(0, pos) + UpdateItem.Category.substring(pos + 1);
+//                         var Commentdata = [];
+//                         UpdateItem.AllComments = '';
+//                         if (UpdateItem.Comments != undefined) {
+//                             Commentdata = JSON.parse(UpdateItem.Comments);
+//                             angular.forEach(Commentdata, function (comment) {
+//                                 UpdateItem.AllComments += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+//                                     '<span>' +
+//                                     '<div style="margin-bottom:5px;">' +
+//                                     comment.AuthorName +
+//                                     ' - ' +
+//                                     comment.Created +
+//                                     '</div>' +
+//                                     comment.Title +
+//                                     '</span>' +
+//                                     '</div>'
+//                             })
+//                         }
+//                         UpdateItem.Description = '';
+//                         if (UpdateItem.Body != undefined && UpdateItem.Body != '')
+//                             UpdateItem.Description = UpdateItem.Body;
+//                         if (UpdateItem.FeedBack != undefined) {
+//                             try {
+//                                 var Description = JSON.parse(UpdateItem.FeedBack);
+//                                 if (Description.length > 0) {
+//                                     UpdateItem.Description = '';
+//                                     angular.forEach(Description[0].FeedBackDescriptions, function (description, index) {
+//                                         var index1 = index + 1;
+//                                         var Comment = '';
+//                                         if (description.Comments != undefined && description.Comments.length > 0) {
+//                                             angular.forEach(description.Comments, function (val) {
+//                                                 Comment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+//                                                     '<span>' +
+//                                                     '<div style="margin-bottom:5px;">' +
+//                                                     val.AuthorName +
+//                                                     ' - ' +
+//                                                     val.Created +
+//                                                     '</div>' +
+//                                                     val.Title +
+//                                                     '</span>' +
+//                                                     '</div>'
+
+//                                             })
+
+//                                         }
+//                                         UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '</span>' +
+//                                             '</td>' +
+//                                             '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
+//                                             '<span>' +
+//                                             description.Title +
+//                                             '</span>' +
+//                                             Comment +
+//                                             '</td>' +
+//                                             '</tr>';
+//                                         if (description.Subtext != undefined && description.Subtext.length > 0) {
+//                                             angular.forEach(description.Subtext, function (Childdescription, Childindex) {
+//                                                 var Childindex1 = Childindex + 1;
+//                                                 var ChildComment = '';
+//                                                 if (Childdescription.Comments != undefined && Childdescription.Comments.length > 0) {
+//                                                     angular.forEach(description.Comments, function (Childval) {
+//                                                         ChildComment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+//                                                             '<span>' +
+//                                                             '<div style="margin-bottom:5px;">' +
+//                                                             Childval.AuthorName +
+//                                                             ' - ' +
+//                                                             Childval.Created +
+//                                                             '</div>' +
+//                                                             Childval.Title +
+//                                                             '</span>' +
+//                                                             '</div>'
+
+//                                                     })
+
+//                                                 }
+//                                                 UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '.' + Childindex1 + '</span>' +
+//                                                     '</td>' +
+//                                                     '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
+//                                                     '<span>' +
+//                                                     Childdescription.Title +
+//                                                     '</span>' +
+//                                                     ChildComment +
+//                                                     '</td>' +
+//                                                     '</tr>';
+//                                             });
+
+//                                         }
+//                                     });
+//                                 }
+//                                 //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
+//                             } catch (e) {
+//                                 console.log(e)
+//                             }
+
+//                         }
+
+//                         var siteUrl = _spPageContextInfo.webAbsoluteUrl;
+//                         var Name = '';
+//                         var OtherDetails = '';
+//                         var Subject = '';
+//                         var TaskDescriptionStart = '';
+//                         var NoOfApprovalTask = '';
+//                         var TaskDescription = '';
+//                         var ApprovalRejectionComments = '';
+//                         var TaskComments = '';
+//                         var TaskDashBoardURl = '';
+//                         var ApprovalDashboard = '';
+//                         var TaskDashBoardTitle = '';
+//                         var ApprovalDashboardTitle = '';
+//                         var CC = [];
+//                         if (item == undefined) {
+//                             //Subject = "[" + siteType + "-Task] " + UpdateItem.Title + "(" + UpdateItem.Category + ")";
+//                             Subject = "[" + siteType + " - " + UpdateItem.Category + " (" + UpdateItem.PercentComplete + "%)] " + UpdateItem.Title + "";
+//                         }
+//                         else {
+//                             if (item != undefined && item.PercentComplete == 5 && item.newCategories != undefined && item.newCategories == 'Immediate') {
+//                                 CC.push("simran.kaur@smalsus.com");
+//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
+//                             }
+//                             if (item != undefined && item.TeamLeadersId != undefined && item.TeamLeadersId.length > 0 && item.CategoriesType == undefined && item.isApprovalRejection == undefined) {
+//                                 CC.push("simran.kaur@smalsus.com");
+//                                 Subject = "[" + item.siteType + " - " + UpdateItem.Category + " (" + item.PercentComplete + "%)] " + item.Title + "";
+//                             }
+//                             if ((item != undefined && (item.PercentComplete == 80 && item.newCategories == undefined) || (item.PercentComplete == 80 && item.newCategories != undefined && item.newCategories != 'Immediate' && item.newCategories != 'Email Notification'))) {
+//                                 CC.push("simran.kaur@smalsus.com");
+//                                 Subject = "[" + item.siteType + " - " + UpdateItem.Category + " (" + item.PercentComplete + "%)] " + item.Title + "";
+//                             }
+//                             if (item != undefined && item.PercentComplete == 93) {
+//                                 if (item.newCategories == undefined || item.newCategories == null)
+//                                     item.newCategories = '';
+//                                 CC.push("simran.kaur@smalsus.com");
+//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
+//                             }
+//                             if ((item != undefined && (item.PercentComplete == 80 && item.newCategories != undefined && item.newCategories == 'Immediate'))) {
+//                                 CC.push("simran.kaur@smalsus.com");
+//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
+//                             }
+
+//                             if ((item != undefined && (item.PercentComplete == 90 && item.newCategories != undefined && item.newCategories == 'Email Notification'))) {
+
+//                                 CC.push("deepak@hochhuth-consulting.de");
+//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
+//                             }
+//                             if ((item != undefined && (item.PercentComplete == 90 && item.newCategories != undefined && item.newCategories == 'Immediate'))) {
+//                                 CC.push("deepak@hochhuth-consulting.de");
+//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
+//                             }
+//                             if (item != undefined && item.CategoriesType != undefined && ((item.CategoriesType.toLowerCase()).indexOf('draft') > -1 || (item.CategoriesType.toLowerCase()).indexOf('approval') > -1 && item.PercentComplete == 1)) {
+//                                 CC = [];
+//                                 if (item.CategoriesType != undefined && item.CategoriesType != '')
+//                                     item.CategoriesType = item.CategoriesType.replaceAll(';', ',')
+//                                 Subject = "[" + item.siteType + " - " + item.CategoriesType + " (" + item.PercentComplete + "%)] " + item.Title + "";
+//                                 TaskDescriptionStart = 'Hi,';
+//                                 TaskDescription = UpdateItem.Author1 + ' has created a Task which requires your Approval.Please take your time and review:';
+//                                 if (item.TotalApprovalTask != undefined && item.TotalApprovalTask != 0)
+//                                     NoOfApprovalTask = 'Please note that you still have ' + item.TotalApprovalTask + ' tasks left to approve.You can find all pending approval tasks on your task dashboard or the approval page.';
+//                                 TaskDashBoardURl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx';
+//                                 ApprovalDashboard = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks';
+//                                 var TaskDashBoardTitle = 'Your Task Dashboard';
+//                                 var ApprovalDashboardTitle = 'Your Approval Page';
+
+//                             }
+//                             if ((item != undefined && (item.isApprovalRejection != undefined && item.isApprovalRejection))) {
+//                                 CC = [];
+//                                 Subject = "[" + item.siteType + " (" + item.PercentComplete + "%)] " + item.Title + " Approved";
+//                                 TaskDescriptionStart = 'Hi,';
+//                                 TaskDescription = 'Your task has been approved by ' + item.ApproverName + ', team will process it further. Refer Approval Comments.';
+//                                 TaskComments = item.TaskComments;
+//                                 ApprovalRejectionComments = '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Approval Comments:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
+//                                     TaskComments + '</span> </td>' +
+//                                     '</tr>'
+//                             }
+//                             if ((item != undefined && (item.isApprovalRejection != undefined && !item.isApprovalRejection))) {
+//                                 CC = [];
+//                                 Subject = "[" + item.siteType + " (" + item.PercentComplete + "%)] " + item.Title + " Rejected";
+//                                 TaskDescriptionStart = 'Hi,';
+//                                 TaskDescription = 'Your task has been rejected by ' + item.ApproverName + '. Refer Reject Comments.';
+//                                 TaskComments = item.TaskComments;
+//                                 ApprovalRejectionComments = '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Rejection Comments:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
+//                                     TaskComments + '</span> </td>' +
+//                                     '</tr>';
+//                             }
+//                             //------
+//                             if (item != undefined && item.PercentComplete != undefined && item.PercentComplete == 2 && item.Categories != undefined && RecipientMail != undefined) {
+//                                 CC = [];
+//                                 Subject = "[" + item.siteType + " - Immediate - Follow up(2 %)] " + item.Title;
+//                                 TaskDescriptionStart = "Hi " + RecipientMail.Title + ",";
+//                                 TaskDescription = 'Your immediate attention required on this task please review and respond ASAP.';
+//                             }
+//                             //---------
+//                         }
+//                         if (Subject == undefined || Subject == '') {
+//                             if (UpdateItem.PercentComplete != undefined && UpdateItem.PercentComplete != '' && UpdateItem.PercentComplete != 1 && UpdateItem.Category != undefined && UpdateItem.Category != '' && UpdateItem.Category.toLowerCase('approval') > -1)
+//                                 item.CategoriesType = item.Category.replace('Approval,', '')
+//                             Subject = "[" + siteType + " - " + UpdateItem.Category + " (" + UpdateItem.PercentComplete + "%)] " + UpdateItem.Title + "";
+//                         }
+//                         if (UpdateItem.PercentComplete != undefined && UpdateItem.PercentComplete != 1) {
+//                             Subject = Subject.replaceAll('Approval,', '')
+//                             Subject = Subject.replaceAll('Normal Approval,', '')
+//                             Subject = Subject.replaceAll('Normal Approval', '')
+//                             Subject = Subject.replaceAll('Quick Approval,', '')
+//                             Subject = Subject.replaceAll('Quick Approval', '')
+//                             Subject = Subject.replaceAll('Complex Approval,', '')
+//                             Subject = Subject.replaceAll('Complex Approval', '')
+//                             Subject = Subject.replaceAll(',,', ',')
+//                         }
+//                         if (UpdateItem.PercentComplete != undefined && UpdateItem.PercentComplete == 1 && UpdateItem.Category.toLowerCase().indexOf('approval') > -1) {
+//                             //Subject = Subject.replaceAll('Approval,', '')
+//                             //if (Subject.indexOf('Normal Approval') <= -1 && Subject.indexOf('Quick Approval') <= -1 && Subject.indexOf('Complex Approval') <= -1)
+//                             //    Subject = Subject.replaceAll('Approval', '')
+//                             //Subject = Subject.replaceAll(',,', ',')
+//                             Subject = "[" + siteType + " - " + "Approval" + "] " + UpdateItem.Title + "";
+//                             if (UpdateItem.Category.toLowerCase().indexOf('email notification') > -1 && UpdateItem.Category.toLowerCase().indexOf('immediate') > -1) {
+//                                 Subject = "[" + siteType + " - " + "Approval,Email notification,Immediate" + "] " + UpdateItem.Title + "";
+//                             }
+//                             else if (UpdateItem.Category.toLowerCase().indexOf('email notification') > -1) {
+//                                 Subject = "[" + siteType + " - " + "Approval,Email notification" + "] " + UpdateItem.Title + "";
+//                             }
+//                             else if (UpdateItem.Category.toLowerCase().indexOf('immediate') > -1) {
+//                                 Subject = "[" + siteType + " - " + "Approval,Immediate" + "] " + UpdateItem.Title + "";
+//                             }
+//                         }
+//                         var body =
+//                             '<div>' +
+//                             '</div>' +
+//                             '<div style="margin-top:4px">' +
+//                             TaskDescriptionStart +
+//                             '</div>' +
+//                             '<div style="margin-top:6px">' +
+//                             TaskDescription +
+//                             '</div>'
+//                             + '<div style="margin-top:10px">' +
+//                             NoOfApprovalTask +
+//                             '</div>'
+//                             + '<div style="margin-top:10px;">' +
+//                             '<a style="padding-right: 17px;" href =' + TaskDashBoardURl + '>' + TaskDashBoardTitle + '</a>' +
+//                             '<a href =' + ApprovalDashboard + '>' + ApprovalDashboardTitle + '</a>' +
+//                             '</div>'
+//                             + '<div style="margin-top:15px">' +
+//                             '<a href =' + siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + UpdateItem.Id + '&Site=' + siteType + '>' +
+//                             UpdateItem.Title + '</a>' +
+//                             '</div>' +
+//                             '<table style="width:100%">' +
+//                             '<tbody>' +
+//                             '<td style="width:70%;vertical-align: top;">' +
+//                             '<table style="width:99%;">' +
+//                             '<tbody>' +
+//                             '<tr>'
+//                             + '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Task Id:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.Shareweb_x0020_ID + '</span></td>' +
+//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Component:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.ComponentName + '</span> </td>' +
+//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Priority:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.Priority + '</span> </td>' +
+//                             '</tr>' +
+//                             '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Start Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.StartDate + '</span></td>' +
+//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Completion Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.CompletedDate + '</span> </td>' +
+//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Due Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.DueDate + '</span> </td>' +
+//                             '</tr>' +
+//                             '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Team Members:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.AssignedToTitle + '</span></td>' +
+//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created By:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.Author1 + '</span> </td>' +
+//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.Created + '</span> </td>' +
+//                             '</tr>' +
+//                             '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Categories:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.Categories + '</span></td>' +
+//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Status:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.Status + '</span> </td>' +
+//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">% Complete:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+//                             UpdateItem.PercentComplete + '%</span> </td>' +
+//                             '</tr>' +
+//                             '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">URL:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
+//                             UpdateItem.URL + '</span> </td>' +
+//                             '</tr>' +
+//                             ApprovalRejectionComments +
+//                             '</tr> ' +
+//                             '</tr>' +
+//                             '</tr>' +
+//                             '<tr>' +
+//                             '</tbody>' +
+//                             '</table>' +
+//                             '<table style="width:99%;margin-top: 10px;">' +
+//                             '<tbody>' +
+//                             '<tr>' + UpdateItem.Description + '</tr>' +
+//                             '</tbody>' +
+//                             '</table>' +
+//                             '</td>' +
+//                             '<td style="width:22%">' +
+//                             '<table style="border:1px solid #ddd;border-radius:4px;margin-bottom:25%;width:100%">' +
+//                             '<tbody>' +
+//                             '<tr>' +
+//                             '<td style="color:#333; background-color:#f5f5f5;border-bottom:1px solid #ddd">Comments:' + '</td>' +
+//                             '</tr>' +
+//                             '<tr>' +
+//                             '<td>' + UpdateItem.AllComments + '</td>' +
+//                             '</tr>' +
+//                             '</tbody>' +
+//                             '</table>' +
+//                             '</td>' +
+//                             '</tr>' +
+//                             '</tbody>' +
+//                             '</table>' +
+//                             '</td>' +
+//                             '</tr>' +
+//                             '</tbody>' +
+//                             '</table>';
+//                         if (CC.length > 1)
+//                             CC.splice(1, 1);
+//                         //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
+//                         if (RecipientMail != undefined && RecipientMail.length > 0) {
+//                             if (ToEmails == undefined) {
+//                                 ToEmails = [];
+//                             }
+//                             angular.forEach(RecipientMail, function (mail) {
+//                                 ToEmails.push(mail.Email);
+//                             })
+
+//                         }
+//                         var from = '',
+//                             to = ToEmails,
+//                             cc = CC,
+//                             body = body,
+//                             subject = Subject,
+//                             ReplyTo = "deepak@hochhuth-consulting.de";
+//                         sendEmail(from, to, body, subject, ReplyTo, cc);
+//                         hideProgressBar();
+//                     }, function (error) {
+//                         console.log(error);
+//                     })
+//             }
+//         },
+
+//             function (error) { });
+// }

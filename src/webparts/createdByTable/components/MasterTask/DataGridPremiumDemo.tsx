@@ -41,14 +41,14 @@ const DataGridPremiumDemo = () => {
   return (
     <div style={containerStyle}>
       <div style={gridStyle} className="ag-theme-alpine">
-        <AgGridReact
+        {/* <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={defaultColDef}
           autoGroupColumnDef={autoGroupColumnDef}
           animateRows={true}
           onGridReady={onGridReady}
-        />
+        /> */}
       </div>
     </div>
   );      
