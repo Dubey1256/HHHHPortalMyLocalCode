@@ -738,7 +738,7 @@ function CreateTaskComponent() {
             <div className='Create-taskpage'>
                 <div className='row'>
                     <div className='col-sm-12'>
-                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a target='_blank' href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx" style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
+                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a target='_blank' data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx" style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
                     </div>
                     <div className='col-sm-6'>
                         <label className='full-width'>Task Name</label>

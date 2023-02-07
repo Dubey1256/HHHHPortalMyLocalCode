@@ -19,6 +19,8 @@ import { any, number } from 'prop-types';
 import CheckboxTree from 'react-checkbox-tree';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
+import { GlobalConstants } from '../../../globalComponents/LocalCommon';
+import * as globalCommon from '../../../globalComponents/globalCommon';
 
 
 
@@ -54,6 +56,7 @@ function ComponentTable(SelectedProp: any) {
     const [IsUpdated, setIsUpdated] = React.useState('');
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [Isshow, setIsshow] = React.useState(false);
+    const [checkedList, setCheckedList] = React.useState([]);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
     var IsExitSmartfilter = function (array: any, Item: any) {
@@ -733,6 +736,16 @@ function ComponentTable(SelectedProp: any) {
             });
         }
     }
+    var WebpartItem: any = [];
+    const LoadSPComponents = async () => {
+        var metadatItem: any = []
+        let smartmetaDetails: any = [];
+        var select: any = '=Title,Id,PageUrl,WebpartId,Component/Id,Component/Title,Service/Id,Service/Title&$expand=Component,Service&$top=4999'
+        smartmetaDetails = await globalCommon.getData(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.SPCOMPONENTS_LISTID, select);
+        console.log(smartmetaDetails);
+        WebpartItem = smartmetaDetails;
+
+    }
     const GetComponents = async () => {
 
         filt = "(Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature') and ((Portfolio_x0020_Type eq 'Service'))";
@@ -1187,6 +1200,20 @@ function ComponentTable(SelectedProp: any) {
             return (aID == bID) ? 0 : (aID > bID) ? 1 : -1;
         })
     }
+    const getWebpartId = function (Item: any) {
+        WebpartItem.forEach((item: any) => {
+            if (item.Component?.Id != undefined) {
+                if (item.Component.Id === Item.Id) {
+                    Item.WebpartItemId = item.Id;
+                }
+            }
+            if (item.Service?.Id != undefined) {
+                if (item.Service.Id === Item.Id) {
+                    Item.WebpartItemId = item.Id;
+                }
+            }
+        });
+    }
     const bindData = function () {
         var RootComponentsData: any[] = [];
         var ComponentsData: any = [];
@@ -1196,6 +1223,7 @@ function ComponentTable(SelectedProp: any) {
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
+            getWebpartId(result);
             result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
@@ -1599,10 +1627,23 @@ function ComponentTable(SelectedProp: any) {
         setSharewebTask(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
+    const onChangeHandler = (itrm: any) => {
+        const list = [...checkedList];
+        var flag = true;
+        list.forEach((obj: any, index: any) => {
+            if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+                flag = false;
+                list.splice(index, 1);
+            }
+        })
+        if (flag)
+            list.push(itrm);
+        setCheckedList(checkedList => ([...list]));
+    };
     function AddItem() {
     }
     return (
-        <div id="ExandTableIds" className= {IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+        <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
 
             {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
             {/* <Modal
@@ -1999,17 +2040,17 @@ function ComponentTable(SelectedProp: any) {
                                             Restructure
                                         </button> */}
                                         <button className="btn border bg-white" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="true" data-bs-reference="parent">
-                                             <RxDotsVertical/>
+                                            <RxDotsVertical />
                                         </button>
-                                        <ul className="dropdown-menu dropdown-menu-end" style={{"position":"absolute","inset":"auto 0px 0px auto","margin":"0px", "transform":"translate(-36px, -1657px)"}} data-popper-placement="top-end">
-                                            <li  onClick={addModal}><a className="dropdown-item" href="#">Add Structure</a></li>
+                                        <ul className="dropdown-menu dropdown-menu-end" style={{ "position": "absolute", "inset": "auto 0px 0px auto", "margin": "0px", "transform": "translate(-36px, -1657px)" }} data-popper-placement="top-end">
+                                            <li onClick={addModal}><a className="dropdown-item" href="#">Add Structure</a></li>
                                             <li ng-click="openActivity()"><a className="dropdown-item" href="#">Add Activity-Task</a></li>
-                                            <li  ng-click="openRestructure()"><a className="dropdown-item" href="#">Restructure</a></li>
+                                            <li ng-click="openRestructure()"><a className="dropdown-item" href="#">Restructure</a></li>
                                         </ul>
                                         <a className="brush" onClick={clearSearch}>
                                             <FaPaintBrush />
                                         </a>
-                                        
+
                                         <a onClick={Prints} className='Prints'>
                                             <FaPrint />
                                         </a>
@@ -2032,6 +2073,12 @@ function ComponentTable(SelectedProp: any) {
                                                             <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
                                                                 : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
                                                             </div>
+                                                        </th>
+                                                        <th style={{ width: "2%" }}>
+                                                            <div className="smart-relative sign hreflink">
+                                                                <span className='pe-2'><input type="checkbox" /></span>
+                                                            </div>
+
                                                         </th>
                                                         <th style={{ width: "9%" }}>
                                                             <div style={{ width: "8%" }} className="smart-relative">
@@ -2145,6 +2192,15 @@ function ComponentTable(SelectedProp: any) {
                                                                                         </div>
 
                                                                                     </td>
+                                                                                    <td style={{ width: "2%" }}>
+                                                                                        <div className="accordian-header" >
+                                                                                            {/* checked={item.checked === true ? true : false} */}
+                                                                                            <span className='pe-2'><input type="checkbox"
+                                                                                                onChange={(e) => onChangeHandler(item)} /></span>
+                                                                                        </div>
+
+                                                                                    </td>
+
 
                                                                                     <td style={{ width: "9%" }}>
                                                                                         <div className="">
@@ -2211,8 +2267,8 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "3%" }}>{item.siteType == "Master Tasks" && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
-                                                                                        {item.siteType != "Master Tasks" && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
+                                                                                    <td style={{ width: "3%" }}>{item.siteType === "Master Tasks" && item.Title !=='Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
+                                                                                        {item.siteType != "Master Tasks" && item.Title !=='Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
@@ -2243,6 +2299,12 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     }
 
                                                                                                                 </div>
+                                                                                                            </td>
+                                                                                                            <td style={{ width: "2%" }}>
+                                                                                                                <div className="accordian-header" >
+                                                                                                                    <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                </div>
+
                                                                                                             </td>
                                                                                                             {/* <td style={{ width: "2%" }}></td> */}
                                                                                                             <td style={{ width: "9%" }}>  <div className="d-flex">
@@ -2348,7 +2410,12 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                             </div>
                                                                                                                                         }
                                                                                                                                     </td>
+                                                                                                                                    <td style={{ width: "2%" }}>
+                                                                                                                                        <div className="accordian-header" >
+                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                        </div>
 
+                                                                                                                                    </td>
 
                                                                                                                                     <td style={{ width: "9%" }}> <div className="d-flex">
                                                                                                                                         <span>
@@ -2455,6 +2522,12 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                 }
 
                                                                                                                                                             </div>
+                                                                                                                                                        </td>
+                                                                                                                                                        <td style={{ width: "2%" }}>
+                                                                                                                                                            <div className="accordian-header" >
+                                                                                                                                                                <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                                            </div>
+
                                                                                                                                                         </td>
                                                                                                                                                         {/* <td style={{ width: "2%" }}></td> */}
                                                                                                                                                         <td style={{ width: "9%" }}>  <div className="d-flex">
