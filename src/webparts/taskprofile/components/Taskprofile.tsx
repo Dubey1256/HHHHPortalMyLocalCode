@@ -10,11 +10,13 @@ import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
+import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
+import * as globalCommon from '../../../globalComponents/globalCommon'
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import RelevantDocuments from './RelevantDocuments'
+import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
 var smartTime: Number = 0                                   ;
@@ -35,7 +37,7 @@ export interface ITaskprofileState {
   showPopup: any;
   maincollection: any;
   SharewebTimeComponent: any;
-  
+  isopenversionHistory:boolean;
   smarttimefunction: boolean;
 }
 
@@ -65,7 +67,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       updateComment: false,
       showComposition: true,
       isOpenEditPopup: false,
-  
+      isopenversionHistory:false,
       isTimeEntry: false,
       showPopup: 'none',
       maincollection: [],
@@ -197,7 +199,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "DueDate","AssignedTo/Id","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "DueDate","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("Team_x0020_Members","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
 
@@ -205,6 +207,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     taskDetails["siteType"] = this.state.listName;
     taskDetails["siteUrl"] = this.props.siteUrl;
     console.log(taskDetails);
+    taskDetails.TaskId= globalCommon.getTaskId(taskDetails);
     var category=""
 
     taskDetails["SharewebCategories"].map((item:any,index:any)=>{
@@ -232,15 +235,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    taskDetails.array=array2.concat(taskDetails["Team_x0020_Members"].filter((item:any)=>array2.Id!=item.Id))
     console.log(taskDetails.array);
    }
-    // taskDetails["AssignedTo"].map((item:any,index:any)=>{
-    //   taskDetails["Team_x0020_Members"].map((workingMember:any,index:any)=>{
-    //     if(workingMember.Id!=item.Id){
-    //       item.workingMember=false;
-    //       taskDetails.array.push(item);
-    //     }
-
-    //   })
-    // });
+   var OffshoreComments:any=[];
+   if(taskDetails["OffshoreComments"] != null){
+    OffshoreComments=JSON.parse(taskDetails["OffshoreComments"])
+   }
     console.log(taskDetails)
     console.log(category);
     taskDetails["Categories"]=category;
@@ -254,14 +252,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SiteIcon: this.GetSiteIcon(this.state.listName),
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      OffshoreComments:taskDetails["OffshoreComments"] != null && JSON.parse(taskDetails["OffshoreComments"]),
+      OffshoreComments:OffshoreComments.length>0?OffshoreComments.reverse():null,
       OffshoreImageUrl:taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
       AssignedTo:taskDetails["AssignedTo"]!=null?this.GetUserObjectFromCollection(taskDetails["AssignedTo"]):null,
       ClientCategory:taskDetails["ClientCategory"],
       siteType: taskDetails["siteType"],
       listName: taskDetails["listName"],
       siteUrl: taskDetails["siteUrl"],
-      TaskId: "T" + taskDetails["ID"],
+      TaskId: taskDetails["TaskId"],
       Title: taskDetails["Title"],
       DueDate: taskDetails["DueDate"],
       Categories: taskDetails["Categories"],
@@ -301,7 +299,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    
     });
   }
-
+//  private shortBackgroundComment=(a:any,b:any)=>a.Created-b.Created;
   private sortAlphaNumericAscending = (a:any, b:any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
 
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
@@ -364,14 +362,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let web = new Web(this.props.siteUrl);
     let taskUsers = [];
     taskUsers = await web.lists
-      .getById(GlobalConstants.TASK_USERS_LISTID)
+      .getByTitle("Task Users")
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover','Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
       .expand('AssingedToUser')
       .get();
       taskUsers.map((item:any,index:any)=>{
-        if(this.props.userDisplayName===item.Title&&item.Company=="Smalsus"){
+        if(this.props.Context._pageContext._user.loginName===item.Email&&item.Company=="Smalsus"){
          this.backGroundComment=true;
         }
       })
@@ -383,18 +381,21 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
  
   private async GetSmartMetaData(ClientCategory:any,ClientTime:any) {
      let array2:any=[];
-     if((ClientTime==null||ClientTimeArray==undefined)&&this.count==0){
-     var siteComp :any= {};
-      siteComp.SiteName=this.state.listName,
-      siteComp.ClienTimeDescription = 100,
-      siteComp.SiteIcon=this.state.listName
-      ClientTimeArray.push(siteComp);
-     }
-    
-     else{
-      ClientTimeArray= JSON.parse(ClientTime);
-      console.log(ClientTimeArray);
-     }
+   
+      if((ClientTime==null&&ClientTimeArray.length==0)){
+        var siteComp :any= {};
+         siteComp.SiteName=this.state.listName,
+         siteComp.ClienTimeDescription = 100,
+         siteComp.SiteIcon=this.state.listName
+         ClientTimeArray.push(siteComp);
+        }
+       
+        else if(ClientTime!=null){
+         ClientTimeArray= JSON.parse(ClientTime);
+         console.log(ClientTimeArray);
+        }
+ 
+   
 
     
     let web = new Web(this.props.siteUrl);
@@ -522,7 +523,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         'Name': senderObject[0].Email,
         'Suffix': senderObject[0].Suffix,
         'Title': senderObject[0].Title,
-        'userImage': senderObject[0].Item_x0020_Cover.Url
+        'userImage': senderObject[0]?.Item_x0020_Cover?.Url
       })
     }
     return userDeatails;
@@ -600,7 +601,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     });
 
   }
-
+ private openVersionHistory(){
+  
+  this.setState({
+    isopenversionHistory: true
+  })
+ }
   private OpenEditPopUp() {
     this.setState({
       isOpenEditPopup: true
@@ -1243,7 +1249,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               <div>
                                   <span >{imgData.UploadeDate}</span>
                                   <span className='round px-1'>
-                                    {imgData.UserImage != null &&
+                                    {imgData.UserImage !== null &&
                                       <img className='align-self-start' title={imgData.UserName} src={imgData.UserImage} />
                                     }
                                   </span>
@@ -1297,8 +1303,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </div>
                       <div>Last modified <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
                       </div>
+                      <div> {this.state.itemID?<VersionHistoryPopup taskId={this.state.itemID}listId={this.state.Result.listId} isOpen={this.state.isopenversionHistory}/>:''}</div>
                     </div>
+                   
+                  
                   }
+              
 
                 </div>
 
@@ -1325,7 +1335,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             </div>
           </div>
         </div>
-
+       
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} Call={() => { this.CallBack() }} /> : ''}
         {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''}
       

@@ -11,7 +11,9 @@ var Newrray: any = []
 const Picker = (item: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
-    const [select, setSelect] = React.useState('');
+    const [select, setSelect] = React.useState([]);
+    const [update, set] = React.useState([]);
+
 
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
@@ -23,6 +25,8 @@ const Picker = (item: any) => {
     const closePopupSmartTaxanomy = () => {
         //Example(item);
         setPopupSmartTaxanomy(false)
+        Newrray = []
+        setSelect([])
         item.Call();
 
     }
@@ -108,14 +112,7 @@ const Picker = (item: any) => {
             }
         });
     }
-    var isItemExists = (items: any, columnName: any) => {
-        var flag = false;
-        $.each(items, function (index: any, item: any) {
-            if (item.Id == columnName)
-                flag = true;
-        });
-        return flag;
-    }
+   
     
     const selectPickerData = (item: any) => {
         Newrray.push(item)
@@ -125,23 +122,43 @@ const Picker = (item: any) => {
 
     }
     const showSelectedData =(itemss:any)=>{
-        var categoriesItem = '';
+        var categoriesItem:any = []
         itemss.forEach(function(val:any){
             if (val.Title != undefined) {
-                categoriesItem = categoriesItem == "" ? val.Title : categoriesItem + ';' + val.Title;
+                categoriesItem.push(val);
+               
             }
         })
-        setSelect(categoriesItem)
+        const uniqueNames = categoriesItem.filter((val:any, id:any, array:any) => {
+            return array.indexOf(val) == id;  
+         })
+         console.log(uniqueNames)
+        setSelect(uniqueNames)
     }
     function Example(callBack: any, type: any) {
+        Newrray = []
+        setSelect([])
         item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
         setPopupSmartTaxanomy(false)
     }
-    const deleteSelectedCat=()=>{
-        Newrray = []
-        setSelect('')
+    const deleteSelectedCat=(val:any)=>{
+        select.map((valuee:any,index)=>{
+            if(val.Id == valuee.Id){
+                select.splice(index,1)
+            }
+            
+        })
+        Newrray.map((valuee:any,index:any)=>{
+            if(val.Id == valuee.Id){
+                Newrray.splice(index,1)
+            }
+            
+        })
+        
+        setSelect(select => ([...select]));
+       
        
     }
     return (
@@ -209,13 +226,26 @@ const Picker = (item: any) => {
                                 <input type="text" placeholder="Search here" id="txtnewsmartpicker" className="form-control  searchbox_height" />
                             </div>
 
-                                   
-                                    <div className="col-sm-12 ActivityBox">
+                                 
+                                         <div className="col-sm-12 ActivityBox">
+                                         {select.map((val:any)=>{
+                                    return(
+                                        <>
+                                    <span>
+                                        <a className="hreflink block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
+                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={()=>deleteSelectedCat(val)}/></a>
+                                    </span>
+                                
+                                        </>
+                                    )
+                                   })}
+                                   </div>
+                                    {/* <div className="col-sm-12 ActivityBox">
                                     <span>
                                         <a className="hreflink block" ng-click="removeSmartArray(item.Id)"> {select}
                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={()=>deleteSelectedCat()}/></a>
                                     </span>
-                                </div>
+                                </div> */}
                               
                             {/* <div className="col-sm-12 ActivityBox" ng-show="SmartTaxonomyName==newsmarttaxnomy">
                                 <span>
@@ -230,10 +260,10 @@ const Picker = (item: any) => {
                                 {AllCategories.map(function (item: any) {
                                     return (
                                         <>
-                                            <li>
+                                            <li onClick={() => selectPickerData(item)}>
 
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <a className="hreflink" ng-click="selectnewItem(item);" onClick={() => selectPickerData(item)}>
+                                                    <a className="hreflink" ng-click="selectnewItem(item);" >
                                                         <img className="flag_icon"
                                                             style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
                                                         {item.Title}
@@ -247,10 +277,10 @@ const Picker = (item: any) => {
                                                         return (
                                                             <>
                                                              {child1.Item_x005F_x0020_Cover != null &&
-                                                                <li>
+                                                                <li onClick={() => selectPickerData(child1)}>
 
                                                                    
-                                                                        <a className="hreflink" ng-click="selectnewItem(child1);" onClick={() => selectPickerData(child1)}>
+                                                                        <a className="hreflink" ng-click="selectnewItem(child1);" >
                                                                             <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
                                                                                 style={{ height: "12px", width: "18px;" }}
                                                                                 src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title} 
