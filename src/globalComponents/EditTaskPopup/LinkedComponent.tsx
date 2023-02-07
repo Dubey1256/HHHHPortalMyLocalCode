@@ -4,12 +4,14 @@ import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Version } from '@microsoft/sp-core-library';
 import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
 const LinkedComponent = (item: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setComponentsData] = React.useState([]);
     const [CheckBoxdata, setcheckbox] = React.useState([]);
+    const [table, setTable] = React.useState(data);
     const [selectedComponent, selctedCompo] = React.useState('');
     React.useEffect(() => {
         if (item.smartComponent != undefined && item.smartComponent.length > 0)
@@ -159,11 +161,31 @@ const LinkedComponent = (item: any) => {
         ) => {
             return (
                 <>
-                   
+                    <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                        {`Select Services`}
+                    </div>
                     <Tooltip />
                 </>
             );
         };
+    const sortBy = () => {
+
+        const copy = data
+
+        copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
+
+        setTable(copy)
+
+    }
+    const sortByDng = () => {
+
+        const copy = data
+
+        copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
+
+        setTable(copy)
+
+    }
     return (
         <Panel
             headerText={`Select Services`}
@@ -174,7 +196,7 @@ const LinkedComponent = (item: any) => {
             isBlocking={false}
         >
             <div className="serviepannelgreena">
-                <div className="modal-body">
+                <div className="modal-body p-0 mt-2">
                     <div className="Alltable mt-10">
                         <div className="col-sm-12 p-0 smart">
                             <div className="section-event">
@@ -188,8 +210,8 @@ const LinkedComponent = (item: any) => {
                                                             {item.Child != undefined &&
                                                                 <a className='hreflink'
                                                                     title="Tap to expand the childs">
-                                                                    <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                    <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                     </div>
                                                                 </a>
                                                             }
@@ -208,12 +230,10 @@ const LinkedComponent = (item: any) => {
                                                 <th style={{ width: "22%" }}>
                                                     <div style={{ width: "21%" }} className="smart-relative">
                                                         <input type="search" placeholder="Title" className="full_width searchbox_height" />
-
-                                                        {/* <span className="sorticon">
-                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
-
+                                                                <span className="sorticon">
+                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                </span>
 
                                                     </div>
                                                 </th>
@@ -222,10 +242,10 @@ const LinkedComponent = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
+                                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "20%" }}>
@@ -233,10 +253,10 @@ const LinkedComponent = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
+                                                                        </span>
 
                                                     </div>
                                                 </th>
@@ -245,10 +265,10 @@ const LinkedComponent = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                         <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                         <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
+                                                                    </span>
 
                                                     </div>
                                                 </th>
@@ -257,10 +277,10 @@ const LinkedComponent = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Item Rank"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                         <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                         <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
+                                                                    </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
@@ -268,10 +288,10 @@ const LinkedComponent = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Due"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                         <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                         <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
+                                                                    </span>
 
                                                     </div>
                                                 </th>
@@ -295,8 +315,8 @@ const LinkedComponent = (item: any) => {
                                                                                 {item.Child != undefined &&
                                                                                     <a className='hreflink'
                                                                                         title="Tap to expand the childs">
-                                                                                        <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                            : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                        <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                            : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                                         </div>
                                                                                     </a>
                                                                                 }
@@ -341,7 +361,7 @@ const LinkedComponent = (item: any) => {
                                                                             >{item.Title}
                                                                             </a>
                                                                             {item.Child != undefined &&
-                                                                                <span>({item.Child.length})</span>
+                                                                                <span className="ms-1">({item.Child.length})</span>
                                                                             }
 
                                                                             {item.Short_x0020_Description_x0020_On != null &&
@@ -403,8 +423,8 @@ const LinkedComponent = (item: any) => {
                                                                                                     {childitem.Child.length > 0 &&
                                                                                                         <a className='hreflink'
                                                                                                             title="Tap to expand the childs">
-                                                                                                            <div className="sign">{childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                                                                            <div className="sign">{childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                                                             </div>
                                                                                                         </a>
                                                                                                     }
@@ -446,7 +466,7 @@ const LinkedComponent = (item: any) => {
                                                                                                 >{childitem.Title}
                                                                                                 </a>
                                                                                                 {childitem.Child.length > 0 &&
-                                                                                                    <span>({childitem.Child.length})</span>
+                                                                                                    <span className="ms-1">({childitem.Child.length})</span>
                                                                                                 }
 
                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -525,7 +545,7 @@ const LinkedComponent = (item: any) => {
                                                                                                                 >{childinew.Title}
                                                                                                                 </a>
                                                                                                                 {childinew.Child.length > 0 &&
-                                                                                                                    <span>({childinew.Child.length})</span>
+                                                                                                                    <span className="ms-1">({childinew.Child.length})</span>
                                                                                                                 }
 
                                                                                                                 {childinew.Short_x0020_Description_x0020_On != null &&
@@ -596,7 +616,7 @@ const LinkedComponent = (item: any) => {
                     </div>
                 </div>
                 <footer className="float-end mt-2">
-                    <button type="button" className="btn btn-primary px-3" onClick={setModalIsOpenToOK}>OK</button>
+                    <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
                     <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
                 </footer>
             </div >
