@@ -557,7 +557,7 @@ function CreateTaskComponent(props: any) {
 
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
                     var item = {
-                        "Title": save.taskName,         
+                        "Title": save.taskName,
                         "Priority": priority,
                         "Categories": CategoryTitle,
                         "DueDate": save.DueDate,
@@ -637,10 +637,10 @@ function CreateTaskComponent(props: any) {
                     // }
                     //Code End
                     let web = new Web(selectedSite?.siteUrl?.Url);
-                    await web.lists.getById(selectedSite?.listId).items.add(item).then((data) => {
+                    await web.lists.getById(selectedSite?.listId).items.add(item).then(async (data) => {
                         let newTitle = data?.data?.Title
-                        let CreatedTaskID=data?.data?.Id
-                        if(CategoryTitle?.indexOf('Immediate')>-1||CategoryTitle?.indexOf( "Email Notification")>-1){
+                        let CreatedTaskID = data?.data?.Id
+                        if (CategoryTitle?.indexOf('Immediate') > -1 || CategoryTitle?.indexOf("Email Notification") > -1) {
                             let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                             var postData = {
                                 __metadata: { 'type': 'SP.Data.ImmediateNotificationsListItem' },
@@ -648,7 +648,7 @@ function CreateTaskComponent(props: any) {
                                 "TaskId": CreatedTaskID.toString(),
                                 "Site": save.siteType
                             };
-                            createTaskByListId(selectedSite?.siteUrl?.Url,listID,postData,save.siteType)
+                            await createTaskByListId(selectedSite?.siteUrl?.Url, listID, postData, save.siteType)
                         }
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
@@ -662,36 +662,36 @@ function CreateTaskComponent(props: any) {
             }
         }
     }
-    var createTaskByListId = function (siteUrl:any, listId:any, postData:any, siteName:any ) {
-  
-    var currentUserId = loggedInUser.AssingedToUserId
-    if (postData.Categories != undefined && (postData.Categories.toLowerCase().indexOf('approval') > -1)) {
-       globalCommon.makePostDataForApprovalProcess(postData)
-            .then(function (Data:any) {
-                globalCommon.addData(siteUrl, listId, Data.postData)
-                    .then(function (response:any) {
-                        response.d['Author'] = { Id: currentUserId };
-                        Promise.resolve(response);
-                    },
-                        function (error:any) {
-                            Promise.reject(error);
-                        });
-            },
-                function (error:any) {
-                    Promise.reject(error);
-                });
-    }
-    else {
-        globalCommon.addData(siteUrl, listId, postData)
-            .then(function (response) {
-                Promise.resolve(response);
-            },
-                function (error) {
-                    Promise.reject(error);
-                });
-    }
-    return Promise;
-};
+    var createTaskByListId = async (siteUrl: any, listId: any, postData: any, siteName: any) =>{
+
+        var currentUserId = loggedInUser.AssingedToUserId
+        if (postData.Categories != undefined && (postData.Categories.toLowerCase().indexOf('approval') > -1)) {
+            globalCommon.makePostDataForApprovalProcess(postData)
+                .then(async (Data: any)=> {
+                   await globalCommon.addData(siteUrl, listId, Data.postData)
+                        .then(function (response: any) {
+                            response.d['Author'] = { Id: currentUserId };
+                            Promise.resolve(response);
+                        },
+                            function (error: any) {
+                                Promise.reject(error);
+                            });
+                },
+                    function (error: any) {
+                        Promise.reject(error);
+                    });
+        }
+        else {
+           await globalCommon.addData(siteUrl, listId, postData)
+                .then(function (response) {
+                    Promise.resolve(response);
+                },
+                    function (error) {
+                        Promise.reject(error);
+                    });
+        }
+        return Promise;
+    };
 
     // const urlChange = (e: any) => {
     //    // setTaskUrl(e.target.value)
@@ -1008,13 +1008,13 @@ function CreateTaskComponent(props: any) {
     ];
 
     return (
-        <> <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
+        <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='Create-taskpage'>
                 <div className='row'>
                     <div className='col-sm-12'>
                         <dl className='d-grid text-right pull-right'><span className="pull-right"> <a data-interception="off" target='_blank' href={oldTaskIrl} style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
                     </div>
-                    <div className='col-sm-6'>
+                    <div className='col-sm-6 ps-0'>
                         <label className='full-width'>Task Name</label>
                         <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => setSave({ ...save, taskName: e.target.value })}></input>
                     </div>
@@ -1031,7 +1031,7 @@ function CreateTaskComponent(props: any) {
                         }
                     </div>
 
-                    <div className='col-sm-4'>{
+                    <div className='col-sm-4 pe-0'>{
                         save.portfolioType === 'Component' ?
                             <div className="input-group">
                                 <label className="form-label full-width">Component Portfolio</label>
@@ -1046,7 +1046,7 @@ function CreateTaskComponent(props: any) {
                                 {smartComponentData ? smartComponentData?.map((com: any) => {
                                     return (
                                         <>
-                                            <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
+                                            <div className="d-flex Component-container-edit-task" style={{ width: "89%" }}>
                                                 <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                 <a>
                                                     <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -1097,8 +1097,8 @@ function CreateTaskComponent(props: any) {
                     </div>
                 </div>
                 <div className='row mt-2'>
-                    <div className='col-sm-12'>
-                        <input type="text" placeholder='Enter task Url' value={save.taskUrl} className='col-sm-12' onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
+                    <div className='col-sm-12 p-0'>
+                        <input type="text" className='full-width' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
 
                     </div>
                 </div>
@@ -1112,7 +1112,7 @@ function CreateTaskComponent(props: any) {
                 </div>
                 {/*---------------- Sites -------------
             -------------------------------*/}
-                <div className='row mt-2'>
+                <div className='row mt-2 border'>
                     <fieldset>
                         <legend className="border-bottom fs-6 ">Sites</legend>
                         <ul className="quick-actions ">
@@ -1140,7 +1140,7 @@ function CreateTaskComponent(props: any) {
                 </div>
                 {/*---- Task Categories ---------
             -------------------------------*/}
-                <div className='row mt-2'>
+                <div className='row mt-2 border'>
                     <fieldset >
                         <legend className="border-bottom fs-6">Task Categories</legend>
                         <div className="row " style={{ width: "100%" }}>
@@ -1187,7 +1187,7 @@ function CreateTaskComponent(props: any) {
                 </div>
                 {/*-----Priority Rank --------
             -------------------------------*/}
-                <div className='row mt-2'>
+                <div className='row mt-2 border'>
                     <fieldset>
                         <legend className="border-bottom fs-6">Priority Rank</legend>
                         <dl className="row px-2 text-center">
@@ -1217,48 +1217,49 @@ function CreateTaskComponent(props: any) {
                 </div>
                 {/*-----Time --------
             -------------------------------*/}
-                <div className='row mt-2'>
-
-                    <legend className="border-bottom fs-6">Time</legend>
-                    <div className="row justify-content-md-center subcategoryTasks">
-                        {Timing.map((item: any) => {
-                            return (
-                                <>
-
+                <div className='row mt-2 border'>
+                    <fieldset>
+                        <legend className="border-bottom fs-6">Time</legend>
+                        <div className="row justify-content-md-center subcategoryTasks">
+                            {Timing.map((item: any) => {
+                                return (
                                     <>
-                                        <div className={isActive.time && save.Time === item.Title ? 'bg-siteColor selectedTaskList Timetask mx-1 p-2 px-2   text-center' : 'bg-siteColor Timetask mx-1 p-2 px-2  text-center'} onClick={() => setActiveTile("Time", "time", item.Title)} >
 
-                                            <a className='text-decoration-none text-white'>
-                                                <span className="icon-sites">
-                                                    <img className="icon-sites"
-                                                        src={item.Item_x005F_x0020_Cover.Url} />
-                                                </span>{item.Title}
-                                            </a>
-                                        </div>
+                                        <>
+                                            <div className={isActive.time && save.Time === item.Title ? 'bg-siteColor selectedTaskList Timetask mx-1 p-2 px-2   text-center' : 'bg-siteColor Timetask mx-1 p-2 px-2  text-center'} onClick={() => setActiveTile("Time", "time", item.Title)} >
 
-                                    </>
+                                                <a className='text-decoration-none text-white'>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src={item.Item_x005F_x0020_Cover.Url} />
+                                                    </span>{item.Title}
+                                                </a>
+                                            </div>
 
-                                </>)
-                        })}
+                                        </>
 
-                    </div>
+                                    </>)
+                            })}
 
+                        </div>
+                    </fieldset>
                 </div>
                 {/*-----Due date --------
             -------------------------------*/}
-                <div className='row mt-2'>
+                <div className='row mt-2 border'>
+                    <fieldset>
 
-                    <legend className="border-bottom fs-6">Due Date</legend>
-                    <div className="row justify-content-md-center text-center">
-                        <div className={isActive.dueDate && save.dueDate === 'Today' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
-                            <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
+                        <legend className="border-bottom fs-6">Due Date</legend>
+                        <div className="row justify-content-md-center text-center mb-2">
+                            <div className={isActive.dueDate && save.dueDate === 'Today' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
+                                <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
+                            </div>
+                            <div className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow"><a className='text-decoration-none text-white'>Tomorrow</a> </div>
+                            <div className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek"><a className='text-decoration-none text-white'>This Week</a> </div>
+                            <div className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a className='text-decoration-none text-white'>Next Week</a> </div>
+                            <div className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a className='text-decoration-none text-white'>This Month</a> </div>
                         </div>
-                        <div className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow"><a className='text-decoration-none text-white'>Tomorrow</a> </div>
-                        <div className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek"><a className='text-decoration-none text-white'>This Week</a> </div>
-                        <div className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a className='text-decoration-none text-white'>Next Week</a> </div>
-                        <div className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a className='text-decoration-none text-white'>This Month</a> </div>
-                    </div>
-
+                    </fieldset>
                 </div>
                 <div className='col text-end mt-3'>
                     {
@@ -1283,4 +1284,4 @@ function CreateTaskComponent(props: any) {
     )
 }
 
-export default CreateTaskComponent;
+export default CreateTaskComponent; 
