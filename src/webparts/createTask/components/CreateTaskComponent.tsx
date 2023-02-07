@@ -734,13 +734,15 @@ function CreateTaskComponent() {
     ];
 
     return (
-        <> <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
+       <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='Create-taskpage'>
                 <div className='row'>
                     <div className='col-sm-12'>
                         <dl className='d-grid text-right pull-right'><span className="pull-right"> <a target='_blank' data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx" style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
+                    <div className='col-sm-12 p-0'>
+                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a target='_blank' href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx" style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
                     </div>
-                    <div className='col-sm-6'>
+                    <div className='col-sm-6 ps-0'>
                         <label className='full-width'>Task Name</label>
                         <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => setSave({ ...save, taskName: e.target.value })}></input>
                     </div>
@@ -757,7 +759,7 @@ function CreateTaskComponent() {
                         }
                     </div>
 
-                    <div className='col-sm-4'>{
+                    <div className='col-sm-4 pe-0'>{
                         save.portfolioType === 'Component' ?
                             <div className="input-group">
                                 <label className="form-label full-width">Component Portfolio</label>
@@ -823,7 +825,7 @@ function CreateTaskComponent() {
                     </div>
                 </div>
                 <div className='row mt-2'>
-                    <div className='col-sm-12'>
+                    <div className='col-sm-12 p-0'>
                         <input type="text" placeholder='Enter task Url' value={taskUrl} className='col-sm-12' onChange={(e) => urlChange(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
 
                     </div>
@@ -840,7 +842,7 @@ function CreateTaskComponent() {
 
                 {/*---------------- Sites -------------
             -------------------------------*/}
-                <div className='row mt-2'>
+                <div className='row mt-2 border'>
                     <fieldset>
                         <legend className="border-bottom fs-6 ">Sites</legend>
                         <ul className="quick-actions ">
@@ -868,7 +870,7 @@ function CreateTaskComponent() {
                 </div>
                 {/*---- Task Categories ---------
             -------------------------------*/}
-                <div className='row mt-2'>
+                <div className='row mt-2 border'>
                     <fieldset >
                         <legend className="border-bottom fs-6">Task Categories</legend>
                         <div className="row " style={{ width: "100%" }}>
@@ -915,7 +917,7 @@ function CreateTaskComponent() {
                 </div>
                 {/*-----Priority Rank --------
             -------------------------------*/}
-                <div className='row mt-2'>
+                <div className='row mt-2 border'>
                     <fieldset>
                         <legend className="border-bottom fs-6">Priority Rank</legend>
                         <dl className="row px-2 text-center">
@@ -945,8 +947,8 @@ function CreateTaskComponent() {
                 </div>
                 {/*-----Time --------
             -------------------------------*/}
-                <div className='row mt-2'>
-
+                <div className='row mt-2 border'>
+                <fieldset>
                     <legend className="border-bottom fs-6">Time</legend>
                     <div className="row justify-content-md-center subcategoryTasks">
                         {Timing.map((item: any) => {
@@ -970,14 +972,15 @@ function CreateTaskComponent() {
                         })}
 
                     </div>
-
+                    </fieldset>
                 </div>
                 {/*-----Due date --------
             -------------------------------*/}
-                <div className='row mt-2'>
+                <div className='row mt-2 border'>
+                    <fieldset>
 
                     <legend className="border-bottom fs-6">Due Date</legend>
-                    <div className="row justify-content-md-center text-center">
+                    <div className="row justify-content-md-center text-center mb-2">
                         <div className={isActive.dueDate && save.dueDate === 'Today' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
                             <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
                         </div>
@@ -986,7 +989,7 @@ function CreateTaskComponent() {
                         <div className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a className='text-decoration-none text-white'>Next Week</a> </div>
                         <div className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a className='text-decoration-none text-white'>This Month</a> </div>
                     </div>
-
+                    </fieldset>
                 </div>
                 <div className='col text-end mt-3'>
                     {
@@ -1007,7 +1010,7 @@ function CreateTaskComponent() {
                 {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call}></LinkedComponent>}
             </div>
         </div>
-        </>
+</div></>
     )
 }
 
