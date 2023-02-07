@@ -11,6 +11,7 @@ import "bootstrap/js/dist/modal.js";
 import ComponentPortPolioPopup from "../../webparts/EditPopupFiles/ComponentPortfolioSelection";
 import axios, { AxiosResponse } from 'axios';
 import "bootstrap/js/dist/tab.js";
+import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import LinkedComponent from './LinkedComponent';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
@@ -20,6 +21,7 @@ import { TbReplace } from 'react-icons/tb'
 import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
 import TimeEntryPopup from './TimeEntryComponent';
+import VersionHistory from "../VersionHistroy/VersionHistory";
 
 
 var AllMetaData: any = []
@@ -57,6 +59,9 @@ const EditTaskPopup = (Items: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
+    const [ImageComparePopup, setImageComparePopup] = React.useState(false);
+    const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
+    const [compareImageArray, setCompareImageArray] = React.useState([]);
     const [composition, setComposition] = React.useState(false);
     const [FolderData, SetFolderData] = React.useState([]);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
@@ -139,7 +144,6 @@ const EditTaskPopup = (Items: any) => {
         }
 
     }, []);
-
     function EditComponentCallback() {
         Items.Items.Call();
     }
@@ -191,10 +195,11 @@ const EditTaskPopup = (Items: any) => {
         setComposition(!composition)
     }
 
+
     var count = 0;
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
-        axios.get("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$select=Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc")
+        axios.get("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc")
             .then((response: AxiosResponse) => {
                 taskUsers = response.data.value;
                 $.each(taskUsers, function (index: any, user: any) {
@@ -211,7 +216,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         AllTaskUsers.push(user);
                     }
-
+                    console.log("All Task Users On Edit TAsk Popup ============", AllTaskUsers)
                 });
                 if (AllMetaData != undefined && AllMetaData?.length > 0) {
                     GetEditData();
@@ -377,14 +382,14 @@ const EditTaskPopup = (Items: any) => {
                     updateFeedbackArray = [FeedBackItem]
                 }
                 setEditData(item)
-                console.log("Edit Data Task Popup ==================",item)
+                console.log("Edit Data Task Popup ==================", item)
                 setPriorityStatus(item.Priority)
             })
         } catch (error) {
             console.log("Error :", error.message);
         }
     }
-   const PercentCompleted = (StatusData: any) => {
+    const PercentCompleted = (StatusData: any) => {
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
@@ -408,7 +413,6 @@ const EditTaskPopup = (Items: any) => {
                 setWorkingMember(156);
             }
             EditData.CompletedDate = undefined;
-
         }
         if (StatusData.value == 10) {
             EditData.CompletedDate = undefined;
@@ -445,7 +449,6 @@ const EditTaskPopup = (Items: any) => {
             }
             EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
         }
-
     }
 
     const setWorkingMember = (statusId: any) => {
@@ -480,6 +483,7 @@ const EditTaskPopup = (Items: any) => {
             })
         })
     }
+
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete ? EditData.PercentComplete : null) })
@@ -570,10 +574,10 @@ const EditTaskPopup = (Items: any) => {
 
             }
             if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
-                let result:any =[];
-                if(SubCommentBoxData == "delete"){
+                let result: any = [];
+                if (SubCommentBoxData == "delete") {
                     result = CommentBoxData
-                }else{
+                } else {
                     result = CommentBoxData.concat(SubCommentBoxData)
                 }
                 updateFeedbackArray[0].FeedBackDescriptions = result;
@@ -662,7 +666,7 @@ const EditTaskPopup = (Items: any) => {
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                 Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
-                FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
+                FeedBack: updateFeedbackArray?.length > 0 && updateFeedbackArray[0]?.FeedBackDescriptions[0]?.Title?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
                 component_x0020_link: {
                     "__metadata": { type: "SP.FieldUrlValue" },
                     Description: "Description",
@@ -786,16 +790,16 @@ const EditTaskPopup = (Items: any) => {
     const CategoryChange = (e: any, type: any, Id: any) => {
         if (e.target.value == "true") {
             removeCategoryItem(type, Id);
-            if(type == "Phone"){
+            if (type == "Phone") {
                 setPhoneStatus(false)
             }
-            if(type == "Email"){
+            if (type == "Email") {
                 setEmailStatus(false)
             }
-            if(type == "Immediate"){
+            if (type == "Immediate") {
                 setImmediateStatus(false)
             }
-            if(type == "Approval"){
+            if (type == "Approval") {
                 setApprovalStatus(false)
             }
 
@@ -809,16 +813,16 @@ const EditTaskPopup = (Items: any) => {
             }
             ShareWebTypeData.push(tempObject);
             tempShareWebTypeData.push(tempObject);
-            if(type == "Phone"){
+            if (type == "Phone") {
                 setPhoneStatus(true)
             }
-            if(type == "Email"){
+            if (type == "Email") {
                 setEmailStatus(true)
             }
-            if(type == "Immediate"){
+            if (type == "Immediate") {
                 setImmediateStatus(true)
             }
-            if(type == "Approval"){
+            if (type == "Approval") {
                 setApprovalStatus(true)
             }
         }
@@ -832,8 +836,31 @@ const EditTaskPopup = (Items: any) => {
         setTimeSheetPopup(false);
         setModalIsOpenToFalse();
     }
+
+
+    const ImageCompareFunction = (imageData: any) => {
+        compareImageArray.push(imageData);
+        if (compareImageArray.length == 2) {
+            setImageComparePopup(true);
+        }
+    }
+    const ImageCompareFunctionClosePopup = () => {
+        setImageComparePopup(false);
+        setCompareImageArray([]);
+    }
+
+    const ImageCustomizeFunction = (currentImagIndex: any) => {
+        setImageCustomizePopup(true)
+    }
+
+    const ImageCustomizeFunctionClosePopup = () => {
+        setImageCustomizePopup(false)
+    }
+
+
     return (
         <>
+            {/* ***************** this is status panel *********** */}
             <Panel
                 headerText={`Update Task Status`}
                 isOpen={TaskStatusPopup}
@@ -869,6 +896,8 @@ const EditTaskPopup = (Items: any) => {
                     </footer>
                 </div>
             </Panel>
+            {/* ***************** this is Save And Time Sheet panel *********** */}
+
             <Panel
                 headerText={`Update Task Status`}
                 isOpen={TimeSheetPopup}
@@ -881,6 +910,8 @@ const EditTaskPopup = (Items: any) => {
                     <TimeEntryPopup props={Items.Items} />
                 </div>
             </Panel>
+            {/* ***************** this is Main Panel *********** */}
+
             <Panel
                 headerText={`${EditData.TaskId} ${EditData.Title}`}
                 type={PanelType.large}
@@ -1067,7 +1098,7 @@ const EditTaskPopup = (Items: any) => {
                                                         {ShareWebTypeData != undefined && ShareWebTypeData?.length > 0 ?
                                                             <div>
                                                                 {ShareWebTypeData?.map((type: any, index: number) => {
-                                                                    if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" ) {
+                                                                    if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email") {
                                                                         return (
                                                                             <div className="Component-container-edit-task d-flex my-1 justify-content-between">
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
@@ -1407,7 +1438,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} className="card-img-top" />
                                                                             <div className="card-footer d-flex justify-content-between p-1 px-2">
                                                                                 <div>
-                                                                                    <input type="checkbox" />
+                                                                                    <input type="checkbox" onClick={() => ImageCompareFunction(ImageDtl)} />
                                                                                     <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
                                                                                     <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                                                                     <span className="mx-1">
@@ -1415,7 +1446,9 @@ const EditTaskPopup = (Items: any) => {
                                                                                     </span>
                                                                                 </div>
                                                                                 <div>
-                                                                                    <span><AiOutlineFullscreen /></span>
+                                                                                    <span onClick={() => ImageCustomizeFunction(index)}>
+                                                                                        <AiOutlineFullscreen />
+                                                                                    </span>
                                                                                     <span className="mx-1" onClick={() => onImageUpdate(index)}>| <TbReplace /> |</span>
                                                                                     <span><RiDeleteBin6Line onClick={() => onImageRemove(index)} /></span>
                                                                                 </div>
@@ -1428,14 +1461,15 @@ const EditTaskPopup = (Items: any) => {
                                                             : null}
                                                         <div className="d-flex justify-content-between">
                                                             <a
-                                                                style={isDragging ? { color: "red" } : { color: "darkblue" }}
-                                                                onClick={onImageUpload}
-                                                                {...dragProps}
+                                                                className="hreflink"
                                                             >
                                                                 Upload Image
                                                             </a>
                                                             &nbsp;
-                                                            <a className="hreflink" onClick={onImageRemoveAll}> Remove all images</a>
+                                                            <a className="hreflink"
+                                                                onClick={onImageUpload}
+                                                                {...dragProps}
+                                                            > Add New Image</a>
                                                         </div>
                                                         {/* <span className="taskimage border mb-3">
                                                             {imageList.map((image: any, index: any) => (
@@ -1535,9 +1569,8 @@ const EditTaskPopup = (Items: any) => {
                                     <span > | </span>
                                     <a className="hreflink"> Move Task</a> |
                                     <span>
-                                        <img className="hreflink" title="Version History"
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Version_HG.png"
-                                        />
+                                        {EditData.ID ?
+                                            <VersionHistory taskId={EditData.ID} listId={Items.Items.listId} /> : null}
                                     </span>
                                 </div>
                             </div>
@@ -1582,6 +1615,270 @@ const EditTaskPopup = (Items: any) => {
                     {IsComponentPicker && <Picker props={ShareWebComponent} Call={Call}></Picker>}
                     {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call}></LinkedComponent>}
                 </div>
+            </Panel>
+            {/* ***************** this is Image compare panel *********** */}
+            <Panel
+                headerText={`${EditData.TaskId} ${EditData.Title}`}
+                isOpen={ImageComparePopup}
+                type={PanelType.custom}
+                customWidth="100%"
+                onDismiss={ImageCompareFunctionClosePopup}
+                isBlocking={false}
+            >
+                <div className="modal-body">
+                    <ul className="nav nav-tabs" id="myTab" role="tablist">
+                        <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
+                            BASIC INFORMATION
+                        </button>
+                        <button className="nav-link" id="IMAGE-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#IMAGETIMESHEET" type="button" role="tab" aria-controls="IMAGETIMESHEET" aria-selected="false">TIMESHEET</button>
+                    </ul>
+                    <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
+                        <div className="tab-pane show active" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="IMAGEINFORMATION">
+                            <div className="image-section row">
+                                <div className="single-image-section col-sm-6">
+                                    <img src={compareImageArray?.length > 0 ? compareImageArray[0].ImageUrl : ""} className='img-fluid' />
+                                </div>
+                                <div className="slider-image-section col-sm-6">
+                                    <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+                                        <div className="carousel-inner">
+                                            {TaskImages?.map((imgData: any, index: any) => {
+                                                return (
+                                                    <div className={index == 0 ? "carousel-item active" : "carousel-item"}>
+                                                        <img src={imgData.ImageUrl} className="d-block w-100" alt="..." />
+                                                    </div>
+                                                )
+                                            })}
+
+                                        </div>
+                                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span className="visually-hidden">Previous</span>
+                                        </button>
+                                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span className="visually-hidden">Next</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
+                            <div>
+                                <NewTameSheetComponent props={Items}
+                                    TeamConfigDataCallBack={getTeamConfigData}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    <div className="d-flex justify-content-between py-2">
+                        <div>
+                            <div className="">
+                                Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
+
+                                    {EditData.Author?.Title ? EditData.Author?.Title : ''}
+
+                                </span>
+                            </div>
+                            <div>
+                                Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                </span> By <span className="font-weight-normal siteColor">
+                                    {EditData.Editor?.Title ? EditData.Editor.Title : ''}
+                                </span>
+                            </div>
+                            <div>
+                                <a className="hreflink">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
+                                    </svg>
+                                    <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
+                                </a>
+                                <span> | </span>
+                                <a className="hreflink">
+                                    Copy
+                                    Task
+                                </a>
+                                <span > | </span>
+                                <a className="hreflink"> Move Task</a> |
+                                <span>
+                                    <span>
+                                        {EditData.ID ?
+                                            <VersionHistory taskId={EditData.ID} listId={EditData.listId} /> : null}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <span>
+                                    <a className="mx-2" target="_blank" data-interception="off"
+                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                        Go To Profile Page
+                                    </a>
+                                </span> ||
+                                <span>
+                                    <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
+                                        Save & Add Time-Sheet
+                                    </a>
+                                </span> ||
+
+                                <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
+                                    <img className="mail-width mx-2"
+                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                                    Share This Task
+                                </span> ||
+                                <a target="_blank" className="mx-2" data-interception="off"
+                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                    Open Out-Of-The-Box Form
+                                </a>
+                                <span >
+
+                                    <button type="button" className="btn btn-default ms-1 px-3" onClick={ImageCustomizeFunctionClosePopup}>
+                                        Close
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+
+            </Panel>
+            {/* ***************** this is Image customize panel *********** */}
+            <Panel
+                headerText={`${EditData.TaskId} ${EditData.Title}`}
+                isOpen={ImageCustomizePopup}
+                type={PanelType.custom}
+                customWidth="100%"
+                onDismiss={ImageCustomizeFunctionClosePopup}
+                isBlocking={false}
+            >
+                <div className="modal-body">
+                    <ul className="nav nav-tabs" id="myTab" role="tablist">
+                        <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
+                            BASIC INFORMATION
+                        </button>
+                        <button className="nav-link" id="IMAGE-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#IMAGETIMESHEET" type="button" role="tab" aria-controls="IMAGETIMESHEET" aria-selected="false">TIMESHEET</button>
+                    </ul>
+                    <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
+                        <div className="tab-pane show active" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="IMAGEINFORMATION">
+                            <div className="image-section row">
+                                <div className="slider-image-section col-sm-6">
+                                    <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+                                        <div className="carousel-inner">
+                                            {TaskImages?.map((imgData: any, index: any) => {
+                                                return (
+                                                    <div className={index == 0 ? "carousel-item active" : "carousel-item"}>
+                                                        <img src={imgData.ImageUrl} className="d-block w-100" alt="..." />
+                                                    </div>
+                                                )
+                                            })}
+
+                                        </div>
+                                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span className="visually-hidden">Previous</span>
+                                        </button>
+                                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span className="visually-hidden">Next</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="comment-section col-sm-6" style={{
+                                    overflowY: "auto",
+                                    height: "600px"
+                                }}>
+                                    <div>
+                                        {EditData.Title != null ? <>
+                                            <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
+                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} />
+                                        </>
+                                            : null}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
+                            <div>
+                                <NewTameSheetComponent props={Items}
+                                    TeamConfigDataCallBack={getTeamConfigData}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    <div className="d-flex justify-content-between py-2">
+                        <div>
+                            <div className="">
+                                Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
+
+                                    {EditData.Author?.Title ? EditData.Author?.Title : ''}
+
+                                </span>
+                            </div>
+                            <div>
+                                Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                </span> By <span className="font-weight-normal siteColor">
+                                    {EditData.Editor?.Title ? EditData.Editor.Title : ''}
+                                </span>
+                            </div>
+                            <div>
+                                <a className="hreflink">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
+                                    </svg>
+                                    <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
+                                </a>
+                                <span> | </span>
+                                <a className="hreflink">
+                                    Copy
+                                    Task
+                                </a>
+                                <span > | </span>
+                                <a className="hreflink"> Move Task</a> |
+                                <span>
+                                    <span>
+                                        {EditData.ID ?
+                                            <VersionHistory taskId={EditData.ID} listId={EditData.listId} /> : null}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <span>
+                                    <a className="mx-2" target="_blank" data-interception="off"
+                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                        Go To Profile Page
+                                    </a>
+                                </span> ||
+                                <span>
+                                    <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
+                                        Save & Add Time-Sheet
+                                    </a>
+                                </span> ||
+
+                                <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
+                                    <img className="mail-width mx-2"
+                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                                    Share This Task
+                                </span> ||
+                                <a target="_blank" className="mx-2" data-interception="off"
+                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                    Open Out-Of-The-Box Form
+                                </a>
+                                <span >
+
+                                    <button type="button" className="btn btn-default ms-1 px-3" onClick={ImageCustomizeFunctionClosePopup}>
+                                        Close
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
             </Panel>
         </>
     )

@@ -39,36 +39,23 @@ export default function VersionHistoryPopup(props: any) {
 
   return (
     <>
-     <span>Version History</span> <a style={{ color: 'blue', fontSize: 13, cursor: 'pointer' }} onClick={handleShow}>
+      <span className='siteColor mx-1'>Version History</span> <a style={{ color: 'blue', fontSize: 13, cursor: 'pointer' }} onClick={handleShow}>
         <img className="hreflink" title="Version History"
           src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Version_HG.png"
         />
       </a>
 
-      <Panel headerText="Version History" 
+      <Panel headerText="Version History"
         isOpen={show}
         type={PanelType.custom}
         customWidth="1091px"
         onDismiss={handleClose}>
-          <div  dangerouslySetInnerHTML={{ __html: data }}></div>
-          <Button variant="secondary" onClick={handleClose}>
-            Cancel
-          </Button>
+        <div dangerouslySetInnerHTML={{ __html: data }}></div>
+        <Button variant="secondary" className="float-end" onClick={handleClose}>
+          Cancel
+        </Button>
       </Panel>
-          {/* <Modal size='lg' show={show} onHide={handleClose}>
-          <Modal.Header >
-            <Modal.Title className='modal-title'>Version History</Modal.Title>
-            <div role={'button'} onClick={handleClose}>&#10006;</div>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="table_scroll" dangerouslySetInnerHTML={{ __html: data}}></div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal> */}
-      </>
+      
+    </>
   );
 }
