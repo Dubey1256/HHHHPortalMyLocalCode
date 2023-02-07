@@ -204,7 +204,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         <textarea
                                             style={{ width: "100%" }}
                                             className="form-control"
-                                            defaultValue={obj.Title + " " + (obj.SeeAbove ? "See" + obj.taskIndex : "")}
+                                            defaultValue={obj.Title}
                                             name='Title'
                                         ></textarea>
                                     </div>
