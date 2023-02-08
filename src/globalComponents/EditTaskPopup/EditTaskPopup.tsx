@@ -1010,7 +1010,6 @@ const EditTaskPopup = (Items: any) => {
         setImageCustomizePopup(false)
     }
 
-
     const onRenderCustomHeaderMain = () => {
         return (
             <>
@@ -1080,7 +1079,6 @@ const EditTaskPopup = (Items: any) => {
             {/* ***************** this is Main Panel *********** */}
 
             <Panel
-
                 type={PanelType.large}
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}

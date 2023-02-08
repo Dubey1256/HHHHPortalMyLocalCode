@@ -2,6 +2,7 @@ import * as React from "react";
 // import ImagesC from "./Images";
 import { arraysEqual, Modal, Panel, PanelType, TextField } from 'office-ui-fabric-react';
 
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
@@ -24,6 +25,7 @@ import TeamConfigurationCard from "../../globalComponents/TeamConfiguration/Team
 import Tooltip from "../../globalComponents/Tooltip";
 import ImagesC from "./Image";
 import { AllOut } from "@material-ui/icons";
+import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
 
 var PostTechnicalExplanations = ''
 var PostDeliverables = ''
@@ -36,6 +38,7 @@ var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var Backupdata:any=[]
 var BackupCat:any=''
+let listID ="EC34B38F-0669-480A-910C-F84E92E58ADF"
 function EditInstitution(item: any) {
     // Id:any
 
@@ -330,6 +333,7 @@ function EditInstitution(item: any) {
 
                 }
             }
+            if(item.Sitestagging != undefined && item.Sitestagging != null){
             item.Sitestagging = JSON.parse(item.Sitestagging)
             item.Sitestagging.forEach(function(site:any){
                 siteDetail.forEach(function (siteDetail:any) {
@@ -343,6 +347,7 @@ function EditInstitution(item: any) {
                 }
             })
         })
+    }
 
             item.AssignedUsers = [];
             AllUsers?.map((userData: any) => {
@@ -1476,10 +1481,11 @@ function EditInstitution(item: any) {
                                                 </div>
                                                 <div className="col mt-2">
                                                     <div className="input-group">
-                                                        <label className="form-label full-width  mx-2">Task Users</label>
+                                                       
                                                         {EditData.AssignedUsers?.map((userDtl: any, index: any) => {
                                                             return (
                                                                 <div className="TaskUsers" key={index}>
+                                                                     <label className="form-label full-width  mx-2">Task Users</label>
                                                                     <a
                                                                         target="_blank"
                                                                         href={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} >
@@ -1620,193 +1626,200 @@ function EditInstitution(item: any) {
 
 
                                 <div className="tab-pane" id="concept" role="tabpanel" aria-labelledby="profile-tab">
+                                    <div className="row">
                                     <div className="col-sm-7">
+                                        <div className="row">
                                         <TeamConfigurationCard ItemInfo={item.props} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                        </div>
+                                        <div className="row">
+
+<section className='accordionbox'>
+
+    <div className="accordion p-0  overflow-hidden">
+        <div className="card shadow-none mb-2">
+
+            <div className="accordion-item border-0" id="t_draggable1">
+                <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showsAdmin')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                    <span className="sign">{EditData.showsAdmin ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Admin Notes</span></button></div>
+                <div className="accordion-collapse collapse show"  >
+
+                    {EditData.showsAdmin &&
+                        <div className="accordion-body pt-1" id="testDiv1">
+                            <textarea className="full_width" defaultValue={EditData.Admin_x0020_Notes} onChange={(e) => EditData.Admin_x0020_Notes = e.target.value}>
+
+                            </textarea>
+                        </div>
+
+
+                    }
+
+
+                </div>
+            </div>
+
+        </div>
+        <div className="card shadow-none  mb-2">
+            <div className="accordion-item border-0" id="t_draggable1">
+                <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showdes')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                    <span className="fw-medium font-sans-serif text-900"><span className="sign">{EditData.showdes ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span> Description</span></button></div>
+                <div className="accordion-collapse collapse show"  >
+
+                    {EditData.showdes &&
+                        <div className="accordion-body pt-1" id="testDiv1">
+                            <span className="form-check text-end">
+                                <input type="checkbox" defaultChecked={EditData.descriptionVerified === true}></input>
+                                <span className="ps-1">Verified</span>
+                            </span>
+                            {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
+                            <HtmlEditorCard editorValue={EditData.Body != undefined ? EditData.Body : ''} HtmlEditorStateChange={HtmlEditorCallBack}></HtmlEditorCard>
+
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+        <div className="card shadow-none  mb-2">
+            <div className="accordion-item border-0" id="t_draggable1">
+                <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'show')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                    <span className="fw-medium font-sans-serif text-900"><span className="sign">{EditData.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
+                <div className="accordion-collapse collapse show"  >
+
+                    {EditData.show &&
+                        <div className="accordion-body pt-1" id="testDiv1">
+                            <span className="form-check text-end">
+                                <input type="checkbox" defaultChecked={EditData.ShortDescriptionVerified === true}></input>
+                                <span className="ps-1">Verified</span>
+                            </span>
+
+                            <HtmlEditorCard editorValue={EditData.Short_x0020_Description_x0020_On != undefined ? EditData.Short_x0020_Description_x0020_On : ''} HtmlEditorStateChange={SortHtmlEditorCallBack}></HtmlEditorCard>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div className="card shadow-none  mb-2">
+
+            <div className="accordion-item border-0" id="t_draggable1">
+                <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showl')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                    <span className="sign">{EditData.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
+                <div className="accordion-collapse collapse show" >
+
+
+                    {EditData.showl &&
+                        <div className="accordion-body pt-1" id="testDiv1">
+                            <span className="form-check text-end">
+                                <input type="checkbox" defaultChecked={EditData.BackgroundVerified === true} onChange={(e) => EditData.BackgroundVerified = e.target.value}></input>
+                                <span className="ps-1">Verified</span>
+                            </span>
+                            <textarea className="full_width" defaultValue={EditData.Background} onChange={(e) => EditData.Background = e.target.value}>
+
+                            </textarea>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+
+        </div>
+
+        <div className="card shadow-none mb-2">
+
+            <div className="accordion-item border-0" id="t_draggable1">
+                <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'shows')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                    <span className="sign">{EditData.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Idea</span></button></div>
+                <div className="accordion-collapse collapse show"  >
+
+                    {EditData.shows &&
+                        <div className="accordion-body pt-1" id="testDiv1">
+                            <span className="form-check text-end">
+                                <input type="checkbox" defaultChecked={EditData.IdeaVerified === true} onChange={(e) => EditData.BackgroundVerified = e.target.value}></input>
+                                <span className="ps-1">Verified</span>
+                            </span>
+                            <textarea className="full_width" defaultValue={EditData.Idea} onChange={(e) => EditData.Idea = e.target.value}>
+
+                            </textarea>
+                        </div>
+
+                    }
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+        <div className="card shadow-none mb-2">
+
+            <div className="accordion-item border-0" id="t_draggable1">
+                <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showj')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                    <span className="sign">{EditData.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
+                <div className="accordion-collapse collapse show"  >
+
+                    {EditData.showj &&
+                        <div className="accordion-body pt-1" id="testDiv1">
+                            <span className="form-check text-end">
+                                <input type="checkbox" defaultChecked={EditData.ValueAddedVerified === true} onChange={(e) => EditData.ValueAddedVerified = e.target.value}></input>
+                                <span className="ps-1">Verified</span>
+                            </span>
+                            <textarea className="full_width" defaultValue={EditData.ValueAdded} onChange={(e) => EditData.ValueAdded = e.target.value}>
+
+                            </textarea>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+
+        </div>
+
+        <div className="card shadow-none mb-2">
+
+            <div className="accordion-item border-0" id="t_draggable1">
+                <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showm')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                    <span className="sign">{EditData.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
+                <div className="accordion-collapse collapse show"  >
+
+                    {EditData.showm &&
+                        <div className="accordion-body pt-1" id="testDiv1">
+                            <span className="form-check text-end">
+                                <input type="checkbox" defaultChecked={EditData.DeliverablesVerified === true}></input>
+                                <span className="ps-1">Verified</span>
+                            </span>
+                            <HtmlEditorCard editorValue={EditData.Deliverables != undefined ? EditData.Deliverables : ''} HtmlEditorStateChange={DeliverablesHtmlEditorCallBack}></HtmlEditorCard>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+</section>
+
+</div>
                                     </div>
-                                    <div className="col-sm-7">
-
-                                        <section className='accordionbox'>
-
-                                            <div className="accordion p-0  overflow-hidden">
-                                                <div className="card shadow-none mb-2">
-
-                                                    <div className="accordion-item border-0" id="t_draggable1">
-                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showsAdmin')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                            <span className="sign">{EditData.showsAdmin ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Admin Notes</span></button></div>
-                                                        <div className="accordion-collapse collapse show"  >
-
-                                                            {EditData.showsAdmin &&
-                                                                <div className="accordion-body pt-1" id="testDiv1">
-                                                                    <textarea className="full_width" defaultValue={EditData.Admin_x0020_Notes} onChange={(e) => EditData.Admin_x0020_Notes = e.target.value}>
-
-                                                                    </textarea>
-                                                                </div>
-
-
-                                                            }
-
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <div className="card shadow-none  mb-2">
-                                                    <div className="accordion-item border-0" id="t_draggable1">
-                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showdes')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                            <span className="fw-medium font-sans-serif text-900"><span className="sign">{EditData.showdes ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span> Description</span></button></div>
-                                                        <div className="accordion-collapse collapse show"  >
-
-                                                            {EditData.showdes &&
-                                                                <div className="accordion-body pt-1" id="testDiv1">
-                                                                    <span className="form-check text-end">
-                                                                        <input type="checkbox" defaultChecked={EditData.descriptionVerified === true}></input>
-                                                                        <span className="ps-1">Verified</span>
-                                                                    </span>
-                                                                    {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
-                                                                    <HtmlEditorCard editorValue={EditData.Body != undefined ? EditData.Body : ''} HtmlEditorStateChange={HtmlEditorCallBack}></HtmlEditorCard>
-
-                                                                </div>
-                                                            }
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <div className="card shadow-none  mb-2">
-                                                    <div className="accordion-item border-0" id="t_draggable1">
-                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'show')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                            <span className="fw-medium font-sans-serif text-900"><span className="sign">{EditData.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
-                                                        <div className="accordion-collapse collapse show"  >
-
-                                                            {EditData.show &&
-                                                                <div className="accordion-body pt-1" id="testDiv1">
-                                                                    <span className="form-check text-end">
-                                                                        <input type="checkbox" defaultChecked={EditData.ShortDescriptionVerified === true}></input>
-                                                                        <span className="ps-1">Verified</span>
-                                                                    </span>
-
-                                                                    <HtmlEditorCard editorValue={EditData.Short_x0020_Description_x0020_On != undefined ? EditData.Short_x0020_Description_x0020_On : ''} HtmlEditorStateChange={SortHtmlEditorCallBack}></HtmlEditorCard>
-                                                                </div>
-                                                            }
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-
-
-                                                <div className="card shadow-none  mb-2">
-
-                                                    <div className="accordion-item border-0" id="t_draggable1">
-                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showl')} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                            <span className="sign">{EditData.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
-                                                        <div className="accordion-collapse collapse show" >
-
-
-                                                            {EditData.showl &&
-                                                                <div className="accordion-body pt-1" id="testDiv1">
-                                                                    <span className="form-check text-end">
-                                                                        <input type="checkbox" defaultChecked={EditData.BackgroundVerified === true} onChange={(e) => EditData.BackgroundVerified = e.target.value}></input>
-                                                                        <span className="ps-1">Verified</span>
-                                                                    </span>
-                                                                    <textarea className="full_width" defaultValue={EditData.Background} onChange={(e) => EditData.Background = e.target.value}>
-
-                                                                    </textarea>
-                                                                </div>
-                                                            }
-
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-                                                <div className="card shadow-none mb-2">
-
-                                                    <div className="accordion-item border-0" id="t_draggable1">
-                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'shows')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                            <span className="sign">{EditData.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Idea</span></button></div>
-                                                        <div className="accordion-collapse collapse show"  >
-
-                                                            {EditData.shows &&
-                                                                <div className="accordion-body pt-1" id="testDiv1">
-                                                                    <span className="form-check text-end">
-                                                                        <input type="checkbox" defaultChecked={EditData.IdeaVerified === true} onChange={(e) => EditData.BackgroundVerified = e.target.value}></input>
-                                                                        <span className="ps-1">Verified</span>
-                                                                    </span>
-                                                                    <textarea className="full_width" defaultValue={EditData.Idea} onChange={(e) => EditData.Idea = e.target.value}>
-
-                                                                    </textarea>
-                                                                </div>
-
-                                                            }
-
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-
-
-
-
-                                                <div className="card shadow-none mb-2">
-
-                                                    <div className="accordion-item border-0" id="t_draggable1">
-                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showj')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                            <span className="sign">{EditData.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
-                                                        <div className="accordion-collapse collapse show"  >
-
-                                                            {EditData.showj &&
-                                                                <div className="accordion-body pt-1" id="testDiv1">
-                                                                    <span className="form-check text-end">
-                                                                        <input type="checkbox" defaultChecked={EditData.ValueAddedVerified === true} onChange={(e) => EditData.ValueAddedVerified = e.target.value}></input>
-                                                                        <span className="ps-1">Verified</span>
-                                                                    </span>
-                                                                    <textarea className="full_width" defaultValue={EditData.ValueAdded} onChange={(e) => EditData.ValueAdded = e.target.value}>
-
-                                                                    </textarea>
-                                                                </div>
-                                                            }
-
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-                                                <div className="card shadow-none mb-2">
-
-                                                    <div className="accordion-item border-0" id="t_draggable1">
-                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => expendcollapsAccordion(EditData, 'showm')}><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                            <span className="sign">{EditData.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
-                                                        <div className="accordion-collapse collapse show"  >
-
-                                                            {EditData.showm &&
-                                                                <div className="accordion-body pt-1" id="testDiv1">
-                                                                    <span className="form-check text-end">
-                                                                        <input type="checkbox" defaultChecked={EditData.DeliverablesVerified === true}></input>
-                                                                        <span className="ps-1">Verified</span>
-                                                                    </span>
-                                                                    <HtmlEditorCard editorValue={EditData.Deliverables != undefined ? EditData.Deliverables : ''} HtmlEditorStateChange={DeliverablesHtmlEditorCallBack}></HtmlEditorCard>
-                                                                </div>
-                                                            }
-
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-
-
-
-
-                                        </section>
-
+                                    <div className="col-sm-5">
+                                    
+                                    </div>
                                     </div>
                                 </div>
                                 <div className="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
@@ -1877,6 +1890,7 @@ function EditInstitution(item: any) {
 
                                             </svg> Delete this item
                                         </a>
+                                        <span> {EditData.ID?<VersionHistoryPopup taskId={EditData.ID} listId={listID}/>:''}</span>
                                     </div>
                                 </div>
                                 <div>
