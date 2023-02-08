@@ -24,7 +24,6 @@ import TimeEntryPopup from './TimeEntryComponent';
 import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 
-
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -989,8 +988,6 @@ const EditTaskPopup = (Items: any) => {
         setTimeSheetPopup(false);
         setModalIsOpenToFalse();
     }
-
-
     const ImageCompareFunction = (imageData: any) => {
         compareImageArray.push(imageData);
         if (compareImageArray.length == 2) {
@@ -1743,7 +1740,7 @@ const EditTaskPopup = (Items: any) => {
                                     <a className="hreflink"> Move Task</a> |
                                     <span>
                                         {EditData.ID ?
-                                            <VersionHistory taskId={EditData.ID} listId={Items.Items.listId} /> : null}
+                                            <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
                                     </span>
                                 </div>
                             </div>
@@ -1912,7 +1909,7 @@ const EditTaskPopup = (Items: any) => {
                                 <span>
                                     <span>
                                         {EditData.ID ?
-                                            <VersionHistory taskId={EditData.ID} listId={EditData.listId} /> : null}
+                                            <VersionHistory taskId={EditData.Id} listId={EditData.listId} /> : null}
                                     </span>
                                 </span>
                             </div>
@@ -2538,7 +2535,7 @@ const EditTaskPopup = (Items: any) => {
                                 <span>
                                     <span>
                                         {EditData.ID ?
-                                            <VersionHistory taskId={EditData.ID} listId={EditData.listId} /> : null}
+                                            <VersionHistory taskId={EditData.Id} listId={EditData.listId} /> : null}
                                     </span>
                                 </span>
                             </div>
