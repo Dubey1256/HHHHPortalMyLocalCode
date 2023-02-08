@@ -24,7 +24,6 @@ import TimeEntryPopup from './TimeEntryComponent';
 import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 
-
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
