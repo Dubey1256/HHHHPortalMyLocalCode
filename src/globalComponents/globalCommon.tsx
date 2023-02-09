@@ -1,11 +1,12 @@
 import * as React from "react";
 import { useEffect, useState } from 'react';
-import { Web } from "sp-pnp-js";
+import pnp, { sp, Web } from "sp-pnp-js";
 import * as moment from 'moment';
 import { GlobalConstants } from '../globalComponents/LocalCommon';
+import { IContextInfo } from "@pnp/sp/sites";
 
 
-export const getData = async (url:any,listId:any,query:any) => {
+export const getData = async (url: any, listId: any, query: any) => {
     const web = new Web(url);
     let result;
     try {
@@ -16,10 +17,10 @@ export const getData = async (url:any,listId:any,query:any) => {
     }
 
     return result;
-    
+
 }
 
-export const addData = async (url:any,listId:any,item:any) => {
+export const addData = async (url: any, listId: any, item: any) => {
     const web = new Web(url);
     let result;
     try {
@@ -31,7 +32,7 @@ export const addData = async (url:any,listId:any,item:any) => {
     return result;
 }
 
-export const updateItemById = async (url:any,listId:any,item:any,itemId:any) => {
+export const updateItemById = async (url: any, listId: any, item: any, itemId: any) => {
     const web = new Web(url);
     let result;
     try {
@@ -43,7 +44,7 @@ export const updateItemById = async (url:any,listId:any,item:any,itemId:any) => 
     return result;
 }
 
-export const deleteItemById = async (url:any,listId:any,item:any,itemId:any) => {
+export const deleteItemById = async (url: any, listId: any, item: any, itemId: any) => {
     const web = new Web(url);
     let result;
     try {
@@ -55,130 +56,130 @@ export const deleteItemById = async (url:any,listId:any,item:any,itemId:any) => 
     return result;
 }
 
-export const getTaskId=(item: any)=> {
+export const getTaskId = (item: any) => {
     let Shareweb_x0020_ID = undefined;
     try {
-    
-    if (item != undefined && item.SharewebTaskType == undefined) {
-        Shareweb_x0020_ID = 'T' + item.Id;
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
-        Shareweb_x0020_ID = 'T' + item.Id;
-        if (item.SharewebTaskType.Title == 'MileStone')
-            Shareweb_x0020_ID = 'M' + item.Id;
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
-        if (item.Component != undefined) {
-            if (item.Component != undefined && item.Component.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
-            }
-        }
-        if (item.Services != undefined) {
-            if (item.Services != undefined && item.Services.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
-            }
-        }
-        if (item.Events != undefined) {
-            if (item.Events != undefined && item.Events.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
-            }
-        }
-        if (item.Component != undefined && item.Events != undefined && item.Services != undefined)
-            // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-        //}
-        if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-        }
-        if (item.SharewebTaskType.Title == 'Project')
-            Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
 
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Workstream' || item.SharewebTaskType.Title == 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
-        if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-            // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-            // }
+        if (item != undefined && item.SharewebTaskType == undefined) {
+            Shareweb_x0020_ID = 'T' + item.Id;
         }
-        if (item.Component != undefined) {
-            if (item.Component != undefined && item.Component.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
+            Shareweb_x0020_ID = 'T' + item.Id;
+            if (item.SharewebTaskType.Title == 'MileStone')
+                Shareweb_x0020_ID = 'M' + item.Id;
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item.Component.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
+                }
             }
-        }
-        if (item.Services != undefined) {
-            if (item.Services != undefined && item.Services.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item.Services.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
+                }
             }
-        }
-        if (item.Events != undefined) {
-            if (item.Events != undefined && item.Events.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
+                }
             }
-        }
-        if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-        }
-        if (item.SharewebTaskType.Title == 'Step')
-            Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
+            if (item.Component != undefined && item.Events != undefined && item.Services != undefined)
+                // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
+            //}
+            if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
+            }
+            if (item.SharewebTaskType.Title == 'Project')
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
 
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
-        if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-            // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-            //  }
         }
-        if (item.Component != undefined) {
-            if (item.Component != undefined && item.Component.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Workstream' || item.SharewebTaskType.Title == 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                // }
             }
-        }
-        if (item.Services != undefined) {
-            if (item.Services != undefined && item.Services.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item.Component.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
             }
-        }
-        if (item.Events != undefined) {
-            if (item.Events != undefined && item.Events.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item.Services.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
             }
-        }
-        if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-        }
-        if (item.SharewebTaskType.Title == 'MileStone') {
-            Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
-        }
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No == undefined) {
-        if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-            //  if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
-            // }
-        }
-        if (item.Component != undefined) {
-            if (item.Component != undefined && item.Component.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
             }
-        }
-        if (item.Services != undefined) {
-            if (item.Services != undefined && item.Services.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
             }
-        }
-        if (item.Events != undefined) {
-            if (item.Events != undefined && item.Events.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
-            }
-        }
-        if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
-        }
-        if (item.SharewebTaskType.Title == 'MileStone') {
-            Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
-        }
+            if (item.SharewebTaskType.Title == 'Step')
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
 
-    }
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                //  }
+            }
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item.Component.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item.Services.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+            }
+            if (item.SharewebTaskType.Title == 'MileStone') {
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
+            }
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No == undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                //  if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                // }
+            }
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item.Component.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item.Services.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
+            }
+            if (item.SharewebTaskType.Title == 'MileStone') {
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
+            }
+
+        }
     }
     catch (error) {
         return Promise.reject(error);
@@ -186,7 +187,7 @@ export const getTaskId=(item: any)=> {
     return Shareweb_x0020_ID;
 }
 
-export const loadTaskUsers= async ()=> {
+export const loadTaskUsers = async () => {
     let taskUser;
     try {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -211,7 +212,7 @@ export const parseJSON = (jsonItem: any) => {
     }
     return json;
 };
-export const  GetIconImageUrl =(listName: any, listUrl: any, Item: any) =>{
+export const GetIconImageUrl = (listName: any, listUrl: any, Item: any) => {
     var IconUrl = '';
     if (listName != undefined) {
         let TaskListsConfiguration = parseJSON(GlobalConstants.LIST_CONFIGURATIONS_TASKS);
@@ -233,3 +234,37 @@ export const  GetIconImageUrl =(listName: any, listUrl: any, Item: any) =>{
     }
     return IconUrl;
 }
+
+// var GetGroupsByCurrentUser = async function (siteUrl: any) {
+//     if (siteUrl == undefined) {
+//         const oContext: IContextInfo = await pnp.sp.site.getContextInfo();
+//         siteUrl = oContext.WebFullUrl
+//     }
+//     var query = "/_api/web/currentuser/?$expand=groups";
+//     pnp.sp.web.siteUsers.get().then(function(data) {
+//     return baseService.getRequest(siteUrl, query);
+// };
+
+export const IsCurrentUserSiteOwner =  async () => {
+    //var deferred = $q.defer();
+    var IsSiteAdmin = false;
+    // if (_spPageContextInfo.isSiteAdmin) {    
+    //     IsSiteAdmin = true;
+    // } else {
+    pnp.sp.web.siteGroups.get().then(function (data) {
+        //console.log(data.d.Groups.results);
+        data.forEach(data.d.Groups.results, function (value: any, i: any) {
+            if (data.d.Groups.results[i].Title != undefined && (data.d.Groups.results[i].Title == 'HHHH Owners' || data.d.Groups.results[i].Title == 'HHHH SP-Admin' || data.d.Groups.results[i].Title == 'HHHH SP-Manager' || data.d.Groups.results[i].Title == 'GmBH Owners' || data.d.Groups.results[i].Title == 'TeamK4Bundestag Owners' || data.d.Groups.results[i].Title == 'HHHH Administrators') || (data.d.Groups.results[i].Title != undefined && data.d.Groups.results[i].OwnerTitle == "HHHH Owners")) {
+                IsSiteAdmin = true;
+            } // end of IF system account
+        }); // end of for loop
+
+        //return IsSiteAdmin;
+    }, // en
+        function (error) {
+            IsSiteAdmin = false;
+        });
+    //}
+    return IsSiteAdmin;
+    ;
+};

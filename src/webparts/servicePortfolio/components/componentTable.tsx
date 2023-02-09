@@ -21,7 +21,11 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
-
+import { sp } from '@pnp/sp';
+import '@pnp/sp/webs';
+import '@pnp/sp/site-users';
+import { IContextInfo } from '@pnp/sp/sites';
+import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 
 
 
@@ -76,8 +80,21 @@ function ComponentTable(SelectedProp: any) {
         Item.count = count;
         return isExists;
     }
+    // const getSPData = async () => {
+    //     pnp.sp.web.currentUser.get().then(result => {
+    //         console.log(result)
+    //         let User = result;
+    //     })
+    //     const oContext: IContextInfo = await pnp.sp.site.getContextInfo();
+    //     oContext.SiteFullUrl;
+    //     oContext.WebFullUrl
+    //     // sp.site.getContextInfo().then(result => {
+    //     // console.log(result);
+    //     // let User = result;
+    //     // })
 
-
+    // }
+    // getSPData();
     var issmartExists = function (array: any, title: any) {
         var isExists = false;
         map(array, (item) => {
@@ -154,134 +171,134 @@ function ComponentTable(SelectedProp: any) {
             map(maidataBackup, (item) => {
 
                 map(state, (select) => {
-                   // if (select.Selected)
-                        switch (select.TaxType) {
-                            case 'Portfolio':
-                                if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
-                                    item.flag = true
-                                    PortfolioItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.Item_x0020_Type != undefined && child.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
-                                            child.flag = true
-                                            PortfolioItems.push(item);
-                                        }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.Item_x0020_Type != undefined && subchild.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
-                                                    child.flag = true
-                                                    PortfolioItems.push(item);
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                                break;
+                    // if (select.Selected)
+                    switch (select.TaxType) {
+                        case 'Portfolio':
+                            if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                item.flag = true
+                                PortfolioItems.push(item);
+                            }
+                            if (item.childs != undefined && item.childs.length > 0) {
+                                map(item.childs, (child) => {
+                                    if (child.Item_x0020_Type != undefined && child.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                        child.flag = true
+                                        PortfolioItems.push(item);
+                                    }
+                                    if (child.childs != undefined && child.childs.length > 0) {
+                                        map(child.childs, (subchild) => {
+                                            if (subchild.Item_x0020_Type != undefined && subchild.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
+                                                child.flag = true
+                                                PortfolioItems.push(item);
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                            break;
 
-                            case 'Type':
-                                if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
-                                    item.flag = true
-                                    CategoryItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.SharewebTaskType != undefined && child.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
-                                            child.flag = true
-                                            CategoryItems.push(item);
-                                        }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.SharewebTaskType != undefined && subchild.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
-                                                    child.flag = true
-                                                    CategoryItems.push(item);
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                                break;
+                        case 'Type':
+                            if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                item.flag = true
+                                CategoryItems.push(item);
+                            }
+                            if (item.childs != undefined && item.childs.length > 0) {
+                                map(item.childs, (child) => {
+                                    if (child.SharewebTaskType != undefined && child.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                        child.flag = true
+                                        CategoryItems.push(item);
+                                    }
+                                    if (child.childs != undefined && child.childs.length > 0) {
+                                        map(child.childs, (subchild) => {
+                                            if (subchild.SharewebTaskType != undefined && subchild.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
+                                                child.flag = true
+                                                CategoryItems.push(item);
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                            break;
 
-                            case 'Priority':
-                                // if (item.Priority != null && item.Priority_x0020_Rank == select.Title) {
-                                //    item.flag = true
-                                //     PriorityItems.push(item);
-                                // }
-                                if(item.Priority != null){
-                                  
-                                        if(item.Priority == select.Title){
-                                            PriorityItems.push(item);
-                                        }
-                                  
-                                }
-                                // if (item.childs != undefined && item.childs.length > 0) {
-                                //     map(item.childs, (child) => {
-                                //         if (child.Priority_x0020_Rank != null && child.Priority_x0020_Rank == select.Title) {
-                                //             child.flag = true
-                                //             PriorityItems.push(item);
-                                //         }
-                                //         if (child.childs != undefined && child.childs.length > 0) {
-                                //             map(child.childs, (subchild) => {
-                                //                 if (subchild.Priority_x0020_Rank != null && subchild.Priority_x0020_Rank == select.Title) {
-                                //                     child.flag = true
-                                //                     PriorityItems.push(item);
-                                //                 }
-                                //             })
-                                //         } 
-                                //     })
-                                   // setData(PriorityItems)
-                               // }
-                                
-                                break;
+                        case 'Priority':
+                            // if (item.Priority != null && item.Priority_x0020_Rank == select.Title) {
+                            //    item.flag = true
+                            //     PriorityItems.push(item);
+                            // }
+                            if (item.Priority != null) {
 
-                            case 'Sites':
-                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                    item.flag = true
+                                if (item.Priority == select.Title) {
                                     PriorityItems.push(item);
                                 }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                            child.flag = true
-                                            PriorityItems.push(item);
-                                        }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                                    child.flag = true
-                                                    PriorityItems.push(item);
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                                break;
 
-                            case 'Team Members':
-                                if (item.TeamLeaderUserTitle != undefined && item.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title) > -1 && !isItemExists(ResponsibilityItems, item.Id)) {
-                                    item.flag = true
-                                    ResponsibilityItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.TeamLeaderUserTitle != undefined && child.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title && !isItemExists(ResponsibilityItems, item.Id))) {
-                                            child.flag = true
-                                            ResponsibilityItems.push(item);
-                                        }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.TeamLeaderUserTitle != undefined && subchild.TeamLeaderUserTitle == select.Title && !isItemExists(ResponsibilityItems, item.Id)) {
-                                                    child.flag = true
-                                                    ResponsibilityItems.push(item);
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                                break;
+                            }
+                            // if (item.childs != undefined && item.childs.length > 0) {
+                            //     map(item.childs, (child) => {
+                            //         if (child.Priority_x0020_Rank != null && child.Priority_x0020_Rank == select.Title) {
+                            //             child.flag = true
+                            //             PriorityItems.push(item);
+                            //         }
+                            //         if (child.childs != undefined && child.childs.length > 0) {
+                            //             map(child.childs, (subchild) => {
+                            //                 if (subchild.Priority_x0020_Rank != null && subchild.Priority_x0020_Rank == select.Title) {
+                            //                     child.flag = true
+                            //                     PriorityItems.push(item);
+                            //                 }
+                            //             })
+                            //         } 
+                            //     })
+                            // setData(PriorityItems)
+                            // }
+
+                            break;
+
+                        case 'Sites':
+                            if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                item.flag = true
+                                PriorityItems.push(item);
+                            }
+                            if (item.childs != undefined && item.childs.length > 0) {
+                                map(item.childs, (child) => {
+                                    if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                        child.flag = true
+                                        PriorityItems.push(item);
+                                    }
+                                    if (child.childs != undefined && child.childs.length > 0) {
+                                        map(child.childs, (subchild) => {
+                                            if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
+                                                child.flag = true
+                                                PriorityItems.push(item);
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                            break;
+
+                        case 'Team Members':
+                            if (item.TeamLeaderUserTitle != undefined && item.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title) > -1 && !isItemExists(ResponsibilityItems, item.Id)) {
+                                item.flag = true
+                                ResponsibilityItems.push(item);
+                            }
+                            if (item.childs != undefined && item.childs.length > 0) {
+                                map(item.childs, (child) => {
+                                    if (child.TeamLeaderUserTitle != undefined && child.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title && !isItemExists(ResponsibilityItems, item.Id))) {
+                                        child.flag = true
+                                        ResponsibilityItems.push(item);
+                                    }
+                                    if (child.childs != undefined && child.childs.length > 0) {
+                                        map(child.childs, (subchild) => {
+                                            if (subchild.TeamLeaderUserTitle != undefined && subchild.TeamLeaderUserTitle == select.Title && !isItemExists(ResponsibilityItems, item.Id)) {
+                                                child.flag = true
+                                                ResponsibilityItems.push(item);
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                            break;
 
 
-                        }
+                    }
                 })
             })
 
@@ -322,6 +339,8 @@ function ComponentTable(SelectedProp: any) {
                 console.log(AllTasksMatches.length);
                 if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
                     $.each(AllTasksMatches, function (index: any, item: any) {
+                        if(item.Id === 23 || item.Id === 65 || item.Id === 69)
+                        console.log(item);
                         item.isDrafted = false;
                         item.flag = true;
                         item.siteType = config.Title;
@@ -342,8 +361,10 @@ function ComponentTable(SelectedProp: any) {
                     AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
                     if (Counter == siteConfig.length) {
                         map(AllTasks, (result: any) => {
-                            result.TeamLeaderUser = []
+                            result.AllTeamMembers = []
                             result.TeamLeaderUserTitle = ''
+                            result.TeamLeader = [];
+                            result.Display = 'none';
                             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
 
                             if (result.DueDate == 'Invalid date' || '') {
@@ -360,9 +381,9 @@ function ComponentTable(SelectedProp: any) {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
 
-                                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id === users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover?.Url;
+                                                result.AllTeamMembers.push(users);
                                                 result.TeamLeaderUserTitle += users.Title + ';';
                                             }
 
@@ -370,13 +391,27 @@ function ComponentTable(SelectedProp: any) {
                                     }
                                 })
                             }
-                            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
-                                map(result.Team_x0020_Members.results, (Assig: any) => {
+                            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                                map(result.Team_x0020_Members, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover?.Url;
+                                                result.AllTeamMembers.push(users);
+                                                result.TeamLeaderUserTitle += users.Title + ';';
+                                            }
+
+                                        })
+                                    }
+                                })
+                            }
+                            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
+                                map(result.Responsible_x0020_Team, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(TaskUsers, (users: any) => {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover?.Url;
+                                                result.TeamLeader.push(users);
                                                 result.TeamLeaderUserTitle += users.Title + ';';
                                             }
 
@@ -594,7 +629,7 @@ function ComponentTable(SelectedProp: any) {
             .get();
         Response = taskUsers;
         TaskUsers = Response;
-        setTaskUser(Response => ([...Response]));
+        setTaskUser(Response);
         // setTaskUser(Response);
         console.log(Response);
 
@@ -794,8 +829,14 @@ function ComponentTable(SelectedProp: any) {
         setIsUpdated(SelectedProp.SelectedProp)
     }
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
+    const isSiteOwner = async function () {
+        const isOwner = await globalCommon.IsCurrentUserSiteOwner();
+        console.log(isOwner);
+
+    }
     React.useEffect(() => {
         showProgressBar();
+        // isSiteOwner();
         setmaidataBackup(maidataBackup => ([...[]]))
         setmaidataBackup(maidataBackup => ([...[]]))
         setData(data => ([...[]]));
@@ -805,6 +846,7 @@ function ComponentTable(SelectedProp: any) {
             filterGroups.push("Type");
             filterGroups.push("Team Members");
             getTaskUsers();
+            LoadSPComponents();
             GetSmartmetadata();
         } else {
             map(filterItems, (filte) => {
@@ -1094,7 +1136,7 @@ function ComponentTable(SelectedProp: any) {
             map(Items.results, (index: any, user: any) => {
                 $.each(AllUsers, function (index: any, item: any) {
                     $.each(AllUsers, function (index: any, item: any) {
-                        if (user.Id == item.AssingedToUserId) {
+                        if (user.Id === item.AssingedToUser?.Id) {
                             Item.AllTeamName = Item.AllTeamName + item.Title + ' ';
                         }
                     });
@@ -1230,8 +1272,10 @@ function ComponentTable(SelectedProp: any) {
         var FeatureData: any = [];
 
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
-            result.TeamLeaderUser = []
-            result.TeamLeaderUserTitle = '';
+            result.AllTeamMembers = result.AllTeamMembers != undefined ? result.AllTeamMembers : [];
+            result.TeamLeaderUserTitle = result.TeamLeaderUserTitle != undefined ? result.TeamLeaderUserTitle : '';
+            result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
+            result.Display = 'none';
             getWebpartId(result);
             result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
@@ -1251,9 +1295,10 @@ function ComponentTable(SelectedProp: any) {
                     if (Assig.Id != undefined) {
                         $.each(Response, function (index: any, users: any) {
 
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                users.ItemCover = users.Item_x0020_Cover;
-                                result.TeamLeaderUser.push(users);
+                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                users.ItemCover = users.Item_x0020_Cover?.Url;
+                                users.IsAssignTo = true;
+                                result.AllTeamMembers.push(users);
                                 result.TeamLeaderUserTitle += users.Title + ';';
                             }
 
@@ -1261,13 +1306,28 @@ function ComponentTable(SelectedProp: any) {
                     }
                 })
             }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.results != undefined && result.Team_x0020_Members.results.length > 0) {
-                $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
+            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(TaskUsers, function (index: any, users: any) {
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                users.ItemCover = users.Item_x0020_Cover;
-                                result.TeamLeaderUser.push(users);
+                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                users.ItemCover = users.Item_x0020_Cover?.Url;
+                                result.AllTeamMembers.push(users);
+                                result.TeamLeaderUserTitle += users.Title + ';';
+                            }
+
+                        })
+                    }
+                })
+            }
+
+            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
+                map(result.Responsible_x0020_Team, (Assig: any) => {
+                    if (Assig.Id != undefined) {
+                        map(TaskUsers, (users: any) => {
+                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                users.ItemCover = users.Item_x0020_Cover?.Url;
+                                result.TeamLeader.push(users);
                                 result.TeamLeaderUserTitle += users.Title + ';';
                             }
 
@@ -1647,158 +1707,21 @@ function ComponentTable(SelectedProp: any) {
         })
         if (flag)
             list.push(itrm);
-        setCheckedList(checkedList => ([...list]));
+        setData(checkedList => ([...list]));
     };
     function AddItem() {
     }
+    const handleSuffixHover = (item: any) => {
+        item.Display = 'block'
+        setData(data => ([...data]));
+    }
+
+    const handleuffixLeave = (item: any) => {
+        item.Display = 'none'
+        setData(data => ([...data]));
+    }
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
-
-            {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
-            {/* <Modal
-                isOpen={modalIsOpen}
-                onDismiss={setModalIsOpenToFalse}
-                isBlocking={false} >
-                <div className='modal-dialog modal-lg'>
-                    <form>
-                        <div className='modal-content'>
-                            <div className='modal-header'>
-                                <h5 className='modal-title'><span>Add Item</span></h5>
-                                <button type="button" className='btn btn-danger pull-right' onClick={setModalIsOpenToFalse}>Cancel</button>
-                            </div>
-                            <div className='modal-body clearfix bg-f5f5'>
-                                <div className="col-sm-12 tab-content">
-                                    <div className="col-md-5">
-                                        <div className="row">
-                                            <div className="col-sm-4 mb-10 p-0" title="Task Name">
-                                                <label>Title</label>
-                                                <input type="text" className="form-control" placeholder="Task Name"
-                                                    value={Title} onChange={handleTitle} />
-                                            </div>
-                                            <div className="col-sm-4 mb-10 Doc-align padR0">
-                                                <label className="full_width">ItemRank
-                                                </label>
-                                                <select className="form-control" value="2">
-                                                    <option value="">Select Item Rank</option>
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                </select>
-
-
-                                            </div>
-                                            <div className="col-4 mb-10">
-                                                <label>Item Type</label>
-                                                <select value={itemType} onChange={(e: any) => setitemType(e.target.value)}>
-                                                    <option>Component</option>
-                                                    <option>Feature</option>
-                                                    <option>SubComponent</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-
-                                            <div className="col-sm-6 p-0">
-                                                <div ng-show="Item.Portfolio_x0020_Type=='Service'"
-                                                    className="col-sm-12 mb-10 Doc-align padL-0">
-                                                    <div className="col-sm-11 PadR0 Doc-align">
-                                                        <label>
-                                                            Service Portfolio
-                                                            <span data-toggle="popover" data-placement="right"
-                                                                data-trigger="hover"
-                                                                data-content="Click to activate auto suggest for components/services"
-                                                                data-original-title="Click to activate auto suggest for components/services"
-                                                                title="Click to activate auto suggest for components/services">
-
-                                                            </span>
-
-                                                        </label>
-                                                        <input type="text" className="form-control ui-autocomplete-input"
-                                                            id="txtSharewebComponent" ng-model="SearchComponent"
-                                                        /><span role="status" aria-live="polite"
-                                                            className="ui-helper-hidden-accessible"></span>
-                                                    </div>
-                                                    <div className="col-sm-1 no-padding">
-                                                        <label className="full_width">&nbsp;</label>
-                                                        <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/edititem.gif"
-                                                            ng-click="EditComponent('Components',item)" />
-                                                    </div>
-
-                                                </div>
-                                                <div ng-show="Item.Portfolio_x0020_Type=='Component'"
-                                                    className="col-sm-12 padL-0">
-                                                    <div className="col-sm-11 p-0 Doc-align">
-
-                                                        <label>
-                                                            Service Portfolio
-                                                            <span data-toggle="popover" data-placement="right"
-                                                                data-trigger="hover"
-                                                                data-content="Click to activate auto suggest for components/services"
-                                                                data-original-title="Click to activate auto suggest for components/services"
-                                                                title="Click to activate auto suggest for components/services">
-
-                                                            </span>
-
-                                                        </label>
-                                                        <input type="text" className="form-control ui-autocomplete-input"
-                                                            id="txtServiceSharewebComponent" ng-model="SearchService"
-                                                        /><span role="status" aria-live="polite"
-                                                            className="ui-helper-hidden-accessible"></span>
-                                                    </div>
-                                                    <div className="col-sm-1 no-padding">
-                                                        <label className="full_width">&nbsp;</label>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                            <div className="col-sm-6 padR0">
-                                                <label>Deliverable-Synonyms </label>
-                                                <input type="text" className="form-control ui-autocomplete-input"
-                                                    id="txtDeliverable_x002d_Synonyms"
-                                                    ng-model="Item.Deliverable_x002d_Synonyms" /><span
-                                                        role="status" aria-live="polite"
-                                                        className="ui-helper-hidden-accessible"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div className='modal-footer mt-3'>
-                    <button type="button" className="btn btn-primary m-2" onClick={AddItem}>Save</button>
-                    <button type="button" className="btn btn-danger" onClick={setModalIsOpenToFalse}>Cancel</button>
-                </div>
-            </Modal> */}
-            {/* ------------------------Add Popup------------------------------------------------------------------------------------------------------------------------------ */}
-
-            {/* <Modal
-                isOpen={addModalOpen}
-                onDismiss={closeModal}
-                isBlocking={false}>
-                <div className='modal-dialog modal-lg'>
-                    <div className='modal-header'>
-                        <h5 className='modal-title'><span>Add Component</span></h5>
-                        <button type="button" className='btn btn-danger pull-right' onClick={closeModal}>Cancel</button>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-6 mb-10" title="Task Name">
-                            <label>Title</label>
-                            <input type="text" className="form-control" placeholder="Task Name"
-                                ng-required="true" />
-                        </div>
-                    </div>
-                </div>
-                <div className='modal-footer mt-3'>
-                    <button type="button" className="btn btn-primary m-2" disabled={true}> Create & Open Popup</button>
-                    <button type="button" className="btn btn-primary" disabled={true} onClick={closeModal}>Create</button>
-                </div>
-            </Modal> */}
-            {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
-
 
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
@@ -1815,11 +1738,6 @@ function ComponentTable(SelectedProp: any) {
                     <div className="togglebox">
                         <label className="toggler full_width mb-10">
                             <span className=" siteColor">
-                                {/* <img className="hreflink wid22"
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" /> */}
-                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="currentColor">
-                                    <path d="M36 11H11V15.0625L20.6774 23.1875V32.9375L27.129 37V23.1875L36 15.0625V11Z" stroke="#333333" stroke-width="0" />
-                                </svg> */}
                                 {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <img className="hreflink wid22"
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" />}
                                 {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <img className="hreflink wid22"
@@ -2216,15 +2134,12 @@ function ComponentTable(SelectedProp: any) {
                                                                                             <span>
                                                                                                 {item.SiteIcon != undefined && <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                     <img className="icon-sites-img ml20 me-1" src={item.SiteIcon}></img>
-                                                                                                    {/* <img className="icon-sites-img"
-                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" /> */}
                                                                                                 </a>
                                                                                                 }
                                                                                             </span>
                                                                                             <span>{item.Shareweb_x0020_ID}</span>
                                                                                         </div>
                                                                                     </td>
-                                                                                    {/* <td style={{ width: "6%" }}></td> */}
                                                                                     <td style={{ width: "22%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
@@ -2261,23 +2176,16 @@ function ComponentTable(SelectedProp: any) {
                                                                                             })}</div>
                                                                                     </td>
                                                                                     <td style={{ width: "17%" }}>
-                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.length > 0 && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                            return (
-                                                                                                <span className="ClientCategory-Usericon"
-                                                                                                    title={client1.Title}>
-
-                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                </span>
-                                                                                            )
-                                                                                        })}</div></td>
+                                                                                        <div>
+                                                                                        <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                           
+                                                                                        </div></td>
                                                                                     <td style={{ width: "6%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
-                                                                                    {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "3%" }}>{item.siteType === "Master Tasks" && item.Title !=='Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
-                                                                                        {item.siteType != "Master Tasks" && item.Title !=='Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
+                                                                                    <td style={{ width: "3%" }}>{item.siteType === "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
+                                                                                        {item.siteType != "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
@@ -2375,16 +2283,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     })}</div>
                                                                                                             </td>
                                                                                                             <td style={{ width: "17%" }}>
-                                                                                                                <div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.length > 0 && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                    return (
-                                                                                                                        <div className="ClientCategory-Usericon"
-                                                                                                                            title={client1.Title}>
-
-                                                                                                                            <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                                        </div>
-                                                                                                                    )
-                                                                                                                })}</div></td>
+                                                                                                            <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
@@ -2489,16 +2388,10 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                             })}</div>
                                                                                                                                     </td>
                                                                                                                                     <td style={{ width: "17%" }}>
-                                                                                                                                        <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.length > 0 && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                                            return (
-                                                                                                                                                <span className="ClientCategory-Usericon"
-                                                                                                                                                    title={client1.Title}>
-
-                                                                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                                                                </span>
-                                                                                                                                            )
-                                                                                                                                        })}</div></td>
+                                                                                                                                        <div>
+                                                                                                                                        <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                                                           
+                                                                                                                                        </div></td>
                                                                                                                                     <td style={{ width: "6%" }}>{childinew.PercentComplete}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
@@ -2597,7 +2490,9 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                 })}</div>
                                                                                                                                                         </td>
                                                                                                                                                         <td style={{ width: "17%" }}>
-                                                                                                                                                            <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.length > 0 && subchilditem.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                                                                            <div>
+                                                                                                                                                            <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                                                                                {/* {subchilditem.AllTeamMembers != undefined && subchilditem.AllTeamMembers.length > 0 && subchilditem.AllTeamMembers.map(function (client1: { Title: string; }) {
                                                                                                                                                                 return (
                                                                                                                                                                     <div className="ClientCategory-Usericon"
                                                                                                                                                                         title={client1.Title}>
@@ -2606,7 +2501,9 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                                                     </div>
                                                                                                                                                                 )
-                                                                                                                                                            })}</div></td>
+                                                                                                                                                            })} */}
+
+                                                                                                                                                            </div></td>
                                                                                                                                                         <td style={{ width: "6%" }}>{subchilditem.PercentComplete}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
