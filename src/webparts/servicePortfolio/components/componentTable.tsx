@@ -1516,7 +1516,9 @@ function ComponentTable(SelectedProp: any) {
         temp.childs = [];
         temp.childsLength = 0;
         temp.flag = true;
-
+        temp.PercentComplete ='';
+        temp.ItemRank ='';
+        temp.DueDate ='';
         // ComponetsData['allComponets'][i]['childs']
         map(ComponetsData['allUntaggedTasks'], (task: any) => {
             if (task.Title != undefined) {
