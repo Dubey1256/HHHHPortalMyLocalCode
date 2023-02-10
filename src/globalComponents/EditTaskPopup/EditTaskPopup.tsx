@@ -2,6 +2,10 @@ import * as React from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import { Web } from "sp-pnp-js";
+import pnp from 'sp-pnp-js';
+import { sp } from "@pnp/sp/presets/all";
+import { IAttachmentInfo } from "@pnp/sp/attachments";
+import { IItem } from "@pnp/sp/items/types";
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
 import * as globalCommon from "../../globalComponents/globalCommon";
@@ -74,7 +78,8 @@ const EditTaskPopup = (Items: any) => {
     const [ImmediateStatus, setImmediateStatus] = React.useState(false);
     const [ApprovalStatus, setApprovalStatus] = React.useState(false);
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = React.useState(false);
-
+    const [currentUserData, setCurrentUserData] = React.useState([]);
+    const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -163,32 +168,29 @@ const EditTaskPopup = (Items: any) => {
     React.useEffect(() => {
         loadTaskUsers();
         GetEditData();
+        getCurrentUserDetails();
         // Descriptions();
     }, [])
     const setPriority = function (val: any) {
         setPriorityStatus(val)
     }
-    const uploadImageFunction = (
-        imageList: ImageListType,
-        addUpdateIndex: number[] | undefined
-    ) => {
-        imageList?.map((imgItem) => {
-            if (imgItem.dataURL != undefined && imgItem.file != undefined) {
-                let ImgArray = [{
-                    ImageName: imgItem.file.name,
-                    ImageUrl: EditData?.siteUrl + '/Lists/' + EditData?.siteType + '/Attachments/' + EditData?.Id + '/' + imgItem.file.name,
-                    UploadeDate: new Date(),
-                    UserImage: EditData.Author?.Title,
-                    UserName: EditData.Author?.Title
-                }];
-                TaskImages.push(ImgArray);
+    const getCurrentUserDetails = async () => {
+        let currentUserId: number;
+        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
 
-            } else {
-                TaskImages.push(imgItem);
+        if (currentUserId != undefined) {
+            if (taskUsers != null && taskUsers?.length > 0) {
+                taskUsers?.map((userData: any) => {
+                    if (userData.AssingedToUserId == currentUserId) {
+                        let temp: any = [];
+                        temp.push(userData)
+                        setCurrentUserData(temp);
+                    }
+                })
             }
-        })
-        setImages(imageList as never[]);
-    };
+        }
+    }
+
     const openTaskStatusUpdatePopup = (itemData: any) => {
         setTaskStatusPopup(true);
     }
@@ -217,7 +219,6 @@ const EditTaskPopup = (Items: any) => {
                         }
                         AllTaskUsers.push(user);
                     }
-                    console.log("All Task Users On Edit TAsk Popup ============", AllTaskUsers)
                 });
                 if (AllMetaData != undefined && AllMetaData?.length > 0) {
                     GetEditData();
@@ -261,7 +262,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -271,7 +272,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -307,21 +308,26 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.TaskId = globalCommon.getTaskId(item);
                 let AssignedUsers: any = [];
+                let ApproverData: any = [];
                 if (taskUsers != undefined) {
                     taskUsers?.map((userData: any) => {
                         item.AssignedTo?.map((AssignedUser: any) => {
                             if (userData?.AssingedToUserId == AssignedUser.Id) {
                                 AssignedUsers.push(userData);
+                                userData.Approver?.map((AData: any) => {
+                                    ApproverData.push(AData);
+                                })
                             }
                         })
                     })
                 }
-
+                item.TaskAssignedUsers = AssignedUsers;
+                item.TaskApprovers = ApproverData;
                 if (item.Attachments) {
                     let tempData = []
                     tempData = saveImage[0];
                     item.UploadedImage = saveImage ? saveImage[0] : '';
-                    uploadImageFunction(tempData, tempData?.length);
+                    onUploadImageFunction(tempData, tempData?.length);
                 }
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
@@ -365,7 +371,8 @@ const EditTaskPopup = (Items: any) => {
                 if (item.RelevantPortfolio?.length > 0) {
                     setLinkedComponentData(item.RelevantPortfolio)
                 }
-                item.TaskAssignedUsers = AssignedUsers;
+
+
                 if (item.FeedBack != null) {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
@@ -669,24 +676,41 @@ const EditTaskPopup = (Items: any) => {
     var TeamMemberIds: any = [];
     var CategoryTypeID: any = [];
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
-        var UploadImage: any = []
-        var item: any = {}
-        images?.map((imgDtl: any) => {
-            if (imgDtl.dataURL != undefined) {
-                var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
-            }
-            // else {
-            //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
-            // }
-            if (imgDtl.file != undefined) {
-                item['ImageName'] = imgDtl.file.name
-                item['ImageUrl'] = imgUrl
-                item['UploadeDate'] = EditData.Created
-                item['UserImage'] = EditData.Author?.Title
-                item['UserName'] = EditData.Author?.Title
-            }
-            UploadImage.push(item)
-        })
+        var UploadImageArray: any = []
+
+        if (TaskImages != undefined && TaskImages?.length > 0) {
+            TaskImages?.map((imgItem: any) => {
+                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                    let tempObject: any = {
+                        ImageName: imgItem.ImageName,
+                        ImageUrl: imgItem.imageDataUrl,
+                        UploadeDate: imgItem.UploadeDate,
+                        UserName: imgItem.UserName,
+                        UserImage: imgItem.UserImage
+                    }
+                    UploadImageArray.push(tempObject)
+                } else {
+                    UploadImageArray.push(imgItem);
+                }
+
+            })
+        }
+        // images?.map((imgDtl: any) => {
+        //     if (imgDtl.dataURL != undefined) {
+        //         var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
+        //     }
+        //     // else {
+        //     //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
+        //     // }
+        //     if (imgDtl.file != undefined) {
+        //         item['ImageName'] = imgDtl.file.name
+        //         item['ImageUrl'] = imgUrl
+        //         item['UploadeDate'] = EditData.Created
+        //         item['UserImage'] = EditData.Author?.Title
+        //         item['UserName'] = EditData.Author?.Title
+        //     }
+        //     UploadImage.push(item)
+        // })
 
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
@@ -824,6 +848,7 @@ const EditTaskPopup = (Items: any) => {
                     Description: "Description",
                     Url: UpdateTaskInfo.ComponentLink ? UpdateTaskInfo.ComponentLink : (EditData.component_x0020_link ? EditData.component_x0020_link.Url : null)
                 },
+                BasicImageInfo: JSON.stringify(UploadImageArray)
             }).then((res: any) => {
                 console.log(res);
                 if (typeFunction != "TimeSheetPopup") {
@@ -998,14 +1023,14 @@ const EditTaskPopup = (Items: any) => {
         setImageComparePopup(false);
         setCompareImageArray([]);
     }
-
     const ImageCustomizeFunction = (currentImagIndex: any) => {
         setImageCustomizePopup(true)
     }
-
     const ImageCustomizeFunctionClosePopup = () => {
         setImageCustomizePopup(false)
     }
+
+    // ************** this is custom header section function for panel *************
 
     const onRenderCustomHeaderMain = () => {
         return (
@@ -1020,6 +1045,147 @@ const EditTaskPopup = (Items: any) => {
             </>
         );
     };
+    const removeApproverFunction = (Title: any, Id: any) => {
+        let tempArray: any = [];
+        if (EditData.TaskApprovers != null && EditData.TaskApprovers?.length > 0) {
+            EditData.TaskApprovers?.map((item: any) => {
+                if (item.Id == Id) {
+                    tempArray.push(item);
+                }
+            })
+        }
+        EditData.TaskApprovers = tempArray;
+
+    }
+
+    //***************** This is for image Upload Section  Functions *****************
+    const onUploadImageFunction = async (
+        imageList: ImageListType,
+        addUpdateIndex: number[] | undefined) => {
+        let lastindexArray = imageList[imageList.length - 1];
+        let fileName: any = '';
+        let tempArray: any = [];
+        let SiteUrl = Items.Items.siteUrl;
+        imageList?.map(async (imgItem: any, index: number) => {
+            if (imgItem.data_url != undefined && imgItem.file != undefined) {
+                let date = new Date()
+                let timeStamp = date.getTime();
+                let imageIndex = index + 1
+                fileName = 'Image' + imageIndex + "-" + EditData.Title + " " + EditData.Title + timeStamp + ".jpg"
+                let ImgArray = {
+                    ImageName: fileName,
+                    UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                    imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
+                    ImageUrl: imgItem.data_url,
+                    UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
+                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : ""
+                };
+                tempArray.push(ImgArray);
+
+            } else {
+                tempArray.push(imgItem);
+            }
+        })
+        setTaskImages(tempArray);
+        UploadImageFunction(lastindexArray, fileName);
+        // if (addUpdateIndex != undefined) {
+        //     let updateIndex:any = addUpdateIndex[0]
+        //     let updateImage:any = imageList[updateIndex];
+        //     if(updateIndex >= imageList.length ){
+        //         UploadImageFunction(lastindexArray, fileName);
+        //     }
+        //     else{
+        //         ReplaceImageFunction(updateImage, updateIndex)
+        //     }
+        // }
+    };
+    const UploadImageFunction = (Data: any, imageName: any) => {
+        let listId = Items.Items.listId;
+        let listName = Items.Items.listName;
+        let Id = Items.Items.Id
+        var src = Data.data_url?.split(",")[1];
+        var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+            return c.charCodeAt(0);
+        }));
+        const data: any = byteArray
+        var fileData = '';
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            fileData += String.fromCharCode(byteArray[i]);
+        }
+        if (Items.Items.listId != undefined) {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getById(listId).items.getById(Id);
+                item.attachmentFiles.add(imageName, data);
+                console.log("Attachment added");
+            })().catch(console.log)
+        } else {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getByTitle(listName).items.getById(Id);
+                item.attachmentFiles.add(imageName, data);
+                console.log("Attachment added");
+            })().catch(console.log)
+        }
+    }
+    const RemoveImageFunction = (imageIndex: number, imageName: any) => {
+        let tempArray: any = [];
+        TaskImages?.map((imageData: any, index: number) => {
+            if (index != imageIndex) {
+                tempArray.push(imageData)
+            }
+        })
+        setTaskImages(tempArray);
+        if (Items.Items.listId != undefined) {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
+                item.attachmentFiles.getByName(imageName).delete();
+                console.log("Attachment deleted");
+            })().catch(console.log)
+        } else {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
+                item.attachmentFiles.getByName(imageName).delete();
+                console.log("Attachment deleted");
+            })().catch(console.log)
+        }
+    }
+    const ReplaceImageFunction = (Data: any, ImageIndex:any) => {
+        let ImageName:string;
+        TaskImages.map((dataItem:any, Index:any)=>{
+            if(Index == ImageIndex){
+               ImageName = dataItem.ImageName;
+            }
+        })
+
+        var src = Data?.data_url?.split(",")[1];
+        var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+            return c.charCodeAt(0);
+        }));
+        const data: any = byteArray
+        var fileData = '';
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            fileData += String.fromCharCode(byteArray[i]);
+        }
+        if (Items.Items.siteUrl != undefined) {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
+                item.attachmentFiles.getByName(ImageName).setContent(data);
+                console.log("Attachment Updated");
+            })().catch(console.log)
+        } else {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getById(Items.Items.listName).items.getById(Items.Items.Id);
+                item.attachmentFiles.getByName(ImageName).setContent(data);
+                console.log("Attachment Updated");
+            })().catch(console.log)
+        }
+
+    }
 
     return (
         <>
@@ -1032,7 +1198,6 @@ const EditTaskPopup = (Items: any) => {
             >
                 <div >
                     <div className="modal-body">
-
                         <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
                             <tbody>
                                 {StatusArray?.map((item: any, index) => {
@@ -1060,7 +1225,6 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
             {/* ***************** this is Save And Time Sheet panel *********** */}
-
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 isOpen={TimeSheetPopup}
@@ -1311,7 +1475,29 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-check-input" />
                                                         </div>
                                                     </div>
-
+                                                    {ApprovalStatus ?
+                                                        <div>
+                                                            {EditData.TaskApprovers?.map((Approver: any, index: number) => {
+                                                                return (
+                                                                    <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                        {/* href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`} */}
+                                                                        <div>
+                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off">
+                                                                                {Approver.Title}
+                                                                            </a>
+                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                                                onClick={() => removeApproverFunction(Approver.Title, Approver.Id)} className="p-1"
+                                                                            />
+                                                                        </div>
+                                                                        <span className="float-end ">
+                                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                                onClick={() => alert("We are working on It. This feature will be live soon...")} />
+                                                                        </span>
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                        </div> : null
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="col-6 ps-0 pe-0 pt-4">
@@ -1574,89 +1760,91 @@ const EditTaskPopup = (Items: any) => {
                                         )
                                     })
                                     } */}
-                                    <div
-                                        className={IsShowFullViewImage != true ? 'col-sm-3 padL-0 DashboardTaskPopup-Editor above' : 'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}>
+                                    <div className={IsShowFullViewImage != true ?
+                                        'col-sm-3 padL-0 DashboardTaskPopup-Editor above' :
+                                        'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}>
                                         <div className="image-upload">
+                                            {console.log("all image details ======", TaskImages)}
                                             <ImageUploading
                                                 multiple
                                                 value={TaskImages}
-                                                onChange={uploadImageFunction}
-                                                maxNumber={maxNumber}
+                                                onChange={onUploadImageFunction}
+                                                dataURLKey="data_url"
                                             >
                                                 {({
-                                                    imageList = TaskImages,
+                                                    imageList,
                                                     onImageUpload,
                                                     onImageRemoveAll,
                                                     onImageUpdate,
                                                     onImageRemove,
                                                     isDragging,
-                                                    dragProps
-                                                }: any) => (
+                                                    dragProps,
+                                                }) => (
                                                     <div className="upload__image-wrapper">
-                                                        {imageList ?
-                                                            <div>{imageList?.map((ImageDtl: any, index: any) => {
-                                                                return (
-                                                                    <div>
-                                                                        <div className="my-1" style={{ width: "18rem" }}>
-                                                                            <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} className="card-img-top" />
-                                                                            <div className="card-footer d-flex justify-content-between p-1 px-2">
-                                                                                <div>
-                                                                                    <input type="checkbox" onClick={() => ImageCompareFunction(ImageDtl)} />
-                                                                                    <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
-                                                                                    <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
-                                                                                    <span className="mx-1">
-                                                                                        <img style={{ width: "25px" }} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
-                                                                                    </span>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <span onClick={() => ImageCustomizeFunction(index)}>
-                                                                                        <FaExpandAlt />
-                                                                                    </span>
-                                                                                    <span className="mx-1" onClick={() => alert("we are working on it. This feature will be live soon..")}>| <TbReplace /> |</span>
-                                                                                    <span><RiDeleteBin6Line onClick={() => alert("we are working on it. This feature will be live soon..")} /></span>
-                                                                                </div>
-                                                                            </div>
+
+                                                        {imageList.map((ImageDtl, index) => (
+                                                            <div key={index} className="image-item">
+                                                                <div className="my-1">
+                                                                    <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} className="card-img-top" />
+                                                                    <div className="card-footer d-flex justify-content-between p-1 px-2">
+                                                                        <div>
+                                                                            <input type="checkbox" onClick={() => ImageCompareFunction(ImageDtl)} />
+                                                                            <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
+                                                                            <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
+                                                                            <span className="mx-1">
+                                                                                <img style={{ width: "25px" }} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
+                                                                            </span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span onClick={() => ImageCustomizeFunction(index)}>
+                                                                                <FaExpandAlt />
+                                                                            </span>
+                                                                            <span className="mx-1" onClick={(e) => onImageUpdate(index)}>| <TbReplace /> |</span>
+                                                                            <span onClick={() => RemoveImageFunction(index, ImageDtl.ImageName)}><RiDeleteBin6Line /></span>
                                                                         </div>
                                                                     </div>
-                                                                )
-                                                            })}
+                                                                </div>
                                                             </div>
-                                                            : null}
-                                                        <div className="d-flex justify-content-between">
-                                                            <a
-                                                                className="hreflink"
-                                                                onClick={() => alert("we are working on it. This feature will be live soon..")}
-                                                            >
-                                                                Upload Image
-                                                            </a>
-                                                            <a
-                                                                className="hreflink"
-                                                                onClick={() => alert("we are working on it. This feature will be live soon..")}
-                                                            >
-                                                                Add New Image
-                                                            </a>
-                                                            {/* &nbsp; */}
-                                                            {/* <a className="hreflink"
+                                                        ))}
+                                                        <div className="d-flex justify-content-between py-1 border-top ">
+                                                            <span className="siteColor"
+                                                                style={{ cursor: "pointer" }}
+                                                                onClick={() => alert("We are working on it. This Feature will be live soon ..")}>
+                                                                Upload Item-Images
+                                                            </span>
+
+                                                            {TaskImages?.length != 0 ?
+                                                                <span className="siteColor"
+                                                                    style={{ cursor: "pointer" }}
+                                                                    onClick={() => setUploadBtnStatus(UploadBtnStatus ? false : true)}>
+                                                                    Add New Image
+                                                                </span>
+                                                                : null}
+                                                        </div>
+                                                        {UploadBtnStatus ?
+                                                            <div>
+                                                                <div className="drag-upload-image mt-1"
+                                                                    style={isDragging ? { border: '1px solid red' } : undefined}
+                                                                    onClick={onImageUpload}
+                                                                    {...dragProps}
+                                                                >
+                                                                    Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
+                                                                </div>
+                                                            </div> : null}
+                                                        {TaskImages?.length == 0 ? <div>
+                                                            <div className="drag-upload-image mt-1"
+                                                                style={isDragging ? { border: '1px solid red' } : undefined}
                                                                 onClick={onImageUpload}
                                                                 {...dragProps}
-                                                            > Add New Image</a> */}
-                                                        </div>
-                                                        {/* <span className="taskimage border mb-3">
-                                                            {imageList.map((image: any, index: any) => (
-                                                                <div key={index} className="image-item">
-                                                                    <img src={image.dataURL} alt="" width="100%" className="ImageBox" />
-                                                                    <div className="Footerimg d-flex align-items-center bg-fxdark  p-1 ">
-                                                                        <a onClick={() => onImageUpdate(index)}><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
-                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M6.18178 9.10429C6.0131 9.21501 5.97742 11.8728 6.01191 21.808L6.05556 34.3718L17.2248 34.4167L28.3941 34.4615V33.629V32.7963L25.3363 29.6562C23.6546 27.9291 22.2786 26.435 22.2786 26.3356C22.2786 26.1056 24.8625 23.4561 25.0871 23.4561C25.1794 23.4561 26.6292 24.8708 28.3091 26.5998L31.3633 29.7435H32.1721H32.9807V28.9999C32.9807 28.2629 32.946 28.2206 29.1147 24.2843C26.9884 22.0998 25.1739 20.3124 25.0825 20.3124C24.9911 20.3124 23.9403 21.3137 22.7474 22.5373L20.5787 24.7622L16.0787 20.1383L11.5787 15.5143L10.0031 17.1274C9.13641 18.0148 8.36994 18.7406 8.29978 18.7406C8.22962 18.7406 8.19276 17.1097 8.21807 15.1166L8.26393 11.4926L21.7265 11.4479L35.1891 11.4032V18.3029V25.2026H36.2949H37.4008L37.3567 17.1251L37.3125 9.04753L21.8539 9.00596C13.3517 8.98325 6.29916 9.02744 6.18178 9.10429ZM31.1121 14.0251C30.9252 14.2172 30.7723 14.5708 30.7723 14.811C30.7723 15.3389 31.3217 15.9462 31.7992 15.9462C32.2112 15.9462 32.9807 15.2067 32.9807 14.811C32.9807 14.4152 32.2112 13.6758 31.7992 13.6758C31.6081 13.6758 31.2989 13.8329 31.1121 14.0251ZM24.487 32.0585C24.487 32.1319 20.8367 32.1717 16.3754 32.1467L8.26393 32.1013L8.21875 27.2169L8.17356 22.3326L9.91545 20.5355L11.6575 18.7383L18.0723 25.3317C21.6003 28.958 24.487 31.985 24.487 32.0585ZM35.3024 27.5896C35.24 27.6535 35.1891 28.7145 35.1891 29.9474V32.1887H32.9807H30.7723V33.3239V34.4591H32.9807H35.1891V36.7295V39H36.2932H37.3974V36.7346V34.4692L39.6483 34.4205L41.8991 34.3718L41.9496 33.2853L42 32.199L39.7412 32.1501L37.4824 32.1013L37.435 29.7872L37.3876 27.4731H36.4016C35.8592 27.4731 35.3645 27.5255 35.3024 27.5896Z" fill="#333333" />
-                                                                        </svg></a>
-                                                                        <a style={{ margin: "3px" }} onClick={() => onImageRemove(index)}><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
-                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
-                                                                        </svg></a>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </span> */}
+                                                            >
+                                                                Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
+                                                            </div>
+                                                        </div> : null}
+
+                                                        {/* <button onClick={onImageRemoveAll}>Upload item-images</button> */}
+
                                                     </div>
+
                                                 )}
                                             </ImageUploading>
                                         </div>
@@ -1713,9 +1901,7 @@ const EditTaskPopup = (Items: any) => {
                             <div>
                                 <div className="">
                                     Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
-
                                         {EditData.Author?.Title ? EditData.Author?.Title : ''}
-
                                     </span>
                                 </div>
                                 <div>
@@ -1845,11 +2031,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 <span><RiDeleteBin6Line /></span>
                                                             </div>
                                                         </div>
-
                                                     </div>
                                                 )
                                             })}
-
                                         </div>
                                         <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
