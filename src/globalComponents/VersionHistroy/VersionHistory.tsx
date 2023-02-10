@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { Button, Modal, Table } from 'react-bootstrap';
 import './VersionHistory.scss'
 import * as  $ from 'jquery';
-import { FontSizes, Panel, PanelType } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
+import Tooltip from '../Tooltip';
 
 export default function VersionHistoryPopup(props: any) {
   const [propdata, setpropData] = React.useState(props);
@@ -37,25 +37,36 @@ export default function VersionHistoryPopup(props: any) {
     GetItemsVersionHistory()
   }, [show]);
 
+  const onRenderCustomHeader = () => {
+    return (
+      <>
+        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
+          Version History
+        </div>
+        <Tooltip />
+      </>
+    );
+  };
+
   return (
     <>
-      <span className='siteColor mx-1'>Version History</span> <a style={{ color: 'blue', fontSize: 13, cursor: 'pointer' }} onClick={handleShow}>
-        <img className="hreflink" title="Version History"
+      <span className='siteColor mx-1' onClick={handleShow}>
+        <img className="mx-1" title="Version History"
           src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Version_HG.png"
         />
-      </a>
-
-      <Panel headerText="Version History"
+      </span>
+      <Panel
+        onRenderHeader={onRenderCustomHeader}
         isOpen={show}
         type={PanelType.custom}
         customWidth="1091px"
         onDismiss={handleClose}>
         <div dangerouslySetInnerHTML={{ __html: data }}></div>
-        <Button variant="secondary" className="float-end" onClick={handleClose}>
+        <button className="float-end mb-2 btn btn-default" onClick={handleClose}>
           Cancel
-        </Button>
+        </button>
       </Panel>
-      
+
     </>
   );
 }
