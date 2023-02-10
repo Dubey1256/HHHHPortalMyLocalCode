@@ -163,10 +163,10 @@ export default function ComponentTable({ props }: any) {
                         if (Counter === (filterarray.length === 1 ? siteConfig.length : (siteConfig.length * filterarray.length))) {
 
                             map(AllTasks, (result: any) => {
-                                result.TeamLeader = []
+                             //   result.TeamLeader = []
                                 result.CreatedDateImg = []
                                 result.TeamLeaderUserTitle = ''
-                                result.AllTeamMembers = []
+                              //  result.AllTeamMembers = []
                                 result.Display = 'none'
                                 result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
 
@@ -179,46 +179,46 @@ export default function ComponentTable({ props }: any) {
                                     result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
                                 }
 
-                                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                                    map(result.AssignedTo, (Assig: any) => {
-                                        if (Assig.Id != undefined) {
-                                            map(TaskUsers, (users: any) => {
+                                // if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                                //     map(result.AssignedTo, (Assig: any) => {
+                                //         if (Assig.Id != undefined) {
+                                //             map(TaskUsers, (users: any) => {
 
-                                                if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id === users.AssingedToUser.Id) {
-                                                    users.ItemCover = users.Item_x0020_Cover?.Url;
-                                                    result.AllTeamMembers.push(users);
-                                                }
+                                //                 if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id === users.AssingedToUser.Id) {
+                                //                     users.ItemCover = users.Item_x0020_Cover?.Url;
+                                //                     result.AllTeamMembers.push(users);
+                                //                 }
 
-                                            })
-                                        }
-                                    })
-                                }
-                                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                                    map(result.Team_x0020_Members, (obj: any) => {
-                                        if (obj.Id != undefined) {
-                                            map(TaskUsers, (users: any) => {
-                                                if (obj.Id != undefined && users.AssingedToUser != undefined && obj.Id == users.AssingedToUser.Id) {
-                                                    users.ItemCover = users.Item_x0020_Cover?.Url;
-                                                    result.AllTeamMembers.push(users);
-                                                }
+                                //             })
+                                //         }
+                                //     })
+                                // }
+                                // if (result.Team_x0020_Members != undefined && result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                                //     map(result.Team_x0020_Members, (obj: any) => {
+                                //         if (obj.Id != undefined) {
+                                //             map(TaskUsers, (users: any) => {
+                                //                 if (obj.Id != undefined && users.AssingedToUser != undefined && obj.Id == users.AssingedToUser.Id) {
+                                //                     users.ItemCover = users.Item_x0020_Cover?.Url;
+                                //                     result.AllTeamMembers.push(users);
+                                //                 }
 
-                                            })
-                                        }
-                                    })
-                                }
-                                if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                                    map(result.Responsible_x0020_Team, (resp: any) => {
-                                        if (resp.Id != undefined) {
-                                            map(TaskUsers, (users: any) => {
-                                                if (resp.Id != undefined && users.AssingedToUser != undefined && resp.Id == users.AssingedToUser.Id) {
-                                                    users.ItemCover = users.Item_x0020_Cover?.Url;
-                                                    result.TeamLeader.push(users);
-                                                }
+                                //             })
+                                //         }
+                                //     })
+                                // }
+                                // if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
+                                //     map(result.Responsible_x0020_Team, (resp: any) => {
+                                //         if (resp.Id != undefined) {
+                                //             map(TaskUsers, (users: any) => {
+                                //                 if (resp.Id != undefined && users.AssingedToUser != undefined && resp.Id == users.AssingedToUser.Id) {
+                                //                     users.ItemCover = users.Item_x0020_Cover?.Url;
+                                //                     result.TeamLeader.push(users);
+                                //                 }
 
-                                            })
-                                        }
-                                    })
-                                }
+                                //             })
+                                //         }
+                                //     })
+                                // }
                                 if (result.Author != undefined) {
                                     if (result.Author.Id != undefined) {
                                         $.each(TaskUsers, function (index: any, users: any) {
@@ -504,7 +504,7 @@ export default function ComponentTable({ props }: any) {
 
         var arrayfilter: any = [];
         const Itmes: any = [];
-        const chunkSize = 23;
+        const chunkSize = 20;
         for (let i = 0; i < AllComponetsData.length; i += chunkSize) {
             const chunk = AllComponetsData.slice(i, i + chunkSize);
             if (chunk != undefined && chunk.length > 0) {
@@ -707,8 +707,8 @@ export default function ComponentTable({ props }: any) {
         var FeatureData: any = [];
 
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
-            result.AllTeamMembers = result.AllTeamMembers != undefined ? result.AllTeamMembers : [];
-            result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
+            // result.AllTeamMembers = result.AllTeamMembers != undefined ? result.AllTeamMembers : [];
+            // result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
             result.CreatedDateImg = []
             result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
@@ -723,47 +723,47 @@ export default function ComponentTable({ props }: any) {
             }
             result['siteType'] = 'Master Tasks';
             result['SiteIcon'] = globalCommon.GetIconImageUrl(result.siteType, GlobalConstants.MAIN_SITE_URL + '/SP', undefined);
-            if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                $.each(result.AssignedTo, function (index: any, Assig: any) {
-                    if (Assig.Id != undefined) {
-                        $.each(Response, function (index: any, users: any) {
+           // if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+            //     $.each(result.AssignedTo, function (index: any, Assig: any) {
+            //         if (Assig.Id != undefined) {
+            //             $.each(Response, function (index: any, users: any) {
 
-                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                users.ItemCover = users.Item_x0020_Cover?.Url;
-                                result.AllTeamMembers.push(users);
-                            }
+            //                 if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+            //                     users.ItemCover = users.Item_x0020_Cover?.Url;
+            //                     result.AllTeamMembers.push(users);
+            //                 }
 
-                        })
-                    }
-                })
-            }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                $.each(result.Team_x0020_Members, function (index: any, Assig2: any) {
-                    if (Assig2.Id != undefined) {
-                        $.each(TaskUsers, function (index: any, users: any) {
-                            if (Assig2.Id != undefined && users.AssingedToUser != undefined && Assig2.Id == users.AssingedToUser.Id) {
-                                users.ItemCover = users.Item_x0020_Cover?.Url;
-                                result.AllTeamMembers.push(users);
-                            }
+            //             })
+            //         }
+            //     })
+            // }
+            // if (result.Team_x0020_Members != undefined && result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+            //     $.each(result.Team_x0020_Members, function (index: any, Assig2: any) {
+            //         if (Assig2.Id != undefined) {
+            //             $.each(TaskUsers, function (index: any, users: any) {
+            //                 if (Assig2.Id != undefined && users.AssingedToUser != undefined && Assig2.Id == users.AssingedToUser.Id) {
+            //                     users.ItemCover = users.Item_x0020_Cover?.Url;
+            //                     result.AllTeamMembers.push(users);
+            //                 }
 
-                        })
-                    }
-                })
-            }
+            //             })
+            //         }
+            //     })
+            // }
 
-            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                map(result.Responsible_x0020_Team, (Assig1: any) => {
-                    if (Assig1.Id != undefined) {
-                        map(TaskUsers, (users: any) => {
-                            if (Assig1.Id != undefined && users.AssingedToUser != undefined && Assig1.Id == users.AssingedToUser.Id) {
-                                users.ItemCover = users.Item_x0020_Cover?.Url;
-                                result.TeamLeader.push(users);
-                            }
+            // if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
+            //     map(result.Responsible_x0020_Team, (Assig1: any) => {
+            //         if (Assig1.Id != undefined) {
+            //             map(TaskUsers, (users: any) => {
+            //                 if (Assig1.Id != undefined && users.AssingedToUser != undefined && Assig1.Id == users.AssingedToUser.Id) {
+            //                     users.ItemCover = users.Item_x0020_Cover?.Url;
+            //                     result.TeamLeader.push(users);
+            //                 }
 
-                        })
-                    }
-                })
-            }
+            //             })
+            //         }
+            //     })
+            // }
             if (result.Author != undefined) {
                 if (result.Author.Id != undefined) {
                     $.each(TaskUsers, function (index: any, users: any) {
@@ -982,7 +982,7 @@ export default function ComponentTable({ props }: any) {
         var temp: any = {};
         temp.Title = 'Tasks';
         temp.childs = [];
-        temp.AllTeamMembers = [];
+      //  temp.AllTeamMembers = [];
         temp.TeamLeader = [];
         temp.flag = true;
         temp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/24/list-icon.png';
@@ -2198,14 +2198,9 @@ export default function ComponentTable({ props }: any) {
                                                                                             </td>
                                                                                             <td style={{ width: "7%" }}>{childitem.PercentComplete}</td>
                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
-                                                                                            <td style={{ width: "7%" }}><div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                return (
-                                                                                                    <div className="AssignUserPhoto"
-                                                                                                        title={client1.Title}>
-                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                    </div>
-                                                                                                )
-                                                                                            })}</div></td>
+                                                                                            <td style={{ width: "7%" }}><div>
+                                                                                            <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                            </div></td>
                                                                                             <td style={{ width: "9%" }}>{childitem.DueDate}</td>
                                                                                             <td style={{ width: "9%" }}>
                                                                                                 {childitem.CreatedDateImg != null ? childitem.CreatedDateImg.map((Creates: any) => {
@@ -2310,14 +2305,20 @@ export default function ComponentTable({ props }: any) {
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "7%" }}>{childinew.PercentComplete}</td>
                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
-                                                                                                                    <td style={{ width: "7%" }}>  <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                                    <td style={{ width: "7%" }}> 
+                                                                                                                     <div>
+                                                                                                                     <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                                        {/* {childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                         return (
                                                                                                                             <span className="AssignUserPhoto"
                                                                                                                                 title={client1.Title}>
                                                                                                                                 <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                             </span>
                                                                                                                         )
-                                                                                                                    })}</div></td>
+                                                                                                                    })} */}
+                                                                                                                    </div>
+                                                                                                                    
+                                                                                                                    </td>
                                                                                                                     <td style={{ width: "9%" }}>{childinew.DueDate}</td>
                                                                                                                     <td style={{ width: "9%" }}>
                                                                                                                         {(childinew.CreatedDateImg != undefined && childinew.CreatedDateImg.length === 0 && childinew.Created != null) ?
@@ -2429,14 +2430,11 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "7%" }}>{subchilditem.PercentComplete}</td>
                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
-                                                                                                                                        <td style={{ width: "7%" }}>   <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.map(function (client1: any) {
-                                                                                                                                            return (
-                                                                                                                                                <div className="AssignUserPhoto"
-                                                                                                                                                    title={client1.Title}>
-                                                                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                                                </div>
-                                                                                                                                            )
-                                                                                                                                        })}</div></td>
+                                                                                                                                        <td style={{ width: "7%" }}>  
+                                                                                                                                        <div>
+                                                                                                                                        <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                                                        </div>
+                                                                                                                                        </td>
 
                                                                                                                                         <td style={{ width: "9%" }}>{subchilditem.DueDate}</td>
                                                                                                                                         <td style={{ width: "9%" }}>
@@ -2549,14 +2547,11 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                             </td>
                                                                                                                                                             <td style={{ width: "7%" }}>{nextsubchilditem.PercentComplete}</td>
                                                                                                                                                             <td style={{ width: "7%" }}>{nextsubchilditem.ItemRank}</td>
-                                                                                                                                                            <td style={{ width: "10%" }}>   <div>{nextsubchilditem.TeamLeaderUser != undefined && nextsubchilditem.TeamLeaderUser.map(function (client1: any) {
-                                                                                                                                                                return (
-                                                                                                                                                                    <div className="AssignUserPhoto"
-                                                                                                                                                                        title={client1.Title}>
-                                                                                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                                                                    </div>
-                                                                                                                                                                )
-                                                                                                                                                            })}</div></td>
+                                                                                                                                                            <td style={{ width: "10%" }}> 
+                                                                                                                                                            <div>
+                                                                                                                                                            <ShowTaskTeamMembers props={nextsubchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                                                                            </div>
+                                                                                                                                                            </td>
 
                                                                                                                                                             <td style={{ width: "9%" }}>{nextsubchilditem.DueDate}</td>
                                                                                                                                                             <td style={{ width: "9%" }}>
