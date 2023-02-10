@@ -1154,7 +1154,7 @@ function CreateTaskComponent(props: any) {
 
     return (
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
-            <div>
+            <div className='Create-taskpage'>
                 <div className='row'>
                     <div className='col-sm-12'>
                         <dl className='d-grid text-right pull-right'><span className="pull-right"> <a data-interception="off" target='_blank' href={oldTaskIrl} style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
