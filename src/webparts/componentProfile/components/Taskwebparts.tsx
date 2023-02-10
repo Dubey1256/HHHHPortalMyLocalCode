@@ -846,6 +846,7 @@ export default function ComponentTable({ props }: any) {
                             featurecomp['childs'] = [];
                             DynamicSort(Tasks, 'Shareweb_x0020_ID');
                             featurecomp['childs'] = Tasks;
+                            featurecomp.childsLength = Tasks.length;
                         }
                         subcomp['childs'].unshift(featurecomp);;
                     }
@@ -1814,7 +1815,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                     title="Client Category" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "ClientCategory")} />
+                                                    // onChange={(e) => handleChange1(e, "ClientCategory")} 
+                                                    />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -1825,7 +1827,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="%"
                                                     title="Percentage Complete" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "ClientCategory")} />
+                                                    // onChange={(e) => handleChange1(e, "ClientCategory")} 
+                                                    />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -1852,7 +1855,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="ItemRank"
                                                     title="Item Rank" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "ClientCategory")} />
+                                                    // onChange={(e) => handleChange1(e, "ClientCategory")}
+                                                     />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -1880,7 +1884,8 @@ export default function ComponentTable({ props }: any) {
                                             <div style={{ width: "9%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                     title="Team" className="full_width searchbox_height"
-                                                    onChange={(e) => handleChange1(e, "Team")} />
+                                                    // onChange={(e) => handleChange1(e, "Team")}
+                                                     />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -2083,8 +2088,8 @@ export default function ComponentTable({ props }: any) {
                                                                             })}</div>
                                                                     </td>
                                                                     <td style={{ width: "7%" }}>{item.PercentComplete}</td>
-                                                                    <td style={{ width: "10%" }}>{item.ItemRank}</td>
-                                                                    <td style={{ width: "7%" }}>
+                                                                    <td style={{ width: "7%" }}>{item.ItemRank}</td>
+                                                                    <td style={{ width: "10%" }}>
                                                                         <div>
                                                                             <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
@@ -2094,17 +2099,25 @@ export default function ComponentTable({ props }: any) {
 
                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
                                                                     <td style={{ width: "9%" }}>
-                                                                        {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
-                                                                            return (
-                                                                                <span>
-                                                                                    {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                                    <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                        {(item.CreatedDateImg != undefined && item.CreatedDateImg.length === 0 && item.Created != null) ?
+                                                                            <>
+                                                                                {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+                                                                            </>
+                                                                            :
+                                                                            <>
+                                                                                {item.CreatedDateImg != null ? item.CreatedDateImg.map((Creates: any) => {
+                                                                                    return (
+                                                                                        <span>
+                                                                                            {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+                                                                                            <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
-                                                                                        <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                    </a>
-                                                                                </span>
-                                                                            )
-                                                                        }) : ""}
+                                                                                                <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                            </a>
+                                                                                        </span>
+                                                                                    )
+                                                                                }) : ""}
+                                                                            </>
+                                                                        }
                                                                     </td>
                                                                     {item.Item_x0020_Type == 'Task' &&
                                                                         <td style={{ width: "7%" }}>
@@ -2185,21 +2198,25 @@ export default function ComponentTable({ props }: any) {
                                                                                             </td>
                                                                                             <td style={{ width: "7%" }}>{childitem.PercentComplete}</td>
                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
-                                                                                            <td style={{ width: "7%" }}><div>
-                                                                                                <ShowTaskTeamMembers props={childitem}  TaskUsers={AllUsers}></ShowTaskTeamMembers>
-                                                                                               
-                                                                                            </div></td>
+                                                                                            <td style={{ width: "7%" }}><div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                                                return (
+                                                                                                    <div className="AssignUserPhoto"
+                                                                                                        title={client1.Title}>
+                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                    </div>
+                                                                                                )
+                                                                                            })}</div></td>
                                                                                             <td style={{ width: "9%" }}>{childitem.DueDate}</td>
                                                                                             <td style={{ width: "9%" }}>
                                                                                                 {childitem.CreatedDateImg != null ? childitem.CreatedDateImg.map((Creates: any) => {
                                                                                                     return (
-                                                                                                        <>  <span>
+                                                                                                        <span>
                                                                                                             {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
                                                                                                             <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                 <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                             </a>
-                                                                                                        </span></>
+                                                                                                        </span>
                                                                                                     )
                                                                                                 }) : ""}</td>
                                                                                             {childitem.Item_x0020_Type == 'Task' &&
@@ -2260,7 +2277,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.childs != undefined && childinew.childs.length > 0 &&
-                                                                                                                            <span className='ms-1'>({childinew.childsLength})</span>
+                                                                                                                            <span className='ms-1'>({childinew.childs.length})</span>
                                                                                                                         }
                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
                                                                                                                             // <span className="project-tool"><img
@@ -2293,22 +2310,36 @@ export default function ComponentTable({ props }: any) {
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "7%" }}>{childinew.PercentComplete}</td>
                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
-                                                                                                                    <td style={{ width: "7%" }}>  <div>
-                                                                                                                        <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
-                                                                                                                       
-                                                                                                                    </div></td>
-                                                                                                                    <td style={{ width: "9%" }}>{childinew.DueDate}</td>
-                                                                                                                    <td style={{ width: "9%" }}> {childinew.CreatedDateImg != null ? childinew.CreatedDateImg.map((Creates: any) => {
+                                                                                                                    <td style={{ width: "7%" }}>  <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                         return (
-                                                                                                                            <span>
-                                                                                                                                {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
-
-                                                                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                                                                </a>
+                                                                                                                            <span className="AssignUserPhoto"
+                                                                                                                                title={client1.Title}>
+                                                                                                                                <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
                                                                                                                             </span>
                                                                                                                         )
-                                                                                                                    }) : ""}</td>
+                                                                                                                    })}</div></td>
+                                                                                                                    <td style={{ width: "9%" }}>{childinew.DueDate}</td>
+                                                                                                                    <td style={{ width: "9%" }}>
+                                                                                                                        {(childinew.CreatedDateImg != undefined && childinew.CreatedDateImg.length === 0 && childinew.Created != null) ?
+                                                                                                                            <>
+                                                                                                                                {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                            </>
+                                                                                                                            :
+                                                                                                                            <>
+                                                                                                                                {childinew.CreatedDateImg != null ? childinew.CreatedDateImg.map((Creates: any) => {
+                                                                                                                                    return (
+                                                                                                                                        <span>
+                                                                                                                                            {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                            <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                                                                                <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                                            </a>
+                                                                                                                                        </span>
+                                                                                                                                    )
+                                                                                                                                }) : ""}
+                                                                                                                            </>
+                                                                                                                        }
+                                                                                                                    </td>
                                                                                                                     {childinew.Item_x0020_Type == 'Task' &&
                                                                                                                         <td style={{ width: "7%" }}>
                                                                                                                             <div></div>
@@ -2365,7 +2396,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined && subchilditem.childs.length > 0 &&
-                                                                                                                                                <span className='ms-1'>({subchilditem.childsLength})</span>
+                                                                                                                                                <span className='ms-1'>({subchilditem.childs.length})</span>
                                                                                                                                             }
                                                                                                                                             {subchilditem.Short_x0020_Description_x0020_On != null &&
                                                                                                                                                 // <span className="project-tool"><img
@@ -2398,23 +2429,37 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "7%" }}>{subchilditem.PercentComplete}</td>
                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
-                                                                                                                                        <td style={{ width: "7%" }}>   <div>
-                                                                                                                                            <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
-                                                                                                                                           
-                                                                                                                                        </div></td>
+                                                                                                                                        <td style={{ width: "7%" }}>   <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.map(function (client1: any) {
+                                                                                                                                            return (
+                                                                                                                                                <div className="AssignUserPhoto"
+                                                                                                                                                    title={client1.Title}>
+                                                                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                                </div>
+                                                                                                                                            )
+                                                                                                                                        })}</div></td>
 
                                                                                                                                         <td style={{ width: "9%" }}>{subchilditem.DueDate}</td>
-                                                                                                                                        <td style={{ width: "9%" }}>{subchilditem.CreatedDateImg != null ? subchilditem.CreatedDateImg.map((Creates: any) => {
-                                                                                                                                            return (
-                                                                                                                                                <span>
+                                                                                                                                        <td style={{ width: "9%" }}>
+                                                                                                                                            {(subchilditem.CreatedDateImg != undefined && subchilditem.CreatedDateImg.length === 0 && subchilditem.Created != null) ?
+                                                                                                                                                <>
                                                                                                                                                     {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                                    <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                                </>
+                                                                                                                                                :
+                                                                                                                                                <>
+                                                                                                                                                    {subchilditem.CreatedDateImg != null ? subchilditem.CreatedDateImg.map((Creates: any) => {
+                                                                                                                                                        return (
+                                                                                                                                                            <span>
+                                                                                                                                                                {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                                                <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
-                                                                                                                                                        <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                                                                                    </a>
-                                                                                                                                                </span>
-                                                                                                                                            )
-                                                                                                                                        }) : ""}</td>
+                                                                                                                                                                    <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                                                                </a>
+                                                                                                                                                            </span>
+                                                                                                                                                        )
+                                                                                                                                                    }) : ""}
+                                                                                                                                                </>
+                                                                                                                                            }
+                                                                                                                                        </td>
                                                                                                                                         {subchilditem.Item_x0020_Type == 'Task' &&
                                                                                                                                             <td style={{ width: "7%" }}>
                                                                                                                                                 <div></div>
@@ -2427,6 +2472,132 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                 </table>
                                                                                                                             </td>
                                                                                                                         </tr>
+                                                                                                                        {subchilditem.show && subchilditem.childs.length > 0 && (
+                                                                                                                            <>
+                                                                                                                                {subchilditem.childs.map(function (nextsubchilditem: any) {
+                                                                                                                                    return (
+                                                                                                                                        <>
+                                                                                                                                            <tr >
+                                                                                                                                                <td className="p-0" colSpan={13}>
+                                                                                                                                                    <table className="table m-0" style={{ width: "100%" }}>
+                                                                                                                                                        <tr className="for-c02">
+                                                                                                                                                            <td style={{ width: "2%" }}>
+                                                                                                                                                                <div className="accordian-header" onClick={() => handleOpen(nextsubchilditem)}>
+                                                                                                                                                                    {nextsubchilditem.childs.length > 0 &&
+                                                                                                                                                                        <a className='hreflink'
+                                                                                                                                                                            title="Tap to expand the childs">
+                                                                                                                                                                            <div className="sign">{nextsubchilditem.childs.length > 0 && nextsubchilditem.show ? <img src={nextsubchilditem.downArrowIcon} />
+                                                                                                                                                                                : <img src={nextsubchilditem.RightArrowIcon} />}
+                                                                                                                                                                            </div>
+                                                                                                                                                                        </a>
+                                                                                                                                                                    }
+                                                                                                                                                                </div>
+                                                                                                                                                            </td>
+                                                                                                                                                            <td style={{ width: "6%" }}>
+                                                                                                                                                                <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                                                <span>
+                                                                                                                                                                    <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                                                                                        <img className="icon-sites-img ml20" src={nextsubchilditem.SiteIcon}></img>
+                                                                                                                                                                    </a>
+                                                                                                                                                                </span>
+                                                                                                                                                            </td>
+                                                                                                                                                            <td style={{ width: "7%" }}>  <div className="d-flex">
+
+                                                                                                                                                                <span className="ml-2">{nextsubchilditem.Shareweb_x0020_ID}</span>
+                                                                                                                                                            </div>
+                                                                                                                                                            </td>
+                                                                                                                                                            <td style={{ width: "23%" }}>
+                                                                                                                                                                {nextsubchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
+                                                                                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                                >{nextsubchilditem.Title}
+                                                                                                                                                                </a>}
+                                                                                                                                                                {nextsubchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
+                                                                                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + nextsubchilditem.Id + '&Site=' + nextsubchilditem.siteType}
+                                                                                                                                                                >{nextsubchilditem.Title}
+                                                                                                                                                                </a>}
+                                                                                                                                                                {nextsubchilditem.childs != undefined && nextsubchilditem.childs.length > 0 &&
+                                                                                                                                                                    <span className='ms-1'>({nextsubchilditem.childs.length})</span>
+                                                                                                                                                                }
+                                                                                                                                                                {nextsubchilditem.Short_x0020_Description_x0020_On != null &&
+                                                                                                                                                                    // <span className="project-tool"><img
+                                                                                                                                                                    //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                                                                                    //         <span className="tooltiptext">
+                                                                                                                                                                    //             <div className="tooltip_Desc">
+                                                                                                                                                                    //                 <span>{nextsubchilditem.Short_x0020_Description_x0020_On}</span>
+                                                                                                                                                                    //             </div>
+                                                                                                                                                                    //         </span>
+                                                                                                                                                                    //     </span>
+                                                                                                                                                                    // </span>
+                                                                                                                                                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                                                                                        <img src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"} />
+                                                                                                                                                                        <div className="popover__content">
+                                                                                                                                                                            {nextsubchilditem.Short_x0020_Description_x0020_On}
+                                                                                                                                                                        </div>
+                                                                                                                                                                    </div>
+                                                                                                                                                                }
+                                                                                                                                                            </td>
+                                                                                                                                                            <td style={{ width: "7%" }}>
+                                                                                                                                                                <div>
+                                                                                                                                                                    {nextsubchilditem.ClientCategory != undefined && nextsubchilditem.ClientCategory.length > 0 && nextsubchilditem.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                                                                                        return (
+                                                                                                                                                                            <span className="ClientCategory-Usericon"
+                                                                                                                                                                                title={client.Title}>
+                                                                                                                                                                                <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                                                            </span>
+                                                                                                                                                                        )
+                                                                                                                                                                    })}</div>
+                                                                                                                                                            </td>
+                                                                                                                                                            <td style={{ width: "7%" }}>{nextsubchilditem.PercentComplete}</td>
+                                                                                                                                                            <td style={{ width: "7%" }}>{nextsubchilditem.ItemRank}</td>
+                                                                                                                                                            <td style={{ width: "10%" }}>   <div>{nextsubchilditem.TeamLeaderUser != undefined && nextsubchilditem.TeamLeaderUser.map(function (client1: any) {
+                                                                                                                                                                return (
+                                                                                                                                                                    <div className="AssignUserPhoto"
+                                                                                                                                                                        title={client1.Title}>
+                                                                                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                                                    </div>
+                                                                                                                                                                )
+                                                                                                                                                            })}</div></td>
+
+                                                                                                                                                            <td style={{ width: "9%" }}>{nextsubchilditem.DueDate}</td>
+                                                                                                                                                            <td style={{ width: "9%" }}>
+                                                                                                                                                                {(nextsubchilditem.CreatedDateImg != undefined && nextsubchilditem.CreatedDateImg.length === 0 && nextsubchilditem.Created != null) ?
+                                                                                                                                                                    <>
+                                                                                                                                                                        {nextsubchilditem.Created != null ? Moment(nextsubchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                                                    </>
+                                                                                                                                                                    :
+                                                                                                                                                                    <>
+                                                                                                                                                                        {nextsubchilditem.CreatedDateImg != null ? nextsubchilditem.CreatedDateImg.map((Creates: any) => {
+                                                                                                                                                                            return (
+                                                                                                                                                                                <span>
+                                                                                                                                                                                    {nextsubchilditem.Created != null ? Moment(nextsubchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                                                                    <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+
+                                                                                                                                                                                        <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                                                                                    </a>
+                                                                                                                                                                                </span>
+                                                                                                                                                                            )
+                                                                                                                                                                        }) : ""}
+                                                                                                                                                                    </>
+                                                                                                                                                                }
+                                                                                                                                                            </td>
+                                                                                                                                                            {nextsubchilditem.Item_x0020_Type == 'Task' &&
+                                                                                                                                                                <td style={{ width: "7%" }}>
+                                                                                                                                                                    <div></div>
+                                                                                                                                                                </td>
+                                                                                                                                                            }
+                                                                                                                                                            <td style={{ width: "3%" }}>{nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                                            <td style={{ width: "3%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
+                                                                                                                                                                {nextsubchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td>
+                                                                                                                                                        </tr>
+                                                                                                                                                    </table>
+                                                                                                                                                </td>
+                                                                                                                                            </tr>
+                                                                                                                                        </>
+                                                                                                                                    )
+                                                                                                                                })}
+                                                                                                                            </>
+
+                                                                                                                        )}
                                                                                                                     </>
                                                                                                                 )
                                                                                                             })}
@@ -2459,3 +2630,6 @@ export default function ComponentTable({ props }: any) {
         </div>
     );
 }
+
+
+

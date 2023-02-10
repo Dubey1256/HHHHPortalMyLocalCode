@@ -234,37 +234,3 @@ export const GetIconImageUrl = (listName: any, listUrl: any, Item: any) => {
     }
     return IconUrl;
 }
-
-// var GetGroupsByCurrentUser = async function (siteUrl: any) {
-//     if (siteUrl == undefined) {
-//         const oContext: IContextInfo = await pnp.sp.site.getContextInfo();
-//         siteUrl = oContext.WebFullUrl
-//     }
-//     var query = "/_api/web/currentuser/?$expand=groups";
-//     pnp.sp.web.siteUsers.get().then(function(data) {
-//     return baseService.getRequest(siteUrl, query);
-// };
-
-export const IsCurrentUserSiteOwner =  async () => {
-    //var deferred = $q.defer();
-    var IsSiteAdmin = false;
-    // if (_spPageContextInfo.isSiteAdmin) {    
-    //     IsSiteAdmin = true;
-    // } else {
-    pnp.sp.web.siteGroups.get().then(function (data) {
-        //console.log(data.d.Groups.results);
-        data.forEach(data.d.Groups.results, function (value: any, i: any) {
-            if (data.d.Groups.results[i].Title != undefined && (data.d.Groups.results[i].Title == 'HHHH Owners' || data.d.Groups.results[i].Title == 'HHHH SP-Admin' || data.d.Groups.results[i].Title == 'HHHH SP-Manager' || data.d.Groups.results[i].Title == 'GmBH Owners' || data.d.Groups.results[i].Title == 'TeamK4Bundestag Owners' || data.d.Groups.results[i].Title == 'HHHH Administrators') || (data.d.Groups.results[i].Title != undefined && data.d.Groups.results[i].OwnerTitle == "HHHH Owners")) {
-                IsSiteAdmin = true;
-            } // end of IF system account
-        }); // end of for loop
-
-        //return IsSiteAdmin;
-    }, // en
-        function (error) {
-            IsSiteAdmin = false;
-        });
-    //}
-    return IsSiteAdmin;
-    ;
-};

@@ -829,11 +829,11 @@ function ComponentTable(SelectedProp: any) {
         setIsUpdated(SelectedProp.SelectedProp)
     }
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
-    const isSiteOwner = async function () {
-        const isOwner = await globalCommon.IsCurrentUserSiteOwner();
-        console.log(isOwner);
+    // const isSiteOwner = async function () {
+    //     const isOwner = await globalCommon.IsCurrentUserSiteOwner();
+    //     console.log(isOwner);
 
-    }
+    // }
     React.useEffect(() => {
         showProgressBar();
         // isSiteOwner();
@@ -1968,8 +1968,8 @@ function ComponentTable(SelectedProp: any) {
                                             disabled={true}>
                                             Restructure
                                         </button> */}
-                                        <button className="btn border bg-white" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="true" data-bs-reference="parent">
-                                            <RxDotsVertical />
+                                        <button className="border bg-white" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="true" data-bs-reference="parent">
+                                             <RxDotsVertical/>
                                         </button>
                                         <ul className="dropdown-menu dropdown-menu-end" style={{ "position": "absolute", "inset": "auto 0px 0px auto", "margin": "0px", "transform": "translate(-36px, -1657px)" }} data-popper-placement="top-end">
                                             <li onClick={addModal}><a className="dropdown-item" href="#">Add Structure</a></li>
