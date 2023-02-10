@@ -1869,7 +1869,7 @@ function TimeEntryPopup(item: any) {
                                                 ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                 name="timeSpent"
                                                 ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                value={TimeInMinutes}
+                                                value={TimeInMinutes>0?TimeInMinutes:0}
                                                 onChange={(e) => setNewData({ ...newData, TimeSpentInMinute: e.target.value })} />
 
                                         </div>
@@ -1918,7 +1918,7 @@ function TimeEntryPopup(item: any) {
                                     <div className="row mb-2">
                                         <div className="col-sm-6">
                                             <label>Time Spent (in hours)</label>
-                                            <input className="form-control" type="text" value={TimeInHours} onChange={(e) => setPostData({ ...newData, TaskTime: e.target.value })}
+                                            <input className="form-control" type="text" value={TimeInHours>0?TimeInHours:0} onChange={(e) => setPostData({ ...newData, TaskTime: e.target.value })}
                                             />
                                         </div>
                                     </div>
@@ -2122,7 +2122,7 @@ function TimeEntryPopup(item: any) {
                                                                 ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                                 name="timeSpent"
                                                                 ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                                value={TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin} />
+                                                                value={TimeInMinutes>0?TimeInMinutes : child.TaskTimeInMin} />
 
                                                         </div>
                                                         <div
@@ -2168,7 +2168,7 @@ function TimeEntryPopup(item: any) {
                                                     <div className="row">
                                                         <div className="col-sm-6 ">
                                                             <label>Time Spent (in hours)</label>
-                                                            <input className="form-control" type="text" value={TimeInHours != 0 ? TimeInHours : child.TaskTime}
+                                                            <input className="form-control" type="text" value={TimeInHours>0? TimeInHours : child.TaskTime}
                                                                 onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
                                                         </div>
                                                     </div>
