@@ -271,8 +271,8 @@ function CreateTaskComponent(props: any) {
                     }
                 }
                 UrlPasteTitle(e);
-                await loadRelevantTask(PageName, "PageTask")
                 await loadRelevantTask(paramSiteUrl, "UrlTask")
+                await loadRelevantTask(PageName, "PageTask")
             }
             let Condition = "&$filter=Component/Id eq  '" + paramComponentId + "'"
             await loadRelevantTask(Condition, "ComponentId").then((response:any)=>{
@@ -827,63 +827,48 @@ function CreateTaskComponent(props: any) {
                 if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/eps/')) > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
                     if (site.Title.toLowerCase() === 'eps') {
                         item = site.Title === 'EPS' ? item = 'EPS' : site = site.Title;
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/ei/') > -1 || TestUrl.toLowerCase().indexOf('/ee/') > -1) && TestUrl.toLowerCase().indexOf('/digitaladministration/') <= -1 && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
                     if (site.Title.toLowerCase() === 'ei') {
                         item = site.Title === 'EI' ? item = 'EI' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/digitaladministration/') > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
                     if (site.Title.toLowerCase() === 'alakdigital') {
                         item = site.Title === 'ALAKDigital' ? item = 'ALAKDigital' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/migration/') > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
                     if (site.Title.toLowerCase() === 'migration') {
                         item = site.Title === 'Migration' ? item = 'MIGRATION' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/education/') > -1)) {
                     if (site.Title.toLowerCase() === 'education') {
                         item = site.Title === 'Education' ? item = 'Education' : site = site.Title;
-                        // if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/gender/') > -1)) {
                     if (site.Title.toLowerCase() === 'gender') {
                         item = site.Title === 'Gender' ? item = 'Gender' : site = site.Title;
-                        // if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/drr/') > -1)) {
                     if (site.Title.toLowerCase() === 'drr') {
                         item = site.Title === 'DRR' ? item = 'DRR' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/health') > -1)) {
                     if (site.Title.toLowerCase() === 'health') {
                         item = site.Title === 'Health' ? item = 'Health' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
 
@@ -891,78 +876,58 @@ function CreateTaskComponent(props: any) {
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/development-effectiveness/')) > -1 && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
                     if (site.Title.toLowerCase() === 'de') {
                         item = site.Title === 'DE' ? item = 'DE' : site = site.Title;
-                        // if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/qa/') > -1)) {
                     if (site.Title.toLowerCase() === 'qa') {
                         item = site.Title === 'QA' ? item = 'QA' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/shareweb') > -1)) {
                     if (site.Title.toLowerCase() === 'shareweb') {
                         item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/joint') > -1)) {
                     if (site.Title.toLowerCase() === 'shareweb') {
                         item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('www.gruene-washington.de') > -1)) {
                     if (site.Title.toLowerCase() === 'gruene') {
                         item = site.Title === 'Gruene' ? item = 'Gruene' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('kathabeck.sharepoint.com') > -1)) {
                     if (site.Title.toLowerCase() === 'kathabeck') {
                         item = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('hhhhteams.sharepoint.com') > -1) || (TestUrl.toLowerCase().indexOf('hhhh') > -1)) {
                     if (site.Title.toLowerCase() === 'hhhh') {
                         item = site.Title === 'HHHH' ? item = 'HHHH' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('hhhhteams.sharepoint.com') > -1)) {
                     if (site.Title.toLowerCase() === 'Offshore Tasks') {
                         item = site.Title === 'Offshore Tasks' ? item = 'Offshore Tasks' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
                 if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/sco-belgrade-online-monitoring-tool') > -1)) {
                     if (site.Title.toLowerCase() === 'shareweb') {
                         item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        //if (item !== undefined && getLatestSiteName.toLowerCase() === site.Title.toLowerCase())
-                        // setSelectedsiteType(site);
                         selectedSiteTitle = site.Title
                     }
                 }
             })
-            //if (item !== undefined && getLatestSiteName.toLowerCase() === item.toLowerCase())
-            //$scope.selectedsiteMetadata(item);
         }
         saveValue.siteType = selectedSiteTitle;
         setSave(saveValue)
