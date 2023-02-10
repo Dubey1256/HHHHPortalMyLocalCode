@@ -817,7 +817,8 @@ function ComponentTable(SelectedProp: any) {
             keywordList = stringToArray(searchTerms);
         }
         var pattern: any = getRegexPattern(keywordList);
-        item.Title = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+      //  item.Title = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+      item.Title = item.Title;
         keywordList = [];
         pattern = '';
     }
