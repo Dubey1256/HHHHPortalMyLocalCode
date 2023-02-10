@@ -1,9 +1,25 @@
 import * as React from "react";
 import { useEffect, useState } from 'react';
-import { Web } from "sp-pnp-js";
+import pnp, { Web } from "sp-pnp-js";
+import "@pnp/sp/sputilities";
+import { sp } from "@pnp/sp";
 import * as moment from 'moment';
 import { GlobalConstants } from '../globalComponents/LocalCommon';
+import { PageContext } from "@microsoft/sp-page-context";
 
+export const pageContext= async() =>
+{
+    let result;
+    try {
+        result = (await pnp.sp.site.getContextInfo());
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+
+    return result;
+    
+} 
 
 export const getData = async (url:any,listId:any,query:any) => {
     const web = new Web(url);
@@ -293,460 +309,688 @@ export const makePostDataForApprovalProcess =  async (postData:any)=> {
     return Promise;
     
 }
+export const GetImmediateTaskNotificationEmails = async (item:any, isLoadNotification:any, rootsite:any) => {
+    let pageContent=await pageContext()
+    var isLoadNotification = isLoadNotification;
+    var CurrentItem = item;
+    var Allmail: any[] = [];
+    var query = ''
+    if ((item != undefined) && (item.PercentComplete == 80 || item.PercentComplete == 93)) {
+        query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=TaskStatusNotification eq " + item?.PercentComplete + "";
+    }
+    if  ((item?.PercentComplete == 80 && item?.newCategories == 'Immediate') || (item?.PercentComplete == 90 && item?.newCategories == 'Immediate') || (item?.PercentComplete == 90 && item?.newCategories == 'Email Notification')) {
+        query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=TaskStatusNotification eq " + item?.PercentComplete + " or AssingedToUser/Id eq " + item?.Author?.Id + "";
+    }
+    if  (item?.PercentComplete == 5 && item?.newCategories == 'Immediate') {
+        query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter= AssingedToUser/Id eq " + item?.Author?.Id + "";
+    }
+    if (item == undefined) {
+        query = "Id,Title,IsTaskNotifications,Email,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=IsTaskNotifications eq 1"
 
+    }
+    if (item?.TeamLeadersId != undefined) {
+        var filter = '';
+        if (item?.TeamLeadersId != undefined) {
+          item.TeamLeadersId.map((UserId:any, indexing:any) =>{
+                if (item.TeamLeadersId.length - 1 != indexing)
+                    filter = filter + 'AssingedToUser/Id eq ' + UserId + ' or ';
+                else
+                    filter = filter + 'AssingedToUser/Id eq ' + UserId;
+            })
+        } else {
+            item.TeamLeadersId.map((UserId:any, indexing:any) =>{
+                if (item.TeamLeadersId.length - 1 != indexing)
+                    filter = filter + 'AssingedToUser/Id eq ' + UserId + ' or ';
+                else
+                    filter = filter + 'AssingedToUser/Id eq ' + UserId;
+            })
+        }
+        query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,Email,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=" + filter;
+    }
+    else if (item?.TeamLeadersId?.length == 0 && isLoadNotification == 'ApprovalMail') {
+        query = "Id,Title,IsTaskNotifications,AssingedToUserId,Approver/Title,Approver/EMail,Email,Approver/Name,Approver/Id&$expand=Approver";
+    }
+    if (query != undefined && query != '') {
+        var listID = rootsite != undefined ? rootsite.TaskUserlistId : GlobalConstants.ADMIN_TASK_USERS_LISTID;
+       await getData(rootsite != undefined ? rootsite.SiteUrl : pageContent?.WebFullUrl,  listID , query )
+            .then((data:any)=> {
+                var Allusers = data?.data
+                if (item != undefined && item.TeamLeadersId != undefined && isLoadNotification != undefined && isLoadNotification != '' && isLoadNotification == 'ApprovalMail') {
+                 Allusers.map((user:any)=> {
+                        if (CurrentItem?.Author?.Id == user?.AssingedToUserId) {
+                            if (user?.Approver?.results?.length > 0)
+                              user.Approver.results.map((approver:any)=> {
+                                    Allmail.push(approver?.EMail);
+                                })
+                        }
+                    })
+                }
+                else {
+                    Allusers.map((user:any)=> {
+                        if (user?.Email != null || user?.Email != undefined) {
+                            Allmail.push(user?.Email);
+                        }
+                        else if (user.AssingedToUser != undefined) {
+                            if (user.AssingedToUser.EMail != null || user.AssingedToUser.EMail != undefined) {
+                                Allmail.push(user?.AssingedToUser?.EMail);
+                            }
+                        }
+                    })
+                }
+                if (Allmail == undefined || Allmail.length == 0 && isLoadNotification == 'ApprovalMail')
+                    alert("User has no Approver to send an email");
+                    Promise.resolve(Allmail);
 
-// var sendImmediateEmailNotifications = function (itemId, siteUrl, listId, item, RecipientMail, isLoadNotification, rootSite) {
-//     GetImmediateTaskNotificationEmails(item, isLoadNotification, rootSite)
-//         .then(function (ToEmails) {
-//             if (isLoadNotification == false)
-//                 ToEmails = [];
-//             if (RecipientMail != undefined && RecipientMail.Email != undefined && ToEmails.length == 0) {
-//                 ToEmails.push(RecipientMail.Email)
-//             }
-//             if (ToEmails.length > 0) {
-//                 var query = '';
-//                 query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,component_x0020_link,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,SharewebTaskType/Id,SharewebTaskType/Title,Shareweb_x0020_ID,CompletedDate,SharewebTaskLevel1No,SharewebTaskLevel2No&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,SharewebCategories,SharewebTaskType,Services,Events&$filter=Id eq " + itemId;
-//                 SharewebListService.getRequest(siteUrl, "/getbyid('" + listId + "')/items?$select=" + query)
-//                     .then(function (data) {
-//                         angular.forEach(data.d.results, function (item) {
-//                             item.PercentageCompleted = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
-//                             item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
-//                             if (item.PercentageCompleted != undefined) {
-//                                 item.PercentageCompleted = parseInt((item.PercentageCompleted).toFixed(0));
-//                             }
-//                             if (item.PercentComplete != undefined) {
-//                                 item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
-//                             }
-//                             item.taskLeader = 'None';
-//                             if (item.AssignedTo != undefined && item.AssignedTo.results != undefined && item.AssignedTo.results.length > 0)
-//                                 item.taskLeader = getMultiUserValues(item);
-//                         })
-//                         var UpdateItem = angular.copy(data.d.results[0]);
-//                         if (item != undefined && item.PercentComplete != undefined) {
-//                             item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
-//                             item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
-//                             item.PercentageCompleted = item.PercentComplete;
+            },
+                function (error) {
+                    Promise.reject();
+                });
+    }
+    else {
+        Promise.resolve(Allmail);     
+
+        if (isLoadNotification == 'ApprovalMail')
+            alert("User has no Approver to send an email");
+    }
+    return Promise;
+
+}
+
+export const getMultiUserValues =  (item:any)=> {
+    var users = '';
+    var isuserexists = false;
+    var userarray = [];
+    if (item?.AssignedTo?.results != undefined)
+        userarray = item.AssignedTo.results;
+    for (var i = 0; i < userarray.length; i++) {
+        users += userarray[i].Title + ', ';
+    }
+    if (users.length > 0)
+        users = users.slice(0, -2);
+    return users;
+};
+export const getListNameFromItemProperties = (item:any)=> {
+    var listName = [];
+    var metadataType = item.__metadata.type;
+    if (metadataType != undefined)
+        listName = metadataType.split('.');
+    listName = listName[2];
+    if (listName != undefined)
+        listName = listName.substr(0, listName.indexOf('ListItem'));
+    return listName;
+}
+
+export const ConvertLocalTOServerDate = async (LocalDateTime:any, dtformat:any)=> {
+    if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
+
+    // below logic works fine in all condition 
+    if (LocalDateTime != '') {
+        var serverDateTime;
+        var vLocalDateTime = new Date(LocalDateTime);
+        //var offsetObj = GetServerOffset();
+        //var IANATimeZoneName = GetIANATimeZoneName();
+        var mDateTime = moment(LocalDateTime);
+        serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
+        //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
+        return serverDateTime;
+    }
+    return '';
+}
+
+// export const loadRelevantTask = async (SitesTypes:any,query: any) => {
+//     let taskUsers: any[]=[];
+//     taskUsers=await loadTaskUsers();
+//     try {
+//         let SiteTaskTaggedToComp: any[] = []
+//         let count = 0
+//         SitesTypes.map(async (site: any) => {
+//             await getData(site?.siteUrl?.Url, site?.listId, query).then((data: any) => {
+//                 data.map((item: any) => {
+
+//                     item.siteCover = site?.Item_x005F_x0020_Cover?.Url
+//                     item.siteType = site.siteName;
+//                     item.TaskName = item.Title;
+//                     taskUsers.map((user: any) => {
+//                         if (user?.AssingedToUser?.Id == item.Author.Id) {
+//                             item.AuthorCover = user?.Item_x0020_Cover?.Url
 //                         }
-//                         if (item != undefined && item.siteType != undefined) {
-//                             item.siteType = item.siteType.replace(/_x0020_/g, ' ');
-//                         }
-//                         var siteType = getListNameFromItemProperties(UpdateItem);
-//                         UpdateItem.siteType = '';
-//                         if (UpdateItem.siteType == '') {
-//                             if (siteType != undefined) {
-//                                 siteType = siteType.replace(/_x0020_/g, '%20');
-//                             }
-//                             UpdateItem.siteType = siteType;
-//                         }
-//                         UpdateItem.Shareweb_x0020_ID = getSharewebId(UpdateItem);
-//                         if (UpdateItem.Author != undefined) {
-//                             UpdateItem.Author1 = '';
-//                             UpdateItem.Author1 = UpdateItem.Author.Title;
-//                         } else
-//                             UpdateItem.Editor1 = '';
-//                         if (UpdateItem.Editor != undefined) {
-//                             UpdateItem.Editor1 = '';
-//                             UpdateItem.Editor1 = UpdateItem.Editor.Title;
-//                         } else
-//                             UpdateItem.Editor1 = '';
-//                         if (UpdateItem.component_x0020_link != undefined && UpdateItem.component_x0020_link.Url != undefined)
-//                             UpdateItem.URL = UpdateItem.component_x0020_link.Url;
-//                         else
-//                             UpdateItem.URL = '';
-
-//                         if (UpdateItem.DueDate != undefined)
-//                             UpdateItem.DueDate = ConvertLocalTOServerDate(UpdateItem.DueDate, 'DD-MMM-YYYY');
-//                         else
-//                             UpdateItem.DueDate = '';
-//                         if (UpdateItem.StartDate != undefined)
-//                             UpdateItem.StartDate = ConvertLocalTOServerDate(UpdateItem.StartDate, 'DD-MMM-YYYY');
-//                         else
-//                             UpdateItem.StartDate = '';
-//                         if (UpdateItem.CompletedDate != undefined)
-//                             UpdateItem.CompletedDate = ConvertLocalTOServerDate(UpdateItem.CompletedDate, 'DD-MMM-YYYY');
-//                         else
-//                             UpdateItem.CompletedDate = '';
-
-//                         if (UpdateItem.Created != undefined)
-//                             UpdateItem.Created = ConvertLocalTOServerDate(UpdateItem.Created, 'DD-MMM-YYYY');
-//                         else
-//                             UpdateItem.Created = '';
-//                         if (UpdateItem.Modified != undefined)
-//                             UpdateItem.Modified = ConvertLocalTOServerDate(UpdateItem.Modified, 'DD-MMM-YYYY');
-//                         else
-//                             UpdateItem.Modified = '';
-//                         if (UpdateItem.PercentComplete != undefined)
-//                             UpdateItem.PercentComplete = UpdateItem.PercentComplete;
-//                         else
-//                             UpdateItem.PercentComplete = '';
-//                         if (UpdateItem.Priority != undefined)
-//                             UpdateItem.Priority = UpdateItem.Priority;
-//                         else
-//                             UpdateItem.Priority = '';
-//                         if (UpdateItem.Body != undefined)
-//                             UpdateItem.Body = $.parseHTML(UpdateItem.Body)[0].textContent;
-//                         else
-//                             UpdateItem.Body = '';
-//                         if (UpdateItem.Title != undefined)
-//                             UpdateItem.Title = UpdateItem.Title;
-//                         else
-//                             UpdateItem.Title = '';
-//                         UpdateItem.AssignedToTitle = '';
-//                         if (UpdateItem.AssignedTo.results != undefined) {
-//                             angular.forEach(UpdateItem.AssignedTo.results, function (item) {
-//                                 UpdateItem.AssignedToTitle += item.Title + ';';
-//                             })
-//                         }
-//                         UpdateItem.ComponentName = '';
-//                         if (UpdateItem.Component.results != undefined) {
-//                             angular.forEach(UpdateItem.Component.results, function (item) {
-//                                 UpdateItem.ComponentName += item.Title + ';';
-//                             })
-//                         }
-//                         UpdateItem.Category = '';
-//                         UpdateItem.Categories = '';
-//                         if (UpdateItem.SharewebCategories.results != undefined) {
-//                             angular.forEach(UpdateItem.SharewebCategories.results, function (item) {
-//                                 UpdateItem.Categories += item.Title + ';';
-//                                 UpdateItem.Category += item.Title + ',';
-//                             })
-//                         }
-//                         var pos = UpdateItem.Category.lastIndexOf(',');
-//                         UpdateItem.Category = UpdateItem.Category.substring(0, pos) + UpdateItem.Category.substring(pos + 1);
-//                         var Commentdata = [];
-//                         UpdateItem.AllComments = '';
-//                         if (UpdateItem.Comments != undefined) {
-//                             Commentdata = JSON.parse(UpdateItem.Comments);
-//                             angular.forEach(Commentdata, function (comment) {
-//                                 UpdateItem.AllComments += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
-//                                     '<span>' +
-//                                     '<div style="margin-bottom:5px;">' +
-//                                     comment.AuthorName +
-//                                     ' - ' +
-//                                     comment.Created +
-//                                     '</div>' +
-//                                     comment.Title +
-//                                     '</span>' +
-//                                     '</div>'
-//                             })
-//                         }
-//                         UpdateItem.Description = '';
-//                         if (UpdateItem.Body != undefined && UpdateItem.Body != '')
-//                             UpdateItem.Description = UpdateItem.Body;
-//                         if (UpdateItem.FeedBack != undefined) {
-//                             try {
-//                                 var Description = JSON.parse(UpdateItem.FeedBack);
-//                                 if (Description.length > 0) {
-//                                     UpdateItem.Description = '';
-//                                     angular.forEach(Description[0].FeedBackDescriptions, function (description, index) {
-//                                         var index1 = index + 1;
-//                                         var Comment = '';
-//                                         if (description.Comments != undefined && description.Comments.length > 0) {
-//                                             angular.forEach(description.Comments, function (val) {
-//                                                 Comment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
-//                                                     '<span>' +
-//                                                     '<div style="margin-bottom:5px;">' +
-//                                                     val.AuthorName +
-//                                                     ' - ' +
-//                                                     val.Created +
-//                                                     '</div>' +
-//                                                     val.Title +
-//                                                     '</span>' +
-//                                                     '</div>'
-
-//                                             })
-
-//                                         }
-//                                         UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '</span>' +
-//                                             '</td>' +
-//                                             '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
-//                                             '<span>' +
-//                                             description.Title +
-//                                             '</span>' +
-//                                             Comment +
-//                                             '</td>' +
-//                                             '</tr>';
-//                                         if (description.Subtext != undefined && description.Subtext.length > 0) {
-//                                             angular.forEach(description.Subtext, function (Childdescription, Childindex) {
-//                                                 var Childindex1 = Childindex + 1;
-//                                                 var ChildComment = '';
-//                                                 if (Childdescription.Comments != undefined && Childdescription.Comments.length > 0) {
-//                                                     angular.forEach(description.Comments, function (Childval) {
-//                                                         ChildComment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
-//                                                             '<span>' +
-//                                                             '<div style="margin-bottom:5px;">' +
-//                                                             Childval.AuthorName +
-//                                                             ' - ' +
-//                                                             Childval.Created +
-//                                                             '</div>' +
-//                                                             Childval.Title +
-//                                                             '</span>' +
-//                                                             '</div>'
-
-//                                                     })
-
-//                                                 }
-//                                                 UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '.' + Childindex1 + '</span>' +
-//                                                     '</td>' +
-//                                                     '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
-//                                                     '<span>' +
-//                                                     Childdescription.Title +
-//                                                     '</span>' +
-//                                                     ChildComment +
-//                                                     '</td>' +
-//                                                     '</tr>';
-//                                             });
-
-//                                         }
-//                                     });
-//                                 }
-//                                 //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
-//                             } catch (e) {
-//                                 console.log(e)
-//                             }
-
+//                         if (user?.AssingedToUser?.Id == item.Editor.Id) {
+//                             item.EditorCover = user?.Item_x0020_Cover?.Url
 //                         }
 
-//                         var siteUrl = _spPageContextInfo.webAbsoluteUrl;
-//                         var Name = '';
-//                         var OtherDetails = '';
-//                         var Subject = '';
-//                         var TaskDescriptionStart = '';
-//                         var NoOfApprovalTask = '';
-//                         var TaskDescription = '';
-//                         var ApprovalRejectionComments = '';
-//                         var TaskComments = '';
-//                         var TaskDashBoardURl = '';
-//                         var ApprovalDashboard = '';
-//                         var TaskDashBoardTitle = '';
-//                         var ApprovalDashboardTitle = '';
-//                         var CC = [];
-//                         if (item == undefined) {
-//                             //Subject = "[" + siteType + "-Task] " + UpdateItem.Title + "(" + UpdateItem.Category + ")";
-//                             Subject = "[" + siteType + " - " + UpdateItem.Category + " (" + UpdateItem.PercentComplete + "%)] " + UpdateItem.Title + "";
-//                         }
-//                         else {
-//                             if (item != undefined && item.PercentComplete == 5 && item.newCategories != undefined && item.newCategories == 'Immediate') {
-//                                 CC.push("simran.kaur@smalsus.com");
-//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
-//                             }
-//                             if (item != undefined && item.TeamLeadersId != undefined && item.TeamLeadersId.length > 0 && item.CategoriesType == undefined && item.isApprovalRejection == undefined) {
-//                                 CC.push("simran.kaur@smalsus.com");
-//                                 Subject = "[" + item.siteType + " - " + UpdateItem.Category + " (" + item.PercentComplete + "%)] " + item.Title + "";
-//                             }
-//                             if ((item != undefined && (item.PercentComplete == 80 && item.newCategories == undefined) || (item.PercentComplete == 80 && item.newCategories != undefined && item.newCategories != 'Immediate' && item.newCategories != 'Email Notification'))) {
-//                                 CC.push("simran.kaur@smalsus.com");
-//                                 Subject = "[" + item.siteType + " - " + UpdateItem.Category + " (" + item.PercentComplete + "%)] " + item.Title + "";
-//                             }
-//                             if (item != undefined && item.PercentComplete == 93) {
-//                                 if (item.newCategories == undefined || item.newCategories == null)
-//                                     item.newCategories = '';
-//                                 CC.push("simran.kaur@smalsus.com");
-//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
-//                             }
-//                             if ((item != undefined && (item.PercentComplete == 80 && item.newCategories != undefined && item.newCategories == 'Immediate'))) {
-//                                 CC.push("simran.kaur@smalsus.com");
-//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
-//                             }
-
-//                             if ((item != undefined && (item.PercentComplete == 90 && item.newCategories != undefined && item.newCategories == 'Email Notification'))) {
-
-//                                 CC.push("deepak@hochhuth-consulting.de");
-//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
-//                             }
-//                             if ((item != undefined && (item.PercentComplete == 90 && item.newCategories != undefined && item.newCategories == 'Immediate'))) {
-//                                 CC.push("deepak@hochhuth-consulting.de");
-//                                 Subject = "[" + item.siteType + " - " + item.newCategories + " (" + item.PercentComplete + "%)] " + item.Title + "";
-//                             }
-//                             if (item != undefined && item.CategoriesType != undefined && ((item.CategoriesType.toLowerCase()).indexOf('draft') > -1 || (item.CategoriesType.toLowerCase()).indexOf('approval') > -1 && item.PercentComplete == 1)) {
-//                                 CC = [];
-//                                 if (item.CategoriesType != undefined && item.CategoriesType != '')
-//                                     item.CategoriesType = item.CategoriesType.replaceAll(';', ',')
-//                                 Subject = "[" + item.siteType + " - " + item.CategoriesType + " (" + item.PercentComplete + "%)] " + item.Title + "";
-//                                 TaskDescriptionStart = 'Hi,';
-//                                 TaskDescription = UpdateItem.Author1 + ' has created a Task which requires your Approval.Please take your time and review:';
-//                                 if (item.TotalApprovalTask != undefined && item.TotalApprovalTask != 0)
-//                                     NoOfApprovalTask = 'Please note that you still have ' + item.TotalApprovalTask + ' tasks left to approve.You can find all pending approval tasks on your task dashboard or the approval page.';
-//                                 TaskDashBoardURl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx';
-//                                 ApprovalDashboard = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks';
-//                                 var TaskDashBoardTitle = 'Your Task Dashboard';
-//                                 var ApprovalDashboardTitle = 'Your Approval Page';
-
-//                             }
-//                             if ((item != undefined && (item.isApprovalRejection != undefined && item.isApprovalRejection))) {
-//                                 CC = [];
-//                                 Subject = "[" + item.siteType + " (" + item.PercentComplete + "%)] " + item.Title + " Approved";
-//                                 TaskDescriptionStart = 'Hi,';
-//                                 TaskDescription = 'Your task has been approved by ' + item.ApproverName + ', team will process it further. Refer Approval Comments.';
-//                                 TaskComments = item.TaskComments;
-//                                 ApprovalRejectionComments = '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Approval Comments:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
-//                                     TaskComments + '</span> </td>' +
-//                                     '</tr>'
-//                             }
-//                             if ((item != undefined && (item.isApprovalRejection != undefined && !item.isApprovalRejection))) {
-//                                 CC = [];
-//                                 Subject = "[" + item.siteType + " (" + item.PercentComplete + "%)] " + item.Title + " Rejected";
-//                                 TaskDescriptionStart = 'Hi,';
-//                                 TaskDescription = 'Your task has been rejected by ' + item.ApproverName + '. Refer Reject Comments.';
-//                                 TaskComments = item.TaskComments;
-//                                 ApprovalRejectionComments = '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Rejection Comments:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
-//                                     TaskComments + '</span> </td>' +
-//                                     '</tr>';
-//                             }
-//                             //------
-//                             if (item != undefined && item.PercentComplete != undefined && item.PercentComplete == 2 && item.Categories != undefined && RecipientMail != undefined) {
-//                                 CC = [];
-//                                 Subject = "[" + item.siteType + " - Immediate - Follow up(2 %)] " + item.Title;
-//                                 TaskDescriptionStart = "Hi " + RecipientMail.Title + ",";
-//                                 TaskDescription = 'Your immediate attention required on this task please review and respond ASAP.';
-//                             }
-//                             //---------
-//                         }
-//                         if (Subject == undefined || Subject == '') {
-//                             if (UpdateItem.PercentComplete != undefined && UpdateItem.PercentComplete != '' && UpdateItem.PercentComplete != 1 && UpdateItem.Category != undefined && UpdateItem.Category != '' && UpdateItem.Category.toLowerCase('approval') > -1)
-//                                 item.CategoriesType = item.Category.replace('Approval,', '')
-//                             Subject = "[" + siteType + " - " + UpdateItem.Category + " (" + UpdateItem.PercentComplete + "%)] " + UpdateItem.Title + "";
-//                         }
-//                         if (UpdateItem.PercentComplete != undefined && UpdateItem.PercentComplete != 1) {
-//                             Subject = Subject.replaceAll('Approval,', '')
-//                             Subject = Subject.replaceAll('Normal Approval,', '')
-//                             Subject = Subject.replaceAll('Normal Approval', '')
-//                             Subject = Subject.replaceAll('Quick Approval,', '')
-//                             Subject = Subject.replaceAll('Quick Approval', '')
-//                             Subject = Subject.replaceAll('Complex Approval,', '')
-//                             Subject = Subject.replaceAll('Complex Approval', '')
-//                             Subject = Subject.replaceAll(',,', ',')
-//                         }
-//                         if (UpdateItem.PercentComplete != undefined && UpdateItem.PercentComplete == 1 && UpdateItem.Category.toLowerCase().indexOf('approval') > -1) {
-//                             //Subject = Subject.replaceAll('Approval,', '')
-//                             //if (Subject.indexOf('Normal Approval') <= -1 && Subject.indexOf('Quick Approval') <= -1 && Subject.indexOf('Complex Approval') <= -1)
-//                             //    Subject = Subject.replaceAll('Approval', '')
-//                             //Subject = Subject.replaceAll(',,', ',')
-//                             Subject = "[" + siteType + " - " + "Approval" + "] " + UpdateItem.Title + "";
-//                             if (UpdateItem.Category.toLowerCase().indexOf('email notification') > -1 && UpdateItem.Category.toLowerCase().indexOf('immediate') > -1) {
-//                                 Subject = "[" + siteType + " - " + "Approval,Email notification,Immediate" + "] " + UpdateItem.Title + "";
-//                             }
-//                             else if (UpdateItem.Category.toLowerCase().indexOf('email notification') > -1) {
-//                                 Subject = "[" + siteType + " - " + "Approval,Email notification" + "] " + UpdateItem.Title + "";
-//                             }
-//                             else if (UpdateItem.Category.toLowerCase().indexOf('immediate') > -1) {
-//                                 Subject = "[" + siteType + " - " + "Approval,Immediate" + "] " + UpdateItem.Title + "";
-//                             }
-//                         }
-//                         var body =
-//                             '<div>' +
-//                             '</div>' +
-//                             '<div style="margin-top:4px">' +
-//                             TaskDescriptionStart +
-//                             '</div>' +
-//                             '<div style="margin-top:6px">' +
-//                             TaskDescription +
-//                             '</div>'
-//                             + '<div style="margin-top:10px">' +
-//                             NoOfApprovalTask +
-//                             '</div>'
-//                             + '<div style="margin-top:10px;">' +
-//                             '<a style="padding-right: 17px;" href =' + TaskDashBoardURl + '>' + TaskDashBoardTitle + '</a>' +
-//                             '<a href =' + ApprovalDashboard + '>' + ApprovalDashboardTitle + '</a>' +
-//                             '</div>'
-//                             + '<div style="margin-top:15px">' +
-//                             '<a href =' + siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + UpdateItem.Id + '&Site=' + siteType + '>' +
-//                             UpdateItem.Title + '</a>' +
-//                             '</div>' +
-//                             '<table style="width:100%">' +
-//                             '<tbody>' +
-//                             '<td style="width:70%;vertical-align: top;">' +
-//                             '<table style="width:99%;">' +
-//                             '<tbody>' +
-//                             '<tr>'
-//                             + '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Task Id:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.Shareweb_x0020_ID + '</span></td>' +
-//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Component:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.ComponentName + '</span> </td>' +
-//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Priority:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.Priority + '</span> </td>' +
-//                             '</tr>' +
-//                             '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Start Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.StartDate + '</span></td>' +
-//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Completion Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.CompletedDate + '</span> </td>' +
-//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Due Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.DueDate + '</span> </td>' +
-//                             '</tr>' +
-//                             '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Team Members:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.AssignedToTitle + '</span></td>' +
-//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created By:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.Author1 + '</span> </td>' +
-//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.Created + '</span> </td>' +
-//                             '</tr>' +
-//                             '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Categories:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.Categories + '</span></td>' +
-//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Status:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.Status + '</span> </td>' +
-//                             '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">% Complete:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-//                             UpdateItem.PercentComplete + '%</span> </td>' +
-//                             '</tr>' +
-//                             '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">URL:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
-//                             UpdateItem.URL + '</span> </td>' +
-//                             '</tr>' +
-//                             ApprovalRejectionComments +
-//                             '</tr> ' +
-//                             '</tr>' +
-//                             '</tr>' +
-//                             '<tr>' +
-//                             '</tbody>' +
-//                             '</table>' +
-//                             '<table style="width:99%;margin-top: 10px;">' +
-//                             '<tbody>' +
-//                             '<tr>' + UpdateItem.Description + '</tr>' +
-//                             '</tbody>' +
-//                             '</table>' +
-//                             '</td>' +
-//                             '<td style="width:22%">' +
-//                             '<table style="border:1px solid #ddd;border-radius:4px;margin-bottom:25%;width:100%">' +
-//                             '<tbody>' +
-//                             '<tr>' +
-//                             '<td style="color:#333; background-color:#f5f5f5;border-bottom:1px solid #ddd">Comments:' + '</td>' +
-//                             '</tr>' +
-//                             '<tr>' +
-//                             '<td>' + UpdateItem.AllComments + '</td>' +
-//                             '</tr>' +
-//                             '</tbody>' +
-//                             '</table>' +
-//                             '</td>' +
-//                             '</tr>' +
-//                             '</tbody>' +
-//                             '</table>' +
-//                             '</td>' +
-//                             '</tr>' +
-//                             '</tbody>' +
-//                             '</table>';
-//                         if (CC.length > 1)
-//                             CC.splice(1, 1);
-//                         //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
-//                         if (RecipientMail != undefined && RecipientMail.length > 0) {
-//                             if (ToEmails == undefined) {
-//                                 ToEmails = [];
-//                             }
-//                             angular.forEach(RecipientMail, function (mail) {
-//                                 ToEmails.push(mail.Email);
-//                             })
-
-//                         }
-//                         var from = '',
-//                             to = ToEmails,
-//                             cc = CC,
-//                             body = body,
-//                             subject = Subject,
-//                             ReplyTo = "deepak@hochhuth-consulting.de";
-//                         sendEmail(from, to, body, subject, ReplyTo, cc);
-//                         hideProgressBar();
-//                     }, function (error) {
-//                         console.log(error);
 //                     })
-//             }
-//         },
 
-//             function (error) { });
+//                     item.Author = item.Author.Title;
+//                     item.Editor = item.Editor.Title;
+//                     item.PercentComplete = item?.PercentComplete * 100;
+//                     item.Priority = item.Priority_x0020_Rank * 1;
+//                     if (item.Categories == null)
+//                         item.Categories = '';
+//                     //type.Priority = type.Priority.split('')[1];
+//                     //type.Component = type.Component.results[0].Title,
+//                     item.ComponentTitle = '';
+//                     if (item?.Component?.results?.length > 0) {
+//                         item.Component.results.map((comResult: any) => {
+//                             item.ComponentTitle = comResult.Title + ';' + item.ComponentTitle;
+//                         })
+//                     }
+//                     else {
+//                         item.ComponentTitle = '';
+//                     }
+
+//                     if (item?.Component?.results?.length > 0) {
+//                         item['Portfoliotype'] = 'Component';
+//                     }
+//                     if (item?.Services?.results?.length > 0) {
+//                         item['Portfoliotype'] = 'Service';
+//                     }
+//                     if (item?.Component?.results?.length > 0 && item?.Services?.results?.length > 0) {
+//                         item['Portfoliotype'] = 'Component';
+//                     }
+
+//                     item.Shareweb_x0020_ID = getTaskId(item);
+
+//                     item.TaskDueDate = moment(item?.DueDate).format('YYYY-MM-DD');
+//                     if (item.TaskDueDate == "Invalid date" || item.TaskDueDate == undefined) {
+//                         item.TaskDueDate = '';
+//                     }
+//                     item.CreateDate = moment(item?.Created).format('YYYY-MM-DD');
+//                     item.CreatedSearch = item.CreateDate + '' + item.Author;
+//                     item.DateModified = item.Modified;
+//                     item.ModifiedDate = moment(item?.Modified).format('YYYY-MM-DD');
+//                     item.ModifiedSearch = item.ModifiedDate + '' + item.Editor;
+//                     if (item.siteType != 'Offshore Tasks') {
+//                         try {
+//                             SiteTaskTaggedToComp.push(item);
+//                         } catch (error) {
+//                             console.log(error.message)
+//                         }
+//                     }
+//                 })
+//             })
+//             count++;
+//             if (count == SitesTypes.length - 1) {
+//                 console.log("inside Set Task")
+//                 return SiteTaskTaggedToComp
+//             }
+
+
+//         })
+//     } catch (error) {
+//         return Promise.reject(error);
+//     }
+
+
 // }
+
+export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, listId:any, item:any, RecipientMail:any, isLoadNotification:any, rootSite:any)=> {
+    await GetImmediateTaskNotificationEmails(item, isLoadNotification, rootSite)
+        .then(async (ToEmails:any)=> {
+            if (isLoadNotification == false)
+                ToEmails = [];
+            if (RecipientMail?.Email != undefined && ToEmails?.length == 0) {
+                ToEmails.push(RecipientMail.Email)
+            }
+            if (ToEmails.length > 0) {
+                var query = '';
+                query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,component_x0020_link,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,SharewebTaskType/Id,SharewebTaskType/Title,Shareweb_x0020_ID,CompletedDate,SharewebTaskLevel1No,SharewebTaskLevel2No&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,SharewebCategories,SharewebTaskType,Services,Events&$filter=Id eq " + itemId;
+               await getData(siteUrl,listId , query)
+                    .then(async (data:any)=> {
+                        data?.data?.map((item:any)=> {
+                            item.PercentageCompleted = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
+                            item.PercentComplete = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
+                            if (item.PercentageCompleted != undefined) {
+                                item.PercentageCompleted = parseInt((item?.PercentageCompleted).toFixed(0));
+                            }
+                            if (item.PercentComplete != undefined) {
+                                item.PercentComplete = parseInt((item?.PercentComplete).toFixed(0));
+                            }
+                            item.taskLeader = 'None';
+                            if ( item?.AssignedTo?.results?.length > 0)
+                                item.taskLeader = getMultiUserValues(item);
+                        })
+                        var UpdateItem = data?.data[0];
+                        if (item?.PercentComplete != undefined) {
+                            item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
+                            item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+                            item.PercentageCompleted = item.PercentComplete;
+                        }
+                        if ( item?.siteType != undefined) {
+                            item.siteType = item.siteType.replace(/_x0020_/g, ' ');
+                        }
+                        var siteType = getListNameFromItemProperties(UpdateItem);
+                        UpdateItem.siteType = '';
+                        if (UpdateItem.siteType == '') {
+                            if (siteType != undefined) {
+                                siteType = siteType.replace(/_x0020_/g, '%20');
+                            }
+                            UpdateItem.siteType = siteType;
+                        }
+                        UpdateItem.Shareweb_x0020_ID = getTaskId(UpdateItem);
+                        if (UpdateItem?.Author != undefined) {
+                            UpdateItem.Author1 = '';
+                            UpdateItem.Author1 = UpdateItem.Author.Title;
+                        } else
+                            UpdateItem.Editor1 = '';
+                        if (UpdateItem?.Editor != undefined) {
+                            UpdateItem.Editor1 = '';
+                            UpdateItem.Editor1 = UpdateItem.Editor.Title;
+                        } else
+                            UpdateItem.Editor1 = '';
+                        if ( UpdateItem?.component_x0020_link?.Url != undefined)
+                            UpdateItem.URL = UpdateItem.component_x0020_link.Url;
+                        else
+                            UpdateItem.URL = '';
+
+                        if (UpdateItem?.DueDate != undefined)
+                            UpdateItem.DueDate = ConvertLocalTOServerDate(UpdateItem.DueDate, 'DD-MMM-YYYY');
+                        else
+                            UpdateItem.DueDate = '';
+                        if (UpdateItem?.StartDate != undefined)
+                            UpdateItem.StartDate = ConvertLocalTOServerDate(UpdateItem.StartDate, 'DD-MMM-YYYY');
+                        else
+                            UpdateItem.StartDate = '';
+                        if (UpdateItem?.CompletedDate != undefined)
+                            UpdateItem.CompletedDate = ConvertLocalTOServerDate(UpdateItem.CompletedDate, 'DD-MMM-YYYY');
+                        else
+                            UpdateItem.CompletedDate = '';
+
+                        if (UpdateItem?.Created != undefined)
+                            UpdateItem.Created = ConvertLocalTOServerDate(UpdateItem.Created, 'DD-MMM-YYYY');
+                        else
+                            UpdateItem.Created = '';
+                        if (UpdateItem?.Modified != undefined)
+                            UpdateItem.Modified = ConvertLocalTOServerDate(UpdateItem.Modified, 'DD-MMM-YYYY');
+                        else
+                            UpdateItem.Modified = '';
+                        if (UpdateItem?.PercentComplete != undefined)
+                            UpdateItem.PercentComplete = UpdateItem.PercentComplete;
+                        else
+                            UpdateItem.PercentComplete = '';
+                        if (UpdateItem?.Priority != undefined)
+                            UpdateItem.Priority = UpdateItem.Priority;
+                        else
+                            UpdateItem.Priority = '';
+                        if (UpdateItem?.Body != undefined)
+                            UpdateItem.Body = $.parseHTML(UpdateItem.Body)[0]?.textContent;
+                        else
+                            UpdateItem.Body = '';
+                        if (UpdateItem?.Title != undefined)
+                            UpdateItem.Title = UpdateItem.Title;
+                        else
+                            UpdateItem.Title = '';
+                        UpdateItem.AssignedToTitle = '';
+                        if (UpdateItem?.AssignedTo?.results != undefined) {
+                           UpdateItem.AssignedTo.results.map((item:any)=> {
+                                UpdateItem.AssignedToTitle += item.Title + ';';
+                            })
+                        }
+                        UpdateItem.ComponentName = '';
+                        if (UpdateItem?.Component?.results != undefined) {
+                        UpdateItem.Component.results.map((item:any)=> {
+                                UpdateItem.ComponentName += item.Title + ';';
+                            })
+                        }
+                        UpdateItem.Category = '';
+                        UpdateItem.Categories = '';
+                        if (UpdateItem?.SharewebCategories?.results != undefined) {
+                             UpdateItem.SharewebCategories.results.map((item:any)=> {
+                                UpdateItem.Categories += item.Title + ';';
+                                UpdateItem.Category += item.Title + ',';
+                            })
+                        }
+                        var pos = UpdateItem?.Category?.lastIndexOf(',');
+                        UpdateItem.Category = UpdateItem?.Category?.substring(0, pos) + UpdateItem?.Category?.substring(pos + 1);
+                        var Commentdata = [];
+                        UpdateItem.AllComments = '';
+                        if (UpdateItem?.Comments != undefined) {
+                            Commentdata = JSON.parse(UpdateItem.Comments);
+                           Commentdata.map((comment:any)=> {
+                                UpdateItem.AllComments += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+                                    '<span>' +
+                                    '<div style="margin-bottom:5px;">' +
+                                    comment?.AuthorName +
+                                    ' - ' +
+                                    comment?.Created +
+                                    '</div>' +
+                                    comment?.Title +
+                                    '</span>' +
+                                    '</div>'
+                            })
+                        }
+                        UpdateItem.Description = '';
+                        if (UpdateItem?.Body != undefined && UpdateItem?.Body != '')
+                            UpdateItem.Description = UpdateItem.Body;
+                        if (UpdateItem?.FeedBack != undefined) {
+                            try {
+                                var Description = JSON.parse(UpdateItem?.FeedBack);
+                                if (Description?.length > 0) {
+                                    UpdateItem.Description = '';
+                                 Description[0]?.FeedBackDescriptions?.map((description:any, index:any)=> {
+                                        var index1 = index + 1;
+                                        var Comment = '';
+                                        if (description?.Comments?.length > 0) {
+                                           description.Comments.map((val:any)=> {
+                                                Comment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+                                                    '<span>' +
+                                                    '<div style="margin-bottom:5px;">' +
+                                                    val?.AuthorName +
+                                                    ' - ' +
+                                                    val?.Created +
+                                                    '</div>' +
+                                                    val?.Title +
+                                                    '</span>' +
+                                                    '</div>'
+
+                                            })
+
+                                        }
+                                        UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '</span>' +
+                                            '</td>' +
+                                            '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
+                                            '<span>' +
+                                            description?.Title +
+                                            '</span>' +
+                                            Comment +
+                                            '</td>' +
+                                            '</tr>';
+                                        if (  description?.Subtext?.length > 0) {
+                                            description.Subtext.map((Childdescription:any, Childindex:any)=> {
+                                                var Childindex1 = Childindex + 1;
+                                                var ChildComment = '';
+                                                if ( Childdescription?.Comments?.length > 0) {
+                                                    description.Comments.map((Childval:any)=> {
+                                                        ChildComment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+                                                            '<span>' +
+                                                            '<div style="margin-bottom:5px;">' +
+                                                            Childval?.AuthorName +
+                                                            ' - ' +
+                                                            Childval?.Created +
+                                                            '</div>' +
+                                                            Childval?.Title +
+                                                            '</span>' +
+                                                            '</div>'
+
+                                                    })
+
+                                                }
+                                                UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '.' + Childindex1 + '</span>' +
+                                                    '</td>' +
+                                                    '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
+                                                    '<span>' +
+                                                    Childdescription?.Title +
+                                                    '</span>' +
+                                                    ChildComment +
+                                                    '</td>' +
+                                                    '</tr>';
+                                            });
+
+                                        }
+                                    });
+                                }
+                                //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
+                            } catch (e) {
+                                console.log(e)
+                            }
+
+                        }
+                        let pageContent=await pageContext()
+                        var siteUrl = pageContent?.SiteFullUrl+'/sp';
+                        var Name = '';
+                        var OtherDetails = '';
+                        let Subject : any = '';
+                        var TaskDescriptionStart = '';
+                        var NoOfApprovalTask = '';
+                        var TaskDescription = '';
+                        var ApprovalRejectionComments = '';
+                        var TaskComments = '';
+                        var TaskDashBoardURl = '';
+                        var ApprovalDashboard = '';
+                        var TaskDashBoardTitle = '';
+                        var ApprovalDashboardTitle = '';
+                        var CC = [];
+                        if (item == undefined) {
+                            //Subject = "[" + siteType + "-Task] " + UpdateItem.Title + "(" + UpdateItem.Category + ")";
+                            Subject = "[" + siteType + " - " + UpdateItem?.Category + " (" + UpdateItem?.PercentComplete + "%)] " + UpdateItem?.Title + "";
+                        }
+                        else {
+                            if (item?.PercentComplete == 5 && item?.newCategories == 'Immediate') {
+                              
+                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
+                            }
+                            if (item?.TeamLeadersId?.length>0 && item?.CategoriesType == undefined && item?.isApprovalRejection == undefined) {
+                              
+                                Subject = "[" + item?.siteType + " - " + UpdateItem?.Category + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
+                            }
+                            if ((item != undefined && (item?.PercentComplete == 80 && item.newCategories == undefined) || (item.PercentComplete == 80 && item.newCategories != undefined && item.newCategories != 'Immediate' && item.newCategories != 'Email Notification'))) {
+                              
+                                Subject = "[" + item?.siteType + " - " + UpdateItem?.Category + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
+                            }
+                            if (item != undefined && item?.PercentComplete == 93) {
+                                if (item?.newCategories == undefined || item?.newCategories == null)
+                                    item.newCategories = '';
+                              
+                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
+                            }
+                            if ((item != undefined && (item?.PercentComplete == 80 && item?.newCategories != undefined && item?.newCategories == 'Immediate'))) {
+                              
+                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
+                            }
+
+                            if ((item != undefined && (item?.PercentComplete == 90 && item?.newCategories != undefined && item?.newCategories == 'Email Notification'))) {
+
+                                CC.push("deepak@hochhuth-consulting.de");
+                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
+                            }
+                            if ((item != undefined && (item.PercentComplete == 90 && item.newCategories != undefined && item.newCategories == 'Immediate'))) {
+                                CC.push("deepak@hochhuth-consulting.de");
+                                Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
+                            }
+                            if ((item?.CategoriesType?.toLowerCase()).indexOf('draft') > -1 || (item?.CategoriesType?.toLowerCase()).indexOf('approval') > -1 && item?.PercentComplete == 1) {
+                                CC = [];
+                                if (item.CategoriesType != undefined && item.CategoriesType != '')
+                                    item.CategoriesType = item?.CategoriesType?.replaceAll(';', ',')
+                                Subject = "[" + item?.siteType + " - " + item?.CategoriesType + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
+                                TaskDescriptionStart = 'Hi,';
+                                TaskDescription = UpdateItem?.Author1 + ' has created a Task which requires your Approval.Please take your time and review:';
+                                if (item?.TotalApprovalTask != undefined && item?.TotalApprovalTask != 0)
+                                    NoOfApprovalTask = 'Please note that you still have ' + item?.TotalApprovalTask + ' tasks left to approve.You can find all pending approval tasks on your task dashboard or the approval page.';
+                                TaskDashBoardURl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx';
+                                ApprovalDashboard = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks';
+                                var TaskDashBoardTitle = 'Your Task Dashboard';
+                                var ApprovalDashboardTitle = 'Your Approval Page';
+
+                            }
+                            if ((item != undefined && (item?.isApprovalRejection != undefined && item?.isApprovalRejection))) {
+                                CC = [];
+                                Subject = "[" + item?.siteType + " (" + item?.PercentComplete + "%)] " + item?.Title + " Approved";
+                                TaskDescriptionStart = 'Hi,';
+                                TaskDescription = 'Your task has been approved by ' + item?.ApproverName + ', team will process it further. Refer Approval Comments.';
+                                TaskComments = item?.TaskComments;
+                                ApprovalRejectionComments = '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Approval Comments:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
+                                    TaskComments + '</span> </td>' +
+                                    '</tr>'
+                            }
+                            if ((item != undefined && (item?.isApprovalRejection != undefined && !item?.isApprovalRejection))) {
+                                CC = [];
+                                Subject = "[" + item?.siteType + " (" + item?.PercentComplete + "%)] " + item?.Title + " Rejected";
+                                TaskDescriptionStart = 'Hi,';
+                                TaskDescription = 'Your task has been rejected by ' + item?.ApproverName + '. Refer Reject Comments.';
+                                TaskComments = item.TaskComments;
+                                ApprovalRejectionComments = '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Rejection Comments:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
+                                    TaskComments + '</span> </td>' +
+                                    '</tr>';
+                            }
+                            //------
+                            if (item?.PercentComplete == 2 && item?.Categories != undefined && RecipientMail != undefined) {
+                                CC = [];
+                                Subject = "[" + item?.siteType + " - Immediate - Follow up(2 %)] " + item?.Title;
+                                TaskDescriptionStart = "Hi " + RecipientMail?.Title + ",";
+                                TaskDescription = 'Your immediate attention required on this task please review and respond ASAP.';
+                            }
+                            //---------
+                        }
+                        if (Subject == undefined || Subject == '') {
+                            if (UpdateItem?.PercentComplete != undefined && UpdateItem?.PercentComplete != '' && UpdateItem?.PercentComplete != 1 && UpdateItem?.Category != undefined && UpdateItem?.Category != '' && UpdateItem?.Category.toLowerCase('approval') > -1)
+                                item.CategoriesType = item?.Category?.replace('Approval,', '')
+                            Subject = "[" + siteType + " - " + UpdateItem?.Category + " (" + UpdateItem?.PercentComplete + "%)] " + UpdateItem?.Title + "";
+                        }
+                        if (UpdateItem?.PercentComplete != 1) {
+                            Subject = Subject?.replaceAll('Approval,', '')
+                            Subject = Subject?.replaceAll('Normal Approval,', '')
+                            Subject = Subject?.replaceAll('Normal Approval', '')
+                            Subject = Subject?.replaceAll('Quick Approval,', '')
+                            Subject = Subject?.replaceAll('Quick Approval', '')
+                            Subject = Subject?.replaceAll('Complex Approval,', '')
+                            Subject = Subject?.replaceAll('Complex Approval', '')
+                            Subject = Subject?.replaceAll(',,', ',')
+                        }
+                        if (UpdateItem?.PercentComplete == 1 && UpdateItem?.Category?.toLowerCase().indexOf('approval') > -1) {
+                            //Subject = Subject.replaceAll('Approval,', '')
+                            //if (Subject.indexOf('Normal Approval') <= -1 && Subject.indexOf('Quick Approval') <= -1 && Subject.indexOf('Complex Approval') <= -1)
+                            //    Subject = Subject.replaceAll('Approval', '')
+                            //Subject = Subject.replaceAll(',,', ',')
+                            Subject = "[" + siteType + " - " + "Approval" + "] " + UpdateItem?.Title + "";
+                            if (UpdateItem?.Category?.toLowerCase().indexOf('email notification') > -1 && UpdateItem?.Category?.toLowerCase().indexOf('immediate') > -1) {
+                                Subject = "[" + siteType + " - " + "Approval,Email notification,Immediate" + "] " + UpdateItem?.Title + "";
+                            }
+                            else if (UpdateItem?.Category?.toLowerCase().indexOf('email notification') > -1) {
+                                Subject = "[" + siteType + " - " + "Approval,Email notification" + "] " + UpdateItem?.Title + "";
+                            }
+                            else if (UpdateItem?.Category?.toLowerCase().indexOf('immediate') > -1) {
+                                Subject = "[" + siteType + " - " + "Approval,Immediate" + "] " + UpdateItem?.Title + "";
+                            }
+                        }
+                        var body =
+                            '<div>' +
+                            '</div>' +
+                            '<div style="margin-top:4px">' +
+                            TaskDescriptionStart +
+                            '</div>' +
+                            '<div style="margin-top:6px">' +
+                            TaskDescription +
+                            '</div>'
+                            + '<div style="margin-top:10px">' +
+                            NoOfApprovalTask +
+                            '</div>'
+                            + '<div style="margin-top:10px;">' +
+                            '<a style="padding-right: 17px;" href =' + TaskDashBoardURl + '>' + TaskDashBoardTitle + '</a>' +
+                            '<a href =' + ApprovalDashboard + '>' + ApprovalDashboardTitle + '</a>' +
+                            '</div>'
+                            + '<div style="margin-top:15px">' +
+                            '<a href =' + siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + UpdateItem?.Id + '&Site=' + siteType + '>' +
+                            UpdateItem?.Title + '</a>' +
+                            '</div>' +
+                            '<table style="width:100%">' +
+                            '<tbody>' +
+                            '<td style="width:70%;vertical-align: top;">' +
+                            '<table style="width:99%;">' +
+                            '<tbody>' +
+                            '<tr>'
+                            + '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Task Id:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.Shareweb_x0020_ID + '</span></td>' +
+                            '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Component:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.ComponentName + '</span> </td>' +
+                            '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Priority:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.Priority + '</span> </td>' +
+                            '</tr>' +
+                            '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Start Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.StartDate + '</span></td>' +
+                            '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Completion Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.CompletedDate + '</span> </td>' +
+                            '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Due Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.DueDate + '</span> </td>' +
+                            '</tr>' +
+                            '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Team Members:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.AssignedToTitle + '</span></td>' +
+                            '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created By:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.Author1 + '</span> </td>' +
+                            '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.Created + '</span> </td>' +
+                            '</tr>' +
+                            '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Categories:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.Categories + '</span></td>' +
+                            '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Status:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.Status + '</span> </td>' +
+                            '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">% Complete:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                            UpdateItem?.PercentComplete + '%</span> </td>' +
+                            '</tr>' +
+                            '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">URL:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
+                            UpdateItem?.URL + '</span> </td>' +
+                            '</tr>' +
+                            ApprovalRejectionComments +
+                            '</tr> ' +
+                            '</tr>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '</tbody>' +
+                            '</table>' +
+                            '<table style="width:99%;margin-top: 10px;">' +
+                            '<tbody>' +
+                            '<tr>' + UpdateItem?.Description + '</tr>' +
+                            '</tbody>' +
+                            '</table>' +
+                            '</td>' +
+                            '<td style="width:22%">' +
+                            '<table style="border:1px solid #ddd;border-radius:4px;margin-bottom:25%;width:100%">' +
+                            '<tbody>' +
+                            '<tr>' +
+                            '<td style="color:#333; background-color:#f5f5f5;border-bottom:1px solid #ddd">Comments:' + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td>' + UpdateItem?.AllComments + '</td>' +
+                            '</tr>' +
+                            '</tbody>' +
+                            '</table>' +
+                            '</td>' +
+                            '</tr>' +
+                            '</tbody>' +
+                            '</table>' +
+                            '</td>' +
+                            '</tr>' +
+                            '</tbody>' +
+                            '</table>';
+                        if (CC.length > 1)
+                            CC.splice(1, 1);
+                        //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
+                        if ( RecipientMail?.length > 0) {
+                            if (ToEmails == undefined) {
+                                ToEmails = [];
+                            }
+                           RecipientMail.map((mail:any)=> {
+                                ToEmails.push(mail.Email);
+                            })
+
+                        }
+                        var from = '',
+                            to = ToEmails,
+                            cc = CC,
+                            body = body,
+                            subject = Subject,
+                            ReplyTo = "deepak@hochhuth-consulting.de";
+                       sendEmail(from, to, body, subject, ReplyTo, cc);
+                    }, function (error) {
+                        console.log(error);
+                    })
+            }
+        },
+
+            function (error) { });
+}
+export const sendEmail = async (from:any, to:any, body:any, subject:any, ReplyTo:any, cc:any)=> {
+
+    let result;
+    try {
+        result = (await  sp.utility.sendEmail({
+            To: ['abhishek.tiwari@smalsus.com'],
+            Subject: subject,
+            Body: body
+          }));
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+
+    return result;
+   
+}
