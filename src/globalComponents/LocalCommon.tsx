@@ -1,3 +1,4 @@
+
 export  const GlobalConstants={
     MAIN_SITE_URL: 'https://hhhhteams.sharepoint.com/sites/HHHH',
     ADMIN_SITE_URL: 'https://hhhhteams.sharepoint.com/sites/HHHH',
@@ -116,3 +117,4 @@ export  const GlobalConstants={
 //{"Title":"Migration","listId":"D1A5AC25-3DC2-4939-9291-1513FE5AC17E","siteName":"Migration","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https: //www.shareweb.ch/site/ei","MetadataName":"SP.Data.MigrationListItem","TimesheetListName":"TasksTimesheet2","TimesheetListId":"9ED5C649-3B4E-42DB-A186-778BA43C5C93","TimesheetListmetadata":"TasksTimesheet2ListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png"}
 
 }
+
