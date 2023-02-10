@@ -339,8 +339,8 @@ function ComponentTable(SelectedProp: any) {
                 console.log(AllTasksMatches.length);
                 if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
                     $.each(AllTasksMatches, function (index: any, item: any) {
-                        if(item.Id === 23 || item.Id === 65 || item.Id === 69)
-                        console.log(item);
+                        if (item.Id === 23 || item.Id === 65 || item.Id === 69)
+                            console.log(item);
                         item.isDrafted = false;
                         item.flag = true;
                         item.siteType = config.Title;
@@ -523,7 +523,53 @@ function ComponentTable(SelectedProp: any) {
         $.each(searchTerms, function (index: any, val: any) {
             if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
                 isSearchTermAvailable = true;
+                getHighlightdata(item, val.toLowerCase());
 
+            } else
+                isSearchTermAvailable = false;
+        })
+        return isSearchTermAvailable;
+    }
+    var stringToArray = function (input: any) {
+        if (input) {
+            return input.match(/\S+/g);
+        } else {
+            return [];
+        }
+    };
+    var getRegexPattern = function (keywordArray: any) {
+        var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
+        return new RegExp(pattern, "gi");
+    };
+    var getHighlightdata = function (item: any, searchTerms: any) {
+        var keywordList = [];
+        if (searchTerms != undefined && searchTerms != '') {
+            keywordList = stringToArray(searchTerms);
+        } else {
+            keywordList = stringToArray(searchTerms);
+        }
+        var pattern: any = getRegexPattern(keywordList);
+        item.Title = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+        keywordList = [];
+        pattern = '';
+    }
+    var getSearchTermAvialable = function (searchTerms: any, item: any) {
+        var isSearchTermAvailable = true;
+        searchTerms.forEach((val: any) => {
+            if (isSearchTermAvailable && (item.Title != undefined && item.Title.toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+                isSearchTermAvailable = true;
+                getHighlightdata(item, searchTerms[0]);
+            } else if (item.Synonyms != undefined && item.Synonyms != '') {
+                let flag = false;
+                item.Synonyms.forEach((Synonyms: any) => {
+                    if (isSearchTermAvailable && (Synonyms.Title != undefined && Synonyms.Title.toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+                        isSearchTermAvailable = true;
+                        getHighlightdata(item, searchTerms[0]);
+                        flag = true;
+                    }
+                })
+                if (flag == false)
+                    isSearchTermAvailable = false;
             } else
                 isSearchTermAvailable = false;
         })
@@ -1516,9 +1562,9 @@ function ComponentTable(SelectedProp: any) {
         temp.childs = [];
         temp.childsLength = 0;
         temp.flag = true;
-        temp.PercentComplete ='';
-        temp.ItemRank ='';
-        temp.DueDate ='';
+        temp.PercentComplete = '';
+        temp.ItemRank = '';
+        temp.DueDate = '';
         // ComponetsData['allComponets'][i]['childs']
         map(ComponetsData['allUntaggedTasks'], (task: any) => {
             if (task.Title != undefined) {
@@ -1713,13 +1759,23 @@ function ComponentTable(SelectedProp: any) {
     };
     function AddItem() {
     }
-    const handleSuffixHover = (item: any) => {
-        item.Display = 'block'
+    const hideAllChildsMinus = (item: any) => {
+        if (item.childs?.length > 0) {
+            item.Isexpend = false;
+            item.childs.forEach((child: any) => {
+                child.Isexpend = false;
+            })
+        }
         setData(data => ([...data]));
     }
 
-    const handleuffixLeave = (item: any) => {
-        item.Display = 'none'
+    const ShowAllChildsPlus = (item: any) => {
+        if (item.childs?.length > 0) {
+            item.Isexpend = true;
+            item.childs.forEach((child: any) => {
+                child.Isexpend = true;
+            })
+        }
         setData(data => ([...data]));
     }
     return (
@@ -1969,7 +2025,7 @@ function ComponentTable(SelectedProp: any) {
                                             Restructure
                                         </button> */}
                                         <button className="border bg-white" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="true" data-bs-reference="parent">
-                                             <RxDotsVertical/>
+                                            <RxDotsVertical />
                                         </button>
                                         <ul className="dropdown-menu dropdown-menu-end" style={{ "position": "absolute", "inset": "auto 0px 0px auto", "margin": "0px", "transform": "translate(-36px, -1657px)" }} data-popper-placement="top-end">
                                             <li onClick={addModal}><a className="dropdown-item" href="#">Add Structure</a></li>
@@ -2009,6 +2065,7 @@ function ComponentTable(SelectedProp: any) {
                                                             </div>
 
                                                         </th>
+
                                                         <th style={{ width: "9%" }}>
                                                             <div style={{ width: "8%" }} className="smart-relative">
                                                                 <input type="search" placeholder="ID" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} />
@@ -2139,17 +2196,36 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 </a>
                                                                                                 }
                                                                                             </span>
+                                                                                            {search != undefined && search != '' ?
+                                                                                                <>
+                                                                                                    {item?.Isexpend ?
+                                                                                                        <span>
+                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(item)}>
+                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                            </a>
+                                                                                                        </span>
+                                                                                                        : ''}
+                                                                                                    {!item?.Isexpend ?
+                                                                                                        <span>
+                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(item)}>
+                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                            </a>
+                                                                                                        </span>
+                                                                                                        : ''}
+                                                                                                </> : ''}
                                                                                             <span>{item.Shareweb_x0020_ID}</span>
                                                                                         </div>
                                                                                     </td>
                                                                                     <td style={{ width: "22%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
-                                                                                        ><span>{item.Title}</span>
+                                                                                        >
+                                                                                            {/* <span dangerouslySetInnerHTML={{ __html: item.Title }}></span> */}
+                                                                                        {item.Title}
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                                        ><span>{item.Title}</span>
+                                                                                        >{item.Title}
 
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
@@ -2179,8 +2255,8 @@ function ComponentTable(SelectedProp: any) {
                                                                                     </td>
                                                                                     <td style={{ width: "17%" }}>
                                                                                         <div>
-                                                                                        <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
-                                                                                           
+                                                                                            <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+
                                                                                         </div></td>
                                                                                     <td style={{ width: "6%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
@@ -2236,6 +2312,23 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     </a>
 
                                                                                                                 </span>
+                                                                                                                {search != undefined && search != '' ?
+                                                                                                                    <>
+                                                                                                                        {childitem?.Isexpend ?
+                                                                                                                            <span>
+                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(childitem)}>
+                                                                                                                                    <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                                </a>
+                                                                                                                            </span>
+                                                                                                                            : ''}
+                                                                                                                        {!childitem?.Isexpend ?
+                                                                                                                            <span>
+                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(childitem)}>
+                                                                                                                                    <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                                </a>
+                                                                                                                            </span>
+                                                                                                                            : ''}
+                                                                                                                    </> : ''}
                                                                                                                 <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
                                                                                                             </div>
                                                                                                             </td>
@@ -2285,7 +2378,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     })}</div>
                                                                                                             </td>
                                                                                                             <td style={{ width: "17%" }}>
-                                                                                                            <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
+                                                                                                                <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
@@ -2335,8 +2428,24 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                 {/* <img  className="icon-sites-img" 
                                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" /> */}
                                                                                                                                             </a>
-
                                                                                                                                         </span>
+                                                                                                                                        {search != undefined && search != '' ?
+                                                                                                                                            <>
+                                                                                                                                                {childinew?.Isexpend ?
+                                                                                                                                                    <span>
+                                                                                                                                                        <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(childinew)}>
+                                                                                                                                                            <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                                                        </a>
+                                                                                                                                                    </span>
+                                                                                                                                                    : ''}
+                                                                                                                                                {!childinew?.Isexpend ?
+                                                                                                                                                    <span>
+                                                                                                                                                        <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(childinew)}>
+                                                                                                                                                            <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                                                        </a>
+                                                                                                                                                    </span>
+                                                                                                                                                    : ''}
+                                                                                                                                            </> : ''}
                                                                                                                                         <span className="ml-2">{childinew.Shareweb_x0020_ID}</span>
                                                                                                                                     </div>
                                                                                                                                     </td>
@@ -2391,8 +2500,8 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     </td>
                                                                                                                                     <td style={{ width: "17%" }}>
                                                                                                                                         <div>
-                                                                                                                                        <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
-                                                                                                                                           
+                                                                                                                                            <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+
                                                                                                                                         </div></td>
                                                                                                                                     <td style={{ width: "6%" }}>{childinew.PercentComplete}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
@@ -2444,6 +2553,23 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                 </a>
 
                                                                                                                                                             </span>
+                                                                                                                                                            {search != undefined && search != '' ?
+                                                                                                                                                                <>
+                                                                                                                                                                    {subchilditem?.Isexpend ?
+                                                                                                                                                                        <span>
+                                                                                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(subchilditem)}>
+                                                                                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                                                                            </a>
+                                                                                                                                                                        </span>
+                                                                                                                                                                        : ''}
+                                                                                                                                                                    {!subchilditem?.Isexpend ?
+                                                                                                                                                                        <span>
+                                                                                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(subchilditem)}>
+                                                                                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                                                                            </a>
+                                                                                                                                                                        </span>
+                                                                                                                                                                        : ''}
+                                                                                                                                                                </> : ''}
                                                                                                                                                             <span className="">{subchilditem.Shareweb_x0020_ID}</span>
                                                                                                                                                         </div>
                                                                                                                                                         </td>
@@ -2493,7 +2619,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                         </td>
                                                                                                                                                         <td style={{ width: "17%" }}>
                                                                                                                                                             <div>
-                                                                                                                                                            <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                                                                                <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
                                                                                                                                                                 {/* {subchilditem.AllTeamMembers != undefined && subchilditem.AllTeamMembers.length > 0 && subchilditem.AllTeamMembers.map(function (client1: { Title: string; }) {
                                                                                                                                                                 return (
                                                                                                                                                                     <div className="ClientCategory-Usericon"
