@@ -11,11 +11,12 @@ export default class CreateTask extends React.Component<ICreateTaskProps, {}> {
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
+      pageContext
     } = this.props;
 
     return (
-     <CreateTaskComponent/>
+     <CreateTaskComponent pageContext={this.props.pageContext}/>
     );
   }
 }

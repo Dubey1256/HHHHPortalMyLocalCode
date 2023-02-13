@@ -5,17 +5,18 @@ import * as moment from 'moment';
 import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
 // import { escape } from '@microsoft/sp-lodash-subset';
-import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
+import{ Web} from "sp-pnp-js";
 // import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
+// import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
 import * as globalCommon from '../../../globalComponents/globalCommon'
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
-import RelevantDocuments from './RelevantDocuments'
+import RelevantDocuments from './RelevantDocuments';
+import  SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
@@ -94,8 +95,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         this.breadcrumb();
         this.count++;
       }
-      console.log('Array for Breadcrumb');
-      console.log(this.maincollection);
+      // console.log('Array for Breadcrumb');
+      // console.log(this.maincollection);
       this.setState({
         maincollection: this.maincollection
       })
@@ -107,8 +108,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         this.breadcrumb();
         this.count++;
       }
-      console.log('Array for Breadcrumb');
-      console.log(this.maincollection);
+      // console.log('Array for Breadcrumb');
+      // console.log(this.maincollection);
       this.setState({
         maincollection: this.maincollection
       })
@@ -142,10 +143,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         .orderBy('Modified', false)
         .getAll(4000);
 
-      console.log(AllDataMatches);
+      // console.log(AllDataMatches);
       this.gAllDataMatches = AllDataMatches;
-      console.log('All Component : ');
-      console.log(this.gAllDataMatches)
+      // console.log('All Component : ');
+      // console.log(this.gAllDataMatches)
       if (AllDataMatches[0] != undefined && AllDataMatches[0].Item_x0020_Type != undefined && AllDataMatches[0].Item_x0020_Type == 'Component') {
         return AllDataMatches;
       }
@@ -194,19 +195,19 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let web = new Web(this.props.siteUrl);
     let taskDetails :any = [];
     let listInfo = await web.lists.getByTitle(this.state.listName).get();
-    console.log(listInfo);
+    // console.log(listInfo);
     taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "DueDate","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("Team_x0020_Members","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "DueDate","SmartInformation/Id","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("Team_x0020_Members","SmartInformation","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
 
     taskDetails["listName"] = this.state.listName;
     taskDetails["siteType"] = this.state.listName;
     taskDetails["siteUrl"] = this.props.siteUrl;
-    console.log(taskDetails);
+    // console.log(taskDetails);
     taskDetails.TaskId= globalCommon.getTaskId(taskDetails);
     var category=""
 
@@ -233,14 +234,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    var array2:any=taskDetails["AssignedTo"]!=undefined?taskDetails["AssignedTo"]:[]
    if( taskDetails["Team_x0020_Members"]!=undefined){
    taskDetails.array=array2.concat(taskDetails["Team_x0020_Members"].filter((item:any)=>array2.Id!=item.Id))
-    console.log(taskDetails.array);
+    // console.log(taskDetails.array);
    }
    var OffshoreComments:any=[];
    if(taskDetails["OffshoreComments"] != null){
     OffshoreComments=JSON.parse(taskDetails["OffshoreComments"])
    }
-    console.log(taskDetails)
-    console.log(category);
+    // console.log(taskDetails)
+    // console.log(category);
     taskDetails["Categories"]=category;
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
@@ -286,10 +287,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       ModifiedBy: taskDetails["Editor"],
       listId: listInfo.Id,
       Attachments: taskDetails["Attachments"],
-      AttachmentFiles: taskDetails["AttachmentFiles"]
+      AttachmentFiles: taskDetails["AttachmentFiles"],
+      SmartInformationId:taskDetails["SmartInformation"]
     };
 
-    console.log(tempTask);
+    // console.log(tempTask);
 
     this.setState({
       Result: tempTask
@@ -369,13 +371,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .expand('AssingedToUser')
       .get();
       taskUsers.map((item:any,index:any)=>{
-        if(this.props.Context._pageContext._user.loginName===item.Email&&item.Company=="Smalsus"){
+        if(this.props.Context?._pageContext?._user.loginName===item.Email&&item.Company=="Smalsus"){
          this.backGroundComment=true;
         }
       })
     this.taskUsers = taskUsers;
 
-    console.log(this.taskUsers);
+    // console.log(this.taskUsers);
    
   }
  
@@ -392,7 +394,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
        
         else if(ClientTime!=null){
          ClientTimeArray= JSON.parse(ClientTime);
-         console.log(ClientTimeArray);
+        //  console.log(ClientTimeArray);
         }
  
    
@@ -406,7 +408,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       
       .expand('Parent').filter("TaxType eq 'Client Category'").top(4000)
       .get();
-    console.log(smartMetaData);
+    // console.log(smartMetaData);
     ClientCategory .map((item:any,index:any)=>{
     smartMetaData.map((items:any,index:any)=>{
     if(item.Id==items.Id){
@@ -539,7 +541,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     }
     //debugger;
     e.preventDefault();
-    console.log(item);
+    // console.log(item);
     this.setState({
       isModalOpen: true,
       imageInfo: item,
@@ -586,8 +588,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private async onPost() {
-    console.log('post');
-    console.log(this.state.Result["FeedBack"]);
+    // console.log('post');
+    // console.log(this.state.Result["FeedBack"]);
 
     let web = new Web(this.props.siteUrl);
     const i = await web.lists.getByTitle(this.state.listName)
@@ -1009,7 +1011,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         }
 
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                          <div className="user_Member_img activeimg "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></a></div>
+                          <div className="img activeimg "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></a></div>
                         }
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 1 &&
                           <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
@@ -1319,7 +1321,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <div>
               <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
               </div>
-              {/* <div><SmartInformation /></div> */}
+              <div>{this.state.Result.Id&&<SmartInformation  Id={this.state.Result.Id}siteurl={this.state.Result.siteUrl}listName={this.state.Result.listName}spPageContext={this.props.Context._pageContext._web}/>}</div>
                <div>  <RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID}siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments></div>
             
             </div>
