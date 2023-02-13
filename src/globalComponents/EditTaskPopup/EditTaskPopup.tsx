@@ -18,7 +18,7 @@ import { RiDeleteBin6Line } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
 import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
-import VersionHistoryPopup from "../../webparts/taskprofile/components/VersionHistory";
+import VersionHistoryPopup from '../../globalComponents/VersionHistroy/VersionHistory';
 
 
 var AllMetaData: any = []
