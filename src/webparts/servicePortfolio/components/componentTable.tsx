@@ -600,6 +600,7 @@ function ComponentTable(SelectedProp: any) {
                     $.each(AllTasksMatches, function (index: any, item: any) {
                         item.isDrafted = false;
                         item.flag = true;
+                        item.TitleNew = item.Title;
                         item.siteType = config.Title;
                         item.childs = [];
                         item.listId = config.listId;
@@ -790,8 +791,9 @@ function ComponentTable(SelectedProp: any) {
             keywordList = stringToArray(searchTerms);
         }
         var pattern: any = getRegexPattern(keywordList);
-        //  item.Title = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
-        item.Title = item.Title;
+          //let Title :any =(...item.Title)
+        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+          // item.Title = item.Title;
         keywordList = [];
         pattern = '';
     }
@@ -1505,7 +1507,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Services'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1532,7 +1534,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Events'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1558,7 +1560,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Component'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1630,6 +1632,7 @@ function ComponentTable(SelectedProp: any) {
             }
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
+            result.TitleNew = result.Title;
             getWebpartId(result);
             result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
@@ -1804,45 +1807,7 @@ function ComponentTable(SelectedProp: any) {
                 //   }
             } else array.push(comp)
         })
-        if (array != undefined) {
-            array.forEach((vall: any) => {
-                if (vall.Title == 'Others') {
-                    if (vall.childs != undefined) {
-                        vall.childs.forEach((All: any) => {
-                            AllTask.push(All)
 
-                        })
-                    }
-                }
-                if (vall.Title != 'Others') {
-                    if (vall.childs != undefined) {
-                        vall.childs.forEach((fea: any) => {
-                         if(fea.Item_x0020_Type == 'Task')
-                          AllTask.push(fea)
-                          if(fea.childs != undefined){
-                            fea.childs.forEach((childd:any)=>{
-                          if(childd.Item_x0020_Type == 'Task')
-                          AllTask.push(childd)
-                          if(childd.childs != undefined){
-                            childd.childs.forEach((last:any)=>{
-                                if(last.Item_x0020_Type == 'Task'){
-                                    AllTask.push(last)
-                                }
-
-                            })
-                          }
-                            })
-                          }
-                        })
-                       
-                            
-
-                        
-                    }
-                }
-            })
-        }
-        setTotalTask(AllTask)
         setSubComponentsData(SubComponentsData);
         setFeatureData(FeatureData);
         setComponentsData(array);
@@ -2102,9 +2067,15 @@ function ComponentTable(SelectedProp: any) {
     const hideAllChildsMinus = (item: any) => {
         if (item.childs?.length > 0) {
             item.Isexpend = false;
+            handleOpen(item);
             item.childs.forEach((child: any) => {
+                child.flag = child?.show == true ? child?.show : false;
+                // if (child.flag)
+                //     flag = true;
                 child.Isexpend = false;
             })
+            // if (flag)
+            //     item.flag = flag;
         }
         setData(data => ([...data]));
     }
@@ -2112,8 +2083,11 @@ function ComponentTable(SelectedProp: any) {
     const ShowAllChildsPlus = (item: any) => {
         if (item.childs?.length > 0) {
             item.Isexpend = true;
+            item.show =false;
+            handleOpen(item);
             item.childs.forEach((child: any) => {
-                child.Isexpend = true;
+                child.flag = true;
+                child.Isexpend = false;
             })
         }
         setData(data => ([...data]));
@@ -2686,7 +2660,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 </a>
                                                                                                 }
                                                                                             </span>
-                                                                                            {search != undefined && search != '' ?
+                                                                                            {search != undefined && search != '' && item.childs?.length > 0 ?
                                                                                                 <>
                                                                                                     {item?.Isexpend ?
                                                                                                         <span>
@@ -2711,12 +2685,14 @@ function ComponentTable(SelectedProp: any) {
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                                         >
-                                                                                            {/* <span dangerouslySetInnerHTML={{ __html: item.Title }}></span> */}
-                                                                                            {item.Title}
+                                                                                            <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                                            {/* {item.Title} */}
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                                        >{item.Title}
+                                                                                        >
+                                                                                            <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                                            {/* {item.Title} */}
 
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
@@ -2804,7 +2780,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     </a>
 
                                                                                                                 </span>
-                                                                                                                {search != undefined && search != '' ?
+                                                                                                                {search != undefined && search != '' && childitem.childs?.length > 0 ?
                                                                                                                     <>
                                                                                                                         {childitem?.Isexpend ?
                                                                                                                             <span>
@@ -2828,11 +2804,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             <td style={{ width: "22%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                >{childitem.Title}
+                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
-                                                                                                                >{childitem.Title}
+                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 && childitem.Item_x0020_Type == 'Feature' &&
                                                                                                                     <span className='ms-1'>  ({childitem.childs.length})</span>
@@ -2921,7 +2897,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" /> */}
                                                                                                                                             </a>
                                                                                                                                         </span>
-                                                                                                                                        {search != undefined && search != '' ?
+                                                                                                                                        {search != undefined && search != '' && childinew.childs?.length > 0 ?
                                                                                                                                             <>
                                                                                                                                                 {childinew?.Isexpend ?
                                                                                                                                                     <span>
@@ -2947,11 +2923,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                                        >{childinew.Title}
+                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
-                                                                                                                                        >{childinew.Title}
+                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
                                                                                                                                         </a>}
                                                                                                                                         {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
@@ -3045,7 +3021,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                 </a>
 
                                                                                                                                                             </span>
-                                                                                                                                                            {search != undefined && search != '' ?
+                                                                                                                                                            {search != undefined && search != '' && subchilditem.childs?.length > 0 ?
                                                                                                                                                                 <>
                                                                                                                                                                     {subchilditem?.Isexpend ?
                                                                                                                                                                         <span>
@@ -3069,11 +3045,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                         <td style={{ width: "22%" }}>
                                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
-                                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&
                                                                                                                                                                 <span className='ms-1'>({subchilditem.childs.length})</span>
