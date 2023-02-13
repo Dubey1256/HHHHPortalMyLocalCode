@@ -1205,8 +1205,8 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="border-bottom" >
-                <div className="border-bottom" style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+            <div className="border-bottom d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
                         {`${EditData.TaskId} ${EditData.Title}`}
@@ -1219,7 +1219,7 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomHeaderCopyAndMoveTaskPanel = () => {
         return (
-            <div  className="border-bottom" >
+            <div  className="border-bottom d-flex full-width pb-1" >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
