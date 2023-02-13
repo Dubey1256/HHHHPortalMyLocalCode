@@ -1497,7 +1497,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Services'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1524,7 +1524,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Events'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1550,7 +1550,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Component'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
