@@ -3,9 +3,6 @@ import * as $ from 'jquery';
 import * as Moment from 'moment';
 import { Web } from "sp-pnp-js";
 import pnp from 'sp-pnp-js';
-import { sp } from "@pnp/sp/presets/all";
-import { IAttachmentInfo } from "@pnp/sp/attachments";
-import { IItem } from "@pnp/sp/items/types";
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
 import * as globalCommon from "../../globalComponents/globalCommon";
@@ -63,6 +60,7 @@ const EditTaskPopup = (Items: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
+    const [hoverImageModal, setHoverImageModal] = React.useState('None');
     const [ImageComparePopup, setImageComparePopup] = React.useState(false);
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
@@ -80,6 +78,7 @@ const EditTaskPopup = (Items: any) => {
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = React.useState(false);
     const [currentUserData, setCurrentUserData] = React.useState([]);
     const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
+    const [HoverImageData, setHoverImageData] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -1094,7 +1093,7 @@ const EditTaskPopup = (Items: any) => {
                 UploadImageFunction(lastindexArray, fileName);
             }
             else {
-                if(updateIndex < imageList.length){
+                if (updateIndex < imageList.length) {
                     ReplaceImageFunction(updateImage, updateIndex);
                 }
             }
@@ -1184,6 +1183,18 @@ const EditTaskPopup = (Items: any) => {
         }
         setTaskImages(EditData.UploadedImage);
 
+    }
+
+    const MouseHoverImageFunction = (e: any, HoverImageData: any) => {
+        e.preventDefault();
+        setHoverImageModal("Block");
+        // let tempArray:any =[];
+        // tempArray.push(HoverImageData)
+        setHoverImageData([HoverImageData]);
+    }
+    const MouseOutImageFunction = (e: any) => {
+        e.preventDefault();
+        setHoverImageModal("None");
     }
 
     return (
@@ -1781,7 +1792,12 @@ const EditTaskPopup = (Items: any) => {
                                                         {imageList.map((ImageDtl, index) => (
                                                             <div key={index} className="image-item">
                                                                 <div className="my-1">
-                                                                    <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} className="card-img-top" />
+                                                                    <a href={ImageDtl.ImageUrl} target="_blank" data-interception="off">
+                                                                        <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} onMouseOver={(e) => MouseHoverImageFunction(e, ImageDtl)}
+                                                                            onMouseOut={(e) => MouseOutImageFunction(e)}
+                                                                            className="card-img-top" />
+                                                                    </a>
+
                                                                     <div className="card-footer d-flex justify-content-between p-1 px-2">
                                                                         <div>
                                                                             <input type="checkbox" onClick={() => ImageCompareFunction(ImageDtl)} />
@@ -2754,11 +2770,52 @@ const EditTaskPopup = (Items: any) => {
                     </div>
                 </footer>
             </Panel>
+
+            {/* ********************** this in hover image modal ****************** */}
+            {/* <Modal
+                isOpen={hoverImageModal}
+            >
+                <div className="modal-header">
+                    <h6>{HoverImageData[0]?.ImageName}</h6>
+
+                </div>
+                <div className="modal-body">
+                    <img src={HoverImageData[0]?.ImageUrl} />
+
+                </div>
+                <footer>
+                    <div>
+                        <span className="mx-1">{HoverImageData[0]?.UserName ? HoverImageData[0]?.UserName: ''}</span>
+                        <span className="fw-semibold">{HoverImageData[0]?.UploadeDate ? HoverImageData[0]?.UploadeDate : ''}</span>
+                        <span className="mx-1">
+                            <img style={{ width: "25px" }} src={HoverImageData[0]?.UserImage ? HoverImageData[0]?.UserImage : ''} />
+                        </span>
+                    </div>
+                </footer>
+            </Modal> */}
+            <div className='hoverImageModal' style={{ display: hoverImageModal }}>
+                <div className="hoverImageModal-popup">
+                    <div className="hoverImageModal-container">
+                        <span style={{ color: 'white' }}>{HoverImageData[0]?.ImageName}</span>
+                        <img className="img-fluid" style={{ width: '100%', height:"450px" }} src={HoverImageData[0]?.ImageUrl}></img>
+                    </div>
+                    <footer className="justify-content-between d-flex p-1" style={{ color: "white" }}>
+                        <span className="mx-1"> Uploaded By :
+                            <span className="mx-1">
+                                <img style={{ width: "25px", borderRadius: "25px" }} src={HoverImageData[0]?.UserImage ? HoverImageData[0]?.UserImage : ''} />
+                            </span>
+                            {HoverImageData[0]?.UserName ? HoverImageData[0]?.UserName : ''}
+                        </span>
+                        <span className="fw-semibold">
+                            Uploaded Date :{HoverImageData[0]?.UploadeDate ? HoverImageData[0]?.UploadeDate : ''}
+                        </span>
+                    </footer>
+                </div>
+            </div>
         </>
     )
 }
 export default React.memo(EditTaskPopup);
-
 
 // How to use this component and require parameters
 
