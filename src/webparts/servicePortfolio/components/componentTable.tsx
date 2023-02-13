@@ -863,7 +863,7 @@ function ComponentTable(SelectedProp: any) {
                 item.isSearch = true;
                 item.show = false;
                 item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
-                if (!isItemExistsNew(AllFilteredTagNews ,item) && item.flag === true) {
+                if (!isItemExistsNew(AllFilteredTagNews, item) && item.flag === true) {
                     AllFilteredTagNews.push(item)
                 }
 
@@ -877,7 +877,7 @@ function ComponentTable(SelectedProp: any) {
                             data[pareIndex].flag = true;
                             item.childs[parentIndex].show = true;
                             data[pareIndex].show = true;
-                            if (!isItemExistsNew(AllFilteredTagNews ,item)) {
+                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
                                 AllFilteredTagNews.push(item)
                             }
                             childData.push(child1)
@@ -895,10 +895,10 @@ function ComponentTable(SelectedProp: any) {
                                     item.childs[parentIndex].show = true;
                                     data[pareIndex].flag = true;
                                     data[pareIndex].show = true;
-                                    if (!isItemExistsNew(AllFilteredTagNews ,item)) {
+                                    if (!isItemExistsNew(AllFilteredTagNews, item)) {
                                         AllFilteredTagNews.push(item)
                                     }
-                                    if (!isItemExistsNew(childData ,child1) )
+                                    if (!isItemExistsNew(childData, child1))
                                         childData.push(child1)
                                     subChild.push(subchild)
 
@@ -918,12 +918,12 @@ function ComponentTable(SelectedProp: any) {
                                             item.childs[parentIndex].show = true;
                                             data[pareIndex].flag = true;
                                             data[pareIndex].show = true;
-                                            if (!isItemExistsNew(AllFilteredTagNews ,item) ) {
+                                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
                                                 AllFilteredTagNews.push(item)
                                             }
-                                            if (!isItemExistsNew(childData ,child1) )
+                                            if (!isItemExistsNew(childData, child1))
                                                 childData.push(child1)
-                                                if (!isItemExistsNew(subChild ,subChild) )
+                                            if (!isItemExistsNew(subChild, subChild))
                                                 subChild.push(subChild)
                                             subChild2.push(subchilds)
 
