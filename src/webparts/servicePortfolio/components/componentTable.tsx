@@ -35,6 +35,7 @@ var ComponentsDataCopy: any = [];
 var SubComponentsDataCopy: any = [];
 var FeatureDataCopy: any = [];
 var array: any = [];
+var AllTask: any = [];
 function ComponentTable(SelectedProp: any) {
 
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -43,6 +44,8 @@ function ComponentTable(SelectedProp: any) {
     const [Title, setTitle] = React.useState()
     const [ComponentsData, setComponentsData] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
+    const [TotalTask, setTotalTask] = React.useState([])
+    const [TaggedAllTask, setTaggedAllTask] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
     const [table, setTable] = React.useState(data);
     const [AllUsers, setTaskUser] = React.useState([]);
@@ -141,7 +144,7 @@ function ComponentTable(SelectedProp: any) {
         // setState(state)
     }
     const Clearitem = () => {
-      
+
         maidataBackup.forEach(function (val: any) {
             val.show = false;
             if (val.childs != undefined) {
@@ -161,17 +164,17 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
-        filterItems.forEach(function(itemm:any){
+        filterItems.forEach(function (itemm: any) {
             itemm.Selected = false;
         })
-       
+        setTotalTask(AllTask)
         setSubComponentsData(SubComponentsDataCopy);
         setFeatureData(FeatureDataCopy);
         setmaidataBackup(ComponentsDataCopy)
         setShowSelectdSmartfilter([])
-      
+
         setState([])
-        
+
 
         setData(maidataBackup)
         // const { checked } = e.target;
@@ -184,6 +187,7 @@ function ComponentTable(SelectedProp: any) {
         var filters: any[] = []
         var finalArray: any = []
         var RootData: any = []
+        var ALTask: any = []
 
 
         if (state.length == 0) {
@@ -461,9 +465,6 @@ function ComponentTable(SelectedProp: any) {
                     }
                     if (select.TaxType == 'Portfolio') {
 
-                        // if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title) {
-                        //     RootData.push(item);
-                        // }
 
 
                         if (item.childs !== undefined) {
@@ -487,19 +488,6 @@ function ComponentTable(SelectedProp: any) {
                                         }
 
 
-                                        // if (vall.childs !== undefined) {
-                                        //     vall.childs.forEach(function (user: any, index: any) {
-
-
-                                        //         if (user.SharewebTaskType != undefined && user.SharewebTaskType.Title == select.Title) {
-                                        //             vall.show = true;
-                                        //             vall.Child.push(user);
-                                        //             RootData.push(item);
-                                        //         }
-
-
-                                        //     })
-                                        // }
 
 
                                     })
@@ -548,6 +536,11 @@ function ComponentTable(SelectedProp: any) {
             if (com.Item_x0020_Type == 'Component') {
                 component.push(com)
             }
+            if (com.childs != undefined && com.Title == 'Others') {
+                com.childs.forEach((value: any) => {
+                    ALTask.push(value)
+                })
+            }
             if (com.childs != undefined) {
                 com.childs.forEach(function (sub: any) {
                     if (sub.Item_x0020_Type == 'SubComponent') {
@@ -564,7 +557,7 @@ function ComponentTable(SelectedProp: any) {
 
 
             }
-
+            setTotalTask(ALTask)
             setSubComponentsData(subcomponent);
             setFeatureData(feature);
             setComponentsData(component);
@@ -797,8 +790,8 @@ function ComponentTable(SelectedProp: any) {
             keywordList = stringToArray(searchTerms);
         }
         var pattern: any = getRegexPattern(keywordList);
-      //  item.Title = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
-      item.Title = item.Title;
+        //  item.Title = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+        item.Title = item.Title;
         keywordList = [];
         pattern = '';
     }
@@ -828,10 +821,12 @@ function ComponentTable(SelectedProp: any) {
         setSearch(e.target.value.toLowerCase());
         var Title = titleName;
 
-        var AllFilteredTagNews:any = [];
-        var childData:any = [];
-        var subChild:any = [];
-        var subChild2:any = [];
+        var AllFilteredTagNews: any = [];
+        var finalOthersData: any = []
+        var ALllTAsk: any = []
+        var childData: any = [];
+        var subChild: any = [];
+        var subChild2: any = [];
         AllFilteredTagNews.forEach(function (val: any) {
             val.Child = []
             if (val.childs != undefined) {
@@ -840,9 +835,9 @@ function ComponentTable(SelectedProp: any) {
                     if (type.childs != undefined) {
                         type.childs.forEach(function (value: any) {
                             value.Child = []
-                            if(value.childs != undefined){
-                                value.childs.forEach(function(last:any){
-                                    last.Child=[]
+                            if (value.childs != undefined) {
+                                value.childs.forEach(function (last: any) {
+                                    last.Child = []
 
                                 })
                             }
@@ -859,10 +854,10 @@ function ComponentTable(SelectedProp: any) {
                 item.isSearch = true;
                 item.show = false;
                 item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
-                if(item.flag == true){
+                if (item.flag == true) {
                     AllFilteredTagNews.push(item)
                 }
-                
+
                 if (item.childs != undefined && item.childs.length > 0) {
                     $.each(item.childs, function (parentIndex: any, child1: any) {
                         child1.flag = false;
@@ -874,7 +869,8 @@ function ComponentTable(SelectedProp: any) {
                             item.childs[parentIndex].show = true;
                             data[pareIndex].show = true;
                             childData.push(child1)
-                           
+                            ALllTAsk.push(item)
+
                         }
                         if (child1.childs != undefined && child1.childs.length > 0) {
                             $.each(child1.childs, function (index: any, subchild: any) {
@@ -889,7 +885,7 @@ function ComponentTable(SelectedProp: any) {
                                     data[pareIndex].flag = true;
                                     data[pareIndex].show = true;
                                     subChild.push(subchild)
-                                    
+
                                 }
                                 if (subchild.childs != undefined && subchild.childs.length > 0) {
                                     $.each(subchild.childs, function (childindex: any, subchilds: any) {
@@ -907,7 +903,7 @@ function ComponentTable(SelectedProp: any) {
                                             data[pareIndex].flag = true;
                                             data[pareIndex].show = true;
                                             subChild2.push(subchilds)
-                                            
+
                                         }
                                     })
                                 }
@@ -916,9 +912,12 @@ function ComponentTable(SelectedProp: any) {
 
                     })
                 }
-                
+
             })
             const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const AllDataTaskk = ALllTAsk.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
             const SData = childData.filter((val: any, id: any, array: any) => {
@@ -927,7 +926,18 @@ function ComponentTable(SelectedProp: any) {
             const FData = subChild.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
-           
+            if (AllDataTaskk != undefined) {
+                AllDataTaskk.forEach((newval: any) => {
+                    if (newval.Title == 'Others' && newval.childs != undefined) {
+                        newval.forEach((valllA: any) => {
+                            finalOthersData.push(valllA)
+                        })
+                    }
+
+                })
+            }
+
+            setTotalTask(finalOthersData)
             setSubComponentsData(SData);
             setFeatureData(FData);
             setComponentsData(CData);
@@ -1794,7 +1804,45 @@ function ComponentTable(SelectedProp: any) {
                 //   }
             } else array.push(comp)
         })
+        if (array != undefined) {
+            array.forEach((vall: any) => {
+                if (vall.Title == 'Others') {
+                    if (vall.childs != undefined) {
+                        vall.childs.forEach((All: any) => {
+                            AllTask.push(All)
 
+                        })
+                    }
+                }
+                if (vall.Title != 'Others') {
+                    if (vall.childs != undefined) {
+                        vall.childs.forEach((fea: any) => {
+                         if(fea.Item_x0020_Type == 'Task')
+                          AllTask.push(fea)
+                          if(fea.childs != undefined){
+                            fea.childs.forEach((childd:any)=>{
+                          if(childd.Item_x0020_Type == 'Task')
+                          AllTask.push(childd)
+                          if(childd.childs != undefined){
+                            childd.childs.forEach((last:any)=>{
+                                if(last.Item_x0020_Type == 'Task'){
+                                    AllTask.push(last)
+                                }
+
+                            })
+                          }
+                            })
+                          }
+                        })
+                       
+                            
+
+                        
+                    }
+                }
+            })
+        }
+        setTotalTask(AllTask)
         setSubComponentsData(SubComponentsData);
         setFeatureData(FeatureData);
         setComponentsData(array);
@@ -1807,6 +1855,7 @@ function ComponentTable(SelectedProp: any) {
         var AllTaskData1: any = [];
         ComponetsData['allUntaggedTasks'] = [];
         AllTaskData1 = AllTaskData1.concat(TasksItem);
+        setTaggedAllTask(AllTaskData1)
         $.each(AllTaskData1, function (index: any, task: any) {
             task.Portfolio_x0020_Type = 'Component';
             if (IsUpdated === 'Service Portfolio') {
@@ -1893,7 +1942,7 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
-       
+
         var AllTaggedTask: any = [];
         $.each(SelectedList, function (index: any, item: any) {
             $.each(AllTaskData1, function (index: any, task: any) {
@@ -2429,6 +2478,10 @@ function ComponentTable(SelectedProp: any) {
                                         <label className="ms-1 me-1"> | </label>
                                         <label>
                                             {FeatureData.length} of {FeatureData.length} Features
+                                        </label>
+                                        <label className="ms-1 me-1"> | </label>
+                                        <label>
+                                            {TotalTask.length} of {TaggedAllTask.length} Task
                                         </label>
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
