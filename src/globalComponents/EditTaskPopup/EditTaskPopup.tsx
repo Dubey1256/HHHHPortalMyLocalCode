@@ -2799,15 +2799,15 @@ const EditTaskPopup = (Items: any) => {
                         <span style={{ color: 'white' }}>{HoverImageData[0]?.ImageName}</span>
                         <img className="img-fluid" style={{ width: '100%', height:"450px" }} src={HoverImageData[0]?.ImageUrl}></img>
                     </div>
-                    <footer className="justify-content-between d-flex p-1" style={{ color: "white" }}>
-                        <span className="mx-1"> Uploaded By :
+                    <footer className="justify-content-between d-flex pb-1 mx-2" style={{ color: "white" }}>
+                        <span className="mx-1"> Uploaded By : 
                             <span className="mx-1">
                                 <img style={{ width: "25px", borderRadius: "25px" }} src={HoverImageData[0]?.UserImage ? HoverImageData[0]?.UserImage : ''} />
                             </span>
                             {HoverImageData[0]?.UserName ? HoverImageData[0]?.UserName : ''}
                         </span>
                         <span className="fw-semibold">
-                            Uploaded Date :{HoverImageData[0]?.UploadeDate ? HoverImageData[0]?.UploadeDate : ''}
+                            Uploaded Date : {HoverImageData[0]?.UploadeDate ? HoverImageData[0]?.UploadeDate : ''}
                         </span>
                     </footer>
                 </div>
