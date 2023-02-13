@@ -1205,7 +1205,7 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <>
+            <div className="border-bottom" >
                 <div className="border-bottom" style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
@@ -1213,21 +1213,21 @@ const EditTaskPopup = (Items: any) => {
                     </span>
                 </div>
                 <Tooltip />
-            </>
+            </div>
         );
     };
 
     const onRenderCustomHeaderCopyAndMoveTaskPanel = () => {
         return (
-            <>
-                <div className="border-bottom" style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+            <div  className="border-bottom" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
                         Select Site
                     </span>
                 </div>
                 <Tooltip />
-            </>
+            </div>
         );
     };
 
