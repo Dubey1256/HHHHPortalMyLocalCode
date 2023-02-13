@@ -79,6 +79,8 @@ export default function ComponentTable({ props }: any) {
         return (false);
     }
     const EditComponentPopup = (item: any) => {
+        item['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+        item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
         setSharewebComponent(item);

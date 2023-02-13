@@ -5,6 +5,7 @@ import * as Moment from 'moment';
 import { Modal } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
+import { RxDotsVertical } from 'react-icons/rx';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
@@ -51,7 +52,7 @@ function ComponentTable(SelectedProp: any) {
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
     const [IsUpdated, setIsUpdated] = React.useState('');
-    const [tablecontiner, settablecontiner]:any = React.useState("hundred");
+    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [Isshow, setIsshow] = React.useState(false);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -150,7 +151,7 @@ function ComponentTable(SelectedProp: any) {
             map(maidataBackup, (item) => {
 
                 map(state, (select) => {
-                    if (select.Selected)
+                   // if (select.Selected)
                         switch (select.TaxType) {
                             case 'Portfolio':
                                 if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
@@ -199,26 +200,35 @@ function ComponentTable(SelectedProp: any) {
                                 break;
 
                             case 'Priority':
-                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                    item.flag = true
-                                    PriorityItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                            child.flag = true
+                                // if (item.Priority != null && item.Priority_x0020_Rank == select.Title) {
+                                //    item.flag = true
+                                //     PriorityItems.push(item);
+                                // }
+                                if(item.Priority != null){
+                                  
+                                        if(item.Priority == select.Title){
                                             PriorityItems.push(item);
                                         }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                                    child.flag = true
-                                                    PriorityItems.push(item);
-                                                }
-                                            })
-                                        }
-                                    })
+                                  
                                 }
+                                // if (item.childs != undefined && item.childs.length > 0) {
+                                //     map(item.childs, (child) => {
+                                //         if (child.Priority_x0020_Rank != null && child.Priority_x0020_Rank == select.Title) {
+                                //             child.flag = true
+                                //             PriorityItems.push(item);
+                                //         }
+                                //         if (child.childs != undefined && child.childs.length > 0) {
+                                //             map(child.childs, (subchild) => {
+                                //                 if (subchild.Priority_x0020_Rank != null && subchild.Priority_x0020_Rank == select.Title) {
+                                //                     child.flag = true
+                                //                     PriorityItems.push(item);
+                                //                 }
+                                //             })
+                                //         } 
+                                //     })
+                                   // setData(PriorityItems)
+                               // }
+                                
                                 break;
 
                             case 'Sites':
@@ -274,7 +284,7 @@ function ComponentTable(SelectedProp: any) {
 
         }
         if (state.length > 0)
-            setData(CategoryItems)
+            setData(PriorityItems)
 
 
     }
@@ -409,7 +419,7 @@ function ComponentTable(SelectedProp: any) {
         setData(maidataBackup => ([...maidataBackup]));
     };
     const handleOpenAll = () => {
-       var Isshow1:any = Isshow == true ? false : true;
+        var Isshow1: any = Isshow == true ? false : true;
         map(data, (obj) => {
             obj.show = Isshow1;
             if (obj.childs != undefined && obj.childs.length > 0) {
@@ -1274,7 +1284,7 @@ function ComponentTable(SelectedProp: any) {
             }
             if (result.Title == 'Others') {
                 //result['childs'] = result['childs'] != undefined ? result['childs'] : [];
-                result.childsLength =result.childs.length;
+                result.childsLength = result.childs.length;
                 ComponentsData.push(result);
             }
         });
@@ -1416,7 +1426,7 @@ function ComponentTable(SelectedProp: any) {
         var temp: any = {};
         temp.Title = 'Others';
         temp.childs = [];
-        temp.childsLength =0;
+        temp.childsLength = 0;
         temp.flag = true;
 
         // ComponetsData['allComponets'][i]['childs']
@@ -1428,7 +1438,7 @@ function ComponentTable(SelectedProp: any) {
                 temp.childs.push(task);
             }
         })
-        
+
         ComponetsData['allComponets'].push(temp);
         bindData();
     }
@@ -1506,11 +1516,11 @@ function ComponentTable(SelectedProp: any) {
 
     }
 
-// Expand Table 
-const expndpopup = (e: any) => {
-    
-    settablecontiner(e);
-  };
+    // Expand Table 
+    const expndpopup = (e: any) => {
+
+        settablecontiner(e);
+    };
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
@@ -1586,6 +1596,7 @@ const expndpopup = (e: any) => {
     }, []);
     const EditComponentPopup = (item: any) => {
         item['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+        item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
         setSharewebComponent(item);
@@ -1600,7 +1611,7 @@ const expndpopup = (e: any) => {
     function AddItem() {
     }
     return (
-        <div className={IsUpdated == 'Events Portfolio' ? 'app component eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component serviepannelgreena' : 'app component')}>
+        <div id="ExandTableIds" className= {IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
 
             {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
             {/* <Modal
@@ -1747,20 +1758,18 @@ const expndpopup = (e: any) => {
             </Modal> */}
             {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
 
-            <div className="col-sm-12 ">
-                <h2 className="alignmentitle ng-binding d-flex">
 
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div>}
-                    {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
-
-
-                </h2>
-            </div>
             <section className="ContentSection">
+                <div className="col-sm-12 clearfix">
+                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div>Service Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div>Event Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio-Old.aspx"} >Old Event Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div>Component Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a></div>}
+                    </h2>
+                </div>
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
                         <label className="toggler full_width mb-10">
@@ -1820,8 +1829,8 @@ const expndpopup = (e: any) => {
 
                                                 <td valign="top">
                                                     <fieldset>
-                                                        <legend>{item != 'teamSites' && <span className="mparent">{item}</span>}</legend>
-                                                        <legend>{item == 'teamSites' && <span className="mparent">Sites</span>}</legend>
+                                                        {item != 'teamSites' && <legend><span className="mparent">{item}</span></legend>}
+                                                        {item == 'teamSites' && <legend><span className="mparent">Sites</span></legend>}
                                                     </fieldset>
                                                     {filterItems.map(function (ItemType, index) {
                                                         return (
@@ -1858,7 +1867,7 @@ const expndpopup = (e: any) => {
                                                                                 </div>
                                                                             }
                                                                             <ul id="id_{ItemType.Id}"
-                                                                                className="m-0">
+                                                                                className="m-0 ps-3 pe-2">
                                                                                 <span>
                                                                                     {ItemType.show && (
                                                                                         <>
@@ -1926,7 +1935,7 @@ const expndpopup = (e: any) => {
                                     })}
                                 </tr>
                             </table>
-                            <div className="text-end">
+                            <div className="text-end mt-3">
                                 <button type="button" className="btn btn-primary"
                                     title="Smart Filter" onClick={() => Updateitem()}>
                                     Update Filters
@@ -1950,7 +1959,7 @@ const expndpopup = (e: any) => {
                         <div className="container p-0">
                             <div className="Alltable mt-2">
                                 <div className="tbl-headings">
-                                    <span className="leftsec w65">
+                                    <span className="leftsec">
                                         <label>
                                             Showing {ComponentsData.length} of {ComponentsData.length} Components
                                         </label>
@@ -1966,17 +1975,17 @@ const expndpopup = (e: any) => {
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
                                             <span className="gsearch-btn" ><i><FaSearch /></i></span>
                                         </span>
-                                        <span>
+                                        {/* <span>
                                             <select className="ml2 searchbox_height">
                                                 <option value="All Words">All Words</option>
                                                 <option value="Any Words">Any Words</option>
                                                 <option value="Exact Phrase">Exact Phrase</option>
 
                                             </select>
-                                        </span>
+                                        </span> */}
                                     </span>
                                     <span className="toolbox mx-auto">
-                                        <button type="button" className="btn btn-primary"
+                                        {/* <button type="button" className="btn btn-primary"
                                             ng-disabled="(isOwner!=true) || ( SelectedTasks.length > 0 || compareComponents[0].Item_x0020_Type =='Feature') "
                                             onClick={addModal} title=" Add Structure">
                                             Add Structure
@@ -1997,25 +2006,29 @@ const expndpopup = (e: any) => {
                                             ng-click="openRestructure()"
                                             disabled={true}>
                                             Restructure
+                                        </button> */}
+                                        <button className="btn border bg-white" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="true" data-bs-reference="parent">
+                                             <RxDotsVertical/>
                                         </button>
+                                        <ul className="dropdown-menu dropdown-menu-end" style={{"position":"absolute","inset":"auto 0px 0px auto","margin":"0px", "transform":"translate(-36px, -1657px)"}} data-popper-placement="top-end">
+                                            <li  onClick={addModal}><a className="dropdown-item" href="#">Add Structure</a></li>
+                                            <li ng-click="openActivity()"><a className="dropdown-item" href="#">Add Activity-Task</a></li>
+                                            <li  ng-click="openRestructure()"><a className="dropdown-item" href="#">Restructure</a></li>
+                                        </ul>
                                         <a className="brush" onClick={clearSearch}>
-                                       <FaPaintBrush />
+                                            <FaPaintBrush />
                                         </a>
+                                        
+                                        <a onClick={Prints} className='Prints'>
+                                            <FaPrint />
+                                        </a>
+
+                                        <CSVLink className="excal" data={getCsvData()} >
+                                            <FaFileExcel />
+                                        </CSVLink>
                                         <a className='expand'>
                                             <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                                         </a>
-                                        <a onClick={Prints} className='Prints'>
-                                           <FaPrint />
-                                        </a>
-                                      
-                                            <CSVLink className="excal" data={getCsvData()} >
-                                               <FaFileExcel />
-                                            </CSVLink>
-                                        
-
-                                        {/* <span>
-                                        <ExpandTable/>
-                                        </span> */}
                                     </span>
                                 </div>
                                 <div className="col-sm-12 p-0 smart">
@@ -2029,8 +2042,8 @@ const expndpopup = (e: any) => {
                                                                 : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "7%" }}>
-                                                            <div style={{ width: "6%" }} className="smart-relative">
+                                                        <th style={{ width: "9%" }}>
+                                                            <div style={{ width: "8%" }} className="smart-relative">
                                                                 <input type="search" placeholder="ID" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} />
 
                                                                 <span className="sorticon">
@@ -2039,8 +2052,8 @@ const expndpopup = (e: any) => {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "20%" }}>
-                                                            <div style={{ width: "19%" }} className="smart-relative">
+                                                        <th style={{ width: "22%" }}>
+                                                            <div style={{ width: "21%" }} className="smart-relative">
                                                                 <input type="search" placeholder="Title" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Title')} />
 
                                                                 <span className="sorticon">
@@ -2076,8 +2089,8 @@ const expndpopup = (e: any) => {
 
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "10%" }}>
-                                                            <div style={{ width: "9%" }} className="smart-relative">
+                                                        <th style={{ width: "6%" }}>
+                                                            <div style={{ width: "5%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Status"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                     onChange={event => handleChange1(event, 'PercentComplete')} />
@@ -2116,11 +2129,8 @@ const expndpopup = (e: any) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
                                                     <div id="SpfxProgressbar" className="align-items-center" style={{ display: "none" }}>
-
                                                         <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-
                                                     </div>
                                                     {data.length > 0 && data && data.map(function (item, index) {
                                                         if (item.flag == true) {
@@ -2145,7 +2155,7 @@ const expndpopup = (e: any) => {
 
                                                                                     </td>
 
-                                                                                    <td style={{ width: "7%" }}>
+                                                                                    <td style={{ width: "9%" }}>
                                                                                         <div className="">
                                                                                             <span>
                                                                                                 {item.SiteIcon != undefined && <a className="hreflink" title="Show All Child" data-toggle="modal">
@@ -2159,14 +2169,15 @@ const expndpopup = (e: any) => {
                                                                                         </div>
                                                                                     </td>
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
-                                                                                    <td style={{ width: "20%" }}>
+                                                                                    <td style={{ width: "22%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                                         ><span>{item.Title}</span>
                                                                                         </a>}
-                                                                                        {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                        {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                                         ><span>{item.Title}</span>
+
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
                                                                                             <span className='ms-1'>({item.childsLength})</span>
@@ -2204,7 +2215,7 @@ const expndpopup = (e: any) => {
                                                                                                 </span>
                                                                                             )
                                                                                         })}</div></td>
-                                                                                    <td style={{ width: "10%" }}>{item.PercentComplete}</td>
+                                                                                    <td style={{ width: "6%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
@@ -2243,7 +2254,7 @@ const expndpopup = (e: any) => {
                                                                                                                 </div>
                                                                                                             </td>
                                                                                                             {/* <td style={{ width: "2%" }}></td> */}
-                                                                                                            <td style={{ width: "7%" }}>  <div className="d-flex">
+                                                                                                            <td style={{ width: "9%" }}>  <div className="d-flex">
                                                                                                                 <span>
 
                                                                                                                     <a className="hreflink" title="Show All Child" data-toggle="modal">
@@ -2257,19 +2268,19 @@ const expndpopup = (e: any) => {
                                                                                                             </div>
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "20%" }}>
+                                                                                                            <td style={{ width: "22%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
                                                                                                                 >{childitem.Title}
                                                                                                                 </a>}
-                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type =='Feature' &&
+                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type == 'Feature' &&
                                                                                                                     <span className='ms-1'>  ({childitem.childs.length})</span>
                                                                                                                 }
-                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type !='Feature' &&
+                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type != 'Feature' &&
                                                                                                                     <span className='ms-1'>  ({childitem.childsLength})</span>
                                                                                                                 }
 
@@ -2312,7 +2323,7 @@ const expndpopup = (e: any) => {
                                                                                                                         </div>
                                                                                                                     )
                                                                                                                 })}</div></td>
-                                                                                                            <td style={{ width: "10%" }}>{childitem.PercentComplete}</td>
+                                                                                                            <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
@@ -2348,7 +2359,7 @@ const expndpopup = (e: any) => {
                                                                                                                                     </td>
 
 
-                                                                                                                                    <td style={{ width: "7%" }}> <div className="d-flex">
+                                                                                                                                    <td style={{ width: "9%" }}> <div className="d-flex">
                                                                                                                                         <span>
 
                                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
@@ -2362,11 +2373,11 @@ const expndpopup = (e: any) => {
                                                                                                                                     </div>
                                                                                                                                     </td>
 
-                                                                                                                                    <td style={{ width: "20%" }}>
+                                                                                                                                    <td style={{ width: "22%" }}>
 
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
                                                                                                                                         >{childinew.Title}
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -2376,12 +2387,12 @@ const expndpopup = (e: any) => {
                                                                                                                                         {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
                                                                                                                                         } */}
-                                                                                                                                         {childinew.childs.length > 0 && childinew.Item_x0020_Type =='Feature' &&
-                                                                                                                    <span className='ms-1'>  ({childinew.childs.length})</span>
-                                                                                                                }
-                                                                                                                {childinew.childs.length > 0 && childinew.Item_x0020_Type !='Feature' &&
-                                                                                                                    <span className='ms-1'>  ({childinew.childsLength})</span>
-                                                                                                                }
+                                                                                                                                        {childinew.childs.length > 0 && childinew.Item_x0020_Type == 'Feature' &&
+                                                                                                                                            <span className='ms-1'>  ({childinew.childs.length})</span>
+                                                                                                                                        }
+                                                                                                                                        {childinew.childs.length > 0 && childinew.Item_x0020_Type != 'Feature' &&
+                                                                                                                                            <span className='ms-1'>  ({childinew.childsLength})</span>
+                                                                                                                                        }
 
                                                                                                                                         {childinew.Short_x0020_Description_x0020_On != null &&
                                                                                                                                             <div className='popover__wrapper ms-1'>
@@ -2421,7 +2432,7 @@ const expndpopup = (e: any) => {
                                                                                                                                                 </span>
                                                                                                                                             )
                                                                                                                                         })}</div></td>
-                                                                                                                                    <td style={{ width: "10%" }}>{childinew.PercentComplete}</td>
+                                                                                                                                    <td style={{ width: "6%" }}>{childinew.PercentComplete}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
                                                                                                                                     <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
@@ -2455,7 +2466,7 @@ const expndpopup = (e: any) => {
                                                                                                                                                             </div>
                                                                                                                                                         </td>
                                                                                                                                                         {/* <td style={{ width: "2%" }}></td> */}
-                                                                                                                                                        <td style={{ width: "7%" }}>  <div className="d-flex">
+                                                                                                                                                        <td style={{ width: "9%" }}>  <div className="d-flex">
                                                                                                                                                             <span>
 
                                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
@@ -2469,9 +2480,9 @@ const expndpopup = (e: any) => {
                                                                                                                                                         </div>
                                                                                                                                                         </td>
 
-                                                                                                                                                        <td style={{ width: "20%" }}>
+                                                                                                                                                        <td style={{ width: "22%" }}>
                                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                                                                             >{subchilditem.Title}
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -2523,7 +2534,7 @@ const expndpopup = (e: any) => {
                                                                                                                                                                     </div>
                                                                                                                                                                 )
                                                                                                                                                             })}</div></td>
-                                                                                                                                                        <td style={{ width: "10%" }}>{subchilditem.PercentComplete}</td>
+                                                                                                                                                        <td style={{ width: "6%" }}>{subchilditem.PercentComplete}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                         <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
@@ -2571,7 +2582,7 @@ const expndpopup = (e: any) => {
                 </div></section>
 
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
-            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
+            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
         </div >
     );

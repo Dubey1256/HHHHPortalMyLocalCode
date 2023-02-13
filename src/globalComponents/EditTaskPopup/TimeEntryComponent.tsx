@@ -855,6 +855,7 @@ function TimeEntryPopup(item: any) {
                                 item.AdditionalTime = []
                                 var update: any = {};
                                 update['AuthorName'] = UpdatedData.AuthorName;
+                                update['AuthorId'] = CurntUserId;
                                 update['AuthorImage'] = UpdatedData.AuthorImage;
                                 update['ID'] = 0;
                                 update['MainParentId'] = mainParentId;
@@ -1075,17 +1076,17 @@ function TimeEntryPopup(item: any) {
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
             var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+           
 
         }
         else{
             var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+           
         }
-        let web = new Web(ListId);
+        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
-        await web.lists.getById(ListId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(child.ParentID).update({
+        await web.lists.getById(ListId).items.getById(child.ParentID).update({
 
-
-            // TaskDate:postData.TaskDate,
             AdditionalTimeEntry: JSON.stringify(UpdatedData),
 
         }).then((res: any) => {
@@ -1246,6 +1247,7 @@ function TimeEntryPopup(item: any) {
                     })
 
                     update['AuthorName'] = CurrentUser.AuthorName;
+                    update['AuthorId'] = CurntUserId;
                     update['AuthorImage'] = CurrentUser.AuthorImage;
                     update['ID'] = timeSpentId.ID + 1;
                     update['MainParentId'] = AddMainParentId;
@@ -1261,6 +1263,7 @@ function TimeEntryPopup(item: any) {
                     AddParentId = items.Id;
                     update['AuthorName'] = CurrentUser.AuthorName;
                     update['AuthorImage'] = CurrentUser.AuthorImage;
+                    update['AuthorId'] = CurntUserId
                     update['ID'] = 0;
                     update['MainParentId'] = items.TimesheetTitle.Id;
                     update['ParentID'] = items.Id;
@@ -1369,7 +1372,7 @@ function TimeEntryPopup(item: any) {
                         update['TaskTime'] = child.TaskTime;
                         update['TaskTimeInMinute'] = child.TaskTimeInMin;
                         update['TaskDate'] = Dateee != 'Invalid date' && Dateee != "" && Dateee != undefined ? Dateee : child.TaskDate;
-                        update['Description'] = child.Description
+                        update['Description'] = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
                     }
@@ -1398,6 +1401,7 @@ function TimeEntryPopup(item: any) {
             console.log(res);
 
             closeCopyTaskpopup();
+            setupdateData(updateData + 7)
 
         })
     }
@@ -1711,7 +1715,7 @@ function TimeEntryPopup(item: any) {
                                             })}
                                         </tbody>
                                     </table>
-                                    {TaskCate.length === 0 && <div className="right-col pt-0 MtPb"
+                                    {TaskCate.length === 0 && <div className="text-center pb-3"
                                     >
                                         No Timesheet Available
                                     </div>}
@@ -2126,7 +2130,7 @@ function TimeEntryPopup(item: any) {
                                                             <div className="Quaterly-Time">
                                                                 <label className="full_width"></label>
                                                                 <button className="btn btn-primary"
-                                                                    title="Decrease by 15 Min" disabled={TimeInMinutes <= 0 ? true : false}
+                                                                    title="Decrease by 15 Min" 
                                                                     onClick={() => changeTimesDecEdit('15', child, 'EditTask')}><i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
 
@@ -2384,7 +2388,7 @@ function TimeEntryPopup(item: any) {
                                                             <div className="Quaterly-Time">
                                                                 <label className="full_width"></label>
                                                                 <button className="btn btn-primary"
-                                                                    title="Decrease by 15 Min" disabled={TimeInMinutes <= 0 ? true : false}
+                                                                    title="Decrease by 15 Min" 
                                                                     onClick={() => changeTimesDecEdit('15', child, 'EditTask')}>
                                                                     <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
