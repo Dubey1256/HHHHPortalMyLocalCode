@@ -1260,7 +1260,7 @@ const EditTaskPopup = (Items: any) => {
                                 Task
                             </a>
                             <span > | </span>
-                            <a className="hreflink"> Move Task</a> |
+                            <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
                                     <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
@@ -1334,7 +1334,7 @@ const EditTaskPopup = (Items: any) => {
                                 Task
                             </a>
                             <span > | </span>
-                            <a className="hreflink"> Move Task</a> |
+                            <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
                                     <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
@@ -1426,7 +1426,6 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
             {/* ***************** this is Main Panel *********** */}
-
             <Panel
                 type={PanelType.large}
                 isOpen={modalIsOpen}
@@ -2775,10 +2774,9 @@ const EditTaskPopup = (Items: any) => {
             >
                 <div className="modal-body">
                     <div>
-                        <h1> Site Lists</h1>
+                        <h5>We Are Working On It. This Feature Will Be Live Soon..... </h5>
                     </div>
                 </div>
-
             </Panel>
 
         </>
