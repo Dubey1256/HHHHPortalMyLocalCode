@@ -141,11 +141,7 @@ function ComponentTable(SelectedProp: any) {
         // setState(state)
     }
     const Clearitem = () => {
-        var componentcount: any = []
-        var subcomponentcount: any = []
-        var featurecount: any = []
-        // setShow(false)
-        // setShowChild(false)
+      
         maidataBackup.forEach(function (val: any) {
             val.show = false;
             if (val.childs != undefined) {
@@ -165,34 +161,18 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
-        // array.forEach(function(com:any){
-        //     if(com.Item_x0020_Type == 'Component'){
-        //         componentcount.push(com)
-        //     }
-        //     if(com.childs != undefined){
-        //         com.childs.forEach(function(sub:any){
-        //             if(sub.Item_x0020_Type == 'SubComponent'){
-        //                 subcomponentcount.push(com)
-        //              }
-        //              if(sub.childs != undefined){
-        //                 sub.childs.forEach(function(fea:any){
-        //                     if(fea.Item_x0020_Type == 'Feature'){
-        //                         featurecount.push(com)
-        //                      }
-        //                 })
-        //             }
-        //         })
-
-
-        //     }
-
-
-        // })
+        filterItems.forEach(function(itemm:any){
+            itemm.Selected = false;
+        })
+       
         setSubComponentsData(SubComponentsDataCopy);
         setFeatureData(FeatureDataCopy);
         setmaidataBackup(ComponentsDataCopy)
-
+        setShowSelectdSmartfilter([])
+      
         setState([])
+        
+
         setData(maidataBackup)
         // const { checked } = e.target;
 
@@ -627,6 +607,7 @@ function ComponentTable(SelectedProp: any) {
                     $.each(AllTasksMatches, function (index: any, item: any) {
                         item.isDrafted = false;
                         item.flag = true;
+                        item.TitleNew = item.Title;
                         item.siteType = config.Title;
                         item.childs = [];
                         item.listId = config.listId;
@@ -817,8 +798,9 @@ function ComponentTable(SelectedProp: any) {
             keywordList = stringToArray(searchTerms);
         }
         var pattern: any = getRegexPattern(keywordList);
-      //  item.Title = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
-      item.Title = item.Title;
+        //let Title :any =(...item.Title)
+        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+        // item.Title = item.Title;
         keywordList = [];
         pattern = '';
     }
@@ -848,10 +830,10 @@ function ComponentTable(SelectedProp: any) {
         setSearch(e.target.value.toLowerCase());
         var Title = titleName;
 
-        var AllFilteredTagNews: any = [];
-        var childData: any = [];
-        var subChild: any = [];
-        var subChild2: any = [];
+        var AllFilteredTagNews:any = [];
+        var childData:any = [];
+        var subChild:any = [];
+        var subChild2:any = [];
         AllFilteredTagNews.forEach(function (val: any) {
             val.Child = []
             if (val.childs != undefined) {
@@ -860,9 +842,9 @@ function ComponentTable(SelectedProp: any) {
                     if (type.childs != undefined) {
                         type.childs.forEach(function (value: any) {
                             value.Child = []
-                            if (value.childs != undefined) {
-                                value.childs.forEach(function (last: any) {
-                                    last.Child = []
+                            if(value.childs != undefined){
+                                value.childs.forEach(function(last:any){
+                                    last.Child=[]
 
                                 })
                             }
@@ -879,6 +861,10 @@ function ComponentTable(SelectedProp: any) {
                 item.isSearch = true;
                 item.show = false;
                 item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
+                if(item.flag == true){
+                    AllFilteredTagNews.push(item)
+                }
+                
                 if (item.childs != undefined && item.childs.length > 0) {
                     $.each(item.childs, function (parentIndex: any, child1: any) {
                         child1.flag = false;
@@ -890,7 +876,7 @@ function ComponentTable(SelectedProp: any) {
                             item.childs[parentIndex].show = true;
                             data[pareIndex].show = true;
                             childData.push(child1)
-                            AllFilteredTagNews.push(item)
+                           
                         }
                         if (child1.childs != undefined && child1.childs.length > 0) {
                             $.each(child1.childs, function (index: any, subchild: any) {
@@ -905,7 +891,7 @@ function ComponentTable(SelectedProp: any) {
                                     data[pareIndex].flag = true;
                                     data[pareIndex].show = true;
                                     subChild.push(subchild)
-                                    AllFilteredTagNews.push(item)
+                                    
                                 }
                                 if (subchild.childs != undefined && subchild.childs.length > 0) {
                                     $.each(subchild.childs, function (childindex: any, subchilds: any) {
@@ -923,7 +909,7 @@ function ComponentTable(SelectedProp: any) {
                                             data[pareIndex].flag = true;
                                             data[pareIndex].show = true;
                                             subChild2.push(subchilds)
-                                            AllFilteredTagNews.push(item)
+                                            
                                         }
                                     })
                                 }
@@ -932,9 +918,21 @@ function ComponentTable(SelectedProp: any) {
 
                     })
                 }
-
+                
             })
-            //   getFilterLength();
+            const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const SData = childData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const FData = subChild.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+           
+            setSubComponentsData(SData);
+            setFeatureData(FData);
+            setComponentsData(CData);
         } else {
             //  ungetFilterLength();
             // setData(data => ([...maidataBackup]));
@@ -944,7 +942,6 @@ function ComponentTable(SelectedProp: any) {
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
 
     };
-
 
     // var TaxonomyItems: any = [];
     var AllComponetsData: any = [];
@@ -1500,7 +1497,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Services'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1527,7 +1524,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Events'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1553,7 +1550,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Component'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1625,6 +1622,7 @@ function ComponentTable(SelectedProp: any) {
             }
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
+            result.TitleNew = result.Title;
             getWebpartId(result);
             result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
@@ -1886,6 +1884,10 @@ function ComponentTable(SelectedProp: any) {
             if (config.Selected && config.TaxType == 'Sites') {
                 SelectedList.push(config);
             }
+            if (config.Title == 'Foundation' || config.Title == 'SDC Sites') {
+                config.show = true
+                config.showItem = true
+            }
             if (config.childs != undefined && config.childs.length > 0) {
                 $.each(config.childs, function (index: any, child: any) {
                     if (child.Selected && child.TaxType == 'Sites') {
@@ -1894,6 +1896,7 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
+       
         var AllTaggedTask: any = [];
         $.each(SelectedList, function (index: any, item: any) {
             $.each(AllTaskData1, function (index: any, task: any) {
@@ -2053,9 +2056,15 @@ function ComponentTable(SelectedProp: any) {
     const hideAllChildsMinus = (item: any) => {
         if (item.childs?.length > 0) {
             item.Isexpend = false;
+            handleOpen(item);
             item.childs.forEach((child: any) => {
+                child.flag = child?.show == true ? child?.show : false;
+                // if (child.flag)
+                //     flag = true;
                 child.Isexpend = false;
             })
+            // if (flag)
+            //     item.flag = flag;
         }
         setData(data => ([...data]));
     }
@@ -2063,8 +2072,11 @@ function ComponentTable(SelectedProp: any) {
     const ShowAllChildsPlus = (item: any) => {
         if (item.childs?.length > 0) {
             item.Isexpend = true;
+            item.show =false;
+            handleOpen(item);
             item.childs.forEach((child: any) => {
-                child.Isexpend = true;
+                child.flag = true;
+                child.Isexpend = false;
             })
         }
         setData(data => ([...data]));
@@ -2633,7 +2645,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 </a>
                                                                                                 }
                                                                                             </span>
-                                                                                            {search != undefined && search != '' ?
+                                                                                            {search != undefined && search != '' && item.childs?.length > 0 ?
                                                                                                 <>
                                                                                                     {item?.Isexpend ?
                                                                                                         <span>
@@ -2658,12 +2670,14 @@ function ComponentTable(SelectedProp: any) {
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                                         >
-                                                                                            {/* <span dangerouslySetInnerHTML={{ __html: item.Title }}></span> */}
-                                                                                            {item.Title}
+                                                                                            <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                                            {/* {item.Title} */}
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                                        >{item.Title}
+                                                                                        >
+                                                                                            <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                                            {/* {item.Title} */}
 
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
@@ -2751,7 +2765,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     </a>
 
                                                                                                                 </span>
-                                                                                                                {search != undefined && search != '' ?
+                                                                                                                {search != undefined && search != '' && childitem.childs?.length > 0 ?
                                                                                                                     <>
                                                                                                                         {childitem?.Isexpend ?
                                                                                                                             <span>
@@ -2775,11 +2789,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             <td style={{ width: "22%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                >{childitem.Title}
+                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
-                                                                                                                >{childitem.Title}
+                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 && childitem.Item_x0020_Type == 'Feature' &&
                                                                                                                     <span className='ms-1'>  ({childitem.childs.length})</span>
@@ -2868,7 +2882,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" /> */}
                                                                                                                                             </a>
                                                                                                                                         </span>
-                                                                                                                                        {search != undefined && search != '' ?
+                                                                                                                                        {search != undefined && search != '' && childinew.childs?.length > 0 ?
                                                                                                                                             <>
                                                                                                                                                 {childinew?.Isexpend ?
                                                                                                                                                     <span>
@@ -2894,11 +2908,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                                        >{childinew.Title}
+                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
-                                                                                                                                        >{childinew.Title}
+                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
                                                                                                                                         </a>}
                                                                                                                                         {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
@@ -2992,7 +3006,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                 </a>
 
                                                                                                                                                             </span>
-                                                                                                                                                            {search != undefined && search != '' ?
+                                                                                                                                                            {search != undefined && search != '' && subchilditem.childs?.length > 0 ?
                                                                                                                                                                 <>
                                                                                                                                                                     {subchilditem?.Isexpend ?
                                                                                                                                                                         <span>
@@ -3016,11 +3030,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                         <td style={{ width: "22%" }}>
                                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
-                                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&
                                                                                                                                                                 <span className='ms-1'>({subchilditem.childs.length})</span>
