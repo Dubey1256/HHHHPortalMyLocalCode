@@ -2102,6 +2102,7 @@ export default function ComponentTable({ props }: any) {
                                                                         {(item.CreatedDateImg != undefined && item.CreatedDateImg.length === 0 && item.Created != null) ?
                                                                             <>
                                                                                 {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+                                                                                <img className='AssignUserPhoto' title={item.Author.Title}src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>
                                                                             </>
                                                                             :
                                                                             <>
@@ -2119,14 +2120,14 @@ export default function ComponentTable({ props }: any) {
                                                                             </>
                                                                         }
                                                                     </td>
-                                                                    {item.Item_x0020_Type == 'Task' &&
+                                                                   
                                                                         <td style={{ width: "7%" }}>
                                                                             <div></div>
                                                                         </td>
-                                                                    }
-                                                                    <td style={{ width: "3%" }}>{item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                    <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />}
-                                                                        {item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
+                                                                    
+                                                                    <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                    <td style={{ width: "3%" }}><a>{ item.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />}
+                                                                        {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -2197,31 +2198,41 @@ export default function ComponentTable({ props }: any) {
                                                                                                     })}</div>
                                                                                             </td>
                                                                                             <td style={{ width: "7%" }}>{childitem.PercentComplete}</td>
-                                                                                            <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
-                                                                                            <td style={{ width: "7%" }}><div>
+                                                                                            <td style={{ width: "7%" }}>{childitem.ItemRank}</td>
+                                                                                            <td style={{ width: "10%" }}><div>
                                                                                             <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
                                                                                             </div></td>
                                                                                             <td style={{ width: "9%" }}>{childitem.DueDate}</td>
                                                                                             <td style={{ width: "9%" }}>
-                                                                                                {childitem.CreatedDateImg != null ? childitem.CreatedDateImg.map((Creates: any) => {
-                                                                                                    return (
-                                                                                                        <span>
-                                                                                                            {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                            <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                            {(childitem.CreatedDateImg != undefined && childitem.CreatedDateImg.length === 0 && childitem.Created != null) ?
+                                                                                                                            <>
+                                                                                                                                {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                <img className='AssignUserPhoto' title={childitem.Author.Title}src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>
+                                                                            
+                                                                                                                            </>
+                                                                                                                            :
+                                                                                                                            <>
+                                                                                                                                {childitem.CreatedDateImg != null ? childitem.CreatedDateImg.map((Creates: any) => {
+                                                                                                                                    return (
+                                                                                                                                        <span>
+                                                                                                                                            {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                            <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
-                                                                                                                <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                                            </a>
-                                                                                                        </span>
-                                                                                                    )
-                                                                                                }) : ""}</td>
-                                                                                            {childitem.Item_x0020_Type == 'Task' &&
+                                                                                                                                                <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                                            </a>
+                                                                                                                                        </span>
+                                                                                                                                    )
+                                                                                                                                }) : ""}
+                                                                                                                            </>
+                                                                                                                        }</td>
+                                                                                          
                                                                                                 <td style={{ width: "7%" }}>
                                                                                                     <div></div>
                                                                                                 </td>
-                                                                                            }
-                                                                                            <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                                            
+                                                                                            <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                             <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
-                                                                                                {childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
+                                                                                                {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                         </tr>
                                                                                     </table>
                                                                                 </td>
@@ -2304,8 +2315,8 @@ export default function ComponentTable({ props }: any) {
                                                                                                                             })}</div>
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "7%" }}>{childinew.PercentComplete}</td>
-                                                                                                                    <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
-                                                                                                                    <td style={{ width: "7%" }}> 
+                                                                                                                    <td style={{ width: "7%" }}>{childinew.ItemRank}</td>
+                                                                                                                    <td style={{ width: "10%" }}> 
                                                                                                                      <div>
                                                                                                                      <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
                                                                                                                         {/* {childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
@@ -2324,6 +2335,8 @@ export default function ComponentTable({ props }: any) {
                                                                                                                         {(childinew.CreatedDateImg != undefined && childinew.CreatedDateImg.length === 0 && childinew.Created != null) ?
                                                                                                                             <>
                                                                                                                                 {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                <img className='AssignUserPhoto' title={childinew.Author.Title}src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>
+                                                                            
                                                                                                                             </>
                                                                                                                             :
                                                                                                                             <>
@@ -2341,14 +2354,14 @@ export default function ComponentTable({ props }: any) {
                                                                                                                             </>
                                                                                                                         }
                                                                                                                     </td>
-                                                                                                                    {childinew.Item_x0020_Type == 'Task' &&
+                                                                                                                    
                                                                                                                         <td style={{ width: "7%" }}>
                                                                                                                             <div></div>
                                                                                                                         </td>
-                                                                                                                    }
-                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                                                                    
+                                                                                                                    <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} />}
-                                                                                                                        {childinew.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
+                                                                                                                        {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
                                                                                                                 </tr>
                                                                                                             </table>
                                                                                                         </td>
@@ -2429,8 +2442,8 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                 })}</div>
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "7%" }}>{subchilditem.PercentComplete}</td>
-                                                                                                                                        <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
-                                                                                                                                        <td style={{ width: "7%" }}>  
+                                                                                                                                        <td style={{ width: "7%" }}>{subchilditem.ItemRank}</td>
+                                                                                                                                        <td style={{ width: "10%" }}>  
                                                                                                                                         <div>
                                                                                                                                         <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
                                                                                                                                         </div>
@@ -2441,6 +2454,8 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                             {(subchilditem.CreatedDateImg != undefined && subchilditem.CreatedDateImg.length === 0 && subchilditem.Created != null) ?
                                                                                                                                                 <>
                                                                                                                                                     {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                                    <img className='AssignUserPhoto' title={subchilditem.Author.Title}src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>
+                                                                            
                                                                                                                                                 </>
                                                                                                                                                 :
                                                                                                                                                 <>
@@ -2463,9 +2478,9 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                 <div></div>
                                                                                                                                             </td>
                                                                                                                                         }
-                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' &&  subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                                                         <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(subchilditem)} />}
-                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
+                                                                                                                                            { subchilditem.Item_x0020_Type == 'Task' &&  subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
                                                                                                                                     </tr>
                                                                                                                                 </table>
                                                                                                                             </td>
@@ -2558,6 +2573,8 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                                 {(nextsubchilditem.CreatedDateImg != undefined && nextsubchilditem.CreatedDateImg.length === 0 && nextsubchilditem.Created != null) ?
                                                                                                                                                                     <>
                                                                                                                                                                         {nextsubchilditem.Created != null ? Moment(nextsubchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                                                        <img className='AssignUserPhoto' title={nextsubchilditem.Author.Title}src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>
+                                                                            
                                                                                                                                                                     </>
                                                                                                                                                                     :
                                                                                                                                                                     <>
@@ -2580,9 +2597,9 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                                     <div></div>
                                                                                                                                                                 </td>
                                                                                                                                                             }
-                                                                                                                                                            <td style={{ width: "3%" }}>{nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                                            <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                                                                             <td style={{ width: "3%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
-                                                                                                                                                                {nextsubchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td>
+                                                                                                                                                                { nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td>
                                                                                                                                                         </tr>
                                                                                                                                                     </table>
                                                                                                                                                 </td>
