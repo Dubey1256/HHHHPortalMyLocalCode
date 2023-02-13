@@ -35,6 +35,7 @@ var ComponentsDataCopy: any = [];
 var SubComponentsDataCopy: any = [];
 var FeatureDataCopy: any = [];
 var array: any = [];
+var AllTask: any = [];
 var serachTitle: any = '';
 function ComponentTable(SelectedProp: any) {
 
@@ -44,6 +45,8 @@ function ComponentTable(SelectedProp: any) {
     const [Title, setTitle] = React.useState()
     const [ComponentsData, setComponentsData] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
+    const [TotalTask, setTotalTask] = React.useState([])
+    const [TaggedAllTask, setTaggedAllTask] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
     const [table, setTable] = React.useState(data);
     const [AllUsers, setTaskUser] = React.useState([]);
@@ -185,6 +188,7 @@ function ComponentTable(SelectedProp: any) {
         var filters: any[] = []
         var finalArray: any = []
         var RootData: any = []
+        var ALTask: any = []
 
 
         if (state.length == 0) {
@@ -462,9 +466,6 @@ function ComponentTable(SelectedProp: any) {
                     }
                     if (select.TaxType == 'Portfolio') {
 
-                        // if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title) {
-                        //     RootData.push(item);
-                        // }
 
 
                         if (item.childs !== undefined) {
@@ -488,19 +489,6 @@ function ComponentTable(SelectedProp: any) {
                                         }
 
 
-                                        // if (vall.childs !== undefined) {
-                                        //     vall.childs.forEach(function (user: any, index: any) {
-
-
-                                        //         if (user.SharewebTaskType != undefined && user.SharewebTaskType.Title == select.Title) {
-                                        //             vall.show = true;
-                                        //             vall.Child.push(user);
-                                        //             RootData.push(item);
-                                        //         }
-
-
-                                        //     })
-                                        // }
 
 
                                     })
@@ -549,6 +537,11 @@ function ComponentTable(SelectedProp: any) {
             if (com.Item_x0020_Type == 'Component') {
                 component.push(com)
             }
+            if (com.childs != undefined && com.Title == 'Others') {
+                com.childs.forEach((value: any) => {
+                    ALTask.push(value)
+                })
+            }
             if (com.childs != undefined) {
                 com.childs.forEach(function (sub: any) {
                     if (sub.Item_x0020_Type == 'SubComponent') {
@@ -565,7 +558,7 @@ function ComponentTable(SelectedProp: any) {
 
 
             }
-
+            setTotalTask(ALTask)
             setSubComponentsData(subcomponent);
             setFeatureData(feature);
             setComponentsData(component);
@@ -833,6 +826,8 @@ function ComponentTable(SelectedProp: any) {
         var Title = titleName;
 
         var AllFilteredTagNews: any = [];
+        var finalOthersData: any = []
+        var ALllTAsk: any = []
         var childData: any = [];
         var subChild: any = [];
         var subChild2: any = [];
@@ -863,7 +858,7 @@ function ComponentTable(SelectedProp: any) {
                 item.isSearch = true;
                 item.show = false;
                 item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
-                if (!isItemExistsNew(AllFilteredTagNews, item) && item.flag === true) {
+                if (item.flag == true) {
                     AllFilteredTagNews.push(item)
                 }
 
@@ -881,6 +876,7 @@ function ComponentTable(SelectedProp: any) {
                                 AllFilteredTagNews.push(item)
                             }
                             childData.push(child1)
+                            ALllTAsk.push(item)
 
                         }
                         if (child1.childs != undefined && child1.childs.length > 0) {
@@ -940,14 +936,27 @@ function ComponentTable(SelectedProp: any) {
             const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
+            const AllDataTaskk = ALllTAsk.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
             const SData = childData.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
             const FData = subChild.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
+            if (AllDataTaskk != undefined) {
+                AllDataTaskk.forEach((newval: any) => {
+                    if (newval.Title == 'Others' && newval.childs != undefined) {
+                        newval.forEach((valllA: any) => {
+                            finalOthersData.push(valllA)
+                        })
+                    }
 
+                })
+            }
 
+            setTotalTask(finalOthersData)
             setSubComponentsData(SData);
             setFeatureData(FData);
             setComponentsData(CData);
@@ -1828,6 +1837,7 @@ function ComponentTable(SelectedProp: any) {
         var AllTaskData1: any = [];
         ComponetsData['allUntaggedTasks'] = [];
         AllTaskData1 = AllTaskData1.concat(TasksItem);
+        setTaggedAllTask(AllTaskData1)
         $.each(AllTaskData1, function (index: any, task: any) {
             task.Portfolio_x0020_Type = 'Component';
             if (IsUpdated === 'Service Portfolio') {
@@ -2072,8 +2082,10 @@ function ComponentTable(SelectedProp: any) {
     function AddItem() {
     }
     const hideAllChildsMinus = (item: any) => {
-        if (item.childs?.length > 0) {
+        if (item?.childs?.length > 0) {
             item.Isexpend = false;
+            if (item.Item_x0020_Type === "Component")
+                item.show = false;
             handleOpen(item);
             item.childs.forEach((child: any) => {
                 child.flag = child?.show == true ? child?.show : false;
@@ -2088,7 +2100,7 @@ function ComponentTable(SelectedProp: any) {
     }
 
     const ShowAllChildsPlus = (item: any) => {
-        if (item.childs?.length > 0) {
+        if (item?.childs?.length > 0) {
             item.Isexpend = true;
             item.show = false;
             handleOpen(item);
@@ -2460,9 +2472,6 @@ function ComponentTable(SelectedProp: any) {
                                         <label>
                                             {FeatureData.length} of {FeatureData.length} Features
                                         </label>
-                                        {/* <label>
-                                            {FeatureData.length} of {FeatureData.length} Tasks
-                                        </label> */}
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
                                             <span className="gsearch-btn" ><i><FaSearch /></i></span>
