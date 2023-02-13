@@ -2638,7 +2638,7 @@ function ComponentTable(SelectedProp: any) {
                                                             return (
                                                                 <>
                                                                     <tr >
-                                                                        <td className="p-0" colSpan={10}>
+                                                                        <td className="p-0" colSpan={11}>
                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
 
@@ -2762,7 +2762,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                         <>
                                                                                             <tr >
-                                                                                                <td className="p-0" colSpan={10}>
+                                                                                                <td className="p-0" colSpan={11}>
                                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                                         <tr className="for-c02">
                                                                                                             <td style={{ width: "2%" }}>
@@ -2882,7 +2882,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             return (
                                                                                                                 <>
                                                                                                                     <tr >
-                                                                                                                        <td className="p-0" colSpan={10}>
+                                                                                                                        <td className="p-0" colSpan={11}>
                                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
                                                                                                                                     <td style={{ width: "2%" }}>
@@ -3007,7 +3007,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                     <>
                                                                                                                                         <tr >
-                                                                                                                                            <td className="p-0" colSpan={10}>
+                                                                                                                                            <td className="p-0" colSpan={11}>
                                                                                                                                                 <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                                     <tr className="for-c02">
                                                                                                                                                         <td style={{ width: "2%" }}>

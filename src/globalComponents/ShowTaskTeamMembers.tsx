@@ -87,17 +87,17 @@ function ShowTaskTeamMembers(item: any) {
                                                                                                                        } */}
 
                    {ItemNew["AllTeamMembers"] != null && ItemNew["AllTeamMembers"].length > 0 ?
-                       <div className=" activeimg "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].Id}&Name=${ItemNew["AllTeamMembers"][0].Title}`} target="_blank" data-interception="off" title={ItemNew["AllTeamMembers"][0].Title}><img className="imgAuthor" src={ItemNew["AllTeamMembers"][0].ItemCover}></img></a></div> : ''
+                       <div className="  "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].Id}&Name=${ItemNew["AllTeamMembers"][0].Title}`} target="_blank" data-interception="off" title={ItemNew["AllTeamMembers"][0].Title}><img className="imgAuthor activeimg" src={ItemNew["AllTeamMembers"][0].ItemCover}></img></a></div> : ''
                    }
                    {ItemNew["AllTeamMembers"] != null && ItemNew["AllTeamMembers"].length > 1 ?
-                       <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => handleSuffixHover(ItemNew)} onMouseLeave={(e) => handleuffixLeave(ItemNew)}>+{ItemNew["AllTeamMembers"].length - 1}
+                       <div className="position-relative user_Member_img_suffix2 ms-1" onMouseOver={(e) => handleSuffixHover(ItemNew)} onMouseLeave={(e) => handleuffixLeave(ItemNew)}>+{ItemNew["AllTeamMembers"].length - 1}
                            <span className="tooltiptext" style={{ display: Display, padding: '10px' }}>
                                <div>
                                    {ItemNew["AllTeamMembers"].slice(1).map((rcData: any, i: any) => {
 
                                        return (<><span className="team_Members_Item" style={{ padding: '2px' }}>
                                            <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
-                                               <img className={`imgAuthor ${rcData.activeimg2}`} src={rcData.ItemCover}></img></a></span>
+                                               <img className={` imgAuthor ${rcData.activeimg2}`} src={rcData.ItemCover}></img></a></span>
                                            <div className='mx-2'>{rcData.Title}</div>
                                        </span></>)
 
