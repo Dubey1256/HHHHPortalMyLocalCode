@@ -1421,7 +1421,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeTimeSheetPopup}
                 isBlocking={false}
             >
-                <div className="modal-body mt-2">
+                <div className="modal-body">
                     <TimeEntryPopup props={Items.Items} />
                 </div>
             </Panel>
@@ -1437,7 +1437,7 @@ const EditTaskPopup = (Items: any) => {
             >
                 <div >
 
-                    <div className="modal-body mt-2">
+                    <div className="modal-body">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
                                 BASIC INFORMATION
@@ -2104,7 +2104,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
                 onRenderFooter={onRenderCustomFooterOther}
             >
-                <div className="modal-body mt-2">
+                <div className="modal-body">
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
@@ -2195,7 +2195,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
                 onRenderFooter={onRenderCustomFooterOther}
             >
-                <div className="modal-body mt-2">
+                <div className="modal-body">
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
