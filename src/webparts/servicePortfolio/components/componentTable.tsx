@@ -141,11 +141,7 @@ function ComponentTable(SelectedProp: any) {
         // setState(state)
     }
     const Clearitem = () => {
-        var componentcount: any = []
-        var subcomponentcount: any = []
-        var featurecount: any = []
-        // setShow(false)
-        // setShowChild(false)
+      
         maidataBackup.forEach(function (val: any) {
             val.show = false;
             if (val.childs != undefined) {
@@ -165,34 +161,18 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
-        // array.forEach(function(com:any){
-        //     if(com.Item_x0020_Type == 'Component'){
-        //         componentcount.push(com)
-        //     }
-        //     if(com.childs != undefined){
-        //         com.childs.forEach(function(sub:any){
-        //             if(sub.Item_x0020_Type == 'SubComponent'){
-        //                 subcomponentcount.push(com)
-        //              }
-        //              if(sub.childs != undefined){
-        //                 sub.childs.forEach(function(fea:any){
-        //                     if(fea.Item_x0020_Type == 'Feature'){
-        //                         featurecount.push(com)
-        //                      }
-        //                 })
-        //             }
-        //         })
-
-
-        //     }
-
-
-        // })
+        filterItems.forEach(function(itemm:any){
+            itemm.Selected = false;
+        })
+       
         setSubComponentsData(SubComponentsDataCopy);
         setFeatureData(FeatureDataCopy);
         setmaidataBackup(ComponentsDataCopy)
-
+        setShowSelectdSmartfilter([])
+      
         setState([])
+        
+
         setData(maidataBackup)
         // const { checked } = e.target;
 
@@ -850,10 +830,10 @@ function ComponentTable(SelectedProp: any) {
         setSearch(e.target.value.toLowerCase());
         var Title = titleName;
 
-        var AllFilteredTagNews: any = [];
-        var childData: any = [];
-        var subChild: any = [];
-        var subChild2: any = [];
+        var AllFilteredTagNews:any = [];
+        var childData:any = [];
+        var subChild:any = [];
+        var subChild2:any = [];
         AllFilteredTagNews.forEach(function (val: any) {
             val.Child = []
             if (val.childs != undefined) {
@@ -862,9 +842,9 @@ function ComponentTable(SelectedProp: any) {
                     if (type.childs != undefined) {
                         type.childs.forEach(function (value: any) {
                             value.Child = []
-                            if (value.childs != undefined) {
-                                value.childs.forEach(function (last: any) {
-                                    last.Child = []
+                            if(value.childs != undefined){
+                                value.childs.forEach(function(last:any){
+                                    last.Child=[]
 
                                 })
                             }
@@ -881,6 +861,10 @@ function ComponentTable(SelectedProp: any) {
                 item.isSearch = true;
                 item.show = false;
                 item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
+                if(item.flag == true){
+                    AllFilteredTagNews.push(item)
+                }
+                
                 if (item.childs != undefined && item.childs.length > 0) {
                     $.each(item.childs, function (parentIndex: any, child1: any) {
                         child1.flag = false;
@@ -892,7 +876,7 @@ function ComponentTable(SelectedProp: any) {
                             item.childs[parentIndex].show = true;
                             data[pareIndex].show = true;
                             childData.push(child1)
-                            AllFilteredTagNews.push(item)
+                           
                         }
                         if (child1.childs != undefined && child1.childs.length > 0) {
                             $.each(child1.childs, function (index: any, subchild: any) {
@@ -907,7 +891,7 @@ function ComponentTable(SelectedProp: any) {
                                     data[pareIndex].flag = true;
                                     data[pareIndex].show = true;
                                     subChild.push(subchild)
-                                    AllFilteredTagNews.push(item)
+                                    
                                 }
                                 if (subchild.childs != undefined && subchild.childs.length > 0) {
                                     $.each(subchild.childs, function (childindex: any, subchilds: any) {
@@ -925,7 +909,7 @@ function ComponentTable(SelectedProp: any) {
                                             data[pareIndex].flag = true;
                                             data[pareIndex].show = true;
                                             subChild2.push(subchilds)
-                                            AllFilteredTagNews.push(item)
+                                            
                                         }
                                     })
                                 }
@@ -934,9 +918,21 @@ function ComponentTable(SelectedProp: any) {
 
                     })
                 }
-
+                
             })
-            //   getFilterLength();
+            const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const SData = childData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const FData = subChild.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+           
+            setSubComponentsData(SData);
+            setFeatureData(FData);
+            setComponentsData(CData);
         } else {
             //  ungetFilterLength();
             // setData(data => ([...maidataBackup]));
@@ -946,7 +942,6 @@ function ComponentTable(SelectedProp: any) {
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
 
     };
-
 
     // var TaxonomyItems: any = [];
     var AllComponetsData: any = [];
@@ -1889,6 +1884,10 @@ function ComponentTable(SelectedProp: any) {
             if (config.Selected && config.TaxType == 'Sites') {
                 SelectedList.push(config);
             }
+            if (config.Title == 'Foundation' || config.Title == 'SDC Sites') {
+                config.show = true
+                config.showItem = true
+            }
             if (config.childs != undefined && config.childs.length > 0) {
                 $.each(config.childs, function (index: any, child: any) {
                     if (child.Selected && child.TaxType == 'Sites') {
@@ -1897,6 +1896,7 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
+       
         var AllTaggedTask: any = [];
         $.each(SelectedList, function (index: any, item: any) {
             $.each(AllTaskData1, function (index: any, task: any) {
