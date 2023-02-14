@@ -1119,10 +1119,7 @@ const EditTaskPopup = (Items: any) => {
 
     //***************** This is for image Upload Section  Functions *****************
 
-    let contentTarget = document.getElementById("CopyImageUpload"); 
-    contentTarget.onpaste = (e) => { 
-        console.log("On Paste Image Data =====",e)
-    }
+    let contentTarget = document.getElementById("imageUpload"); 
 
 
     const onUploadImageFunction = async (
@@ -2111,7 +2108,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 : null}
                                                         </div>
                                                         {UploadBtnStatus ?
-                                                            <div  id="CopyImageUpload">
+                                                            <div>
                                                                 <div className="drag-upload-image mt-1"
                                                                     style={isDragging ? { border: '1px solid red' } : undefined}
                                                                     onClick={onImageUpload}
@@ -2894,7 +2891,7 @@ const EditTaskPopup = (Items: any) => {
                                     </ul>
                                 </div>
                                 <div className="card-footer">
-                                    <button className="btn btn-primary px-3 float-end"
+                                    <button className="btn btn-primary px-3 float-end" onClick={()=>alert("We are working on it. This feature will be live soon .....")}
                                     >
                                         Save
                                     </button>
