@@ -6,11 +6,17 @@ import ProjectManagementMain from './ProjectManagementMain';
 
 export default class ProjectManagement extends React.Component<IProjectManagementProps, {}> {
   public render(): React.ReactElement<IProjectManagementProps> {
- 
-
+    const {
+      description,
+      isDarkTheme,
+      environmentMessage,
+      hasTeamsContext,
+      userDisplayName,
+      pageContext
+    } = this.props;
     return (
       <div>
-       <ProjectManagementMain/> 
+       <ProjectManagementMain pageContext={this.props.pageContext}/> 
       </div>
     );
   }
