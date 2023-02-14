@@ -425,40 +425,38 @@ const SmartInformation = (props: any) => {
         onDismiss={handleClose}>
         <div>
           
-            <div className='row text-center '>
-            <a className="bg-69 col-3  " onClick={() => SelectedTiles('UploadDocument')}>
-              <span className='full-width floar-end'>
+            <div className='d-flex justify-content-center text-center'>
+            <a className="bg-69 me-2 pe-5 px-4 py-2" onClick={() => SelectedTiles('UploadDocument')}>
+              <p className='full-width floar-end'>
                 Document
-                </span>
+                </p>
               
                   <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_LibraryBooks.png"  title="Documents" data-themekey="#" />
                 
          
             </a>
-            <a className="tile bg-69 col-3 " onClick={() => SelectedTiles('UploadEmail')}>
-              <span className='full-width floar-end'>
+            <a className="bg-69 me-2 pe-5 px-4 py-2" onClick={() => SelectedTiles('UploadEmail')}>
+              <p className='full-width floar-end'>
                 Email
-                </span>
-                  <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_MailPlus.png" className="d-block" title="Mail" data-themekey="#" />
+                </p>
+                  <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_MailPlus.png" title="Mail" data-themekey="#" />
               
             
             </a>
-            <a className="tile bg-69 col-3 " onClick={() => SelectedTiles('CreateLink')}>
-              <span className='full-width floar-end'>
+            <a className="bg-69 me-2 pe-5 px-4 py-2" onClick={() => SelectedTiles('CreateLink')}>
+              <p className='full-width floar-end'>
                 Link
-                </span>
-                  <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Links.png" className="d-block" title="Links" data-themekey="#" />
+                </p>
+                  <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Links.png" title="Links" data-themekey="#" />
                
             
             </a>
-            <a className="tile bg-69 col-3 " onClick={() => SelectedTiles('Task')}>
-              <span className='full-width floar-end'>
+            <a className="bg-69 me-2 pe-5 px-4 py-2" onClick={() => SelectedTiles('Task')}>
+              <p className='full-width floar-end'>
                 Task
-                </span>
-            
-                  <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Task.png" className="d-block" title="Tasks" data-themekey="#" />
-               
-            </a>
+                </p>
+             <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Task.png"  title="Tasks" data-themekey="#" />
+               </a>
             {/* <a className="tile ng-scope ng-hide" ng-show="CurrentSiteUrl=='GmBH'" onClick={()=>SelectedTiles('Contact')}>
                             <span>
                                 Contact
@@ -482,8 +480,8 @@ const SmartInformation = (props: any) => {
           {SelectedTilesTitle === "CreateLink" && <div>manas</div>}
           {SelectedTilesTitle === "Task" && <div>pallav</div>}
         </div>
-        <footer>
-          <Button className='btn btn-default text-end' onClick={() => handleClose()}>
+        <footer className='text-end'>
+          <Button className='btn btn-default text-end mt-5' onClick={() => handleClose()}>
             Cancel
           </Button>
         </footer>
