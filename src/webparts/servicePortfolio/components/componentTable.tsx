@@ -2472,6 +2472,9 @@ function ComponentTable(SelectedProp: any) {
                                         <label>
                                             {FeatureData.length} of {FeatureData.length} Features
                                         </label>
+                                        <label>
+                                            {TaggedAllTask.length} of {TotalTask.length} Tasks
+                                        </label>
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
                                             <span className="gsearch-btn" ><i><FaSearch /></i></span>
