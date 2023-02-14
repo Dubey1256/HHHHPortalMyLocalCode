@@ -43,7 +43,9 @@ function Portfolio({ ID }: any) {
     const [datams, setdatams] = React.useState([])
     const [datamb, setdatamb] = React.useState([])
     const [datahelp, setdatahelp] = React.useState([])
+    const [datatech, setdatatech] = React.useState([])
     const [dataQues, setdataQues] = React.useState([])
+    const [dataHelp, setdataHelp] = React.useState([])
     const [FolderData, SetFolderData] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
@@ -100,6 +102,18 @@ function Portfolio({ ID }: any) {
         setIsActive(true);
         item.showQues = item.showQues = item.showQues == true ? false : true;
         setdataQues(dataQues => ([...dataQues]));
+    };
+    const handleOpen9 = (item: any) => {
+        setIsActive(current => !current);
+        setIsActive(true);
+        item.showtech = item.showtech = item.showtech == true ? false : true;
+        setdatatech(datatech => ([...datatech]));
+    };
+    const handleOpen10 = (item: any) => {
+        setIsActive(current => !current);
+        setIsActive(true);
+        item.showHelp = item.showHelp = item.showHelp == true ? false : true;
+        setdataHelp(dataHelp => ([...dataHelp]));
     };
     React.useEffect(() => {
         var folderId: any = "";
@@ -477,7 +491,7 @@ function Portfolio({ ID }: any) {
                     <div className='col-md-9 bg-white'>
                         <div className='team_member row  py-2'>
                             <div className='col-md-8'>
-                                <div className='row'>
+                                <div className='row mb-2'>
                                     <div className='col-md-6 pe-0'>
                                         <dl>
                                             <dt className='bg-fxdark'>Due Date</dt>
@@ -508,48 +522,48 @@ function Portfolio({ ID }: any) {
                                         <dl>
                                             <dt className='bg-fxdark'>Team Members</dt>
                                             <dd className='bg-light d-flex'>
-{AssignTeamMember.length != 0 ? AssignTeamMember.map((item: any) =>
-    <>
-        <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
-            <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
-        </a>
-
-    </>
-) : ""}
-<div className='px-1'>|</div>
-{AllTeamMember != null && AllTeamMember.length > 0 &&
-    <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>
-}
-{AllTeamMember != null && AllTeamMember.length > 1 &&
-    <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => handleSuffixHover()} onMouseLeave={(e) => handleuffixLeave()}>+{AllTeamMember.length - 1}
-        {showBlock &&
-            <span className="tooltiptext" >
-                <div>
-                    {AllTeamMember.slice(1).map((rcData: any, i: any) => {
-
-                        return <div className="team_Members_Item" style={{ padding: '2px' }}>
-                            <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                        {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
+                                    <>
+                                            <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
+                                             <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
+                                            </a>
+                                           
+                                            </>
+                                    ):""}
+                                     <div className='px-1'>|</div>
+                                            {AllTeamMember != null && AllTeamMember.length > 0 &&
+                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
+                }
+                {AllTeamMember != null && AllTeamMember.length > 1 &&
+                  <div className="user_Member_img_suffix2 multimember" onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
+                   {showBlock &&
+                    <span className="tooltiptext" >
+                      <div>                        
+                          { AllTeamMember.slice(1).map( (rcData:any,i:any)=> {
+                            
+                            return  <div className="team_Members_Item" style={{padding: '2px'}}>
+                              <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
                                 <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
-                            <div>{rcData.Title}</div>
-                        </div>
-
-                    })
+                              <div>{rcData.Title}</div>
+                            </div>
+                                                    
+                          })
+                          }
+                       
+                      </div>
+                    </span>
                     }
+                  </div>                        
+                }   
+                                            {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
+                                            <>
+                                                    <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
+                                                    <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
+                                                   </a>
+                                            </>
+                                            ):""} */}
 
-                </div>
-            </span>
-        }
-    </div>
-}
-{/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
-<>
-    <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
-    <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
-   </a>
-</>
-):""} */}
-
-</dd>
+                                  </dd>
                                         </dl>
                                         <dl>
                                             <dt className='bg-fxdark'>Item Rank</dt>
@@ -623,7 +637,7 @@ function Portfolio({ ID }: any) {
                                         })}
                                     </div>
                                 </div>
-                                <section className='row  accordionbox'>
+                                <section className='row pe-1 accordionbox'>
                                     <div className="accordion   overflow-hidden">
                                         {/* description */}
                                         {data.map(item =>
@@ -710,6 +724,45 @@ function Portfolio({ ID }: any) {
                                                     }</div>
                                             </>
                                         )}
+                                        {/* Help description */}
+                                        {AllHelp != undefined && AllHelp.length != 0 && data.map(item =>
+                                            <>
+
+
+                                                <div className="card shadow-none Qapannel  mb-2">
+
+                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen10(item)} ><button className="accordion-button btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showHelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Help  Description</span></button></div>
+
+
+
+
+                                                    {item.showHelp &&
+                                                        <>
+                                                       <div className='px-2 my-2'>
+                                                            {AllHelp.map(item =>
+                                                                <div id="t_draggable1" className='mb-2'>
+                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen10(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showHelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  {item.Title}</span></button></div>
+                                                                    <div className="accordion-collapse collapse show"  >
+                                                                        {item.showHelp &&
+                                                                            <div className="accordion-body pt-1" id="testDiv1">
+                                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+
+                                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
+                                                                                    {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                                </p>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+
+                                                            )}
+                                                            </div>
+                                                        </>
+                                                    }</div>
+                                            </>
+                                        )}
 
                                         {/* Background */}
                                         {data.map(item =>
@@ -777,6 +830,25 @@ function Portfolio({ ID }: any) {
                                                                 {item.showhelp &&
                                                                     <div className="accordion-body pt-1" id="testDiv1">
                                                                         <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Help_x0020_Information }}></p>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }</>)}
+
+                                         {/* Technical Explanation */}
+                                                {data.map(item =>
+                                            <>
+                                                {item.TechnicalExplanations !== null &&
+                                                    <div className="card shadow-none mb-2">
+                                                        <div className="accordion-item border-0" id="t_draggable1">
+                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen9(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                <span className="sign">{item.showtech ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900">Technical Explanation</span></button></div>
+                                                            <div className="accordion-collapse collapse show"  >
+                                                                {item.showtech &&
+                                                                    <div className="accordion-body pt-1" id="testDiv1">
+                                                                        <p className="m-0" dangerouslySetInnerHTML={{ __html: item.TechnicalExplanations }}></p>
                                                                     </div>
                                                                 }
                                                             </div>
