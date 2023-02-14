@@ -35,6 +35,8 @@ var ComponentsDataCopy: any = [];
 var SubComponentsDataCopy: any = [];
 var FeatureDataCopy: any = [];
 var array: any = [];
+var AllTask: any = [];
+var serachTitle: any = '';
 function ComponentTable(SelectedProp: any) {
 
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -43,6 +45,8 @@ function ComponentTable(SelectedProp: any) {
     const [Title, setTitle] = React.useState()
     const [ComponentsData, setComponentsData] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
+    const [TotalTask, setTotalTask] = React.useState([])
+    const [TaggedAllTask, setTaggedAllTask] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
     const [table, setTable] = React.useState(data);
     const [AllUsers, setTaskUser] = React.useState([]);
@@ -141,7 +145,7 @@ function ComponentTable(SelectedProp: any) {
         // setState(state)
     }
     const Clearitem = () => {
-      
+
         maidataBackup.forEach(function (val: any) {
             val.show = false;
             if (val.childs != undefined) {
@@ -161,17 +165,17 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
-        filterItems.forEach(function(itemm:any){
+        filterItems.forEach(function (itemm: any) {
             itemm.Selected = false;
         })
-       
+
         setSubComponentsData(SubComponentsDataCopy);
         setFeatureData(FeatureDataCopy);
         setmaidataBackup(ComponentsDataCopy)
         setShowSelectdSmartfilter([])
-      
+
         setState([])
-        
+
 
         setData(maidataBackup)
         // const { checked } = e.target;
@@ -184,6 +188,7 @@ function ComponentTable(SelectedProp: any) {
         var filters: any[] = []
         var finalArray: any = []
         var RootData: any = []
+        var ALTask: any = []
 
 
         if (state.length == 0) {
@@ -461,9 +466,6 @@ function ComponentTable(SelectedProp: any) {
                     }
                     if (select.TaxType == 'Portfolio') {
 
-                        // if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title) {
-                        //     RootData.push(item);
-                        // }
 
 
                         if (item.childs !== undefined) {
@@ -487,19 +489,6 @@ function ComponentTable(SelectedProp: any) {
                                         }
 
 
-                                        // if (vall.childs !== undefined) {
-                                        //     vall.childs.forEach(function (user: any, index: any) {
-
-
-                                        //         if (user.SharewebTaskType != undefined && user.SharewebTaskType.Title == select.Title) {
-                                        //             vall.show = true;
-                                        //             vall.Child.push(user);
-                                        //             RootData.push(item);
-                                        //         }
-
-
-                                        //     })
-                                        // }
 
 
                                     })
@@ -548,6 +537,11 @@ function ComponentTable(SelectedProp: any) {
             if (com.Item_x0020_Type == 'Component') {
                 component.push(com)
             }
+            if (com.childs != undefined && com.Title == 'Others') {
+                com.childs.forEach((value: any) => {
+                    ALTask.push(value)
+                })
+            }
             if (com.childs != undefined) {
                 com.childs.forEach(function (sub: any) {
                     if (sub.Item_x0020_Type == 'SubComponent') {
@@ -564,7 +558,7 @@ function ComponentTable(SelectedProp: any) {
 
 
             }
-
+            setTotalTask(ALTask)
             setSubComponentsData(subcomponent);
             setFeatureData(feature);
             setComponentsData(component);
@@ -703,7 +697,7 @@ function ComponentTable(SelectedProp: any) {
     };
     const handleOpen = (item: any) => {
         item.show = item.show = item.show == true ? false : true;
-        setData(maidataBackup => ([...maidataBackup]));
+        setData(data => ([...data]));
     };
     const handleOpenAll = () => {
         var Isshow1: any = Isshow == true ? false : true;
@@ -792,10 +786,10 @@ function ComponentTable(SelectedProp: any) {
     };
     var getHighlightdata = function (item: any, searchTerms: any) {
         var keywordList = [];
-        if (searchTerms != undefined && searchTerms != '') {
-            keywordList = stringToArray(searchTerms);
+        if (serachTitle != undefined && serachTitle != '') {
+            keywordList = stringToArray(serachTitle);
         } else {
-            keywordList = stringToArray(searchTerms);
+            keywordList = stringToArray(serachTitle);
         }
         var pattern: any = getRegexPattern(keywordList);
         //let Title :any =(...item.Title)
@@ -828,12 +822,15 @@ function ComponentTable(SelectedProp: any) {
     }
     let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
         setSearch(e.target.value.toLowerCase());
+        serachTitle = e.target.value.toLowerCase();
         var Title = titleName;
 
-        var AllFilteredTagNews:any = [];
-        var childData:any = [];
-        var subChild:any = [];
-        var subChild2:any = [];
+        var AllFilteredTagNews: any = [];
+        var finalOthersData: any = []
+        var ALllTAsk: any = []
+        var childData: any = [];
+        var subChild: any = [];
+        var subChild2: any = [];
         AllFilteredTagNews.forEach(function (val: any) {
             val.Child = []
             if (val.childs != undefined) {
@@ -842,9 +839,9 @@ function ComponentTable(SelectedProp: any) {
                     if (type.childs != undefined) {
                         type.childs.forEach(function (value: any) {
                             value.Child = []
-                            if(value.childs != undefined){
-                                value.childs.forEach(function(last:any){
-                                    last.Child=[]
+                            if (value.childs != undefined) {
+                                value.childs.forEach(function (last: any) {
+                                    last.Child = []
 
                                 })
                             }
@@ -861,10 +858,10 @@ function ComponentTable(SelectedProp: any) {
                 item.isSearch = true;
                 item.show = false;
                 item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
-                if(item.flag == true){
+                if (item.flag == true) {
                     AllFilteredTagNews.push(item)
                 }
-                
+
                 if (item.childs != undefined && item.childs.length > 0) {
                     $.each(item.childs, function (parentIndex: any, child1: any) {
                         child1.flag = false;
@@ -875,8 +872,12 @@ function ComponentTable(SelectedProp: any) {
                             data[pareIndex].flag = true;
                             item.childs[parentIndex].show = true;
                             data[pareIndex].show = true;
+                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                AllFilteredTagNews.push(item)
+                            }
                             childData.push(child1)
-                           
+                            ALllTAsk.push(item)
+
                         }
                         if (child1.childs != undefined && child1.childs.length > 0) {
                             $.each(child1.childs, function (index: any, subchild: any) {
@@ -890,8 +891,13 @@ function ComponentTable(SelectedProp: any) {
                                     item.childs[parentIndex].show = true;
                                     data[pareIndex].flag = true;
                                     data[pareIndex].show = true;
+                                    if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                        AllFilteredTagNews.push(item)
+                                    }
+                                    if (!isItemExistsNew(childData, child1))
+                                        childData.push(child1)
                                     subChild.push(subchild)
-                                    
+
                                 }
                                 if (subchild.childs != undefined && subchild.childs.length > 0) {
                                     $.each(subchild.childs, function (childindex: any, subchilds: any) {
@@ -908,8 +914,15 @@ function ComponentTable(SelectedProp: any) {
                                             item.childs[parentIndex].show = true;
                                             data[pareIndex].flag = true;
                                             data[pareIndex].show = true;
+                                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                                AllFilteredTagNews.push(item)
+                                            }
+                                            if (!isItemExistsNew(childData, child1))
+                                                childData.push(child1)
+                                            if (!isItemExistsNew(subChild, subChild))
+                                                subChild.push(subChild)
                                             subChild2.push(subchilds)
-                                            
+
                                         }
                                     })
                                 }
@@ -918,9 +931,12 @@ function ComponentTable(SelectedProp: any) {
 
                     })
                 }
-                
+
             })
             const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const AllDataTaskk = ALllTAsk.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
             const SData = childData.filter((val: any, id: any, array: any) => {
@@ -929,7 +945,18 @@ function ComponentTable(SelectedProp: any) {
             const FData = subChild.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
-           
+            if (AllDataTaskk != undefined) {
+                AllDataTaskk.forEach((newval: any) => {
+                    if (newval.Title == 'Others' && newval.childs != undefined) {
+                        newval.forEach((valllA: any) => {
+                            finalOthersData.push(valllA)
+                        })
+                    }
+
+                })
+            }
+
+            setTotalTask(finalOthersData)
             setSubComponentsData(SData);
             setFeatureData(FData);
             setComponentsData(CData);
@@ -1810,6 +1837,7 @@ function ComponentTable(SelectedProp: any) {
         var AllTaskData1: any = [];
         ComponetsData['allUntaggedTasks'] = [];
         AllTaskData1 = AllTaskData1.concat(TasksItem);
+        setTaggedAllTask(AllTaskData1)
         $.each(AllTaskData1, function (index: any, task: any) {
             task.Portfolio_x0020_Type = 'Component';
             if (IsUpdated === 'Service Portfolio') {
@@ -1896,7 +1924,7 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
-       
+
         var AllTaggedTask: any = [];
         $.each(SelectedList, function (index: any, item: any) {
             $.each(AllTaskData1, function (index: any, task: any) {
@@ -2054,8 +2082,10 @@ function ComponentTable(SelectedProp: any) {
     function AddItem() {
     }
     const hideAllChildsMinus = (item: any) => {
-        if (item.childs?.length > 0) {
+        if (item?.childs?.length > 0) {
             item.Isexpend = false;
+            if (item.Item_x0020_Type === "Component")
+                item.show = false;
             handleOpen(item);
             item.childs.forEach((child: any) => {
                 child.flag = child?.show == true ? child?.show : false;
@@ -2070,9 +2100,9 @@ function ComponentTable(SelectedProp: any) {
     }
 
     const ShowAllChildsPlus = (item: any) => {
-        if (item.childs?.length > 0) {
+        if (item?.childs?.length > 0) {
             item.Isexpend = true;
-            item.show =false;
+            item.show = false;
             handleOpen(item);
             item.childs.forEach((child: any) => {
                 child.flag = true;
@@ -2322,7 +2352,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                             </a>}
                                                                                     </span>
-                                                                                    <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    <input className="me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
                                                                                     <label className="form-check-label">
                                                                                         {ItemType.Title}
                                                                                     </label>
@@ -2331,7 +2361,7 @@ function ComponentTable(SelectedProp: any) {
                                                                             {ItemType.TaxType == 'Status' &&
 
                                                                                 <div className="align-items-center d-flex">
-                                                                                    <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    <input className="me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
                                                                                     <label className="form-check-label">
                                                                                         {ItemType.Title}
                                                                                     </label>
@@ -2361,7 +2391,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                                                 </span>
                                                                                                             }
-                                                                                                            <input type="checkbox" defaultChecked={child1.Selected == true} className="form-check-input me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                            <input type="checkbox" defaultChecked={child1.Selected == true} className="me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
                                                                                                             <label className="form-check-label">
                                                                                                                 {child1.Title}
                                                                                                             </label>
@@ -2369,7 +2399,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 {child1.childs.map(function (child2: any) {
                                                                                                                     <li>
                                                                                                                         <div className="align-items-center d-flex">
-                                                                                                                            <input className="form-check-input me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                            <input className=" me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
                                                                                                                             <label className="form-check-label">
                                                                                                                                 {child2.Title}
                                                                                                                             </label>
@@ -2442,6 +2472,9 @@ function ComponentTable(SelectedProp: any) {
                                         <label>
                                             {FeatureData.length} of {FeatureData.length} Features
                                         </label>
+                                        <label>
+                                            {TaggedAllTask.length} of {TotalTask.length} Tasks
+                                        </label>
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
                                             <span className="gsearch-btn" ><i><FaSearch /></i></span>
@@ -2502,13 +2535,13 @@ function ComponentTable(SelectedProp: any) {
                                                 <thead>
                                                     <tr>
                                                         <th style={{ width: "2%" }}>
-                                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png'} />
+                                                                : <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"} />}
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "2%" }}>
                                                             <div className="smart-relative sign hreflink">
-                                                                <span className='pe-2'><input type="checkbox" /></span>
+                                                                <span className=''><input type="checkbox" /></span>
                                                             </div>
 
                                                         </th>
@@ -2531,8 +2564,6 @@ function ComponentTable(SelectedProp: any) {
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-
-
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "18%" }}>
@@ -2547,8 +2578,8 @@ function ComponentTable(SelectedProp: any) {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "17%" }}>
-                                                            <div style={{ width: "16%" }} className="smart-relative">
+                                                        <th style={{ width: "15%" }}>
+                                                            <div style={{ width: "14%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                 // onChange={event => handleChange(event, 'Team')} 
@@ -2608,10 +2639,9 @@ function ComponentTable(SelectedProp: any) {
                                                             return (
                                                                 <>
                                                                     <tr >
-                                                                        <td className="p-0" colSpan={10}>
+                                                                        <td className="p-0" colSpan={11}>
                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
-
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
                                                                                             {item.childs != undefined &&
@@ -2628,12 +2658,11 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
                                                                                             {/* checked={item.checked === true ? true : false} */}
-                                                                                            <span className='pe-2'><input type="checkbox"
+                                                                                            <span className=''><input type="checkbox"
                                                                                                 onChange={(e) => onChangeHandler(item)} /></span>
                                                                                         </div>
 
                                                                                     </td>
-
 
                                                                                     <td style={{ width: "9%" }}>
                                                                                         <div className="">
@@ -2705,7 +2734,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 )
                                                                                             })}</div>
                                                                                     </td>
-                                                                                    <td style={{ width: "17%" }}>
+                                                                                    <td style={{ width: "15%" }}>
                                                                                         <div>
                                                                                             <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
@@ -2732,7 +2761,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                         <>
                                                                                             <tr >
-                                                                                                <td className="p-0" colSpan={10}>
+                                                                                                <td className="p-0" colSpan={11}>
                                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                                         <tr className="for-c02">
                                                                                                             <td style={{ width: "2%" }}>
@@ -2750,7 +2779,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             </td>
                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                 <div className="accordian-header" >
-                                                                                                                    <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                    <span className=''><input type="checkbox" /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -2830,13 +2859,15 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         )
                                                                                                                     })}</div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "17%" }}>
+                                                                                                            <td style={{ width: "15%" }}>
                                                                                                                 <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                            <td style={{ width: "3%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
+                                                                                                            <td style={{ width: "3%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
+                                                                                                                {childitem.siteType == "Master Tasks" &&
+                                                                                                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
                                                                                                                 {childitem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                                         </tr>
                                                                                                     </table>
@@ -2850,7 +2881,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             return (
                                                                                                                 <>
                                                                                                                     <tr >
-                                                                                                                        <td className="p-0" colSpan={10}>
+                                                                                                                        <td className="p-0" colSpan={11}>
                                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
                                                                                                                                     <td style={{ width: "2%" }}>
@@ -2868,7 +2899,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     </td>
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                         <div className="accordian-header" >
-                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                            <span className=''><input type="checkbox" /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
@@ -2951,7 +2982,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                 )
                                                                                                                                             })}</div>
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "17%" }}>
+                                                                                                                                    <td style={{ width: "15%" }}>
                                                                                                                                         <div>
                                                                                                                                             <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
@@ -2959,8 +2990,10 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     <td style={{ width: "6%" }}>{childinew.PercentComplete}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
-                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType == "Master Tasks" && <a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">   <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} /></a>}</td>
+                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}
+                                                                                                                                    </td>
+                                                                                                                                    <td style={{ width: "3%" }}> {childinew.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}
+                                                                                                                                        {childinew.siteType == "Master Tasks" && <a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">   <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} /></a>}</td>
                                                                                                                                 </tr>
                                                                                                                             </table>
                                                                                                                         </td>
@@ -2973,7 +3006,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                     <>
                                                                                                                                         <tr >
-                                                                                                                                            <td className="p-0" colSpan={10}>
+                                                                                                                                            <td className="p-0" colSpan={11}>
                                                                                                                                                 <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                                     <tr className="for-c02">
                                                                                                                                                         <td style={{ width: "2%" }}>
@@ -2991,7 +3024,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                         </td>
                                                                                                                                                         <td style={{ width: "2%" }}>
                                                                                                                                                             <div className="accordian-header" >
-                                                                                                                                                                <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                                                <span className=''><input type="checkbox" /></span>
                                                                                                                                                             </div>
 
                                                                                                                                                         </td>
@@ -3070,7 +3103,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                     )
                                                                                                                                                                 })}</div>
                                                                                                                                                         </td>
-                                                                                                                                                        <td style={{ width: "17%" }}>
+                                                                                                                                                        <td style={{ width: "15%" }}>
                                                                                                                                                             <div>
                                                                                                                                                                 <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
                                                                                                                                                             </div></td>
@@ -3078,7 +3111,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                         <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                                        <td style={{ width: "3%" }}></td>
+                                                                                                                                                        <td style={{ width: "3%" }}> {subchilditem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} ></img>}</td>
                                                                                                                                                     </tr>
                                                                                                                                                 </table>
                                                                                                                                             </td>
