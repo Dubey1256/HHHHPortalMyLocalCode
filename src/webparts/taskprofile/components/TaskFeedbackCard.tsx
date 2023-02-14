@@ -341,11 +341,11 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
 
 
          {sunchildcomment==j?<div className='d-flex ' >
-          <div  className="col-sm-11 mt-2 p-0 " style={{display: this.state.showcomment_subtext}}>
+          <div  className="col-sm-10 mt-2 p-0 " style={{display: this.state.showcomment_subtext}}>
             <textarea id="txtCommentSubtext" onChange={(e)=>this.handleInputChange(e)} style={{width:'100%'}} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
           </div>
 
-          <div  className="col-sm-1 pe-0 mt-2 text-end " style={{display: this.state.showcomment_subtext}}>
+          <div  className="col-sm-2  mt-2 text-end " style={{display: this.state.showcomment_subtext}}>
             <button type="button"  className="post btn btn-primary" onClick={()=>this.SubtextPostButtonClick(j)}>Post</button>
           </div>
           </div>:null}

@@ -2,9 +2,10 @@ import * as React from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import { Web } from "sp-pnp-js";
+import pnp from 'sp-pnp-js';
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
-import * as globalCommon from "../../globalComponents/globalCommon";
+import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
@@ -24,6 +25,8 @@ import TimeEntryPopup from './TimeEntryComponent';
 import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 
+
+
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -32,7 +35,8 @@ var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any;
-
+var SiteTypeBackupArray: any = [];
+var ImageBackupArray: any = [];
 const EditTaskPopup = (Items: any) => {
     const [images, setImages] = React.useState([]);
     const [TaskImages, setTaskImages] = React.useState([]);
@@ -59,7 +63,9 @@ const EditTaskPopup = (Items: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
+    const [hoverImageModal, setHoverImageModal] = React.useState('None');
     const [ImageComparePopup, setImageComparePopup] = React.useState(false);
+    const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
     const [composition, setComposition] = React.useState(false);
@@ -74,7 +80,10 @@ const EditTaskPopup = (Items: any) => {
     const [ImmediateStatus, setImmediateStatus] = React.useState(false);
     const [ApprovalStatus, setApprovalStatus] = React.useState(false);
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = React.useState(false);
-
+    const [currentUserData, setCurrentUserData] = React.useState([]);
+    const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
+    const [HoverImageData, setHoverImageData] = React.useState([]);
+    const [SiteTypes, setSiteTypes] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -92,6 +101,15 @@ const EditTaskPopup = (Items: any) => {
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
     // }
+
+    React.useEffect(() => {
+        loadTaskUsers();
+        GetEditData();
+        getCurrentUserDetails();
+        getSmartMetaData();
+        // Descriptions();
+    }, [])
+
     const Call = React.useCallback((PopupItemData: any, type: any) => {
         setIsComponent(false);
         setIsComponentPicker(false);
@@ -160,35 +178,66 @@ const EditTaskPopup = (Items: any) => {
         setIsServices(true);
         setShareWebComponent(item);
     }
-    React.useEffect(() => {
-        loadTaskUsers();
-        GetEditData();
-        // Descriptions();
-    }, [])
+
     const setPriority = function (val: any) {
         setPriorityStatus(val)
     }
-    const uploadImageFunction = (
-        imageList: ImageListType,
-        addUpdateIndex: number[] | undefined
-    ) => {
-        imageList?.map((imgItem) => {
-            if (imgItem.dataURL != undefined && imgItem.file != undefined) {
-                let ImgArray = [{
-                    ImageName: imgItem.file.name,
-                    ImageUrl: EditData?.siteUrl + '/Lists/' + EditData?.siteType + '/Attachments/' + EditData?.Id + '/' + imgItem.file.name,
-                    UploadeDate: new Date(),
-                    UserImage: EditData.Author?.Title,
-                    UserName: EditData.Author?.Title
-                }];
-                TaskImages.push(ImgArray);
 
-            } else {
-                TaskImages.push(imgItem);
+    const getSmartMetaData = async () => {
+        let web = new Web(Items.Items.siteUrl);
+        let MetaData: any = [];
+        let siteConfig: any = [];
+        let tempArray: any = [];
+        MetaData = await web.lists
+            .getByTitle('SmartMetadata')
+            .items
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .top(4999)
+            .expand('Author,Editor')
+            .get()
+
+        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites')
+        siteConfig?.map((site: any) => {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "QA" && site.Title !== "SDC Sites") {
+                site.BtnStatus = false;
+                tempArray.push(site);
             }
         })
-        setImages(imageList as never[]);
-    };
+        setSiteTypes(tempArray);
+        tempArray?.map((tempData: any) => {
+            SiteTypeBackupArray.push(tempData);
+        })
+
+    }
+    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        var Items: any = [];
+        metadataItems.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
+
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
+    }
+    const getCurrentUserDetails = async () => {
+        let currentUserId: number;
+        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+
+        if (currentUserId != undefined) {
+            if (taskUsers != null && taskUsers?.length > 0) {
+                taskUsers?.map((userData: any) => {
+                    if (userData.AssingedToUserId == currentUserId) {
+                        let temp: any = [];
+                        temp.push(userData)
+                        setCurrentUserData(temp);
+                    }
+                })
+            }
+        }
+    }
+
     const openTaskStatusUpdatePopup = (itemData: any) => {
         setTaskStatusPopup(true);
     }
@@ -217,7 +266,6 @@ const EditTaskPopup = (Items: any) => {
                         }
                         AllTaskUsers.push(user);
                     }
-                    console.log("All Task Users On Edit TAsk Popup ============", AllTaskUsers)
                 });
                 if (AllMetaData != undefined && AllMetaData?.length > 0) {
                     GetEditData();
@@ -261,7 +309,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -271,7 +319,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -307,21 +355,32 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.TaskId = globalCommon.getTaskId(item);
                 let AssignedUsers: any = [];
+                let ApproverData: any = [];
                 if (taskUsers != undefined) {
                     taskUsers?.map((userData: any) => {
                         item.AssignedTo?.map((AssignedUser: any) => {
                             if (userData?.AssingedToUserId == AssignedUser.Id) {
                                 AssignedUsers.push(userData);
+                                userData.Approver?.map((AData: any) => {
+                                    ApproverData.push(AData);
+                                })
                             }
                         })
                     })
                 }
 
+                setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
+                setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
+                setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
+
+
+                item.TaskAssignedUsers = AssignedUsers;
+                item.TaskApprovers = ApproverData;
                 if (item.Attachments) {
                     let tempData = []
                     tempData = saveImage[0];
                     item.UploadedImage = saveImage ? saveImage[0] : '';
-                    uploadImageFunction(tempData, tempData?.length);
+                    onUploadImageFunction(tempData, tempData?.length);
                 }
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
@@ -365,7 +424,8 @@ const EditTaskPopup = (Items: any) => {
                 if (item.RelevantPortfolio?.length > 0) {
                     setLinkedComponentData(item.RelevantPortfolio)
                 }
-                item.TaskAssignedUsers = AssignedUsers;
+
+
                 if (item.FeedBack != null) {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
@@ -383,7 +443,6 @@ const EditTaskPopup = (Items: any) => {
                     updateFeedbackArray = [FeedBackItem]
                 }
                 setEditData(item)
-                console.log("Edit Data Task Popup ==================", item)
                 setPriorityStatus(item.Priority)
             })
         } catch (error) {
@@ -669,24 +728,41 @@ const EditTaskPopup = (Items: any) => {
     var TeamMemberIds: any = [];
     var CategoryTypeID: any = [];
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
-        var UploadImage: any = []
-        var item: any = {}
-        images?.map((imgDtl: any) => {
-            if (imgDtl.dataURL != undefined) {
-                var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
-            }
-            // else {
-            //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
-            // }
-            if (imgDtl.file != undefined) {
-                item['ImageName'] = imgDtl.file.name
-                item['ImageUrl'] = imgUrl
-                item['UploadeDate'] = EditData.Created
-                item['UserImage'] = EditData.Author?.Title
-                item['UserName'] = EditData.Author?.Title
-            }
-            UploadImage.push(item)
-        })
+        var UploadImageArray: any = []
+
+        if (TaskImages != undefined && TaskImages?.length > 0) {
+            TaskImages?.map((imgItem: any) => {
+                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                    let tempObject: any = {
+                        ImageName: imgItem.ImageName,
+                        ImageUrl: imgItem.imageDataUrl,
+                        UploadeDate: imgItem.UploadeDate,
+                        UserName: imgItem.UserName,
+                        UserImage: imgItem.UserImage
+                    }
+                    UploadImageArray.push(tempObject)
+                } else {
+                    UploadImageArray.push(imgItem);
+                }
+
+            })
+        }
+        // images?.map((imgDtl: any) => {
+        //     if (imgDtl.dataURL != undefined) {
+        //         var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
+        //     }
+        //     // else {
+        //     //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
+        //     // }
+        //     if (imgDtl.file != undefined) {
+        //         item['ImageName'] = imgDtl.file.name
+        //         item['ImageUrl'] = imgUrl
+        //         item['UploadeDate'] = EditData.Created
+        //         item['UserImage'] = EditData.Author?.Title
+        //         item['UserName'] = EditData.Author?.Title
+        //     }
+        //     UploadImage.push(item)
+        // })
 
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
@@ -744,7 +820,6 @@ const EditTaskPopup = (Items: any) => {
             })
         }
 
-
         if (smartComponentData != undefined && smartComponentData?.length > 0) {
             smartComponentData?.map((com: any) => {
                 if (smartComponentData != undefined && smartComponentData?.length >= 0) {
@@ -768,35 +843,38 @@ const EditTaskPopup = (Items: any) => {
             TaskAssignedTo?.map((taskInfo) => {
                 AssignedToIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                EditData.AssignedTo?.map((taskInfo: any) => {
-                    AssignedToIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+        //         EditData.AssignedTo?.map((taskInfo: any) => {
+        //             AssignedToIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
                 TeamMemberIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                EditData.Team_x0020_Members?.map((taskInfo: any) => {
-                    TeamMemberIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+        //         EditData.Team_x0020_Members?.map((taskInfo: any) => {
+        //             TeamMemberIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
-                EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
-                    ResponsibleTeamIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
+        //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
+        //             ResponsibleTeamIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         try {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
@@ -824,12 +902,12 @@ const EditTaskPopup = (Items: any) => {
                     Description: "Description",
                     Url: UpdateTaskInfo.ComponentLink ? UpdateTaskInfo.ComponentLink : (EditData.component_x0020_link ? EditData.component_x0020_link.Url : null)
                 },
+                BasicImageInfo: JSON.stringify(UploadImageArray)
             }).then((res: any) => {
                 console.log(res);
                 if (typeFunction != "TimeSheetPopup") {
                     Items.Call();
                 }
-
             })
         } catch (error) {
             console.log("Error:", error.messages)
@@ -843,6 +921,9 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+
+    //    ************* this is team configuration call Back function **************
+
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
         if (teamConfigData?.AssignedTo?.length > 0) {
             let tempArray: any = [];
@@ -854,6 +935,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
             setTaskAssignedTo(tempArray);
+            EditData.AssignedTo = tempArray;
         }
         if (teamConfigData?.TeamMemberUsers?.length > 0) {
             let tempArray: any = [];
@@ -865,6 +947,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
             setTaskTeamMembers(tempArray);
+            EditData.Team_x0020_Members = tempArray;
         }
         if (teamConfigData?.ResponsibleTeam?.length > 0) {
             let tempArray: any = [];
@@ -876,8 +959,13 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
             setTaskResponsibleTeam(tempArray);
+            EditData.Responsible_x0020_Team = tempArray;
         }
     }, [])
+
+
+    // *************** this is footer section share this task function ***************
+
     const shareThisTaskFunction = (EmailData: any) => {
         var link = "mailTo:"
             + "?cc:"
@@ -917,6 +1005,11 @@ const EditTaskPopup = (Items: any) => {
         SubCommentBoxData = feedBackData;
         console.log("Feedback Array in Edit Sub comp=====", feedBackData)
     }, [])
+
+    // **************** this is for category change and remove function functions ******************
+
+
+
     const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
         let tempString: any = [];
         CategoriesData.split(";")?.map((type: any, index: number) => {
@@ -939,6 +1032,9 @@ const EditTaskPopup = (Items: any) => {
     const StatusAutoSuggestion = (e: any) => {
 
     }
+
+
+
     const CategoryChange = (e: any, type: any, Id: any) => {
         if (e.target.value == "true") {
             removeCategoryItem(type, Id);
@@ -998,18 +1094,214 @@ const EditTaskPopup = (Items: any) => {
         setImageComparePopup(false);
         setCompareImageArray([]);
     }
-
     const ImageCustomizeFunction = (currentImagIndex: any) => {
         setImageCustomizePopup(true)
     }
-
     const ImageCustomizeFunctionClosePopup = () => {
         setImageCustomizePopup(false)
     }
 
+
+    // ************** this is for the Approver Related All Functions section *****************
+
+    const removeApproverFunction = (Title: any, Id: any) => {
+        let tempArray: any = [];
+        if (EditData.TaskApprovers != null && EditData.TaskApprovers?.length > 0) {
+            EditData.TaskApprovers?.map((item: any) => {
+                if (item.Id == Id) {
+                    tempArray.push(item);
+                }
+            })
+        }
+        EditData.TaskApprovers = tempArray;
+
+    }
+
+    //***************** This is for image Upload Section  Functions *****************
+
+    let contentTarget = document.getElementById("imageUpload"); 
+
+
+    const onUploadImageFunction = async (
+        imageList: ImageListType,
+        addUpdateIndex: number[] | undefined) => {
+        let lastindexArray = imageList[imageList.length - 1];
+        let fileName: any = '';
+        let tempArray: any = [];
+        let SiteUrl = Items.Items.siteUrl;
+        imageList?.map(async (imgItem: any, index: number) => {
+            if (imgItem.data_url != undefined && imgItem.file != undefined) {
+                let date = new Date()
+                let timeStamp = date.getTime();
+                let imageIndex = index + 1
+                fileName = 'Image' + imageIndex + "-" + EditData.Title + " " + EditData.Title + timeStamp + ".jpg"
+                let ImgArray = {
+                    ImageName: fileName,
+                    UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                    imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
+                    ImageUrl: imgItem.data_url,
+                    UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
+                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : ""
+                };
+                tempArray.push(ImgArray);
+            } else {
+                tempArray.push(imgItem);
+            }
+        })
+        setTaskImages(tempArray);
+        // UploadImageFunction(lastindexArray, fileName);
+        if (addUpdateIndex != undefined) {
+            let updateIndex: any = addUpdateIndex[0]
+            let updateImage: any = imageList[updateIndex];
+            if (updateIndex + 1 >= imageList.length) {
+                UploadImageFunction(lastindexArray, fileName);
+            }
+            else {
+                if (updateIndex < imageList.length) {
+                    ReplaceImageFunction(updateImage, updateIndex);
+                }
+            }
+        }
+    };
+    const UploadImageFunction = (Data: any, imageName: any) => {
+        let listId = Items.Items.listId;
+        let listName = Items.Items.listName;
+        let Id = Items.Items.Id
+        var src = Data.data_url?.split(",")[1];
+        var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+            return c.charCodeAt(0);
+        }));
+        const data: any = byteArray
+        var fileData = '';
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            fileData += String.fromCharCode(byteArray[i]);
+        }
+        if (Items.Items.listId != undefined) {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getById(listId).items.getById(Id);
+                item.attachmentFiles.add(imageName, data);
+                console.log("Attachment added");
+            })().catch(console.log)
+        } else {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getByTitle(listName).items.getById(Id);
+                item.attachmentFiles.add(imageName, data);
+                console.log("Attachment added");
+            })().catch(console.log)
+        }
+    }
+    const RemoveImageFunction = (imageIndex: number, imageName: any, FunctionType: any) => {
+        if (FunctionType == "Remove") {
+            let tempArray: any = [];
+            TaskImages?.map((imageData: any, index: number) => {
+                if (index != imageIndex) {
+                    tempArray.push(imageData)
+                }
+            })
+            setTaskImages(tempArray);
+        }
+
+        if (Items.Items.listId != undefined) {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
+                item.attachmentFiles.getByName(imageName).delete();
+                console.log("Attachment deleted");
+            })().catch(console.log)
+        } else {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
+                item.attachmentFiles.getByName(imageName).delete();
+                console.log("Attachment deleted");
+            })().catch(console.log)
+        }
+    }
+    const ReplaceImageFunction = (Data: any, ImageIndex: any) => {
+        let ImageName = EditData.UploadedImage[ImageIndex].ImageName
+        var src = Data?.data_url?.split(",")[1];
+        var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+            return c.charCodeAt(0);
+        }));
+        const data: any = byteArray
+        var fileData = '';
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            fileData += String.fromCharCode(byteArray[i]);
+        }
+        if (Items.Items.siteUrl != undefined) {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
+                item.attachmentFiles.getByName(ImageName).setContent(data);
+                console.log("Attachment Updated");
+            })().catch(console.log)
+        } else {
+            (async () => {
+                let web = new Web(Items.Items.siteUrl);
+                let item = web.lists.getById(Items.Items.listName).items.getById(Items.Items.Id);
+                item.attachmentFiles.getByName(ImageName).setContent(data);
+                console.log("Attachment Updated");
+            })().catch(console.log)
+        }
+        setTaskImages(EditData.UploadedImage);
+
+    }
+
+    const MouseHoverImageFunction = (e: any, HoverImageData: any) => {
+        e.preventDefault();
+        setHoverImageModal("Block");
+        // let tempArray:any =[];
+        // tempArray.push(HoverImageData)
+        setHoverImageData([HoverImageData]);
+    }
+    const MouseOutImageFunction = (e: any) => {
+        e.preventDefault();
+        setHoverImageModal("None");
+    }
+
+
+    // ***************** this is for the Copy and Move Task Functions ***************
+
+    const CopyAndMovePopupFunction = () => {
+        setCopyAndMoveTaskPopup(true)
+    }
+
+    const closeCopyAndMovePopup = () => {
+        setCopyAndMoveTaskPopup(false)
+    }
+
+    const selectSiteTypeFunction = (siteData: any) => {
+        let tempArray: any = [];
+        SiteTypeBackupArray?.map((siteItem: any) => {
+            if (siteItem.Id == siteData.Id) {
+                siteItem.BtnStatus = true;
+                tempArray.push(siteItem);
+            } else {
+                siteItem.BtnStatus = false;
+                tempArray.push(siteItem);
+            }
+        })
+        setSiteTypes(tempArray);
+    }
+
+    const copyAndMoveTaskFunction =(FunctionsType:string)=>{
+        if(FunctionsType == "Move Task"){
+
+        }
+        if(FunctionsType == "Move Task"){
+
+        }
+    }
+
+
+    // ************** this is custom header and custom Footers section functions for panel *************
+
     const onRenderCustomHeaderMain = () => {
         return (
-            <>
+            <div className="d-flex full-width pb-1" >
+                {console.log("all sites details ======", SiteTypes)}
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
@@ -1017,10 +1309,168 @@ const EditTaskPopup = (Items: any) => {
                     </span>
                 </div>
                 <Tooltip />
-            </>
+            </div>
         );
     };
 
+    const onRenderCustomHeaderCopyAndMoveTaskPanel = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
+                    <span>
+                        Select Site
+                    </span>
+                </div>
+                <Tooltip />
+            </div>
+        );
+    };
+
+    const onRenderCustomFooterMain = () => {
+        return (
+            <footer>
+                <div className="border-top d-flex justify-content-between px-4 py-2">
+                    <div>
+                        <div className="">
+                            Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
+                                {EditData.Author?.Title ? EditData.Author?.Title : ''}
+                            </span>
+                        </div>
+                        <div>
+                            Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                            </span> By <span className="font-weight-normal siteColor">
+                                {EditData.Editor?.Title ? EditData.Editor.Title : ''}
+                            </span>
+                        </div>
+                        <div>
+                            <a className="hreflink">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
+                                </svg>
+                                <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
+                            </a>
+                            <span> | </span>
+                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
+                                Copy
+                                Task
+                            </a>
+                            <span > | </span>
+                            <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
+                            <span>
+                                {EditData.ID ?
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <span>
+                                <a className="mx-2" target="_blank" data-interception="off"
+                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                    Go To Profile Page
+                                </a>
+                            </span> ||
+                            <span>
+                                <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
+                                    Save & Add Time-Sheet
+                                </a>
+                            </span> ||
+
+                            <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
+                                <img className="mail-width mx-2"
+                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                                Share This Task
+                            </span> ||
+                            <a target="_blank" className="mx-2" data-interception="off"
+                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                Open Out-Of-The-Box Form
+                            </a>
+                            <span >
+                                <button className="btn btn-primary px-3"
+                                    onClick={UpdateTaskInfoFunction}>
+                                    Save
+                                </button>
+                                <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
+                                    Close
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        )
+    }
+    const onRenderCustomFooterOther = () => {
+        return (
+            <footer>
+                <div className="border-top d-flex justify-content-between px-4 py-2">
+                    <div>
+                        <div className="">
+                            Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
+                                {EditData.Author?.Title ? EditData.Author?.Title : ''}
+                            </span>
+                        </div>
+                        <div>
+                            Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                            </span> By <span className="font-weight-normal siteColor">
+                                {EditData.Editor?.Title ? EditData.Editor.Title : ''}
+                            </span>
+                        </div>
+                        <div>
+                            <a className="hreflink">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
+                                </svg>
+                                <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
+                            </a>
+                            <span> | </span>
+                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
+                                Copy
+                                Task
+                            </a>
+                            <span > | </span>
+                            <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
+                            <span>
+                                {EditData.ID ?
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <span>
+                                <a className="mx-2" target="_blank" data-interception="off"
+                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                    Go To Profile Page
+                                </a>
+                            </span> ||
+                            <span>
+                                <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
+                                    Save & Add Time-Sheet
+                                </a>
+                            </span> ||
+
+                            <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
+                                <img className="mail-width mx-2"
+                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
+                                Share This Task
+                            </span> ||
+                            <a target="_blank" className="mx-2" data-interception="off"
+                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                Open Out-Of-The-Box Form
+                            </a>
+                            <span >
+                                <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
+                                    Close
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        )
+    }
     return (
         <>
             {/* ***************** this is status panel *********** */}
@@ -1032,7 +1482,6 @@ const EditTaskPopup = (Items: any) => {
             >
                 <div >
                     <div className="modal-body">
-
                         <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
                             <tbody>
                                 {StatusArray?.map((item: any, index) => {
@@ -1060,7 +1509,6 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
             {/* ***************** this is Save And Time Sheet panel *********** */}
-
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 isOpen={TimeSheetPopup}
@@ -1069,22 +1517,22 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeTimeSheetPopup}
                 isBlocking={false}
             >
-                <div className="modal-body mt-2">
+                <div className="modal-body">
                     <TimeEntryPopup props={Items.Items} />
                 </div>
             </Panel>
             {/* ***************** this is Main Panel *********** */}
-
             <Panel
                 type={PanelType.large}
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 onRenderHeader={onRenderCustomHeaderMain}
                 isBlocking={false}
+                onRenderFooter={onRenderCustomFooterMain}
             >
                 <div >
 
-                    <div className="modal-body mt-2">
+                    <div className="modal-body">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
                                 BASIC INFORMATION
@@ -1311,7 +1759,29 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-check-input" />
                                                         </div>
                                                     </div>
-
+                                                    {ApprovalStatus ?
+                                                        <div>
+                                                            {EditData.TaskApprovers?.map((Approver: any, index: number) => {
+                                                                return (
+                                                                    <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                        {/* href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`} */}
+                                                                        <div>
+                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off">
+                                                                                {Approver.Title}
+                                                                            </a>
+                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                                                onClick={() => removeApproverFunction(Approver.Title, Approver.Id)} className="p-1"
+                                                                            />
+                                                                        </div>
+                                                                        <span className="float-end ">
+                                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                                onClick={() => alert("We are working on It. This feature will be live soon...")} />
+                                                                        </span>
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                        </div> : null
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="col-6 ps-0 pe-0 pt-4">
@@ -1353,6 +1823,18 @@ const EditTaskPopup = (Items: any) => {
                                                         />
                                                     </div>
                                                 </div>
+                                                <div className="col-12" title="Relevant Portfolio Items">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width "> Linked Component Task </label>
+                                                        <input type="text"
+                                                            className="form-control "
+                                                        />
+                                                        <span className="input-group-text">
+                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                onClick={(e) => alert("We are working on It. This Feature Will Be Live Soon...")} />
+                                                        </span>
+                                                    </div>
+                                                </div>
                                                 <div className="col-12 mb-2">
                                                     <div className="input-group">
                                                         <label className="form-label full-width">
@@ -1382,21 +1864,6 @@ const EditTaskPopup = (Items: any) => {
                                                         <span className="input-group-text">
                                                             <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                 onClick={(e) => EditLinkedServices(EditData, 'Component')} />
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-12" title="Relevant Portfolio Items">
-                                                    <div className="input-group">
-                                                        <label className="form-label full-width "> Linked Component Task </label>
-                                                        <input type="text"
-                                                            className="form-control "
-                                                            id="{{RelevantPortfolioName==='Linked Service'?'txtRelevantServiceShareWebComponent':'txtRelevantShareWebComponent'}}"
-                                                            autoComplete="off" />
-                                                        <span className="input-group-text">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
-                                                            </svg>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -1574,89 +2041,96 @@ const EditTaskPopup = (Items: any) => {
                                         )
                                     })
                                     } */}
-                                    <div
-                                        className={IsShowFullViewImage != true ? 'col-sm-3 padL-0 DashboardTaskPopup-Editor above' : 'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}>
+                                    <div className={IsShowFullViewImage != true ?
+                                        'col-sm-3 padL-0 DashboardTaskPopup-Editor above' :
+                                        'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}>
                                         <div className="image-upload">
+                                            {console.log("all image details ======", TaskImages)}
                                             <ImageUploading
                                                 multiple
                                                 value={TaskImages}
-                                                onChange={uploadImageFunction}
-                                                maxNumber={maxNumber}
+                                                onChange={onUploadImageFunction}
+                                                dataURLKey="data_url"
                                             >
                                                 {({
-                                                    imageList = TaskImages,
+                                                    imageList,
                                                     onImageUpload,
                                                     onImageRemoveAll,
                                                     onImageUpdate,
                                                     onImageRemove,
                                                     isDragging,
-                                                    dragProps
-                                                }: any) => (
+                                                    dragProps,
+                                                }) => (
                                                     <div className="upload__image-wrapper">
-                                                        {imageList ?
-                                                            <div>{imageList?.map((ImageDtl: any, index: any) => {
-                                                                return (
-                                                                    <div>
-                                                                        <div className="my-1" style={{ width: "18rem" }}>
-                                                                            <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} className="card-img-top" />
-                                                                            <div className="card-footer d-flex justify-content-between p-1 px-2">
-                                                                                <div>
-                                                                                    <input type="checkbox" onClick={() => ImageCompareFunction(ImageDtl)} />
-                                                                                    <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
-                                                                                    <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
-                                                                                    <span className="mx-1">
-                                                                                        <img style={{ width: "25px" }} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
-                                                                                    </span>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <span onClick={() => ImageCustomizeFunction(index)}>
-                                                                                        <FaExpandAlt />
-                                                                                    </span>
-                                                                                    <span className="mx-1" onClick={() => alert("we are working on it. This feature will be live soon..")}>| <TbReplace /> |</span>
-                                                                                    <span><RiDeleteBin6Line onClick={() => alert("we are working on it. This feature will be live soon..")} /></span>
-                                                                                </div>
-                                                                            </div>
+
+                                                        {imageList.map((ImageDtl, index) => (
+                                                            <div key={index} className="image-item">
+                                                                <div className="my-1">
+                                                                    <a href={ImageDtl.ImageUrl} target="_blank" data-interception="off">
+                                                                        <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} onMouseOver={(e) => MouseHoverImageFunction(e, ImageDtl)}
+                                                                            onMouseOut={(e) => MouseOutImageFunction(e)}
+                                                                            className="card-img-top" />
+                                                                    </a>
+
+                                                                    <div className="card-footer d-flex justify-content-between p-1 px-2">
+                                                                        <div>
+                                                                            <input type="checkbox" onClick={() => ImageCompareFunction(ImageDtl)} />
+                                                                            <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
+                                                                            <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
+                                                                            <span className="mx-1">
+                                                                                <img style={{ width: "25px" }} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
+                                                                            </span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span onClick={() => ImageCustomizeFunction(index)}>
+                                                                                <FaExpandAlt />
+                                                                            </span>
+                                                                            <span className="mx-1" onClick={(e) => onImageUpdate(index)}>| <TbReplace /> |</span>
+                                                                            <span onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}><RiDeleteBin6Line /></span>
                                                                         </div>
                                                                     </div>
-                                                                )
-                                                            })}
+                                                                </div>
                                                             </div>
-                                                            : null}
-                                                        <div className="d-flex justify-content-between">
-                                                            <a
-                                                                className="hreflink"
-                                                                onClick={() => alert("we are working on it. This feature will be live soon..")}
-                                                            >
-                                                                Upload Image
-                                                            </a>
-                                                            <a
-                                                                className="hreflink"
-                                                                onClick={() => alert("we are working on it. This feature will be live soon..")}
-                                                            >
-                                                                Add New Image
-                                                            </a>
-                                                            {/* &nbsp; */}
-                                                            {/* <a className="hreflink"
+                                                        ))}
+                                                        <div className="d-flex justify-content-between py-1 border-top ">
+                                                            {/* <span className="siteColor"
+                                                                style={{ cursor: "pointer" }}
+                                                                onClick={() => alert("We are working on it. This Feature will be live soon ..")}>
+                                                                Upload Item-Images
+                                                            </span> */}
+
+                                                            {TaskImages?.length != 0 ?
+                                                                <span className="siteColor"
+                                                                    style={{ cursor: "pointer" }}
+                                                                    onClick={() => setUploadBtnStatus(UploadBtnStatus ? false : true)}>
+                                                                    Add New Image
+                                                                </span>
+                                                                : null}
+                                                        </div>
+                                                        {UploadBtnStatus ?
+                                                            <div>
+                                                                <div className="drag-upload-image mt-1"
+                                                                    style={isDragging ? { border: '1px solid red' } : undefined}
+                                                                    onClick={onImageUpload}
+                                                                    {...dragProps}
+                                                                >
+                                                                    Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
+                                                                </div>
+                                                            </div> : null}
+                                                        {TaskImages?.length == 0 ? <div>
+                                                            <div className="drag-upload-image mt-1"
+                                                                style={isDragging ? { border: '1px solid red' } : undefined}
                                                                 onClick={onImageUpload}
                                                                 {...dragProps}
-                                                            > Add New Image</a> */}
-                                                        </div>
-                                                        {/* <span className="taskimage border mb-3">
-                                                            {imageList.map((image: any, index: any) => (
-                                                                <div key={index} className="image-item">
-                                                                    <img src={image.dataURL} alt="" width="100%" className="ImageBox" />
-                                                                    <div className="Footerimg d-flex align-items-center bg-fxdark  p-1 ">
-                                                                        <a onClick={() => onImageUpdate(index)}><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
-                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M6.18178 9.10429C6.0131 9.21501 5.97742 11.8728 6.01191 21.808L6.05556 34.3718L17.2248 34.4167L28.3941 34.4615V33.629V32.7963L25.3363 29.6562C23.6546 27.9291 22.2786 26.435 22.2786 26.3356C22.2786 26.1056 24.8625 23.4561 25.0871 23.4561C25.1794 23.4561 26.6292 24.8708 28.3091 26.5998L31.3633 29.7435H32.1721H32.9807V28.9999C32.9807 28.2629 32.946 28.2206 29.1147 24.2843C26.9884 22.0998 25.1739 20.3124 25.0825 20.3124C24.9911 20.3124 23.9403 21.3137 22.7474 22.5373L20.5787 24.7622L16.0787 20.1383L11.5787 15.5143L10.0031 17.1274C9.13641 18.0148 8.36994 18.7406 8.29978 18.7406C8.22962 18.7406 8.19276 17.1097 8.21807 15.1166L8.26393 11.4926L21.7265 11.4479L35.1891 11.4032V18.3029V25.2026H36.2949H37.4008L37.3567 17.1251L37.3125 9.04753L21.8539 9.00596C13.3517 8.98325 6.29916 9.02744 6.18178 9.10429ZM31.1121 14.0251C30.9252 14.2172 30.7723 14.5708 30.7723 14.811C30.7723 15.3389 31.3217 15.9462 31.7992 15.9462C32.2112 15.9462 32.9807 15.2067 32.9807 14.811C32.9807 14.4152 32.2112 13.6758 31.7992 13.6758C31.6081 13.6758 31.2989 13.8329 31.1121 14.0251ZM24.487 32.0585C24.487 32.1319 20.8367 32.1717 16.3754 32.1467L8.26393 32.1013L8.21875 27.2169L8.17356 22.3326L9.91545 20.5355L11.6575 18.7383L18.0723 25.3317C21.6003 28.958 24.487 31.985 24.487 32.0585ZM35.3024 27.5896C35.24 27.6535 35.1891 28.7145 35.1891 29.9474V32.1887H32.9807H30.7723V33.3239V34.4591H32.9807H35.1891V36.7295V39H36.2932H37.3974V36.7346V34.4692L39.6483 34.4205L41.8991 34.3718L41.9496 33.2853L42 32.199L39.7412 32.1501L37.4824 32.1013L37.435 29.7872L37.3876 27.4731H36.4016C35.8592 27.4731 35.3645 27.5255 35.3024 27.5896Z" fill="#333333" />
-                                                                        </svg></a>
-                                                                        <a style={{ margin: "3px" }} onClick={() => onImageRemove(index)}><svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
-                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
-                                                                        </svg></a>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </span> */}
+                                                            >
+                                                                Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
+                                                            </div>
+                                                        </div> : null}
+
+                                                        {/* <button onClick={onImageRemoveAll}>Upload item-images</button> */}
+
                                                     </div>
+
                                                 )}
                                             </ImageUploading>
                                         </div>
@@ -1708,78 +2182,7 @@ const EditTaskPopup = (Items: any) => {
                                     )
                                 })} */}
                     </div>
-                    <footer>
-                        <div className="d-flex justify-content-between py-2">
-                            <div>
-                                <div className="">
-                                    Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
 
-                                        {EditData.Author?.Title ? EditData.Author?.Title : ''}
-
-                                    </span>
-                                </div>
-                                <div>
-                                    Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
-                                    </span> By <span className="font-weight-normal siteColor">
-                                        {EditData.Editor?.Title ? EditData.Editor.Title : ''}
-                                    </span>
-                                </div>
-                                <div>
-                                    <a className="hreflink">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
-                                        </svg>
-                                        <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
-                                    </a>
-                                    <span> | </span>
-                                    <a className="hreflink">
-                                        Copy
-                                        Task
-                                    </a>
-                                    <span > | </span>
-                                    <a className="hreflink"> Move Task</a> |
-                                    <span>
-                                        {EditData.ID ?
-                                            <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    <span>
-                                        <a className="mx-2" target="_blank" data-interception="off"
-                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
-                                            Go To Profile Page
-                                        </a>
-                                    </span> ||
-                                    <span>
-                                        <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
-                                            Save & Add Time-Sheet
-                                        </a>
-                                    </span> ||
-
-                                    <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
-                                        <img className="mail-width mx-2"
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
-                                        Share This Task
-                                    </span> ||
-                                    <a target="_blank" className="mx-2" data-interception="off"
-                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
-                                        Open Out-Of-The-Box Form
-                                    </a>
-                                    <span >
-                                        <button className="btn btn-primary px-3"
-                                            onClick={UpdateTaskInfoFunction}>
-                                            Save
-                                        </button>
-                                        <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
-                                            Close
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </footer>
                     {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}>
                     </ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} Call={Call}></Picker>}
@@ -1794,8 +2197,9 @@ const EditTaskPopup = (Items: any) => {
                 onRenderHeader={onRenderCustomHeaderMain}
                 onDismiss={ImageCompareFunctionClosePopup}
                 isBlocking={false}
+                onRenderFooter={onRenderCustomFooterOther}
             >
-                <div className="modal-body mt-2">
+                <div className="modal-body">
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
@@ -1845,11 +2249,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 <span><RiDeleteBin6Line /></span>
                                                             </div>
                                                         </div>
-
                                                     </div>
                                                 )
                                             })}
-
                                         </div>
                                         <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -1876,77 +2278,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                 </div>
-                <footer>
-                    <div className="d-flex justify-content-between py-2">
-                        <div>
-                            <div className="">
-                                Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
 
-                                    {EditData.Author?.Title ? EditData.Author?.Title : ''}
-
-                                </span>
-                            </div>
-                            <div>
-                                Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
-                                </span> By <span className="font-weight-normal siteColor">
-                                    {EditData.Editor?.Title ? EditData.Editor.Title : ''}
-                                </span>
-                            </div>
-                            <div>
-                                <a className="hreflink">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
-                                    </svg>
-                                    <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
-                                </a>
-                                <span> | </span>
-                                <a className="hreflink">
-                                    Copy
-                                    Task
-                                </a>
-                                <span > | </span>
-                                <a className="hreflink"> Move Task</a> |
-                                <span>
-                                    <span>
-                                        {EditData.ID ?
-                                            <VersionHistory taskId={EditData.Id} listId={EditData.listId} /> : null}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <div>
-                                <span>
-                                    <a className="mx-2" target="_blank" data-interception="off"
-                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
-                                        Go To Profile Page
-                                    </a>
-                                </span> ||
-                                <span>
-                                    <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
-                                        Save & Add Time-Sheet
-                                    </a>
-                                </span> ||
-
-                                <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
-                                    <img className="mail-width mx-2"
-                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
-                                    Share This Task
-                                </span> ||
-                                <a target="_blank" className="mx-2" data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
-                                    Open Out-Of-The-Box Form
-                                </a>
-                                <span >
-
-                                    <button type="button" className="btn btn-default ms-1 px-3" onClick={ImageCustomizeFunctionClosePopup}>
-                                        Close
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
             </Panel>
             {/* ***************** this is Image customize panel *********** */}
             <Panel
@@ -1956,8 +2288,9 @@ const EditTaskPopup = (Items: any) => {
                 customWidth="100%"
                 onDismiss={ImageCustomizeFunctionClosePopup}
                 isBlocking={false}
+                onRenderFooter={onRenderCustomFooterOther}
             >
-                <div className="modal-body mt-2">
+                <div className="modal-body">
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
@@ -2502,83 +2835,85 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                 </div>
-                <footer>
-                    <div className="d-flex justify-content-between py-2">
-                        <div>
-                            <div className="">
-                                Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
 
-                                    {EditData.Author?.Title ? EditData.Author?.Title : ''}
+            </Panel>
 
-                                </span>
-                            </div>
-                            <div>
-                                Last modified <span className="font-weight-normal siteColor"> {EditData.Modified ? Moment(EditData.Modified).format("DD/MM/YYYY") : ''}
-                                </span> By <span className="font-weight-normal siteColor">
-                                    {EditData.Editor?.Title ? EditData.Editor.Title : ''}
-                                </span>
-                            </div>
-                            <div>
-                                <a className="hreflink">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
-                                    </svg>
-                                    <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
-                                </a>
-                                <span> | </span>
-                                <a className="hreflink">
-                                    Copy
-                                    Task
-                                </a>
-                                <span > | </span>
-                                <a className="hreflink"> Move Task</a> |
-                                <span>
-                                    <span>
-                                        {EditData.ID ?
-                                            <VersionHistory taskId={EditData.Id} listId={EditData.listId} /> : null}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <div>
-                                <span>
-                                    <a className="mx-2" target="_blank" data-interception="off"
-                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
-                                        Go To Profile Page
-                                    </a>
-                                </span> ||
-                                <span>
-                                    <a className="mx-2 hreflink" onClick={SaveAndAddTimeSheet} >
-                                        Save & Add Time-Sheet
-                                    </a>
-                                </span> ||
+            {/* ********************** this in hover image modal ****************** */}
+            <div className='hoverImageModal' style={{ display: hoverImageModal }}>
+                <div className="hoverImageModal-popup">
+                    <div className="hoverImageModal-container">
+                        <span style={{ color: 'white' }}>{HoverImageData[0]?.ImageName}</span>
+                        <img className="img-fluid" style={{ width: '100%', height: "450px" }} src={HoverImageData[0]?.ImageUrl}></img>
+                    </div>
+                    <footer className="justify-content-between d-flex pb-1 mx-2" style={{ color: "white" }}>
+                        <span className="mx-1"> Uploaded By :
+                            <span className="mx-1">
+                                <img style={{ width: "25px", borderRadius: "25px" }} src={HoverImageData[0]?.UserImage ? HoverImageData[0]?.UserImage : ''} />
+                            </span>
+                            {HoverImageData[0]?.UserName ? HoverImageData[0]?.UserName : ''}
+                        </span>
+                        <span className="fw-semibold">
+                            Uploaded Date : {HoverImageData[0]?.UploadeDate ? HoverImageData[0]?.UploadeDate : ''}
+                        </span>
+                    </footer>
+                </div>
+            </div>
 
-                                <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
-                                    <img className="mail-width mx-2"
-                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
-                                    Share This Task
-                                </span> ||
-                                <a target="_blank" className="mx-2" data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
-                                    Open Out-Of-The-Box Form
-                                </a>
-                                <span >
-
-                                    <button type="button" className="btn btn-default ms-1 px-3" onClick={ImageCustomizeFunctionClosePopup}>
+            {/* ********************* this is Copy Task And Move Task panel ****************** */}
+            <Panel
+                onRenderHeader={onRenderCustomHeaderCopyAndMoveTaskPanel}
+                isOpen={CopyAndMoveTaskPopup}
+                type={PanelType.custom}
+                customWidth="700px"
+                onDismiss={closeCopyAndMovePopup}
+                isBlocking={false}
+            >
+                <div className="modal-body">
+                    <div>
+                        <div className="col-md-12 p-3 select-sites-section">
+                            <div className="card rounded-0 mb-10">
+                                <div className="card-header">
+                                    <h6>Sites</h6>
+                                </div>
+                                <div className="card-body">
+                                    <ul className="quick-actions">
+                                        {SiteTypes?.map((siteData: any, index: number) => {
+                                            return (
+                                                <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
+                                                    <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
+                                                        <span className="icon-sites">
+                                                            <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
+                                                        </span> {siteData.Title}
+                                                    </a>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </div>
+                                <div className="card-footer">
+                                    <button className="btn btn-primary px-3 float-end" onClick={()=>alert("We are working on it. This feature will be live soon .....")}
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-default me-1 float-end px-3"
+                                        onClick={closeCopyAndMovePopup}
+                                    >
                                         Close
                                     </button>
-                                </span>
+                                </div>
+
                             </div>
                         </div>
                     </div>
-                </footer>
+                </div>
             </Panel>
+
         </>
     )
 }
 export default React.memo(EditTaskPopup);
-
 
 // How to use this component and require parameters
 
