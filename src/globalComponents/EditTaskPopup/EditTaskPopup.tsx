@@ -35,6 +35,7 @@ var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any;
+var SiteTypeBackupArray: any = [];
 var ImageBackupArray: any = [];
 const EditTaskPopup = (Items: any) => {
     const [images, setImages] = React.useState([]);
@@ -100,6 +101,15 @@ const EditTaskPopup = (Items: any) => {
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
     // }
+
+    React.useEffect(() => {
+        loadTaskUsers();
+        GetEditData();
+        getCurrentUserDetails();
+        getSmartMetaData();
+        // Descriptions();
+    }, [])
+
     const Call = React.useCallback((PopupItemData: any, type: any) => {
         setIsComponent(false);
         setIsComponentPicker(false);
@@ -168,13 +178,7 @@ const EditTaskPopup = (Items: any) => {
         setIsServices(true);
         setShareWebComponent(item);
     }
-    React.useEffect(() => {
-        loadTaskUsers();
-        GetEditData();
-        getCurrentUserDetails();
-        getSmartMetaData();
-        // Descriptions();
-    }, [])
+
     const setPriority = function (val: any) {
         setPriorityStatus(val)
     }
@@ -194,11 +198,16 @@ const EditTaskPopup = (Items: any) => {
 
         siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites')
         siteConfig?.map((site: any) => {
-            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "QA" && site.Title !== "SDC Sites") {
+                site.BtnStatus = false;
                 tempArray.push(site);
             }
         })
         setSiteTypes(tempArray);
+        tempArray?.map((tempData: any) => {
+            SiteTypeBackupArray.push(tempData);
+        })
+
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];
@@ -359,6 +368,12 @@ const EditTaskPopup = (Items: any) => {
                         })
                     })
                 }
+
+                setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
+                setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
+                setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
+
+
                 item.TaskAssignedUsers = AssignedUsers;
                 item.TaskApprovers = ApproverData;
                 if (item.Attachments) {
@@ -805,7 +820,6 @@ const EditTaskPopup = (Items: any) => {
             })
         }
 
-
         if (smartComponentData != undefined && smartComponentData?.length > 0) {
             smartComponentData?.map((com: any) => {
                 if (smartComponentData != undefined && smartComponentData?.length >= 0) {
@@ -829,35 +843,38 @@ const EditTaskPopup = (Items: any) => {
             TaskAssignedTo?.map((taskInfo) => {
                 AssignedToIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                EditData.AssignedTo?.map((taskInfo: any) => {
-                    AssignedToIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+        //         EditData.AssignedTo?.map((taskInfo: any) => {
+        //             AssignedToIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
                 TeamMemberIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                EditData.Team_x0020_Members?.map((taskInfo: any) => {
-                    TeamMemberIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+        //         EditData.Team_x0020_Members?.map((taskInfo: any) => {
+        //             TeamMemberIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
-                EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
-                    ResponsibleTeamIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
+        //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
+        //             ResponsibleTeamIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         try {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
@@ -905,7 +922,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
 
-//    ************* this is team configuration call Back function **************
+    //    ************* this is team configuration call Back function **************
 
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
         if (teamConfigData?.AssignedTo?.length > 0) {
@@ -1101,6 +1118,13 @@ const EditTaskPopup = (Items: any) => {
     }
 
     //***************** This is for image Upload Section  Functions *****************
+
+    let contentTarget = document.getElementById("CopyImageUpload"); 
+    contentTarget.onpaste = (e) => { 
+        console.log("On Paste Image Data =====",e)
+    }
+
+
     const onUploadImageFunction = async (
         imageList: ImageListType,
         addUpdateIndex: number[] | undefined) => {
@@ -1251,12 +1275,35 @@ const EditTaskPopup = (Items: any) => {
         setCopyAndMoveTaskPopup(false)
     }
 
+    const selectSiteTypeFunction = (siteData: any) => {
+        let tempArray: any = [];
+        SiteTypeBackupArray?.map((siteItem: any) => {
+            if (siteItem.Id == siteData.Id) {
+                siteItem.BtnStatus = true;
+                tempArray.push(siteItem);
+            } else {
+                siteItem.BtnStatus = false;
+                tempArray.push(siteItem);
+            }
+        })
+        setSiteTypes(tempArray);
+    }
+
+    const copyAndMoveTaskFunction =(FunctionsType:string)=>{
+        if(FunctionsType == "Move Task"){
+
+        }
+        if(FunctionsType == "Move Task"){
+
+        }
+    }
+
 
     // ************** this is custom header and custom Footers section functions for panel *************
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="border-bottom d-flex full-width pb-1" >
+            <div className="d-flex full-width pb-1" >
                 {console.log("all sites details ======", SiteTypes)}
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
@@ -1271,7 +1318,7 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomHeaderCopyAndMoveTaskPanel = () => {
         return (
-            <div className="border-bottom d-flex full-width pb-1" >
+            <div className="d-flex full-width pb-1" >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
@@ -2064,7 +2111,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 : null}
                                                         </div>
                                                         {UploadBtnStatus ?
-                                                            <div>
+                                                            <div  id="CopyImageUpload">
                                                                 <div className="drag-upload-image mt-1"
                                                                     style={isDragging ? { border: '1px solid red' } : undefined}
                                                                     onClick={onImageUpload}
@@ -2820,15 +2867,14 @@ const EditTaskPopup = (Items: any) => {
                 onRenderHeader={onRenderCustomHeaderCopyAndMoveTaskPanel}
                 isOpen={CopyAndMoveTaskPopup}
                 type={PanelType.custom}
-                customWidth="850px"
+                customWidth="700px"
                 onDismiss={closeCopyAndMovePopup}
                 isBlocking={false}
             >
                 <div className="modal-body">
                     <div>
-                        <h5>We Are Working On It. This Feature Will Be Live Soon..... </h5>
-                        <div className="col-md-12 pad10">
-                            <fieldset className="mb-10">
+                        <div className="col-md-12 p-3 select-sites-section">
+                            <div className="card rounded-0 mb-10">
                                 <div className="card-header">
                                     <h6>Sites</h6>
                                 </div>
@@ -2836,8 +2882,8 @@ const EditTaskPopup = (Items: any) => {
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             return (
-                                                <li key={siteData.Id} className="mx-1 p-2 position-relative bg-siteColor text-center  mb-2">
-                                                    <a className="text-white text-decoration-none">
+                                                <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
+                                                    <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
                                                         <span className="icon-sites">
                                                             <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
                                                         </span> {siteData.Title}
@@ -2848,16 +2894,20 @@ const EditTaskPopup = (Items: any) => {
                                     </ul>
                                 </div>
                                 <div className="card-footer">
-                                    <button className="btn btn-primary px-3"
+                                    <button className="btn btn-primary px-3 float-end"
                                     >
                                         Save
                                     </button>
-                                    <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
+                                    <button
+                                        type="button"
+                                        className="btn btn-default me-1 float-end px-3"
+                                        onClick={closeCopyAndMovePopup}
+                                    >
                                         Close
                                     </button>
                                 </div>
 
-                            </fieldset>
+                            </div>
                         </div>
                     </div>
                 </div>
