@@ -2,6 +2,7 @@ import * as React from "react";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Version } from '@microsoft/sp-core-library';
+import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import * as moment from "moment";
@@ -156,6 +157,17 @@ const LinkedComponent = (item: any) => {
         setComponentsData(ComponentsData);
         setModalIsOpen(true)
     }
+    const onRenderCustomHeader = (
+        ) => {
+            return (
+                <>
+                    <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                        {`Select Services`}
+                    </div>
+                    <Tooltip />
+                </>
+            );
+        };
     const sortBy = () => {
 
         const copy = data
@@ -180,6 +192,7 @@ const LinkedComponent = (item: any) => {
             type={PanelType.large}
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
+            onRenderHeader={onRenderCustomHeader}
             isBlocking={false}
         >
             <div className="serviepannelgreena">
@@ -348,7 +361,7 @@ const LinkedComponent = (item: any) => {
                                                                             >{item.Title}
                                                                             </a>
                                                                             {item.Child != undefined &&
-                                                                                <span>({item.Child.length})</span>
+                                                                                <span className="ms-1">({item.Child.length})</span>
                                                                             }
 
                                                                             {item.Short_x0020_Description_x0020_On != null &&
@@ -453,7 +466,7 @@ const LinkedComponent = (item: any) => {
                                                                                                 >{childitem.Title}
                                                                                                 </a>
                                                                                                 {childitem.Child.length > 0 &&
-                                                                                                    <span>({childitem.Child.length})</span>
+                                                                                                    <span className="ms-1">({childitem.Child.length})</span>
                                                                                                 }
 
                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -532,7 +545,7 @@ const LinkedComponent = (item: any) => {
                                                                                                                 >{childinew.Title}
                                                                                                                 </a>
                                                                                                                 {childinew.Child.length > 0 &&
-                                                                                                                    <span>({childinew.Child.length})</span>
+                                                                                                                    <span className="ms-1">({childinew.Child.length})</span>
                                                                                                                 }
 
                                                                                                                 {childinew.Short_x0020_Description_x0020_On != null &&

@@ -77,7 +77,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     
     let txtComment = this.state.CommenttoPost;
     if (txtComment != ''){
-     var date= moment(new Date()).format('dd MMM yyyy HH:mm')
+    //  var date= moment(new Date()).format('dd MMM yyyy HH:mm')
       let temp = {
         AuthorImage: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['userImage'] : "", 
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
@@ -113,6 +113,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         AuthorName: this.props.CurrentUser != null &&  this.props.CurrentUser.length > 0 ? this.props.CurrentUser[0]['Title'] : "", 
         // Created: new Date().toLocaleString('default', { day:'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
         Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Title:txtComment
       };
       //Add object in feedback
       
@@ -353,17 +354,19 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         })}
 
                 
-        <Modal isOpen={this.state.isModalOpen} isBlocking={false} containerClassName="custommodalpopup">
-            <div className="parentDiv">
-            <span className="closeButtonRow"><img src={require('../assets/cross.png')} className="modal_close_image" onClick={(e) =>this.CloseModal(e) }/></span>
-                <span><h6>Update Comment</h6></span>
-                <div style={{width:'99%', marginTop:'2%', padding:'2%'}}><textarea id="txtUpdateComment" rows={6} onChange={(e)=>this.handleUpdateComment(e)} style={{width: '100%',  marginLeft: '3px'}} >{this.state.CommenttoUpdate}</textarea></div>
-                <div style={{display:'flex', marginTop: '2%',float: 'right', width:'19%', marginBottom:'2%'}}>
-                  <div><button className="btn btnPrimary" onClick={(e) =>this.updateComment() }>Save</button>
-                  <button className='btn btn-default round 0 ms-1' onClick={(e) =>this.CloseModal(e) }>Cancel</button></div>
-                  
-                </div>
-            </div>
+        <Modal isOpen={this.state.isModalOpen} isBlocking={false} containerClassName="custommodalpopup p-2">
+
+        <div className="modal-header mb-1">
+        <h5 className="modal-title">Update Comment</h5>
+        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"  onClick={(e) =>this.CloseModal(e) }></button>
+      </div>
+      <div className="modal-body">
+      <div className='col'><textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e)=>this.handleUpdateComment(e)}  >{this.state.CommenttoUpdate}</textarea></div>
+      </div>
+      <footer className='text-end mt-2'>
+      <button className="btn btnPrimary " onClick={(e) =>this.updateComment() }>Save</button>
+      <button className='btn btn-default ms-1' onClick={(e) =>this.CloseModal(e) }>Cancel</button>
+      </footer>
           </Modal>
       </div> 
     );

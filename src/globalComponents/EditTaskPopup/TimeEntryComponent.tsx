@@ -1372,7 +1372,7 @@ function TimeEntryPopup(item: any) {
                         update['TaskTime'] = child.TaskTime;
                         update['TaskTimeInMinute'] = child.TaskTimeInMin;
                         update['TaskDate'] = Dateee != 'Invalid date' && Dateee != "" && Dateee != undefined ? Dateee : child.TaskDate;
-                        update['Description'] = child.Description
+                        update['Description'] = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
                         subItem.AdditionalTime.push(update)
                         UpdatedData = subItem.AdditionalTime
                     }
@@ -1869,7 +1869,7 @@ function TimeEntryPopup(item: any) {
                                                 ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                 name="timeSpent"
                                                 ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                value={TimeInMinutes}
+                                                value={TimeInMinutes>0?TimeInMinutes:0}
                                                 onChange={(e) => setNewData({ ...newData, TimeSpentInMinute: e.target.value })} />
 
                                         </div>
@@ -1918,7 +1918,7 @@ function TimeEntryPopup(item: any) {
                                     <div className="row mb-2">
                                         <div className="col-sm-6">
                                             <label>Time Spent (in hours)</label>
-                                            <input className="form-control" type="text" value={TimeInHours} onChange={(e) => setPostData({ ...newData, TaskTime: e.target.value })}
+                                            <input className="form-control" type="text" value={TimeInHours>0?TimeInHours:0} onChange={(e) => setPostData({ ...newData, TaskTime: e.target.value })}
                                             />
                                         </div>
                                     </div>
@@ -2122,7 +2122,7 @@ function TimeEntryPopup(item: any) {
                                                                 ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                                                                 name="timeSpent"
                                                                 ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                                value={TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin} />
+                                                                value={TimeInMinutes>0?TimeInMinutes : child.TaskTimeInMin} />
 
                                                         </div>
                                                         <div
@@ -2130,7 +2130,7 @@ function TimeEntryPopup(item: any) {
                                                             <div className="Quaterly-Time">
                                                                 <label className="full_width"></label>
                                                                 <button className="btn btn-primary"
-                                                                    title="Decrease by 15 Min" disabled={TimeInMinutes <= 0 ? true : false}
+                                                                    title="Decrease by 15 Min" 
                                                                     onClick={() => changeTimesDecEdit('15', child, 'EditTask')}><i className="fa fa-minus"
                                                                         aria-hidden="true"></i>
 
@@ -2168,7 +2168,7 @@ function TimeEntryPopup(item: any) {
                                                     <div className="row">
                                                         <div className="col-sm-6 ">
                                                             <label>Time Spent (in hours)</label>
-                                                            <input className="form-control" type="text" value={TimeInHours != 0 ? TimeInHours : child.TaskTime}
+                                                            <input className="form-control" type="text" value={TimeInHours>0? TimeInHours : child.TaskTime}
                                                                 onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
                                                         </div>
                                                     </div>
@@ -2388,7 +2388,7 @@ function TimeEntryPopup(item: any) {
                                                             <div className="Quaterly-Time">
                                                                 <label className="full_width"></label>
                                                                 <button className="btn btn-primary"
-                                                                    title="Decrease by 15 Min" disabled={TimeInMinutes <= 0 ? true : false}
+                                                                    title="Decrease by 15 Min" 
                                                                     onClick={() => changeTimesDecEdit('15', child, 'EditTask')}>
                                                                     <i className="fa fa-minus"
                                                                         aria-hidden="true"></i>

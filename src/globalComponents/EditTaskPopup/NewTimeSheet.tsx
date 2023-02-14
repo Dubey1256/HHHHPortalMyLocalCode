@@ -11,11 +11,11 @@ const NewTameSheetComponent = (props: any) => {
         console.log(TeamConfig)
         props?.TeamConfigDataCallBack(dt);
     }
-    var itemInfo = {
-        siteURL: TeamConfigInfo?.siteUrl,
-        listName: TeamConfigInfo?.listName,
-        itemID: TeamConfigInfo?.Id
-    }
+    // var itemInfo = {
+    //     siteURL: TeamConfigInfo?.siteUrl,
+    //     listName: TeamConfigInfo?.listName,
+    //     itemID: TeamConfigInfo?.Id
+    // }
     return (
         <div>
             <div className="col-sm-7">

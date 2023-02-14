@@ -19,6 +19,10 @@ import { any, number } from 'prop-types';
 import CheckboxTree from 'react-checkbox-tree';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
+import { GlobalConstants } from '../../../globalComponents/LocalCommon';
+import * as globalCommon from '../../../globalComponents/globalCommon';
+import { typography } from '@mui/system';
+import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 
 
 
@@ -26,6 +30,13 @@ import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 
 var filt: any = '';
 var siteConfig: any = [];
+var finalData: any = []
+var ComponentsDataCopy: any = [];
+var SubComponentsDataCopy: any = [];
+var FeatureDataCopy: any = [];
+var array: any = [];
+var AllTask: any = [];
+var serachTitle: any = '';
 function ComponentTable(SelectedProp: any) {
 
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -34,11 +45,16 @@ function ComponentTable(SelectedProp: any) {
     const [Title, setTitle] = React.useState()
     const [ComponentsData, setComponentsData] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
+    const [TotalTask, setTotalTask] = React.useState([])
+    const [TaggedAllTask, setTaggedAllTask] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
     const [table, setTable] = React.useState(data);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
+    const [show, setShow] = React.useState(false);
+    const [showChild, setShowChild] = React.useState(false);
+    const [showSubChild, setShowSubChild] = React.useState(false);
     const [state, setState] = React.useState([]);
     const [filterGroups, setFilterGroups] = React.useState([])
     const [filterItems, setfilterItems] = React.useState([])
@@ -54,6 +70,7 @@ function ComponentTable(SelectedProp: any) {
     const [IsUpdated, setIsUpdated] = React.useState('');
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [Isshow, setIsshow] = React.useState(false);
+    const [checkedList, setCheckedList] = React.useState([]);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
     var IsExitSmartfilter = function (array: any, Item: any) {
@@ -128,154 +145,426 @@ function ComponentTable(SelectedProp: any) {
         // setState(state)
     }
     const Clearitem = () => {
-        // setData(maini...[maidataBackup])
+
+        maidataBackup.forEach(function (val: any) {
+            val.show = false;
+            if (val.childs != undefined) {
+                val.childs.forEach(function (i: any) {
+                    i.show = false
+                    if (i.childs != undefined) {
+                        i.childs.forEach(function (subc: any) {
+                            subc.show = false
+                            if (subc.childs != undefined) {
+                                subc.childs.forEach(function (last: any) {
+                                    last.show = false
+                                })
+                            }
+                        })
+
+                    }
+                })
+            }
+        })
+        filterItems.forEach(function (itemm: any) {
+            itemm.Selected = false;
+        })
+
+        setSubComponentsData(SubComponentsDataCopy);
+        setFeatureData(FeatureDataCopy);
+        setmaidataBackup(ComponentsDataCopy)
+        setShowSelectdSmartfilter([])
+
+        setState([])
+
+
         setData(maidataBackup)
         // const { checked } = e.target;
 
     }
     const Updateitem = () => {
+        var component: any[] = []
+        var subcomponent: any[] = []
+        var feature: any[] = []
         var filters: any[] = []
-        var CategoryItems: any = [];
-        var TeamUsers: any = [];
-        var IsTeamUsers: any = false;
-        var PriorityItems: any = [];
-        var isPrioritySelected: any = false;
-        var ResponsibilityItems: any = [];
-        var isResponsibilitySelected: any = false;
-        var PortfolioItems: any = [];
-        var isPortfolioSelected = false;
+        var finalArray: any = []
+        var RootData: any = []
+        var ALTask: any = []
+
+
         if (state.length == 0) {
             setData(maidataBackup)
         }
-        else {
-            map(maidataBackup, (item) => {
 
-                map(state, (select) => {
-                    if (select.Selected)
-                        switch (select.TaxType) {
-                            case 'Portfolio':
-                                if (item.Item_x0020_Type != undefined && item.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
-                                    item.flag = true
-                                    PortfolioItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.Item_x0020_Type != undefined && child.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
-                                            child.flag = true
-                                            PortfolioItems.push(item);
-                                        }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.Item_x0020_Type != undefined && subchild.Item_x0020_Type == select.Title && !isItemExists(PortfolioItems, item.Id)) {
-                                                    child.flag = true
-                                                    PortfolioItems.push(item);
-                                                }
-                                            })
-                                        }
+
+        if (state.length > 0) {
+            maidataBackup.forEach(function (val: any) {
+                val.Child = []
+                if (val.childs != undefined) {
+                    val.childs.forEach(function (type: any) {
+                        type.Child = []
+                        if (type.childs != undefined) {
+                            type.childs.forEach(function (value: any) {
+                                value.Child = []
+                                if (value.childs != undefined) {
+                                    value.childs.forEach(function (last: any) {
+                                        last.Child = []
+
                                     })
                                 }
-                                break;
+                            })
+                        }
+                    })
+                }
+            })
 
-                            case 'Type':
-                                if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
-                                    item.flag = true
-                                    CategoryItems.push(item);
+            $.each(finalData != undefined && finalData.length > 0 ? finalData : maidataBackup, function (index: any, item) {
+
+                $.each(state, function (index: any, select) {
+
+                    if (select.TaxType == 'Team Members') {
+
+                        if (item.AssignedTo != null) {
+
+                            item.TeamLeaderUser.forEach(function (typee: any) {
+                                if (typee.Title == select.Title) {
+                                    RootData.push(item);
                                 }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.SharewebTaskType != undefined && child.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
-                                            child.flag = true
-                                            CategoryItems.push(item);
-                                        }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.SharewebTaskType != undefined && subchild.SharewebTaskType.Title == select.Title && !isItemExists(CategoryItems, item.Id)) {
-                                                    child.flag = true
-                                                    CategoryItems.push(item);
-                                                }
-                                            })
+                            })
+                        }
+                        if (item.childs !== undefined) {
+                            //   item.Child = []
+                            item.childs.forEach(function (type: any) {
+                                if (type.TeamLeaderUser != undefined) {
+                                    type.TeamLeaderUser.forEach(function (typee: any) {
+                                        if (typee.Title == select.Title) {
+                                            item.show = true;
+                                            item.Child.push(type);
+                                            RootData.push(item);
                                         }
                                     })
-                                }
-                                break;
 
-                            case 'Priority':
-                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                    item.flag = true
-                                    PriorityItems.push(item);
+
                                 }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                            child.flag = true
-                                            PriorityItems.push(item);
-                                        }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                                    child.flag = true
-                                                    PriorityItems.push(item);
+                                if (type.childs !== undefined) {
+                                    //   type.Child = []
+                                    type.childs.forEach(function (vall: any) {
+                                        if (vall.TeamLeaderUser != undefined) {
+                                            vall.TeamLeaderUser.forEach(function (typee: any) {
+                                                if (typee.Title == select.Title) {
+                                                    type.show = true
+                                                    type.Child.push(vall);
+                                                    RootData.push(item)
                                                 }
                                             })
-                                        }
-                                    })
-                                }
-                                break;
 
-                            case 'Sites':
-                                if (item.Priority != undefined && item.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                    item.flag = true
-                                    PriorityItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.Priority != undefined && child.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                            child.flag = true
-                                            PriorityItems.push(item);
+
                                         }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.Priority != undefined && subchild.Priority == select.Title && !isItemExists(PriorityItems, item.Id)) {
-                                                    child.flag = true
-                                                    PriorityItems.push(item);
+                                        if (vall.childs !== undefined) {
+                                            //  vall.Child = []
+                                            vall.childs.forEach(function (user: any, index: any) {
+                                                if (user.TeamLeaderUser != undefined) {
+                                                    user.TeamLeaderUser.forEach(function (tyrr: any) {
+                                                        if (tyrr.Title == select.Title) {
+                                                            vall.show = true
+                                                            vall.Child.push(user)
+                                                        }
+                                                    })
                                                 }
+
+
                                             })
                                         }
+
+
                                     })
                                 }
-                                break;
 
-                            case 'Team Members':
-                                if (item.TeamLeaderUserTitle != undefined && item.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title) > -1 && !isItemExists(ResponsibilityItems, item.Id)) {
-                                    item.flag = true
-                                    ResponsibilityItems.push(item);
-                                }
-                                if (item.childs != undefined && item.childs.length > 0) {
-                                    map(item.childs, (child) => {
-                                        if (child.TeamLeaderUserTitle != undefined && child.TeamLeaderUserTitle.toLowerCase().indexOf(select.Title && !isItemExists(ResponsibilityItems, item.Id))) {
-                                            child.flag = true
-                                            ResponsibilityItems.push(item);
-                                        }
-                                        if (child.childs != undefined && child.childs.length > 0) {
-                                            map(child.childs, (subchild) => {
-                                                if (subchild.TeamLeaderUserTitle != undefined && subchild.TeamLeaderUserTitle == select.Title && !isItemExists(ResponsibilityItems, item.Id)) {
-                                                    child.flag = true
-                                                    ResponsibilityItems.push(item);
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                                break;
-
+                            })
 
                         }
+
+                    }
+                    if (select.TaxType == 'Sites') {
+
+                        if (item.childs !== undefined) {
+                            //item.Child = []
+                            item.childs.forEach(function (type: any) {
+                                if (select.Title == 'Foundation' && item.Title == 'Others') {
+                                    select.childs.forEach(function (value: any) {
+                                        if (type.siteType == value.Title) {
+                                            item.show = true;
+                                            item.Child.push(type);
+                                            RootData.push(item);
+                                        }
+                                    })
+                                }
+
+                                if (select.Title != 'Foundation' && type.siteType == select.Title) {
+                                    item.show = true;
+                                    item.Child.push(type);
+                                    RootData.push(item);
+                                }
+
+
+
+
+                                if (type.childs !== undefined) {
+                                    //type.Child = []
+                                    type.childs.forEach(function (vall: any) {
+                                        if (select.Title == 'Foundation') {
+                                            select.childs.forEach(function (value: any) {
+                                                if (type.siteType == value.Title) {
+                                                    type.show = true
+                                                    type.Child.push(vall);
+                                                    RootData.push(item);
+                                                }
+                                            })
+                                        }
+
+                                        if (select.Title != 'Foundation' && vall.siteType == select.Title) {
+                                            type.show = true
+                                            type.Child.push(vall);
+                                            RootData.push(item)
+                                        }
+
+
+
+
+                                        if (vall.childs !== undefined) {
+                                            // vall.Child = []
+                                            vall.childs.forEach(function (user: any, index: any) {
+                                                if (select.Title == 'Foundation') {
+                                                    select.childs.forEach(function (value: any) {
+                                                        if (type.siteType == value.Title) {
+                                                            vall.show = true
+                                                            vall.Child.push(vall);
+                                                        }
+                                                    })
+                                                }
+
+                                                if (select.Title != 'Foundation' && user.siteType == select.Title) {
+                                                    vall.show = true
+                                                    vall.Child.push(user)
+                                                }
+
+                                            })
+                                        }
+
+
+                                    })
+                                }
+
+                            })
+
+                        }
+
+                    }
+                    if (select.TaxType == 'Priority') {
+
+                        if (item.Priority_x0020_Rank
+                            == select.Title) {
+                            RootData.push(item);
+                        }
+
+
+                        if (item.childs !== undefined) {
+                            item.childs.forEach(function (type: any) {
+
+                                if (type.Priority_x0020_Rank == select.Title) {
+                                    item.show = true;
+                                    item.Child.push(type);
+                                    RootData.push(item);
+                                }
+
+
+                                if (type.childs !== undefined) {
+                                    type.childs.forEach(function (vall: any) {
+
+
+                                        if (vall.Priority_x0020_Rank == select.Title) {
+                                            type.show = true;
+                                            type.Child.push(vall);
+                                            RootData.push(item);
+                                        }
+
+
+                                        if (vall.childs !== undefined) {
+                                            vall.childs.forEach(function (user: any, index: any) {
+
+
+                                                if (user.Priority_x0020_Rank == select.Title) {
+                                                    vall.show = true;
+                                                    vall.Child.push(user);
+                                                    RootData.push(item);
+                                                }
+
+
+                                            })
+                                        }
+
+
+                                    })
+                                }
+
+                            })
+                        }
+
+
+
+                    }
+                    if (select.TaxType == 'Type') {
+
+                        if (item.SharewebTaskType != undefined && item.SharewebTaskType.Title == select.Title) {
+                            RootData.push(item);
+                        }
+
+
+                        if (item.childs !== undefined) {
+                            item.childs.forEach(function (type: any) {
+
+                                if (type.SharewebTaskType != undefined && type.SharewebTaskType.Title == select.Title) {
+                                    item.show = true;
+                                    item.Child.push(type);
+                                    RootData.push(item);
+                                }
+
+
+                                if (type.childs !== undefined) {
+                                    type.childs.forEach(function (vall: any) {
+
+
+                                        if (vall.SharewebTaskType != undefined && vall.SharewebTaskType.Title == select.Title) {
+                                            type.show = true;
+                                            type.Child.push(vall);
+                                            RootData.push(item);
+                                        }
+
+
+                                        if (vall.childs !== undefined) {
+                                            vall.childs.forEach(function (user: any, index: any) {
+
+
+                                                if (user.SharewebTaskType != undefined && user.SharewebTaskType.Title == select.Title) {
+                                                    vall.show = true;
+                                                    vall.Child.push(user);
+                                                    RootData.push(item);
+                                                }
+
+
+                                            })
+                                        }
+
+
+                                    })
+                                }
+
+                            })
+                        }
+
+
+
+                    }
+                    if (select.TaxType == 'Portfolio') {
+
+
+
+                        if (item.childs !== undefined) {
+                            item.childs.forEach(function (type: any) {
+
+                                if (type.Item_x0020_Type != undefined && type.Item_x0020_Type == select.Title) {
+                                    item.show = true;
+                                    item.Child.push(type);
+                                    RootData.push(item);
+                                }
+
+
+                                if (type.childs !== undefined) {
+                                    type.childs.forEach(function (vall: any) {
+
+
+                                        if (vall.Item_x0020_Type != undefined && vall.Item_x0020_Type == select.Title) {
+                                            type.show = true;
+                                            type.Child.push(vall);
+                                            RootData.push(item);
+                                        }
+
+
+
+
+                                    })
+                                }
+
+                            })
+                        }
+
+
+
+                    }
+
+
                 })
+
+
+
+
+
+            })
+            RootData.forEach(function (newItem: any) {
+                newItem.childs = []
+                if (newItem.Child != undefined) {
+                    newItem.Child.forEach(function (val: any) {
+                        newItem.childs.push(val)
+                        if (val.Child != undefined) {
+                            val.Child.forEach(function (subVal: any) {
+                                subVal.childs = []
+                                if (subVal.Child != undefined) {
+                                    subVal.childs.push(subVal)
+                                }
+                            })
+
+                        }
+                    })
+
+                }
             })
 
         }
+
+        finalData = RootData.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+        finalData.forEach(function (com: any) {
+            if (com.Item_x0020_Type == 'Component') {
+                component.push(com)
+            }
+            if (com.childs != undefined && com.Title == 'Others') {
+                com.childs.forEach((value: any) => {
+                    ALTask.push(value)
+                })
+            }
+            if (com.childs != undefined) {
+                com.childs.forEach(function (sub: any) {
+                    if (sub.Item_x0020_Type == 'SubComponent') {
+                        subcomponent.push(com)
+                    }
+                    if (sub.childs != undefined) {
+                        sub.childs.forEach(function (fea: any) {
+                            if (fea.Item_x0020_Type == 'Feature') {
+                                feature.push(com)
+                            }
+                        })
+                    }
+                })
+
+
+            }
+            setTotalTask(ALTask)
+            setSubComponentsData(subcomponent);
+            setFeatureData(feature);
+            setComponentsData(component);
+        })
         if (state.length > 0)
-            setData(CategoryItems)
+            setData(finalData)
 
 
     }
@@ -312,6 +601,7 @@ function ComponentTable(SelectedProp: any) {
                     $.each(AllTasksMatches, function (index: any, item: any) {
                         item.isDrafted = false;
                         item.flag = true;
+                        item.TitleNew = item.Title;
                         item.siteType = config.Title;
                         item.childs = [];
                         item.listId = config.listId;
@@ -348,7 +638,7 @@ function ComponentTable(SelectedProp: any) {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
 
-                                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                                 users.ItemCover = users.Item_x0020_Cover;
                                                 result.TeamLeaderUser.push(users);
                                                 result.TeamLeaderUserTitle += users.Title + ';';
@@ -362,7 +652,7 @@ function ComponentTable(SelectedProp: any) {
                                 map(result.Team_x0020_Members.results, (Assig: any) => {
                                     if (Assig.Id != undefined) {
                                         map(TaskUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                                 users.ItemCover = users.Item_x0020_Cover;
                                                 result.TeamLeaderUser.push(users);
                                                 result.TeamLeaderUserTitle += users.Title + ';';
@@ -407,7 +697,7 @@ function ComponentTable(SelectedProp: any) {
     };
     const handleOpen = (item: any) => {
         item.show = item.show = item.show == true ? false : true;
-        setData(maidataBackup => ([...maidataBackup]));
+        setData(data => ([...data]));
     };
     const handleOpenAll = () => {
         var Isshow1: any = Isshow == true ? false : true;
@@ -476,7 +766,55 @@ function ComponentTable(SelectedProp: any) {
         $.each(searchTerms, function (index: any, val: any) {
             if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
                 isSearchTermAvailable = true;
+                getHighlightdata(item, val.toLowerCase());
 
+            } else
+                isSearchTermAvailable = false;
+        })
+        return isSearchTermAvailable;
+    }
+    var stringToArray = function (input: any) {
+        if (input) {
+            return input.match(/\S+/g);
+        } else {
+            return [];
+        }
+    };
+    var getRegexPattern = function (keywordArray: any) {
+        var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
+        return new RegExp(pattern, "gi");
+    };
+    var getHighlightdata = function (item: any, searchTerms: any) {
+        var keywordList = [];
+        if (serachTitle != undefined && serachTitle != '') {
+            keywordList = stringToArray(serachTitle);
+        } else {
+            keywordList = stringToArray(serachTitle);
+        }
+        var pattern: any = getRegexPattern(keywordList);
+        //let Title :any =(...item.Title)
+        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+        // item.Title = item.Title;
+        keywordList = [];
+        pattern = '';
+    }
+    var getSearchTermAvialable = function (searchTerms: any, item: any) {
+        var isSearchTermAvailable = true;
+        searchTerms.forEach((val: any) => {
+            if (isSearchTermAvailable && (item.Title != undefined && item.Title.toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+                isSearchTermAvailable = true;
+                getHighlightdata(item, searchTerms[0]);
+            } else if (item.Synonyms != undefined && item.Synonyms != '') {
+                let flag = false;
+                item.Synonyms.forEach((Synonyms: any) => {
+                    if (isSearchTermAvailable && (Synonyms.Title != undefined && Synonyms.Title.toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+                        isSearchTermAvailable = true;
+                        getHighlightdata(item, searchTerms[0]);
+                        flag = true;
+                    }
+                })
+                if (flag == false)
+                    isSearchTermAvailable = false;
             } else
                 isSearchTermAvailable = false;
         })
@@ -484,9 +822,34 @@ function ComponentTable(SelectedProp: any) {
     }
     let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
         setSearch(e.target.value.toLowerCase());
+        serachTitle = e.target.value.toLowerCase();
         var Title = titleName;
 
-        var AllFilteredTagNews = [];
+        var AllFilteredTagNews: any = [];
+        var finalOthersData: any = []
+        var ALllTAsk: any = []
+        var childData: any = [];
+        var subChild: any = [];
+        var subChild2: any = [];
+        AllFilteredTagNews.forEach(function (val: any) {
+            val.Child = []
+            if (val.childs != undefined) {
+                val.childs.forEach(function (type: any) {
+                    type.Child = []
+                    if (type.childs != undefined) {
+                        type.childs.forEach(function (value: any) {
+                            value.Child = []
+                            if (value.childs != undefined) {
+                                value.childs.forEach(function (last: any) {
+                                    last.Child = []
+
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
         var filterglobal = e.target.value.toLowerCase();
         if (filterglobal != undefined && filterglobal.length >= 1) {
             var searchTerms = stringToArray(filterglobal);
@@ -495,6 +858,10 @@ function ComponentTable(SelectedProp: any) {
                 item.isSearch = true;
                 item.show = false;
                 item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
+                if (item.flag == true) {
+                    AllFilteredTagNews.push(item)
+                }
+
                 if (item.childs != undefined && item.childs.length > 0) {
                     $.each(item.childs, function (parentIndex: any, child1: any) {
                         child1.flag = false;
@@ -505,6 +872,12 @@ function ComponentTable(SelectedProp: any) {
                             data[pareIndex].flag = true;
                             item.childs[parentIndex].show = true;
                             data[pareIndex].show = true;
+                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                AllFilteredTagNews.push(item)
+                            }
+                            childData.push(child1)
+                            ALllTAsk.push(item)
+
                         }
                         if (child1.childs != undefined && child1.childs.length > 0) {
                             $.each(child1.childs, function (index: any, subchild: any) {
@@ -518,6 +891,13 @@ function ComponentTable(SelectedProp: any) {
                                     item.childs[parentIndex].show = true;
                                     data[pareIndex].flag = true;
                                     data[pareIndex].show = true;
+                                    if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                        AllFilteredTagNews.push(item)
+                                    }
+                                    if (!isItemExistsNew(childData, child1))
+                                        childData.push(child1)
+                                    subChild.push(subchild)
+
                                 }
                                 if (subchild.childs != undefined && subchild.childs.length > 0) {
                                     $.each(subchild.childs, function (childindex: any, subchilds: any) {
@@ -534,6 +914,15 @@ function ComponentTable(SelectedProp: any) {
                                             item.childs[parentIndex].show = true;
                                             data[pareIndex].flag = true;
                                             data[pareIndex].show = true;
+                                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                                AllFilteredTagNews.push(item)
+                                            }
+                                            if (!isItemExistsNew(childData, child1))
+                                                childData.push(child1)
+                                            if (!isItemExistsNew(subChild, subChild))
+                                                subChild.push(subChild)
+                                            subChild2.push(subchilds)
+
                                         }
                                     })
                                 }
@@ -542,8 +931,35 @@ function ComponentTable(SelectedProp: any) {
 
                     })
                 }
+
             })
-            //   getFilterLength();
+            const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const AllDataTaskk = ALllTAsk.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const SData = childData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const FData = subChild.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            if (AllDataTaskk != undefined) {
+                AllDataTaskk.forEach((newval: any) => {
+                    if (newval.Title == 'Others' && newval.childs != undefined) {
+                        newval.forEach((valllA: any) => {
+                            finalOthersData.push(valllA)
+                        })
+                    }
+
+                })
+            }
+
+            setTotalTask(finalOthersData)
+            setSubComponentsData(SData);
+            setFeatureData(FData);
+            setComponentsData(CData);
         } else {
             //  ungetFilterLength();
             // setData(data => ([...maidataBackup]));
@@ -553,7 +969,6 @@ function ComponentTable(SelectedProp: any) {
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
 
     };
-
 
     // var TaxonomyItems: any = [];
     var AllComponetsData: any = [];
@@ -732,6 +1147,16 @@ function ComponentTable(SelectedProp: any) {
                 }
             });
         }
+    }
+    var WebpartItem: any = [];
+    const LoadSPComponents = async () => {
+        var metadatItem: any = []
+        let smartmetaDetails: any = [];
+        var select: any = '=Title,Id,PageUrl,WebpartId,Component/Id,Component/Title,Service/Id,Service/Title&$expand=Component,Service&$top=4999'
+        smartmetaDetails = await globalCommon.getData(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.SPCOMPONENTS_LISTID, select);
+        console.log(smartmetaDetails);
+        WebpartItem = smartmetaDetails;
+
     }
     const GetComponents = async () => {
 
@@ -1099,7 +1524,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Services'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1126,7 +1551,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Events'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1152,7 +1577,7 @@ function ComponentTable(SelectedProp: any) {
             $.each(task['Component'], function (index: any, componentItem: any) {
                 for (var i = 0; i < ComponetsData['allComponets'].length; i++) {
                     let crntItem = ComponetsData['allComponets'][i];
-                    if (componentItem.Id == crntItem.Id) {
+                    if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
                             task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.Shareweb_x0020_ID;
@@ -1187,15 +1612,45 @@ function ComponentTable(SelectedProp: any) {
             return (aID == bID) ? 0 : (aID > bID) ? 1 : -1;
         })
     }
+    const getWebpartId = function (Item: any) {
+        WebpartItem.forEach((item: any) => {
+            if (item.Component?.Id != undefined) {
+                if (item.Component.Id === Item.Id) {
+                    Item.WebpartItemId = item.Id;
+                }
+            }
+            if (item.Service?.Id != undefined) {
+                if (item.Service.Id === Item.Id) {
+                    Item.WebpartItemId = item.Id;
+                }
+            }
+        });
+    }
     const bindData = function () {
         var RootComponentsData: any[] = [];
-        var ComponentsData: any = [];
-        var SubComponentsData: any = [];
-        var FeatureData: any = [];
 
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
+            result.show = false;
+            if (result.childs != undefined) {
+                result.childs.forEach(function (i: any) {
+                    i.show = []
+                    if (i.childs != undefined) {
+                        i.childs.forEach(function (subc: any) {
+                            subc.show = []
+                            if (subc.childs != undefined) {
+                                subc.childs.forEach(function (last: any) {
+                                    last.show = []
+                                })
+                            }
+                        })
+
+                    }
+                })
+            }
             result.TeamLeaderUser = []
             result.TeamLeaderUserTitle = '';
+            result.TitleNew = result.Title;
+            getWebpartId(result);
             result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
@@ -1214,7 +1669,7 @@ function ComponentTable(SelectedProp: any) {
                     if (Assig.Id != undefined) {
                         $.each(Response, function (index: any, users: any) {
 
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
                                 result.TeamLeaderUserTitle += users.Title + ';';
@@ -1228,7 +1683,7 @@ function ComponentTable(SelectedProp: any) {
                 $.each(result.Team_x0020_Members.results, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
                         $.each(TaskUsers, function (index: any, users: any) {
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
                                 users.ItemCover = users.Item_x0020_Cover;
                                 result.TeamLeaderUser.push(users);
                                 result.TeamLeaderUserTitle += users.Title + ';';
@@ -1265,6 +1720,7 @@ function ComponentTable(SelectedProp: any) {
                 result.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 SubComponentsData.push(result);
+                SubComponentsDataCopy.push(result);
 
 
             }
@@ -1272,11 +1728,13 @@ function ComponentTable(SelectedProp: any) {
                 result.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
                 result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 FeatureData.push(result);
+                FeatureDataCopy.push(result);
             }
             if (result.Title == 'Others') {
                 //result['childs'] = result['childs'] != undefined ? result['childs'] : [];
                 result.childsLength = result.childs.length;
                 ComponentsData.push(result);
+                ComponentsDataCopy.push(result)
             }
         });
 
@@ -1323,7 +1781,7 @@ function ComponentTable(SelectedProp: any) {
                 DynamicSort(comp.childs, 'PortfolioLevel')
             }
         })
-        var array: any = [];
+
         map(ComponentsData, (comp, index) => {
             if (comp.childs != undefined && comp.childs.length > 0) {
                 var Subcomponnet = comp.childs.filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'SubComponent'));
@@ -1367,7 +1825,8 @@ function ComponentTable(SelectedProp: any) {
             } else array.push(comp)
         })
 
-        setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
+        setSubComponentsData(SubComponentsData);
+        setFeatureData(FeatureData);
         setComponentsData(array);
         setmaidataBackup(ComponentsData)
         setData(array);
@@ -1378,6 +1837,7 @@ function ComponentTable(SelectedProp: any) {
         var AllTaskData1: any = [];
         ComponetsData['allUntaggedTasks'] = [];
         AllTaskData1 = AllTaskData1.concat(TasksItem);
+        setTaggedAllTask(AllTaskData1)
         $.each(AllTaskData1, function (index: any, task: any) {
             task.Portfolio_x0020_Type = 'Component';
             if (IsUpdated === 'Service Portfolio') {
@@ -1419,7 +1879,9 @@ function ComponentTable(SelectedProp: any) {
         temp.childs = [];
         temp.childsLength = 0;
         temp.flag = true;
-
+        temp.PercentComplete = '';
+        temp.ItemRank = '';
+        temp.DueDate = '';
         // ComponetsData['allComponets'][i]['childs']
         map(ComponetsData['allUntaggedTasks'], (task: any) => {
             if (task.Title != undefined) {
@@ -1450,6 +1912,10 @@ function ComponentTable(SelectedProp: any) {
             if (config.Selected && config.TaxType == 'Sites') {
                 SelectedList.push(config);
             }
+            if (config.Title == 'Foundation' || config.Title == 'SDC Sites') {
+                config.show = true
+                config.showItem = true
+            }
             if (config.childs != undefined && config.childs.length > 0) {
                 $.each(config.childs, function (index: any, child: any) {
                     if (child.Selected && child.TaxType == 'Sites') {
@@ -1458,6 +1924,7 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
         })
+
         var AllTaggedTask: any = [];
         $.each(SelectedList, function (index: any, item: any) {
             $.each(AllTaskData1, function (index: any, task: any) {
@@ -1599,10 +2066,53 @@ function ComponentTable(SelectedProp: any) {
         setSharewebTask(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
+    const onChangeHandler = (itrm: any) => {
+        const list = [...checkedList];
+        var flag = true;
+        list.forEach((obj: any, index: any) => {
+            if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+                flag = false;
+                list.splice(index, 1);
+            }
+        })
+        if (flag)
+            list.push(itrm);
+        setCheckedList(checkedList => ([...list]));
+    };
     function AddItem() {
     }
+    const hideAllChildsMinus = (item: any) => {
+        if (item?.childs?.length > 0) {
+            item.Isexpend = false;
+            if (item.Item_x0020_Type === "Component")
+                item.show = false;
+            handleOpen(item);
+            item.childs.forEach((child: any) => {
+                child.flag = child?.show == true ? child?.show : false;
+                // if (child.flag)
+                //     flag = true;
+                child.Isexpend = false;
+            })
+            // if (flag)
+            //     item.flag = flag;
+        }
+        setData(data => ([...data]));
+    }
+
+    const ShowAllChildsPlus = (item: any) => {
+        if (item?.childs?.length > 0) {
+            item.Isexpend = true;
+            item.show = false;
+            handleOpen(item);
+            item.childs.forEach((child: any) => {
+                child.flag = true;
+                child.Isexpend = false;
+            })
+        }
+        setData(data => ([...data]));
+    }
     return (
-        <div id="ExandTableIds" className= {IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+        <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
 
             {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
             {/* <Modal
@@ -1752,13 +2262,13 @@ function ComponentTable(SelectedProp: any) {
 
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
-                    <h2 className="alignmentitle ng-binding d-flex heading ps-0">
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0'>Service Portfolio</div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx"} >Old Service Portfolio</a></div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0'>Event Portfolio</div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio.aspx"} >Old Event Portfolio</a></div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0'>Component Portfolio</div>}
-                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='col-sm-6 pad0 text-end'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx"} >Old Component Portfolio</a></div>}
+                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div>Service Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div>Event Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio-Old.aspx"} >Old Event Portfolio</a></div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div>Component Portfolio</div>}
+                        {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a></div>}
                     </h2>
                 </div>
                 <div className="bg-wihite border p-2">
@@ -1842,7 +2352,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                             </a>}
                                                                                     </span>
-                                                                                    <input className="form-check-input me-1" checked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    <input className="me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
                                                                                     <label className="form-check-label">
                                                                                         {ItemType.Title}
                                                                                     </label>
@@ -1851,7 +2361,7 @@ function ComponentTable(SelectedProp: any) {
                                                                             {ItemType.TaxType == 'Status' &&
 
                                                                                 <div className="align-items-center d-flex">
-                                                                                    <input className="form-check-input me-1" checked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    <input className="me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
                                                                                     <label className="form-check-label">
                                                                                         {ItemType.Title}
                                                                                     </label>
@@ -1881,7 +2391,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                                                 </span>
                                                                                                             }
-                                                                                                            <input type="checkbox" checked={child1.Selected == true} className="form-check-input me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                            <input type="checkbox" defaultChecked={child1.Selected == true} className="me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
                                                                                                             <label className="form-check-label">
                                                                                                                 {child1.Title}
                                                                                                             </label>
@@ -1889,7 +2399,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 {child1.childs.map(function (child2: any) {
                                                                                                                     <li>
                                                                                                                         <div className="align-items-center d-flex">
-                                                                                                                            <input className="form-check-input me-1" type="checkbox" checked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                            <input className=" me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
                                                                                                                             <label className="form-check-label">
                                                                                                                                 {child2.Title}
                                                                                                                             </label>
@@ -1976,7 +2486,7 @@ function ComponentTable(SelectedProp: any) {
                                         </span> */}
                                     </span>
                                     <span className="toolbox mx-auto">
-                                        {/* <button type="button" className="btn btn-primary"
+                                        <button type="button" className="btn btn-primary"
                                             ng-disabled="(isOwner!=true) || ( SelectedTasks.length > 0 || compareComponents[0].Item_x0020_Type =='Feature') "
                                             onClick={addModal} title=" Add Structure">
                                             Add Structure
@@ -1997,19 +2507,12 @@ function ComponentTable(SelectedProp: any) {
                                             ng-click="openRestructure()"
                                             disabled={true}>
                                             Restructure
-                                        </button> */}
-                                        <button className="btn border bg-white" type="button" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="true" data-bs-reference="parent">
-                                             <RxDotsVertical/>
                                         </button>
-                                        <ul className="dropdown-menu dropdown-menu-end" style={{"position":"absolute","inset":"auto 0px 0px auto","margin":"0px", "transform":"translate(-36px, -1657px)"}} data-popper-placement="top-end">
-                                            <li  onClick={addModal}><a className="dropdown-item" href="#">Add Structure</a></li>
-                                            <li ng-click="openActivity()"><a className="dropdown-item" href="#">Add Activity-Task</a></li>
-                                            <li  ng-click="openRestructure()"><a className="dropdown-item" href="#">Restructure</a></li>
-                                        </ul>
+
                                         <a className="brush" onClick={clearSearch}>
                                             <FaPaintBrush />
                                         </a>
-                                        
+
                                         <a onClick={Prints} className='Prints'>
                                             <FaPrint />
                                         </a>
@@ -2029,10 +2532,17 @@ function ComponentTable(SelectedProp: any) {
                                                 <thead>
                                                     <tr>
                                                         <th style={{ width: "2%" }}>
-                                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
+                                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png'} />
+                                                                : <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"} />}
                                                             </div>
                                                         </th>
+                                                        <th style={{ width: "2%" }}>
+                                                            <div className="smart-relative sign hreflink">
+                                                                <span className=''><input type="checkbox" /></span>
+                                                            </div>
+
+                                                        </th>
+
                                                         <th style={{ width: "9%" }}>
                                                             <div style={{ width: "8%" }} className="smart-relative">
                                                                 <input type="search" placeholder="ID" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} />
@@ -2051,8 +2561,6 @@ function ComponentTable(SelectedProp: any) {
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
-
-
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "18%" }}>
@@ -2067,8 +2575,8 @@ function ComponentTable(SelectedProp: any) {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "17%" }}>
-                                                            <div style={{ width: "16%" }} className="smart-relative">
+                                                        <th style={{ width: "15%" }}>
+                                                            <div style={{ width: "14%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                 // onChange={event => handleChange(event, 'Team')} 
@@ -2128,10 +2636,9 @@ function ComponentTable(SelectedProp: any) {
                                                             return (
                                                                 <>
                                                                     <tr >
-                                                                        <td className="p-0" colSpan={10}>
+                                                                        <td className="p-0" colSpan={11}>
                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
-
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
                                                                                             {item.childs != undefined &&
@@ -2142,6 +2649,14 @@ function ComponentTable(SelectedProp: any) {
                                                                                                     </div>
                                                                                                 </a>
                                                                                             }
+                                                                                        </div>
+
+                                                                                    </td>
+                                                                                    <td style={{ width: "2%" }}>
+                                                                                        <div className="accordian-header" >
+                                                                                            {/* checked={item.checked === true ? true : false} */}
+                                                                                            <span className=''><input type="checkbox"
+                                                                                                onChange={(e) => onChangeHandler(item)} /></span>
                                                                                         </div>
 
                                                                                     </td>
@@ -2156,18 +2671,39 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 </a>
                                                                                                 }
                                                                                             </span>
+                                                                                            {search != undefined && search != '' && item.childs?.length > 0 ?
+                                                                                                <>
+                                                                                                    {item?.Isexpend ?
+                                                                                                        <span>
+                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(item)}>
+                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                            </a>
+                                                                                                        </span>
+                                                                                                        : ''}
+                                                                                                    {!item?.Isexpend ?
+                                                                                                        <span>
+                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(item)}>
+                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                            </a>
+                                                                                                        </span>
+                                                                                                        : ''}
+                                                                                                </> : ''}
                                                                                             <span>{item.Shareweb_x0020_ID}</span>
                                                                                         </div>
                                                                                     </td>
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
                                                                                     <td style={{ width: "22%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + item.Id}
-                                                                                        ><span>{item.Title}</span>
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
+                                                                                        >
+                                                                                            <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                                            {/* {item.Title} */}
                                                                                         </a>}
                                                                                         {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                                        ><span>{item.Title}</span>
+                                                                                        >
+                                                                                            <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                                            {/* {item.Title} */}
 
                                                                                         </a>}
                                                                                         {item.childs != undefined &&
@@ -2195,24 +2731,18 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 )
                                                                                             })}</div>
                                                                                     </td>
-                                                                                    <td style={{ width: "17%" }}>
-                                                                                        <div>{item.TeamLeaderUser != undefined && item.TeamLeaderUser.length > 0 && item.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                            return (
-                                                                                                <span className="ClientCategory-Usericon"
-                                                                                                    title={client1.Title}>
+                                                                                    <td style={{ width: "15%" }}>
+                                                                                        <div>
+                                                                                            <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
-                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                </span>
-                                                                                            )
-                                                                                        })}</div></td>
+                                                                                        </div></td>
                                                                                     <td style={{ width: "6%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "3%" }}>{item.siteType == "Master Tasks" && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
-                                                                                        {item.siteType != "Master Tasks" && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
+                                                                                    <td style={{ width: "3%" }}>{item.siteType === "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
+                                                                                        {item.siteType != "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
                                                                             </table>
@@ -2228,7 +2758,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                         <>
                                                                                             <tr >
-                                                                                                <td className="p-0" colSpan={10}>
+                                                                                                <td className="p-0" colSpan={11}>
                                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                                         <tr className="for-c02">
                                                                                                             <td style={{ width: "2%" }}>
@@ -2244,6 +2774,12 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                 </div>
                                                                                                             </td>
+                                                                                                            <td style={{ width: "2%" }}>
+                                                                                                                <div className="accordian-header" >
+                                                                                                                    <span className=''><input type="checkbox" /></span>
+                                                                                                                </div>
+
+                                                                                                            </td>
                                                                                                             {/* <td style={{ width: "2%" }}></td> */}
                                                                                                             <td style={{ width: "9%" }}>  <div className="d-flex">
                                                                                                                 <span>
@@ -2255,18 +2791,35 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     </a>
 
                                                                                                                 </span>
+                                                                                                                {search != undefined && search != '' && childitem.childs?.length > 0 ?
+                                                                                                                    <>
+                                                                                                                        {childitem?.Isexpend ?
+                                                                                                                            <span>
+                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(childitem)}>
+                                                                                                                                    <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                                </a>
+                                                                                                                            </span>
+                                                                                                                            : ''}
+                                                                                                                        {!childitem?.Isexpend ?
+                                                                                                                            <span>
+                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(childitem)}>
+                                                                                                                                    <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                                </a>
+                                                                                                                            </span>
+                                                                                                                            : ''}
+                                                                                                                    </> : ''}
                                                                                                                 <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
                                                                                                             </div>
                                                                                                             </td>
 
                                                                                                             <td style={{ width: "22%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
-                                                                                                                >{childitem.Title}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
-                                                                                                                >{childitem.Title}
+                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
                                                                                                                 </a>}
                                                                                                                 {childitem.childs.length > 0 && childitem.Item_x0020_Type == 'Feature' &&
                                                                                                                     <span className='ms-1'>  ({childitem.childs.length})</span>
@@ -2303,22 +2856,15 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         )
                                                                                                                     })}</div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "17%" }}>
-                                                                                                                <div>{childitem.TeamLeaderUser != undefined && childitem.TeamLeaderUser.length > 0 && childitem.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                    return (
-                                                                                                                        <div className="ClientCategory-Usericon"
-                                                                                                                            title={client1.Title}>
-
-                                                                                                                            <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                                        </div>
-                                                                                                                    )
-                                                                                                                })}</div></td>
+                                                                                                            <td style={{ width: "15%" }}>
+                                                                                                                <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                            <td style={{ width: "3%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
+                                                                                                            <td style={{ width: "3%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
+                                                                                                                {childitem.siteType == "Master Tasks" &&
+                                                                                                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
                                                                                                                 {childitem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                                         </tr>
                                                                                                     </table>
@@ -2332,7 +2878,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             return (
                                                                                                                 <>
                                                                                                                     <tr >
-                                                                                                                        <td className="p-0" colSpan={10}>
+                                                                                                                        <td className="p-0" colSpan={11}>
                                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
                                                                                                                                     <td style={{ width: "2%" }}>
@@ -2348,7 +2894,12 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                             </div>
                                                                                                                                         }
                                                                                                                                     </td>
+                                                                                                                                    <td style={{ width: "2%" }}>
+                                                                                                                                        <div className="accordian-header" >
+                                                                                                                                            <span className=''><input type="checkbox" /></span>
+                                                                                                                                        </div>
 
+                                                                                                                                    </td>
 
                                                                                                                                     <td style={{ width: "9%" }}> <div className="d-flex">
                                                                                                                                         <span>
@@ -2358,8 +2909,24 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                 {/* <img  className="icon-sites-img" 
                                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" /> */}
                                                                                                                                             </a>
-
                                                                                                                                         </span>
+                                                                                                                                        {search != undefined && search != '' && childinew.childs?.length > 0 ?
+                                                                                                                                            <>
+                                                                                                                                                {childinew?.Isexpend ?
+                                                                                                                                                    <span>
+                                                                                                                                                        <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(childinew)}>
+                                                                                                                                                            <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                                                        </a>
+                                                                                                                                                    </span>
+                                                                                                                                                    : ''}
+                                                                                                                                                {!childinew?.Isexpend ?
+                                                                                                                                                    <span>
+                                                                                                                                                        <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(childinew)}>
+                                                                                                                                                            <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                                                        </a>
+                                                                                                                                                    </span>
+                                                                                                                                                    : ''}
+                                                                                                                                            </> : ''}
                                                                                                                                         <span className="ml-2">{childinew.Shareweb_x0020_ID}</span>
                                                                                                                                     </div>
                                                                                                                                     </td>
@@ -2368,12 +2935,12 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childinew.Id}
-                                                                                                                                        >{childinew.Title}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
-                                                                                                                                        >{childinew.Title}
+                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
                                                                                                                                         </a>}
                                                                                                                                         {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
@@ -2412,22 +2979,18 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                 )
                                                                                                                                             })}</div>
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "17%" }}>
-                                                                                                                                        <div>{childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.length > 0 && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                                            return (
-                                                                                                                                                <span className="ClientCategory-Usericon"
-                                                                                                                                                    title={client1.Title}>
+                                                                                                                                    <td style={{ width: "15%" }}>
+                                                                                                                                        <div>
+                                                                                                                                            <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
-                                                                                                                                                    <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                                                                </span>
-                                                                                                                                            )
-                                                                                                                                        })}</div></td>
+                                                                                                                                        </div></td>
                                                                                                                                     <td style={{ width: "6%" }}>{childinew.PercentComplete}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
-                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType == "Master Tasks" && <a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">   <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} /></a>}</td>
+                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}
+                                                                                                                                    </td>
+                                                                                                                                    <td style={{ width: "3%" }}> {childinew.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}
+                                                                                                                                        {childinew.siteType == "Master Tasks" && <a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">   <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} /></a>}</td>
                                                                                                                                 </tr>
                                                                                                                             </table>
                                                                                                                         </td>
@@ -2440,7 +3003,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                     <>
                                                                                                                                         <tr >
-                                                                                                                                            <td className="p-0" colSpan={10}>
+                                                                                                                                            <td className="p-0" colSpan={11}>
                                                                                                                                                 <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                                     <tr className="for-c02">
                                                                                                                                                         <td style={{ width: "2%" }}>
@@ -2456,6 +3019,12 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                                             </div>
                                                                                                                                                         </td>
+                                                                                                                                                        <td style={{ width: "2%" }}>
+                                                                                                                                                            <div className="accordian-header" >
+                                                                                                                                                                <span className=''><input type="checkbox" /></span>
+                                                                                                                                                            </div>
+
+                                                                                                                                                        </td>
                                                                                                                                                         {/* <td style={{ width: "2%" }}></td> */}
                                                                                                                                                         <td style={{ width: "9%" }}>  <div className="d-flex">
                                                                                                                                                             <span>
@@ -2467,18 +3036,35 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                 </a>
 
                                                                                                                                                             </span>
+                                                                                                                                                            {search != undefined && search != '' && subchilditem.childs?.length > 0 ?
+                                                                                                                                                                <>
+                                                                                                                                                                    {subchilditem?.Isexpend ?
+                                                                                                                                                                        <span>
+                                                                                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(subchilditem)}>
+                                                                                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                                                                            </a>
+                                                                                                                                                                        </span>
+                                                                                                                                                                        : ''}
+                                                                                                                                                                    {!subchilditem?.Isexpend ?
+                                                                                                                                                                        <span>
+                                                                                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(subchilditem)}>
+                                                                                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                                                                            </a>
+                                                                                                                                                                        </span>
+                                                                                                                                                                        : ''}
+                                                                                                                                                                </> : ''}
                                                                                                                                                             <span className="">{subchilditem.Shareweb_x0020_ID}</span>
                                                                                                                                                         </div>
                                                                                                                                                         </td>
 
                                                                                                                                                         <td style={{ width: "22%" }}>
                                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=" + childitem.Id}
-                                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
-                                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
                                                                                                                                                             </a>}
                                                                                                                                                             {subchilditem.childs.length > 0 &&
                                                                                                                                                                 <span className='ms-1'>({subchilditem.childs.length})</span>
@@ -2514,22 +3100,15 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                     )
                                                                                                                                                                 })}</div>
                                                                                                                                                         </td>
-                                                                                                                                                        <td style={{ width: "17%" }}>
-                                                                                                                                                            <div>{subchilditem.TeamLeaderUser != undefined && subchilditem.TeamLeaderUser.length > 0 && subchilditem.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                                                                return (
-                                                                                                                                                                    <div className="ClientCategory-Usericon"
-                                                                                                                                                                        title={client1.Title}>
-
-                                                                                                                                                                        <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-
-                                                                                                                                                                    </div>
-                                                                                                                                                                )
-                                                                                                                                                            })}</div></td>
+                                                                                                                                                        <td style={{ width: "15%" }}>
+                                                                                                                                                            <div>
+                                                                                                                                                                <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                                                                            </div></td>
                                                                                                                                                         <td style={{ width: "6%" }}>{subchilditem.PercentComplete}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                         <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                                        <td style={{ width: "3%" }}></td>
+                                                                                                                                                        <td style={{ width: "3%" }}> {subchilditem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} ></img>}</td>
                                                                                                                                                     </tr>
                                                                                                                                                 </table>
                                                                                                                                             </td>
