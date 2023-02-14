@@ -2090,8 +2090,8 @@ function ComponentTable(SelectedProp: any) {
             handleOpen(item);
             item.childs.forEach((child: any) => {
                 child.flag = child?.show == true ? child?.show : false;
-                if(child.Title.indexOf(search) >-1)
-                   child.flag =true;
+                if (child.Title.indexOf(search) > -1)
+                    child.flag = true;
                 child.Isexpend = false;
             })
             // if (flag)
@@ -2311,7 +2311,7 @@ function ComponentTable(SelectedProp: any) {
                                 {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) &&
                                     <span>  <img className="icon-sites-img  wid22 ml5"
                                         title="Share SmartFilters selection" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}
-                                        src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png"} />
+                                        src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/Service_Icons/Shareweb/Add-New.png"} />
                                         <img className="icon-sites-img  wid22 ml5"
                                             title="Share SmartFilters selection"
                                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png" />
