@@ -164,7 +164,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           'Name': senderObject[0].Email,
           'Suffix': senderObject[0].Suffix,
           'Title': senderObject[0].Title,
-          'userImage': senderObject[0].Item_x0020_Cover.Url
+          'userImage': senderObject[0]?.Item_x0020_Cover?.Url
         })
       }
     }
@@ -364,7 +364,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         'Name': senderObject[0].Email,
         'Suffix': senderObject[0].Suffix,
         'Title': senderObject[0].Title,
-        'userImage': senderObject[0].Item_x0020_Cover.Url
+        'userImage': senderObject[0]?.Item_x0020_Cover?.Url
       })
     }
     return userDeatails;
@@ -384,7 +384,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         'Name': senderObject[0].Email,
         'Suffix': senderObject[0].Suffix,
         'Title': senderObject[0].Title,
-        'userImage': senderObject[0].Item_x0020_Cover.Url
+        'userImage': senderObject[0]?.Item_x0020_Cover?.Url
       }
     }
     return userDeatails;
