@@ -7,7 +7,7 @@ import { ImPriceTags } from 'react-icons/im';
 import { Select } from "@material-ui/core";
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 const Picker = (item: any) => {
-    const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(false);
+    const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
 

@@ -4,9 +4,11 @@ import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Version } from '@microsoft/sp-core-library';
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 const ComponentPortPolioPopup = (item: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setComponentsData] = React.useState([]);
+    const [table, setTable] = React.useState(data);
     const [CheckBoxdata, setcheckbox] = React.useState([]);
     const [selectedComponent, selctedCompo] = React.useState('');
     React.useEffect(() => {
@@ -36,7 +38,16 @@ const ComponentPortPolioPopup = (item: any) => {
         Example(item, "SmartComponent");
         setModalIsOpen(false);
     }
+   
+    const sortByDng = () => {
 
+        const copy = data
+
+        copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
+
+        setTable(copy)
+
+    }
     const handleOpen = (item: any) => {
 
         item.show = item.show = item.show == true ? false : true;
@@ -215,10 +226,10 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     <div style={{ width: "21%" }} className="smart-relative ">
                                                         <input type="search" placeholder="Title" className="full_width searchbox_height" />
 
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
+                                                                        </span>
 
 
                                                     </div>
@@ -228,10 +239,10 @@ const ComponentPortPolioPopup = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
+                                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "20%" }}>
@@ -239,10 +250,10 @@ const ComponentPortPolioPopup = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span> */}
+                                                                        </span>
 
                                                     </div>
                                                 </th>
@@ -251,10 +262,10 @@ const ComponentPortPolioPopup = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                         <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                         <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
+                                                                    </span>
 
                                                     </div>
                                                 </th>
@@ -263,10 +274,10 @@ const ComponentPortPolioPopup = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Item Rank"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                         <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                         <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
+                                                                    </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
@@ -274,10 +285,10 @@ const ComponentPortPolioPopup = (item: any) => {
                                                         <input id="searchClientCategory" type="search" placeholder="Due"
                                                             title="Client Category" className="full_width searchbox_height"
                                                         />
-                                                        {/* <span className="sorticon">
+                                                        <span className="sorticon">
                                                                         <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                         <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span> */}
+                                                                    </span>
 
                                                     </div>
                                                 </th>
@@ -347,7 +358,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                             >{item.Title}
                                                                             </a>
                                                                             {item.Child != undefined &&
-                                                                                <span>({item.Child.length})</span>
+                                                                                <span className="ms-1 siteColor">({item.Child.length})</span>
                                                                             }
 
                                                                             {item.Short_x0020_Description_x0020_On != null &&
@@ -452,7 +463,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                                 >{childitem.Title}
                                                                                                 </a>
                                                                                                 {childitem.Child.length > 0 &&
-                                                                                                    <span>({childitem.Child.length})</span>
+                                                                                                    <span className="ms-1 siteColor">({childitem.Child.length})</span>
                                                                                                 }
 
                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -531,7 +542,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                                                 >{childinew.Title}
                                                                                                                 </a>
                                                                                                                 {childinew.Child.length > 0 &&
-                                                                                                                    <span>({childinew.Child.length})</span>
+                                                                                                                    <span className="ms-1 siteColor">({childinew.Child.length})</span>
                                                                                                                 }
 
                                                                                                                 {childinew.Short_x0020_Description_x0020_On != null &&
@@ -601,9 +612,9 @@ const ComponentPortPolioPopup = (item: any) => {
                         </div>
                     </div>
                 </div>
-                <footer>
+                <footer className="float-end mt-2">
                     <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
-                    <button type="button" className="btn btn-grey" onClick={setModalIsOpenToFalse}>Cancel</button>
+                    <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
                 </footer>
             </div >
         </Panel >
