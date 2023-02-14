@@ -1398,7 +1398,7 @@ const EditTaskPopup = (Items: any) => {
                                     Save
                                 </button>
                                 <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
-                                    Close
+                                    Cancel
                                 </button>
                             </span>
                         </div>
@@ -1468,7 +1468,7 @@ const EditTaskPopup = (Items: any) => {
                             </a>
                             <span >
                                 <button type="button" className="btn btn-default ms-1 px-3" onClick={CommonClosePopupFunction}>
-                                    Close
+                                    Cancel
                                 </button>
                             </span>
                         </div>
