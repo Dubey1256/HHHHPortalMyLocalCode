@@ -1093,12 +1093,18 @@ const EditTaskPopup = (Items: any) => {
     const ImageCompareFunctionClosePopup = () => {
         setImageComparePopup(false);
         setCompareImageArray([]);
+
     }
     const ImageCustomizeFunction = (currentImagIndex: any) => {
         setImageCustomizePopup(true)
     }
     const ImageCustomizeFunctionClosePopup = () => {
         setImageCustomizePopup(false)
+    }
+
+    const CommonClosePopupFunction = () => {
+        ImageCompareFunctionClosePopup();
+        ImageCustomizeFunctionClosePopup();
     }
 
 
@@ -1119,7 +1125,7 @@ const EditTaskPopup = (Items: any) => {
 
     //***************** This is for image Upload Section  Functions *****************
 
-    let contentTarget = document.getElementById("imageUpload"); 
+    let contentTarget = document.getElementById("imageUpload");
 
 
     const onUploadImageFunction = async (
@@ -1286,11 +1292,11 @@ const EditTaskPopup = (Items: any) => {
         setSiteTypes(tempArray);
     }
 
-    const copyAndMoveTaskFunction =(FunctionsType:string)=>{
-        if(FunctionsType == "Move Task"){
+    const copyAndMoveTaskFunction = (FunctionsType: string) => {
+        if (FunctionsType == "Move Task") {
 
         }
-        if(FunctionsType == "Move Task"){
+        if (FunctionsType == "Move Task") {
 
         }
     }
@@ -1461,7 +1467,7 @@ const EditTaskPopup = (Items: any) => {
                                 Open Out-Of-The-Box Form
                             </a>
                             <span >
-                                <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
+                                <button type="button" className="btn btn-default ms-1 px-3" onClick={CommonClosePopupFunction}>
                                     Close
                                 </button>
                             </span>
@@ -2891,7 +2897,7 @@ const EditTaskPopup = (Items: any) => {
                                     </ul>
                                 </div>
                                 <div className="card-footer">
-                                    <button className="btn btn-primary px-3 float-end" onClick={()=>alert("We are working on it. This feature will be live soon .....")}
+                                    <button className="btn btn-primary px-3 float-end" onClick={() => alert("We are working on it. This feature will be live soon .....")}
                                     >
                                         Save
                                     </button>
