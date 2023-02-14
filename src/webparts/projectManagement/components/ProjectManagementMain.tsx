@@ -9,6 +9,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import axios, { AxiosResponse } from 'axios';
 import TagTaskToProjectPopup from './TagTaskToProjectPopup'
 import CreateTaskFromProject from './CreateTaskFromProject';
+
 var AllUser: any = []
 var siteConfig: any = []
 var DataSiteIcon:any=[]
@@ -300,9 +301,7 @@ const ProjectManagementMain = () => {
         var arraycount = 0;
         siteConfig.map(async (config: any) => {
             if (config.Title != 'SDC Sites') {
-
                 let smartmeta = [];
-                let TaxonomyItems = [];
                 smartmeta = await web.lists
                     .getById(config.listId)
                     .items
@@ -336,34 +335,23 @@ const ProjectManagementMain = () => {
                     if (items.Team_x0020_Members != undefined) {
                         items.Team_x0020_Members.map((taskUser: any) => {
                             var newuserdata: any = {};
-
                             AllUser.map((user: any) => {
                                 if (user.AssingedToUserId == taskUser.Id) {
-
                                     newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
                                     newuserdata['Suffix'] = user.Suffix;
                                     newuserdata['Title'] = user.Title;
                                     newuserdata['UserId'] = user.AssingedToUserId;
                                     items['Usertitlename'] = user.Title;
                                 }
-
                             })
                             items.AllTeamMember.push(newuserdata);
                         })
-
                     }
                     AllTask.push(items)
                 })
                 if (arraycount === 17) {
                     setAllTasks(AllTask)
-                    // setmaidataBackup(AllTask)
-                    // showProgressHide();
                 }
-
-
-
-
-
             } else {
                 arraycount++
             }
@@ -461,6 +449,7 @@ const ProjectManagementMain = () => {
                         <div className='col-sm-3 pull-right' style={{ verticalAlign: "top" }}>
                         {projectId&&<CreateTaskFromProject projectId={projectId} callBack={tagAndCreateCallBack}/>}
                         {projectId&&<TagTaskToProjectPopup projectId={projectId} callBack={tagAndCreateCallBack} projectTitle={projectTitle}/>}
+         
                         
                         </div>
                     </div>

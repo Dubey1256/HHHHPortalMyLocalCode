@@ -112,14 +112,7 @@ const Picker = (item: any) => {
             }
         });
     }
-    var isItemExists = (items: any, columnName: any) => {
-        var flag = false;
-        $.each(items, function (index: any, item: any) {
-            if (item.Id == columnName)
-                flag = true;
-        });
-        return flag;
-    }
+   
     
     const selectPickerData = (item: any) => {
         Newrray.push(item)
@@ -131,13 +124,16 @@ const Picker = (item: any) => {
     const showSelectedData =(itemss:any)=>{
         var categoriesItem:any = []
         itemss.forEach(function(val:any){
-           
             if (val.Title != undefined) {
-                (!isItemExists(itemss,val.Id))
                 categoriesItem.push(val);
+               
             }
         })
-        setSelect(categoriesItem)
+        const uniqueNames = categoriesItem.filter((val:any, id:any, array:any) => {
+            return array.indexOf(val) == id;  
+         })
+         console.log(uniqueNames)
+        setSelect(uniqueNames)
     }
     function Example(callBack: any, type: any) {
         Newrray = []
@@ -264,10 +260,10 @@ const Picker = (item: any) => {
                                 {AllCategories.map(function (item: any) {
                                     return (
                                         <>
-                                            <li>
+                                            <li onClick={() => selectPickerData(item)}>
 
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <a className="hreflink" ng-click="selectnewItem(item);" onClick={() => selectPickerData(item)}>
+                                                    <a className="hreflink" ng-click="selectnewItem(item);" >
                                                         <img className="flag_icon"
                                                             style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
                                                         {item.Title}
@@ -281,10 +277,10 @@ const Picker = (item: any) => {
                                                         return (
                                                             <>
                                                              {child1.Item_x005F_x0020_Cover != null &&
-                                                                <li>
+                                                                <li onClick={() => selectPickerData(child1)}>
 
                                                                    
-                                                                        <a className="hreflink" ng-click="selectnewItem(child1);" onClick={() => selectPickerData(child1)}>
+                                                                        <a className="hreflink" ng-click="selectnewItem(child1);" >
                                                                             <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
                                                                                 style={{ height: "12px", width: "18px;" }}
                                                                                 src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title} 
