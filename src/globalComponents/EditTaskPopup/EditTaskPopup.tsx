@@ -5,7 +5,7 @@ import { Web } from "sp-pnp-js";
 import pnp from 'sp-pnp-js';
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
-import * as globalCommon from "../../globalComponents/globalCommon";
+import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
@@ -25,6 +25,8 @@ import TimeEntryPopup from './TimeEntryComponent';
 import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 
+
+
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -33,6 +35,7 @@ var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any;
+var SiteTypeBackupArray: any = [];
 var ImageBackupArray: any = [];
 const EditTaskPopup = (Items: any) => {
     const [images, setImages] = React.useState([]);
@@ -80,6 +83,7 @@ const EditTaskPopup = (Items: any) => {
     const [currentUserData, setCurrentUserData] = React.useState([]);
     const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
     const [HoverImageData, setHoverImageData] = React.useState([]);
+    const [SiteTypes, setSiteTypes] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -97,6 +101,15 @@ const EditTaskPopup = (Items: any) => {
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
     // }
+
+    React.useEffect(() => {
+        loadTaskUsers();
+        GetEditData();
+        getCurrentUserDetails();
+        getSmartMetaData();
+        // Descriptions();
+    }, [])
+
     const Call = React.useCallback((PopupItemData: any, type: any) => {
         setIsComponent(false);
         setIsComponentPicker(false);
@@ -165,14 +178,48 @@ const EditTaskPopup = (Items: any) => {
         setIsServices(true);
         setShareWebComponent(item);
     }
-    React.useEffect(() => {
-        loadTaskUsers();
-        GetEditData();
-        getCurrentUserDetails();
-        // Descriptions();
-    }, [])
+
     const setPriority = function (val: any) {
         setPriorityStatus(val)
+    }
+
+    const getSmartMetaData = async () => {
+        let web = new Web(Items.Items.siteUrl);
+        let MetaData: any = [];
+        let siteConfig: any = [];
+        let tempArray: any = [];
+        MetaData = await web.lists
+            .getByTitle('SmartMetadata')
+            .items
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .top(4999)
+            .expand('Author,Editor')
+            .get()
+
+        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites')
+        siteConfig?.map((site: any) => {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "QA" && site.Title !== "SDC Sites") {
+                site.BtnStatus = false;
+                tempArray.push(site);
+            }
+        })
+        setSiteTypes(tempArray);
+        tempArray?.map((tempData: any) => {
+            SiteTypeBackupArray.push(tempData);
+        })
+
+    }
+    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        var Items: any = [];
+        metadataItems.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
+
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
     }
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
@@ -321,6 +368,12 @@ const EditTaskPopup = (Items: any) => {
                         })
                     })
                 }
+
+                setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
+                setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
+                setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
+
+
                 item.TaskAssignedUsers = AssignedUsers;
                 item.TaskApprovers = ApproverData;
                 if (item.Attachments) {
@@ -390,8 +443,6 @@ const EditTaskPopup = (Items: any) => {
                     updateFeedbackArray = [FeedBackItem]
                 }
                 setEditData(item)
-                console.log("Edit Data Task Popup ==================", item)
-                console.log("task users data  ==================", taskUsers)
                 setPriorityStatus(item.Priority)
             })
         } catch (error) {
@@ -769,7 +820,6 @@ const EditTaskPopup = (Items: any) => {
             })
         }
 
-
         if (smartComponentData != undefined && smartComponentData?.length > 0) {
             smartComponentData?.map((com: any) => {
                 if (smartComponentData != undefined && smartComponentData?.length >= 0) {
@@ -793,35 +843,38 @@ const EditTaskPopup = (Items: any) => {
             TaskAssignedTo?.map((taskInfo) => {
                 AssignedToIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                EditData.AssignedTo?.map((taskInfo: any) => {
-                    AssignedToIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+        //         EditData.AssignedTo?.map((taskInfo: any) => {
+        //             AssignedToIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
                 TeamMemberIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                EditData.Team_x0020_Members?.map((taskInfo: any) => {
-                    TeamMemberIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+        //         EditData.Team_x0020_Members?.map((taskInfo: any) => {
+        //             TeamMemberIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
-        } else {
-            if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
-                EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
-                    ResponsibleTeamIds.push(taskInfo.Id);
-                })
-            }
         }
+        // else {
+        //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
+        //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
+        //             ResponsibleTeamIds.push(taskInfo.Id);
+        //         })
+        //     }
+        // }
         try {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
@@ -868,6 +921,9 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+
+    //    ************* this is team configuration call Back function **************
+
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
         if (teamConfigData?.AssignedTo?.length > 0) {
             let tempArray: any = [];
@@ -879,6 +935,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
             setTaskAssignedTo(tempArray);
+            EditData.AssignedTo = tempArray;
         }
         if (teamConfigData?.TeamMemberUsers?.length > 0) {
             let tempArray: any = [];
@@ -890,6 +947,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
             setTaskTeamMembers(tempArray);
+            EditData.Team_x0020_Members = tempArray;
         }
         if (teamConfigData?.ResponsibleTeam?.length > 0) {
             let tempArray: any = [];
@@ -901,8 +959,13 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
             setTaskResponsibleTeam(tempArray);
+            EditData.Responsible_x0020_Team = tempArray;
         }
     }, [])
+
+
+    // *************** this is footer section share this task function ***************
+
     const shareThisTaskFunction = (EmailData: any) => {
         var link = "mailTo:"
             + "?cc:"
@@ -942,6 +1005,11 @@ const EditTaskPopup = (Items: any) => {
         SubCommentBoxData = feedBackData;
         console.log("Feedback Array in Edit Sub comp=====", feedBackData)
     }, [])
+
+    // **************** this is for category change and remove function functions ******************
+
+
+
     const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
         let tempString: any = [];
         CategoriesData.split(";")?.map((type: any, index: number) => {
@@ -964,6 +1032,9 @@ const EditTaskPopup = (Items: any) => {
     const StatusAutoSuggestion = (e: any) => {
 
     }
+
+
+
     const CategoryChange = (e: any, type: any, Id: any) => {
         if (e.target.value == "true") {
             removeCategoryItem(type, Id);
@@ -1047,6 +1118,13 @@ const EditTaskPopup = (Items: any) => {
     }
 
     //***************** This is for image Upload Section  Functions *****************
+
+    let contentTarget = document.getElementById("CopyImageUpload"); 
+    contentTarget.onpaste = (e) => { 
+        console.log("On Paste Image Data =====",e)
+    }
+
+
     const onUploadImageFunction = async (
         imageList: ImageListType,
         addUpdateIndex: number[] | undefined) => {
@@ -1197,15 +1275,36 @@ const EditTaskPopup = (Items: any) => {
         setCopyAndMoveTaskPopup(false)
     }
 
+    const selectSiteTypeFunction = (siteData: any) => {
+        let tempArray: any = [];
+        SiteTypeBackupArray?.map((siteItem: any) => {
+            if (siteItem.Id == siteData.Id) {
+                siteItem.BtnStatus = true;
+                tempArray.push(siteItem);
+            } else {
+                siteItem.BtnStatus = false;
+                tempArray.push(siteItem);
+            }
+        })
+        setSiteTypes(tempArray);
+    }
 
+    const copyAndMoveTaskFunction =(FunctionsType:string)=>{
+        if(FunctionsType == "Move Task"){
 
+        }
+        if(FunctionsType == "Move Task"){
+
+        }
+    }
 
 
     // ************** this is custom header and custom Footers section functions for panel *************
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="border-bottom d-flex full-width pb-1" >
+            <div className="d-flex full-width pb-1" >
+                {console.log("all sites details ======", SiteTypes)}
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
@@ -1219,7 +1318,7 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomHeaderCopyAndMoveTaskPanel = () => {
         return (
-            <div  className="border-bottom d-flex full-width pb-1" >
+            <div className="d-flex full-width pb-1" >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
@@ -1997,11 +2096,11 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         ))}
                                                         <div className="d-flex justify-content-between py-1 border-top ">
-                                                            <span className="siteColor"
+                                                            {/* <span className="siteColor"
                                                                 style={{ cursor: "pointer" }}
                                                                 onClick={() => alert("We are working on it. This Feature will be live soon ..")}>
                                                                 Upload Item-Images
-                                                            </span>
+                                                            </span> */}
 
                                                             {TaskImages?.length != 0 ?
                                                                 <span className="siteColor"
@@ -2012,7 +2111,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 : null}
                                                         </div>
                                                         {UploadBtnStatus ?
-                                                            <div>
+                                                            <div  id="CopyImageUpload">
                                                                 <div className="drag-upload-image mt-1"
                                                                     style={isDragging ? { border: '1px solid red' } : undefined}
                                                                     onClick={onImageUpload}
@@ -2768,13 +2867,48 @@ const EditTaskPopup = (Items: any) => {
                 onRenderHeader={onRenderCustomHeaderCopyAndMoveTaskPanel}
                 isOpen={CopyAndMoveTaskPopup}
                 type={PanelType.custom}
-                customWidth="850px"
+                customWidth="700px"
                 onDismiss={closeCopyAndMovePopup}
                 isBlocking={false}
             >
                 <div className="modal-body">
                     <div>
-                        <h5>We Are Working On It. This Feature Will Be Live Soon..... </h5>
+                        <div className="col-md-12 p-3 select-sites-section">
+                            <div className="card rounded-0 mb-10">
+                                <div className="card-header">
+                                    <h6>Sites</h6>
+                                </div>
+                                <div className="card-body">
+                                    <ul className="quick-actions">
+                                        {SiteTypes?.map((siteData: any, index: number) => {
+                                            return (
+                                                <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
+                                                    <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
+                                                        <span className="icon-sites">
+                                                            <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
+                                                        </span> {siteData.Title}
+                                                    </a>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </div>
+                                <div className="card-footer">
+                                    <button className="btn btn-primary px-3 float-end"
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-default me-1 float-end px-3"
+                                        onClick={closeCopyAndMovePopup}
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
             </Panel>
