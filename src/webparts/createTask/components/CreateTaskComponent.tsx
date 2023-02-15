@@ -174,113 +174,123 @@ function CreateTaskComponent(props: any) {
         setSave(saveValue);
     }
     const fetchBurgerMenuDetails = async () => {
-        const params = new URLSearchParams(window.location.search);
-        let BurgerMenuData=burgerMenuTaskDetails;
         AllComponents = await GetComponents();
-        let paramSiteUrl = params.get("Siteurl");
-        let paramComponentId = params.get('ComponentID');
-        let paramType = params.get('Type');
-        let paramTaskType = params.get('TaskType');
-        let paramServiceId = params.get('ServiceID');
-        let previousTaggedTaskToComp: any[] = []
-        if (paramComponentId == undefined && paramSiteUrl != undefined && paramType == undefined) {
-            paramComponentId = "756";
-        }
-        else if (paramComponentId == undefined && paramServiceId == undefined && paramSiteUrl != undefined && paramType == 'Service') {
-            paramServiceId = "4497";
-        }
-        BurgerMenuData.ComponentID=paramComponentId;
-        BurgerMenuData.Siteurl=paramSiteUrl;
-        BurgerMenuData.TaskType=paramTaskType;
-        setBurgerMenuTaskDetails(BurgerMenuData)
-        let PageName = '';
+        let setComponent: any = [];
+        if (props?.projectId == undefined) {
+            const params = new URLSearchParams(window.location.search);
+            let BurgerMenuData = burgerMenuTaskDetails;
 
-        if (paramSiteUrl != undefined) {
-            let baseUrl = window.location.href;
-            if (baseUrl.indexOf('CreateTaskSpfx') > -1) {
-                let QueryString = baseUrl.split("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTaskSpfx.aspx")[1]
-                oldTaskIrl = oldTaskIrl + QueryString
+            let paramSiteUrl = params.get("Siteurl");
+            let paramComponentId = params.get('ComponentID');
+            let paramType = params.get('Type');
+            let paramTaskType = params.get('TaskType');
+            let paramServiceId = params.get('ServiceID');
+            let previousTaggedTaskToComp: any[] = []
+            if (paramComponentId == undefined && paramSiteUrl != undefined && paramType == undefined) {
+                paramComponentId = "756";
             }
-            PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
-            PageName = PageName + 'aspx'
-            // await loadRelevantTask(PageName, "PageTask")
-            // await loadRelevantTask(paramSiteUrl, "UrlTask")
-        }
+            else if (paramComponentId == undefined && paramServiceId == undefined && paramSiteUrl != undefined && paramType == 'Service') {
+                paramServiceId = "4497";
+            }
+            BurgerMenuData.ComponentID = paramComponentId;
+            BurgerMenuData.Siteurl = paramSiteUrl;
+            BurgerMenuData.TaskType = paramTaskType;
+            setBurgerMenuTaskDetails(BurgerMenuData)
+            let PageName = '';
+
+            if (paramSiteUrl != undefined) {
+                let baseUrl = window.location.href;
+                if (baseUrl.indexOf('CreateTaskSpfx') > -1) {
+                    let QueryString = baseUrl.split("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTaskSpfx.aspx")[1]
+                    oldTaskIrl = oldTaskIrl + QueryString
+                }
+                PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
+                PageName = PageName + 'aspx'
+                // await loadRelevantTask(PageName, "PageTask")
+                // await loadRelevantTask(paramSiteUrl, "UrlTask")
+            }
 
 
-        if (paramComponentId != undefined) {
-            let setComponent: any = [];
+            if (paramComponentId != undefined) {
+               
+                AllComponents.map((item: any) => {
+                    if (item?.Id == paramComponentId) {
+                        setComponent.push(item)
+                        setSave({ ...save, Component: setComponent });
+                        setSmartComponentData(setComponent);
+                    }
+                })
+
+                if (paramTaskType == 'Bug') {
+                    subCategories?.map((item: any) => {
+                        if (item.Title == "Bug") {
+                            selectSubTaskCategory(item.Title, item.Id, item)
+                        }
+                    })
+                    let saveValue = save;
+                    let setTaskTitle = 'Bug - ' + setComponent[0]?.Title
+                    saveValue.taskName = setTaskTitle;
+                    saveValue.taskUrl = paramSiteUrl;
+                    //  setTaskUrl(paramSiteUrl);
+                    setSave(saveValue);
+                    let e = {
+                        target: {
+                            value: paramSiteUrl
+                        }
+                    }
+                    UrlPasteTitle(e);
+
+                    createTask();
+                } else if (paramTaskType == 'Design') {
+                    subCategories?.map((item: any) => {
+                        if (item.Title == "Design") {
+                            selectSubTaskCategory(item.Title, item.Id, item)
+                        }
+                    })
+                    let saveValue = save;
+                    let setTaskTitle = 'Design Task - ' + setComponent[0]?.Title
+                    saveValue.taskName = setTaskTitle;
+                    saveValue.taskUrl = paramSiteUrl;
+                    //  setTaskUrl(paramSiteUrl);
+                    setSave(saveValue);
+                    let e = {
+                        target: {
+                            value: paramSiteUrl
+                        }
+                    }
+                    UrlPasteTitle(e);
+
+                    createTask();
+                } else if (paramSiteUrl != undefined) {
+                    let saveValue = save;
+                    let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD/MM/YYYY');
+                    saveValue.taskName = setTaskTitle;
+                    saveValue.taskUrl = paramSiteUrl;
+                    //  setTaskUrl(paramSiteUrl);
+                    setSave(saveValue);
+                    let e = {
+                        target: {
+                            value: paramSiteUrl
+                        }
+                    }
+                    UrlPasteTitle(e);
+                    await loadRelevantTask(paramSiteUrl, "UrlTask")
+                    await loadRelevantTask(PageName, "PageTask")
+                }
+                let Condition = "&$filter=Component/Id eq  '" + paramComponentId + "'"
+                await loadRelevantTask(Condition, "ComponentId").then((response: any) => {
+                    setRefreshPage(!refreshPage);
+                })
+            }
+        } else if (props?.projectId != undefined && props?.projectItem!=undefined) {
             AllComponents.map((item: any) => {
-                if (item?.Id == paramComponentId) {
+                if (item?.Id ==props?.projectItem?.ComponentId[0]) {
                     setComponent.push(item)
                     setSave({ ...save, Component: setComponent });
                     setSmartComponentData(setComponent);
                 }
             })
-
-            if (paramTaskType == 'Bug') {
-                subCategories?.map((item: any) => {
-                    if (item.Title == "Bug") {
-                        selectSubTaskCategory(item.Title, item.Id, item)
-                    }
-                })
-                let saveValue = save;
-                let setTaskTitle = 'Bug - ' + setComponent[0]?.Title
-                saveValue.taskName = setTaskTitle;
-                saveValue.taskUrl = paramSiteUrl;
-                //  setTaskUrl(paramSiteUrl);
-                setSave(saveValue);
-                let e = {
-                    target: {
-                        value: paramSiteUrl
-                    }
-                }
-                UrlPasteTitle(e);
-
-                createTask();
-            } else  if (paramTaskType == 'Design') {
-                subCategories?.map((item: any) => {
-                    if (item.Title == "Design") {
-                        selectSubTaskCategory(item.Title, item.Id, item)
-                    }
-                })
-                let saveValue = save;
-                let setTaskTitle = 'Design Task - ' + setComponent[0]?.Title
-                saveValue.taskName = setTaskTitle;
-                saveValue.taskUrl = paramSiteUrl;
-                //  setTaskUrl(paramSiteUrl);
-                setSave(saveValue);
-                let e = {
-                    target: {
-                        value: paramSiteUrl
-                    }
-                }
-                UrlPasteTitle(e);
-
-                createTask();
-            }else if (paramSiteUrl != undefined) {
-                let saveValue = save;
-                let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD/MM/YYYY');
-                saveValue.taskName = setTaskTitle;
-                saveValue.taskUrl = paramSiteUrl;
-                //  setTaskUrl(paramSiteUrl);
-                setSave(saveValue);
-                let e = {
-                    target: {
-                        value: paramSiteUrl
-                    }
-                }
-                UrlPasteTitle(e);
-                await loadRelevantTask(paramSiteUrl, "UrlTask")
-                await loadRelevantTask(PageName, "PageTask")
-            }
-            let Condition = "&$filter=Component/Id eq  '" + paramComponentId + "'"
-            await loadRelevantTask(Condition, "ComponentId").then((response:any)=>{
-                setRefreshPage(!refreshPage);
-            })
         }
-
-
     }
     const loadRelevantTask = async (Condition: any, type: any) => {
         let query = '';
@@ -381,8 +391,8 @@ function CreateTaskComponent(props: any) {
                     setRelevantTasks(setRelTask)
                     setSave({ ...save, recentClick: type })
                 }
-               // setRelevantTasks(setRelTask)
-                
+                // setRelevantTasks(setRelTask)
+
             })
         } catch (error) {
             console.log(error.message)
@@ -391,6 +401,8 @@ function CreateTaskComponent(props: any) {
 
     }
     const GetSmartMetadata = async () => {
+        SitesTypes = [];
+        subCategories = [];
         var TaskTypes: any = []
         var Priority: any = []
         var Timing: any = []
@@ -445,7 +457,8 @@ function CreateTaskComponent(props: any) {
     }
 
     let LoadTaskUsers = async () => {
-        let AllTaskUsers = await globalCommon.loadTaskUsers();
+        let AllTaskUsers: any = [];
+        AllTaskUsers = await globalCommon.loadTaskUsers();
         // let pageContent = await globalCommon.pageContext();
         // console.log(pageContent)
         taskUsers = AllTaskUsers;
@@ -553,7 +566,7 @@ function CreateTaskComponent(props: any) {
                 CategoryTitle.split(';').map((cat: any) => {
                     if (cat.toLowerCase() === 'design') {
                         taskUsers.map((User: any) => {
-                            if (User.Title === 'Design' &&burgerMenuTaskDetails.TaskType!="Design" &&TeamMembersIds.length === 0) {
+                            if (User.Title === 'Design' && burgerMenuTaskDetails.TaskType != "Design" && TeamMembersIds.length === 0) {
                                 TeamMembersIds.push(User.AssingedToUserId);
                             }
                             else if (User.Title === 'Design' && TeamMembersIds.length > 0) {
@@ -655,7 +668,7 @@ function CreateTaskComponent(props: any) {
                     }
 
                     //Latest code for Creating Task
-                    if(burgerMenuTaskDetails.TaskType=="Design"){
+                    if (burgerMenuTaskDetails.TaskType == "Design") {
                         AssignedToIds.push(172);
                         TeamMembersIds.push(172);
                         TeamMembersIds.push(49);
@@ -685,6 +698,7 @@ function CreateTaskComponent(props: any) {
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
                             Url: save.taskUrl?.length > 0 ? save.taskUrl : null,
                         },
+                        ProjectId: props?.projectId != undefined ? props?.projectId : ''
                     };
                     if (CategoryTitle?.toLowerCase().indexOf('approval') > -1)
                         item.PercentComplete = 0;
@@ -768,7 +782,12 @@ function CreateTaskComponent(props: any) {
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
-                        window.open("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + data.data.Id + "&Site=" + save.siteType, "_self")
+                        if (props?.projectId != undefined) {
+                            EditPopup(data?.data)
+                        } else {
+                            window.open("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + data.data.Id + "&Site=" + save.siteType, "_self")
+
+                        }
 
                     })
                 }
@@ -1040,9 +1059,9 @@ function CreateTaskComponent(props: any) {
 
     const columns: GridColDef[] = [
         { field: 'siteType', headerName: 'Site', width: 60, renderCell: (params) => <img className="client-icons" src={params?.row?.siteCover} /> },
-        { field: 'Shareweb_x0020_ID', headerName: 'Task Id', width: 100 },
+        { field: 'Shareweb_x0020_ID', headerName: 'Task Id', width: 75 },
         {
-            field: 'Title', headerName: 'Title', width: 250, renderCell: (params) => {
+            field: 'Title', headerName: 'Title', width: 300, renderCell: (params) => {
                 return (
                     <div>
                         <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
@@ -1060,7 +1079,7 @@ function CreateTaskComponent(props: any) {
             }
         },
         {
-            field: 'PercentComplete', headerName: 'PercentComplete', width: 120, renderCell: (params) => {
+            field: 'PercentComplete', headerName: '% Complete', width: 100, renderCell: (params) => {
                 return (
                     <div>
                         <span>{params?.row?.PercentComplete}%</span>
@@ -1071,7 +1090,7 @@ function CreateTaskComponent(props: any) {
         { field: 'Priority', headerName: 'Priority', width: 80 },
         { field: 'Categories', headerName: 'Categories', width: 120 },
 
-        { field: 'TaskDueDate', headerName: 'Due Date', width: 120 },
+        { field: 'TaskDueDate', headerName: 'Due Date', width: 115 },
         {
             field: 'Created', headerName: 'Created', width: 120, renderCell: (params) => {
                 return (
@@ -1121,14 +1140,14 @@ function CreateTaskComponent(props: any) {
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='Create-taskpage'>
                 <div className='row'>
-                    <div className='col-sm-12'>
+                    {props?.projectId == undefined ? <div className='col-sm-12'>
                         <dl className='d-grid text-right pull-right'><span className="pull-right"> <a data-interception="off" target='_blank' href={oldTaskIrl} style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
-                    </div>
+                    </div> : ''}
                     <div className='col-sm-6 ps-0'>
                         <label className='full-width'>Task Name</label>
                         <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => setSave({ ...save, taskName: e.target.value })}></input>
                     </div>
-                    <div className='col-sm-2 mt-4'>
+                    <div className='col-sm-2 p-0 mt-4'>
                         <input
                             type="radio" className="form-check-input radio  me-1" defaultChecked={save.portfolioType === 'Component'}
                             name="taskcategory" onChange={() => selectPortfolioType('Component')} />
@@ -1294,129 +1313,133 @@ function CreateTaskComponent(props: any) {
                         </ul>
                     </fieldset>
                 </div>
-                {/*---- Task Categories ---------
+
+                {props?.projectId == undefined ? <>
+                    {/*---- Task Categories ---------
             -------------------------------*/}
-                <div className='row mt-2 border'>
-                    <fieldset >
-                        <legend className="border-bottom fs-6">Task Categories</legend>
-                        <div className="row " style={{ width: "100%" }}>
-                            {TaskTypes.map((Task: any) => {
-                                return (
-                                    <>
+                    <div className='row mt-2 border'>
+                        <fieldset >
+                            <legend className="border-bottom fs-6">Task Categories</legend>
+                            <div className="row " style={{ width: "100%" }}>
+                                {TaskTypes.map((Task: any) => {
+                                    return (
                                         <>
-                                            <div
-                                                className=" col-sm-2 mt-1 text-center"  >
-                                                <div id={"subcategorytasks" + Task.Id} className={isActiveCategory ? 'task manage_tiles' : 'task manage_tiles'}>
-                                                    <div className='bg-siteColor py-3'>
-                                                        {(Task.Item_x005F_x0020_Cover !== undefined && Task.Item_x005F_x0020_Cover.Url !== undefined) &&
-                                                            <img className="icon-task"
-                                                                src={Task.Item_x005F_x0020_Cover.Url} />}
-                                                        <p className='m-0'>{Task.Title}</p>
+                                            <>
+                                                <div
+                                                    className=" col-sm-2 mt-1 text-center"  >
+                                                    <div id={"subcategorytasks" + Task.Id} className={isActiveCategory ? 'task manage_tiles' : 'task manage_tiles'}>
+                                                        <div className='bg-siteColor py-3'>
+                                                            {(Task.Item_x005F_x0020_Cover !== undefined && Task.Item_x005F_x0020_Cover.Url !== undefined) &&
+                                                                <img className="icon-task"
+                                                                    src={Task.Item_x005F_x0020_Cover.Url} />}
+                                                            <p className='m-0'>{Task.Title}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div className='subcategoryTasks kind_task col-sm-10'  >
-                                                {subCategory?.map((item: any) => {
-                                                    return (
-                                                        <>
-                                                            {Task.Id === item.ParentID && <>
-                                                                {/* onClick={() => selectSubTaskCategory(item.Title, item.Id)} */}
-                                                                <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask selectedTaskList text-center' : 'bg-siteColor subcategoryTask text-center'} >
+                                                <div className='subcategoryTasks kind_task col-sm-10'  >
+                                                    {subCategory?.map((item: any) => {
+                                                        return (
+                                                            <>
+                                                                {Task.Id === item.ParentID && <>
+                                                                    {/* onClick={() => selectSubTaskCategory(item.Title, item.Id)} */}
+                                                                    <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask selectedTaskList text-center' : 'bg-siteColor subcategoryTask text-center'} >
 
-                                                                    <span className="icon-box">
-                                                                        {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                                                            <img className="icon-task"
-                                                                                src={item.Item_x005F_x0020_Cover.Url} />}
-                                                                    </span> <span className="tasks-label">{item.Title}</span>
-                                                                </a>
+                                                                        <span className="icon-box">
+                                                                            {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                                                                <img className="icon-task"
+                                                                                    src={item.Item_x005F_x0020_Cover.Url} />}
+                                                                        </span> <span className="tasks-label">{item.Title}</span>
+                                                                    </a>
+                                                                </>
+                                                                }
                                                             </>
-                                                            }
-                                                        </>
-                                                    )
-                                                })}
-                                            </div>
-                                        </>
-                                    </>)
-                            })}
-                        </div>
-                    </fieldset>
-                </div>
-                {/*-----Priority Rank --------
-            -------------------------------*/}
-                <div className='row mt-2 border'>
-                    <fieldset>
-                        <legend className="border-bottom fs-6">Priority Rank</legend>
-                        <dl className="row px-2 text-center">
-                            {priorityRank.map((item: any) => {
-                                return (
-                                    <>
-
-                                        <>
-                                            <dt
-                                                className={isActive.rank && save.rank === item.Title ? 'bg-siteColor col selectedTaskList  mx-1 p-2  mb-2 ' : 'bg-siteColor col mx-1 p-2  mb-2 '} onClick={() => setActiveTile("rank", "rank", item.Title)}>
-
-                                                <a className='text-white'>
-                                                    <span>
-                                                        <img src={item.Item_x005F_x0020_Cover.Url} />
-                                                    </span>
-                                                </a>
-
-                                            </dt>
-
-                                        </>
-
-                                    </>)
-                            })}
-
-                        </dl>
-                    </fieldset>
-                </div>
-                {/*-----Time --------
-            -------------------------------*/}
-                <div className='row mt-2 border'>
-                    <fieldset>
-                        <legend className="border-bottom fs-6">Time</legend>
-                        <div className="row justify-content-md-center subcategoryTasks">
-                            {Timing.map((item: any) => {
-                                return (
-                                    <>
-
-                                        <>
-                                            <div className={isActive.time && save.Time === item.Title ? 'bg-siteColor selectedTaskList Timetask mx-1 p-2 px-2   text-center' : 'bg-siteColor Timetask mx-1 p-2 px-2  text-center'} onClick={() => setActiveTile("Time", "time", item.Title)} >
-
-                                                <a className='text-decoration-none text-white'>
-                                                    <span className="icon-sites">
-                                                        <img className="icon-sites"
-                                                            src={item.Item_x005F_x0020_Cover.Url} />
-                                                    </span>{item.Title}
-                                                </a>
-                                            </div>
-
-                                        </>
-
-                                    </>)
-                            })}
-
-                        </div>
-                    </fieldset>
-                </div>
-                {/*-----Due date --------
-            -------------------------------*/}
-                <div className='row mt-2 border'>
-                    <fieldset>
-
-                        <legend className="border-bottom fs-6">Due Date</legend>
-                        <div className="row justify-content-md-center text-center mb-2">
-                            <div className={isActive.dueDate && save.dueDate === 'Today' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
-                                <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </>
+                                        </>)
+                                })}
                             </div>
-                            <div className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow"><a className='text-decoration-none text-white'>Tomorrow</a> </div>
-                            <div className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek"><a className='text-decoration-none text-white'>This Week</a> </div>
-                            <div className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a className='text-decoration-none text-white'>Next Week</a> </div>
-                            <div className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a className='text-decoration-none text-white'>This Month</a> </div>
-                        </div>
-                    </fieldset>
-                </div>
+                        </fieldset>
+                    </div>
+                    {/*-----Priority Rank --------
+            -------------------------------*/}
+                    <div className='row mt-2 border'>
+                        <fieldset>
+                            <legend className="border-bottom fs-6">Priority Rank</legend>
+                            <dl className="row px-2 text-center">
+                                {priorityRank.map((item: any) => {
+                                    return (
+                                        <>
+
+                                            <>
+                                                <dt
+                                                    className={isActive.rank && save.rank === item.Title ? 'bg-siteColor col selectedTaskList  mx-1 p-2  mb-2 ' : 'bg-siteColor col mx-1 p-2  mb-2 '} onClick={() => setActiveTile("rank", "rank", item.Title)}>
+
+                                                    <a className='text-white'>
+                                                        <span>
+                                                            <img src={item.Item_x005F_x0020_Cover.Url} />
+                                                        </span>
+                                                    </a>
+
+                                                </dt>
+
+                                            </>
+
+                                        </>)
+                                })}
+
+                            </dl>
+                        </fieldset>
+                    </div>
+                    {/*-----Time --------
+            -------------------------------*/}
+                    <div className='row mt-2 border'>
+                        <fieldset>
+                            <legend className="border-bottom fs-6">Time</legend>
+                            <div className="row justify-content-md-center subcategoryTasks">
+                                {Timing.map((item: any) => {
+                                    return (
+                                        <>
+
+                                            <>
+                                                <div className={isActive.time && save.Time === item.Title ? 'bg-siteColor selectedTaskList Timetask mx-1 p-2 px-2   text-center' : 'bg-siteColor Timetask mx-1 p-2 px-2  text-center'} onClick={() => setActiveTile("Time", "time", item.Title)} >
+
+                                                    <a className='text-decoration-none text-white'>
+                                                        <span className="icon-sites">
+                                                            <img className="icon-sites"
+                                                                src={item.Item_x005F_x0020_Cover.Url} />
+                                                        </span>{item.Title}
+                                                    </a>
+                                                </div>
+
+                                            </>
+
+                                        </>)
+                                })}
+
+                            </div>
+                        </fieldset>
+                    </div>
+                    {/*-----Due date --------
+            -------------------------------*/}
+                    <div className='row mt-2 border'>
+                        <fieldset>
+
+                            <legend className="border-bottom fs-6">Due Date</legend>
+                            <div className="row justify-content-md-center text-center mb-2">
+                                <div className={isActive.dueDate && save.dueDate === 'Today' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Today')}>
+                                    <a className='text-decoration-none text-white'>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a>
+                                </div>
+                                <div className={isActive.dueDate && save.dueDate === 'Tomorrow' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'Tomorrow')} id="Tomorrow"><a className='text-decoration-none text-white'>Tomorrow</a> </div>
+                                <div className={isActive.dueDate && save.dueDate === 'ThisWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisWeek')} id="ThisWeek"><a className='text-decoration-none text-white'>This Week</a> </div>
+                                <div className={isActive.dueDate && save.dueDate === 'NextWeek' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'NextWeek')} id="NextWeek"><a className='text-decoration-none text-white'>Next Week</a> </div>
+                                <div className={isActive.dueDate && save.dueDate === 'ThisMonth' ? 'bg-siteColor col mx-1 p-2 px-2 selectedTaskList text-center' : 'mx-1 p-2 px-4 col bg-siteColor'} onClick={() => setActiveTile("dueDate", "dueDate", 'ThisMonth')} id="ThisMonth"><a className='text-decoration-none text-white'>This Month</a> </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </> : ''}
+
                 <div className='col text-end mt-3'>
                     {
                         siteType.map((site: any) => {
