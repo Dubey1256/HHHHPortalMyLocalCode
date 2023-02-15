@@ -20,6 +20,7 @@ import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
+import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
@@ -48,6 +49,7 @@ export default function ComponentTable({ props }: any) {
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
     const [Isshow, setIsshow] = React.useState(false);
+     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
    
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     IsUpdated = props.Portfolio_x0020_Type;
@@ -1116,7 +1118,10 @@ export default function ComponentTable({ props }: any) {
 
 
     // Expand Table 
+    const expndpopup = (e: any) => {
 
+        settablecontiner(e);
+    };
 
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
@@ -1807,6 +1812,9 @@ export default function ComponentTable({ props }: any) {
                             disabled={true}>
                             Compare
                         </button>
+                        <a className='expand'>
+                                            <ExpndTable prop={expndpopup} prop1={tablecontiner} />
+                                        </a>
                         <a>
                             <Tooltip />
                         </a>
