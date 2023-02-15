@@ -27,7 +27,7 @@ const SmartTimeTotalFunction=(item:any)=>{
     }, []);
     var AllMetadata: [] = [];
     const GetSmartMetadata = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(item.props.siteUrl);
         let MetaData = [];
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
@@ -43,7 +43,7 @@ const SmartTimeTotalFunction=(item:any)=>{
     //     item.CallBackSumSmartTime(smartTimeTotal);
     // }
     const GetTaskUsers = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(item.props.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle('Task Users')
@@ -61,7 +61,7 @@ const SmartTimeTotalFunction=(item:any)=>{
 
         TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
         TaskTimeSheetCategoriesGrouping = TaskTimeSheetCategoriesGrouping.concat(TaskTimeSheetCategories);
-        TaskTimeSheetCategoriesGrouping.push({ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 319, "Title": "Others", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": null, "TaxType": "TimesheetCategories", "Selectable": true, "ParentID": "ParentID", "SmartSuggestions": false, "ID": 319 });
+       // TaskTimeSheetCategoriesGrouping.push({ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 319, "Title": "Others", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": null, "TaxType": "TimesheetCategories", "Selectable": true, "ParentID": "ParentID", "SmartSuggestions": false, "ID": 319 });
 
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
 
@@ -98,8 +98,13 @@ const SmartTimeTotalFunction=(item:any)=>{
          if(items.siteType=="Migration"||items.siteType=="ALAKDigital"){
             var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
          }
+          else if(item.props.sitePage=="SH"){
+            var allurls = [{
+                'Url': `${item.props.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select= ${select}`}]
+            
+          }
          else{ var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
-         { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }]}
+         { 'Url': `${item.props.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select= ${select}`}]}
 
        
         $.each(allurls, async function (index: any, item: any) {
@@ -146,38 +151,38 @@ const SmartTimeTotalFunction=(item:any)=>{
                             item.listId = null;
                             item.siteName = null
                             item.siteUrl = null;
-                            if (NewParentId == item.Id) {
-                                var TimeInH: any = changeTime / 60
-                                item.TimesheetTitle.Title = NewParentTitle;
-                                item.TimesheetTitle.Id = mainParentId;
-                                item.AdditionalTime = []
-                                var update: any = {};
-                                update['AuthorName'] = item.Author.Title;
-                                update['AuthorImage'] = item.AuthorImage;
-                                update['ID'] = 0;
-                                update['MainParentId'] = mainParentId;
-                                update['ParentID'] = NewParentId;
-                                update['TaskTime'] = TimeInH;
-                                // update['TaskDate'] =  Moment(changeDates).format('DD/MM/YYYY');
-                                update['Description'] = newData.Description
-                                item.AdditionalTime.push(update)
-                                let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+                            // if (NewParentId == item.Id) {
+                            //     var TimeInH: any = changeTime / 60
+                            //     item.TimesheetTitle.Title = NewParentTitle;
+                            //     item.TimesheetTitle.Id = mainParentId;
+                            //     item.AdditionalTime = []
+                            //     var update: any = {};
+                            //     update['AuthorName'] = item.Author.Title;
+                            //     update['AuthorImage'] = item.AuthorImage;
+                            //     update['ID'] = 0;
+                            //     update['MainParentId'] = mainParentId;
+                            //     update['ParentID'] = NewParentId;
+                            //     update['TaskTime'] = TimeInH;
+                            //     // update['TaskDate'] =  Moment(changeDates).format('DD/MM/YYYY');
+                            //     update['Description'] = newData.Description
+                            //     item.AdditionalTime.push(update)
+                            //     let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
-                                await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(NewParentId).update({
+                            //     await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(NewParentId).update({
 
 
-                                    AdditionalTimeEntry: JSON.stringify(item.AdditionalTime),
-                                    TimesheetTitleId: mainParentId
+                            //         AdditionalTimeEntry: JSON.stringify(item.AdditionalTime),
+                            //         TimesheetTitleId: mainParentId
 
-                                }).then((res: any) => {
+                            //     }).then((res: any) => {
 
-                                    console.log(res);
+                            //         console.log(res);
                                     
 
 
-                                })
+                            //     })
 
-                            }
+                            // }
 
                             if (item.TimesheetTitle.Id != undefined) {
                                 if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
