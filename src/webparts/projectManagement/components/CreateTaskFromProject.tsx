@@ -23,27 +23,11 @@ const CreateTaskFromProject = (props: any) => {
         setLgShow(true)
     }
    
-    // const createTask = async () => {
-    //     try {
-    //         if(selectedSite?.listId!=undefined&&selectedSite?.siteUrl?.Url!=undefined&&taskTitle.length>0){
-    //             let web = new Web(selectedSite?.siteUrl?.Url);
-    //             await web.lists.getById(selectedSite?.listId).items.add({
-    //                 Title: taskTitle,
-    //                 ProjectId:props?.projectId!=undefined?props?.projectId:''
-    //             }).then((data) => {
-    //                 data.data.listId=selectedSite?.listId;
-    //                 data.data.siteType=selectedSite?.Title;
-    //                 data.data.siteUrl=selectedSite?.siteUrl?.Url;
-    //                 EditPopup(data.data)
-    //                 console.log(data,"Task Created")
-    //                 props.callBack();
-    //                 handleClose()
-    //             })
-    //         }
-    //     } catch (error) {
-    //         console.log("Error:", error.message);
-    //     } 
-    // }
+    const callBack=()=>{
+        props?.callBack
+        setLgShow(false)
+    }
+ 
     return (
         <>
          
@@ -55,7 +39,7 @@ const CreateTaskFromProject = (props: any) => {
                isOpen={lgShow}
                onDismiss={() => setLgShow(false)}
                isBlocking={false}>
-                <CreateTaskComponent projectItem={props?.projectItem} pageContext={props?.pageContext} projectId={props?.projectId}/>
+                <CreateTaskComponent callBack={props?.callBack} projectItem={props?.projectItem} pageContext={props?.pageContext} projectId={props?.projectId}/>
             </Panel>
            
         </>
