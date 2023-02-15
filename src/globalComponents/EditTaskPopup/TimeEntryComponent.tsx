@@ -1369,8 +1369,8 @@ function TimeEntryPopup(item: any) {
                         update['ID'] = timeSpentId.ID + 1;
                         update['MainParentId'] = AddMainParent;
                         update['ParentID'] = AddParent;
-                        update['TaskTime'] = child.TaskTime;
-                        update['TaskTimeInMinute'] = child.TaskTimeInMin;
+                        update['TaskTime'] =  TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
+                        update['TaskTimeInMinute'] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMinutes;
                         update['TaskDate'] = Dateee != 'Invalid date' && Dateee != "" && Dateee != undefined ? Dateee : child.TaskDate;
                         update['Description'] = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
                         subItem.AdditionalTime.push(update)
