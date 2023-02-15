@@ -216,7 +216,7 @@ export const loadTaskUsers= async ()=> {
     catch (error) {
         return Promise.reject(error);
     }
-    return taskUser;
+    return taskUser ;
 }
 export const parseJSON = (jsonItem: any) => {
     var json = [];
@@ -250,8 +250,9 @@ export const  GetIconImageUrl =(listName: any, listUrl: any, Item: any) =>{
     return IconUrl;
 }
 export const makePostDataForApprovalProcess =  async (postData:any)=> {
+    var TaskUsers:any=[];
     await loadTaskUsers().then(function (data) {
-            var TaskUsers = data;
+             TaskUsers = data;
             var UserManager: any[] = [];
             TaskUsers.map((user:any)=> {
                 if (user?.Approver?.results?.length > 0) {
@@ -553,6 +554,7 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                         if (item?.PercentComplete != undefined) {
                             item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
                             item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+                            
                             item.PercentageCompleted = item.PercentComplete;
                         }
                         if ( item?.siteType != undefined) {

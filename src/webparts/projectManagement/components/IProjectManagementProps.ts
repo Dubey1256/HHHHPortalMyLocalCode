@@ -4,4 +4,5 @@ export interface IProjectManagementProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  pageContext:any
 }

@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import * as React from 'react';
 //import '../components/TagTaskToProjectPopup.css';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Panel, PanelType } from "office-ui-fabric-react";
 import { useEffect, useState } from 'react';
 import { Web } from "sp-pnp-js";
 import * as moment from 'moment';
@@ -16,11 +16,8 @@ const TagTaskToProjectPopup = (props: any) => {
 
     const [lgShow, setLgShow] = useState(false);
     const handleClose = () => {
-
         setLgShow(false);
-
         clearSearch()
-
     }
     const [AllTasks, setAllTasks] = React.useState([])
     const [SearchedAllTasks, setSearchedAllTasks] = React.useState([])
@@ -56,134 +53,7 @@ const TagTaskToProjectPopup = (props: any) => {
         siteConfig = smartmeta;
         LoadAllSiteTasks();
     }
-    // const getSharewebId = (item: any) => {
-    //     var Shareweb_x0020_ID = undefined;
-    //     if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title == undefined) {
-    //         Shareweb_x0020_ID = 'T' + item.Id;
-    //     }
-    //     else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No === undefined && item.SharewebTaskLevel2No === undefined) {
-    //         Shareweb_x0020_ID = 'T' + item.Id;
-    //         if (item.SharewebTaskType.Title === 'MileStone')
-    //             Shareweb_x0020_ID = 'M' + item.Id;
-    //     }
-    //     else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Activities' || item.SharewebTaskType.Title === 'Project') && item.SharewebTaskLevel1No != undefined) {
-    //         if (item.Component != undefined) {
-    //             if (item.Component.results != undefined && item.Component.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
-    //             }
-    //         }
-    //         if (item.Services != undefined) {
-    //             if (item.Services.results != undefined && item.Services.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
-    //             }
-    //         }
-    //         if (item.Events != undefined) {
-    //             if (item.Events.results != undefined && item.Events.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
-    //             }
-    //         }
-    //         if (item.Component != undefined && item.Events != undefined && item.Services != undefined)
-    //             if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
-    //                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-    //             }
-    //         if (item.Component === undefined && item.Events === undefined && item.Services === undefined) {
-    //             Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-    //         }
-    //         if (item.SharewebTaskType.Title === 'Project')
-    //             Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
-
-    //     }
-    //     else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Workstream' || item.SharewebTaskType.Title === 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
-    //         if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-    //             if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
-    //                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-    //             }
-    //         }
-    //         if (item.Component != undefined) {
-    //             if (item.Component.results != undefined && item.Component.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-    //             }
-    //         }
-    //         if (item.Services != undefined) {
-    //             if (item.Services.results != undefined && item.Services.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-    //             }
-    //         }
-    //         if (item.Events != undefined) {
-    //             if (item.Events.results != undefined && item.Events.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-    //             }
-    //         }
-    //         if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
-    //             Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-    //         }
-    //         if (item.SharewebTaskType.Title === 'Step')
-    //             Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
-
-    //     }
-    //     else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
-    //         if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-    //             if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
-    //                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-    //             }
-    //         }
-    //         if (item.Component != undefined) {
-    //             if (item.Component.results != undefined && item.Component.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-    //             }
-    //         }
-    //         if (item.Services != undefined) {
-    //             if (item.Services.results != undefined && item.Services.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-    //             }
-    //         }
-    //         if (item.Events != undefined) {
-    //             if (item.Events.results != undefined && item.Events.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-    //             }
-    //         }
-    //         if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
-    //             Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-    //         }
-    //         if (item.SharewebTaskType.Title === 'MileStone') {
-    //             Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
-    //         }
-    //     }
-    //     else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No === undefined) {
-    //         if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-    //             if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
-    //                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
-    //             }
-    //         }
-    //         if (item.Component != undefined) {
-    //             if (item.Component.results != undefined && item.Component.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
-    //             }
-    //         }
-    //         if (item.Services != undefined) {
-    //             if (item.Services.results != undefined && item.Services.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
-    //             }
-    //         }
-    //         if (item.Events != undefined) {
-    //             if (item.Events.results != undefined && item.Events.results.length > 0) {
-    //                 Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
-    //             }
-    //         }
-    //         if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
-    //             Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
-    //         }
-    //         if (item.SharewebTaskType.Title === 'MileStone') {
-    //             Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
-    //         }
-
-    //     } else {
-    //         if (item?.Id != undefined) {
-    //             Shareweb_x0020_ID = 'T' + item?.Id
-    //         }
-    //     }
-    //     return Shareweb_x0020_ID;
-    // }
+ 
     const loadAdminConfigurations = function () {
 
         var CurrentSiteType = ''
@@ -241,18 +111,18 @@ const TagTaskToProjectPopup = (props: any) => {
                         items['Portfoliotype'] = 'Service';
                     }
                     if (DataSiteIcon != undefined) {
-                        if(config.Title=="DRR"||config.Title=="Gender"||config.Title=="KathaBeck"){
+                        if (config.Title == "DRR" || config.Title == "Gender" || config.Title == "KathaBeck") {
                             items['siteIcon'] = config.Item_x005F_x0020_Cover.Url
-                        }else{
+                        } else {
                             DataSiteIcon.map((site: any) => {
                                 if (site.Site == items.siteType) {
                                     items['siteIcon'] = site.SiteIcon
                                 }
                             })
                         }
-                       
+
                     }
-                    items.CreatedDis=items?.Created != null ? moment(items.Created).format('DD/MM/YYYY') : ""
+                    items.CreatedDis = items?.Created != null ? moment(items.Created).format('DD/MM/YYYY') : ""
                     items.componentString = items.Component != undefined && items.Component != undefined && items.Component.length > 0 ? getComponentasString(items.Component) : '';
                     items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
                     if (items.Team_x0020_Members != undefined) {
@@ -262,7 +132,7 @@ const TagTaskToProjectPopup = (props: any) => {
                             AllUser.map((user: any) => {
                                 if (user.AssingedToUserId == taskUser.Id) {
 
-                                    newuserdata['useimageurl'] = user.Item_x0020_Cover.Url;
+                                    newuserdata['useimageurl'] = user?.Item_x0020_Cover?.Url;
                                     newuserdata['Suffix'] = user.Suffix;
                                     newuserdata['Title'] = user.Title;
                                     newuserdata['UserId'] = user.AssingedToUserId;
@@ -331,7 +201,7 @@ const TagTaskToProjectPopup = (props: any) => {
                 if (
                     task?.Title?.toLowerCase().includes(searchText.toLowerCase()) || task?.Shareweb_x0020_ID?.toLowerCase().includes(searchText.toLowerCase())
                     || task.Priority.toLowerCase().includes(searchText.toLowerCase()) || task.PercentComplete.toLowerCase().includes(searchText.toLowerCase()) ||
-                    task.Author.Title.toLowerCase().includes(searchText.toLowerCase())||task.siteType.toLowerCase().includes(searchText.toLowerCase())||task.CreatedDis.toLowerCase().includes(searchText.toLowerCase())
+                    task.Author.Title.toLowerCase().includes(searchText.toLowerCase()) || task.siteType.toLowerCase().includes(searchText.toLowerCase()) || task.CreatedDis.toLowerCase().includes(searchText.toLowerCase())
                 ) {
                     return true;
                 }
@@ -395,126 +265,136 @@ const TagTaskToProjectPopup = (props: any) => {
         }
 
     }
+    const onRenderCustomHeaderMain = (type: any) => {
+        return (
+            <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                {`Tag Tasks - ${props.projectTitle}`}
+            </div>
+
+        )
+
+    }
+    const onRenderCustomFooterMain = () => {
+        return (
+
+
+            <footer className='text-end'>
+                <Button type="button" className="me-2" variant="secondary" onClick={handleClose}>Cancel</Button>
+                <Button type="button" variant="primary" onClick={() => tagSelectedTasks()}>Tag</Button>
+            </footer>
+
+
+        )
+    }
+
     return (
         <>
             <Button type="button" variant="secondary" className='pull-right me-2' onClick={() => OpenTaskPopupData()}>Tag Tasks</Button>
-            <Modal
-                size="lg"
-                show={lgShow}
-                onHide={() => setLgShow(false)}
-                aria-labelledby="example-modal-sizes-title-lg">
-                <Modal.Header>
-                    <span className='modal-title' id="example-modal-sizes-title-lg">
-                        <span><strong>Tag Tasks - {props.projectTitle}</strong></span>
-                    </span>
-                    <button type="button" className='Close-button' onClick={handleClose} >×</button>
-                </Modal.Header>
-                <Modal.Body>
-                    {
-                        AllTasks?.length > 0 ? <div>
-                            <div className='row'>
-                                <div className='col-sm-6 searchTaskTag'>
+
+            <Panel
+                onRenderHeader={onRenderCustomHeaderMain}
+                type={PanelType.large}
+                isOpen={lgShow}
+                onDismiss={() => setLgShow(false)}
+                isBlocking={false}
+                onRenderFooter={onRenderCustomFooterMain}
+            >
+                {
+                    AllTasks?.length > 0 ? <div>
+                        <div className='row'>
+                            <div className='col-sm-6'>
+                                <div className="input-group">
                                     <input className="form-control " type="text" value={searchText} onKeyDown={handleKeyDown} onChange={onSearchText} placeholder="Search" aria-label="Search" />
                                     <span className="input-group-text" onClick={() => { searchTaskToTag() }}><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none">
                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M31.0138 7.06731C33.8354 7.61202 36.1852 8.86678 37.9071 10.7481C39.8647 12.8866 40.832 15.2084 40.979 18.1218C41.0896 20.3107 40.7731 21.8402 39.7795 23.9182C39.1457 25.2435 38.8458 25.6499 37.5723 26.9085C35.1834 29.2697 33.1175 30.1768 29.783 30.3289C27.9988 30.4101 27.6948 30.3806 26.3472 29.9939C24.6941 29.5197 23.8671 29.1402 22.7405 28.3386C22.3186 28.0385 21.9187 27.7929 21.8519 27.7929C21.7851 27.7929 18.7525 30.7738 15.1127 34.4173C8.73245 40.8041 8.47514 41.04 7.93518 40.9963C7.15937 40.9331 6.78471 40.3003 7.12757 39.6316C7.25623 39.3804 10.2498 36.2724 13.78 32.7251C17.3101 29.1776 20.1984 26.2245 20.1984 26.1623C20.1984 26.1003 19.9343 25.6607 19.6115 25.1856C17.4873 22.0598 17.0424 17.9103 18.4541 14.3929C19.8012 11.0364 22.4973 8.58667 26.0904 7.45461C27.2002 7.10508 30.0487 6.88084 31.0138 7.06731ZM27.5326 9.2402C26.2441 9.47559 24.1717 10.4672 23.1928 11.3167C20.2179 13.8984 19.0413 17.6838 20.0893 21.3025C21.0407 24.5876 23.6698 27.1581 26.9782 28.0375C28.2549 28.3769 30.5384 28.3442 31.8541 27.9679C35.2193 27.0055 37.9175 24.2229 38.6949 20.9132C39.1038 19.1722 38.9464 16.9223 38.3009 15.2809C36.5751 10.8934 32.1303 8.40004 27.5326 9.2402Z" fill="#333333" />
                                     </svg></span>
-                                    {searchText?.length > 0 ? <span className='searchclearTagTask' onClick={clearSearch} >×</span> : ''}
+                                    {searchText?.length > 0 ? <span className='searchclear' onClick={clearSearch} >×</span> : ''}
                                 </div>
-                                {SearchedAllTasks?.length > 0 ? <div className="col-sm-12">
-                                    <div className="col-sm-12">
-                                        <div className="tbl-header">
-                                            <table className="compareTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th><input type="checkbox" id="isActive" checked={selectAll} defaultChecked={selectAll} onChange={() => selectAllFiltered(selectAll)} /></th>
-                                                        <th style={{ width: "5%" }}>Site</th>
-                                                        <th style={{ width: "10%" }}>Task Id</th>
-                                                        <th style={{ width: "35%" }}> Task Title</th>
-                                                        <th style={{ width: "20%" }}>Portfolio Type</th>
-                                                        <th style={{ width: "10%" }}> % Complete</th>
-                                                        <th style={{ width: "10%" }}>Priority</th>
-                                                        <th style={{ width: "10%" }}>Created</th>
-                                                        {/* <th>Edit</th> */}
-                                                    </tr>
-                                                </thead>
-                                            </table>
-                                        </div>
-                                        <div className="tbl-content">
-                                            <table className="compareTable">
-                                                <tbody>
-                                                    {
-                                                        SearchedAllTasks.map((item: any, index: any) => {
-                                                            return (
-                                                                <tr className="table-body-content" key={index}>
-                                                                    <td><input type="checkbox" id="isActive" onClick={() => { selectRow(item, index) }} checked={item?.selected} /></td>
-                                                                    <td style={{ width: "5%" }}>
-                                                                        <img className="icon-sites-img"
-                                                                           title={item?.siteType} src={item?.siteIcon} />
-                                                                    </td >
-                                                                    <td style={{ width: "10%" }}>{item?.Shareweb_x0020_ID}</td>
-                                                                    <td style={{ width: "35%" }}> <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span></td>
-                                                                    <td style={{ width: "20%" }}>
-                                                                        {item.Component != undefined &&
-                                                                            <>
-                                                                                {item.Component.map((types: any) => {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
-                                                                                        </>
-                                                                                    )
-                                                                                })}
-                                                                            </>
-                                                                        }
-                                                                        {item.Component == undefined &&
-                                                                            <>
-                                                                                {item.Services.map((types: any) => {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
-                                                                                        </>
-                                                                                    )
-                                                                                })}
-                                                                            </>
-                                                                        }
-                                                                    </td>
-                                                                    <td style={{ width: "10%" }}><span className="ml-2">{item.PercentComplete}</span></td>
-                                                                    <td style={{ width: "10%" }}>{item.Priority}</td>
-                                                                    <td style={{ width: "10%" }}>{item.CreatedDis}
-                                                                        {
-                                                                            AllUser.map((user: any) => {
-                                                                                if (user.AssingedToUserId == item.Author.Id) {
-                                                                                    return (
-                                                                                        <img className="AssignUserPhoto1" title={user.Title} src={user.Item_x0020_Cover.Url} alt={user.Title} />
-                                                                                    )
-
-                                                                                }
-                                                                            }) 
-                                                                        }
-                                                                    </td>
-                                                                </tr>
-                                                            )
-                                                        })
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div> : ''}
 
                             </div>
-                        </div> : 'Loading ...'
-                    }
-                </Modal.Body>
-                <div className="modal-footer">
+                            {SearchedAllTasks?.length > 0 ? <div className="col-sm-12">
+                                <div className="col-sm-12">
+                                    <div className="tbl-header">
+                                        <table className="table">
+                                            <thead>
+                                                <tr>
+                                                    <th style={{ width: "3%" }}><input type="checkbox" id="isActive" checked={selectAll} defaultChecked={selectAll} onChange={() => selectAllFiltered(selectAll)} /></th>
+                                                    <th style={{ width: "5%" }}>Site</th>
+                                                    <th style={{ width: "10%" }}>Task Id</th>
+                                                    <th style={{ width: "32%" }}> Task Title</th>
+                                                    <th style={{ width: "20%" }}>Portfolio Type</th>
+                                                    <th style={{ width: "10%" }}> % Complete</th>
+                                                    <th style={{ width: "10%" }}>Priority</th>
+                                                    <th style={{ width: "10%" }}>Created</th>
+                                                    {/* <th>Edit</th> */}
+                                                </tr>
+                                            </thead>
+                                            <tbody >
+                                                {
+                                                    SearchedAllTasks.map((item: any, index: any) => {
+                                                        return (
+                                                            <tr className="table-body-content" key={index}>
+                                                                <td style={{ width: "3%" }}><input type="checkbox" id="isActive" onClick={() => { selectRow(item, index) }} checked={item?.selected} /></td>
+                                                                <td style={{ width: "5%" }}>
+                                                                    <img className="icon-sites-img"
+                                                                        title={item?.siteType} src={item?.siteIcon} />
+                                                                </td >
+                                                                <td style={{ width: "10%" }}>{item?.Shareweb_x0020_ID != undefined ? item?.Shareweb_x0020_ID : ''}</td>
+                                                                <td style={{ width: "32%" }}> <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title != undefined ? item?.Title : ''}</a></span></td>
+                                                                <td style={{ width: "20%" }}>
+                                                                    {item.Component != undefined ?
+                                                                        <>
+                                                                            {item.Component.map((types: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                                                    </>
+                                                                                )
+                                                                            })}
+                                                                        </> : ''
+                                                                    }
+                                                                    {item.Component == undefined ?
+                                                                        <>
+                                                                            {item.Services.map((types: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                                                    </>
+                                                                                )
+                                                                            })}
+                                                                        </> : ''
+                                                                    }
+                                                                </td>
+                                                                <td style={{ width: "10%" }}><span className="ml-2">{item.PercentComplete != undefined ? item.PercentComplete : ''}</span></td>
+                                                                <td style={{ width: "10%" }}>{item.Priority != undefined ? item.Priority : ''}</td>
+                                                                <td style={{ width: "10%" }}>{item.CreatedDis != undefined ? item.CreatedDis : ''}
+                                                                    {
+                                                                        AllUser.map((user: any) => {
+                                                                            if (user.AssingedToUserId == item.Author.Id) {
+                                                                                return (
+                                                                                    <img className="AssignUserPhoto1" title={user.Title} src={user?.Item_x0020_Cover?.Url} alt={user.Title} />
+                                                                                )
 
-                    <div className="row">
-                        <div className="pull-right">
-                            <Button type="button" className="me-2" variant="secondary" onClick={handleClose}>Cancel</Button>
-                            <Button type="button" variant="primary" onClick={() => tagSelectedTasks()}>Tag</Button>
+                                                                            }
+                                                                        })
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    })
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div> : <h3 className="text-center">No Search Result</h3>}
+
                         </div>
-                    </div>
-                </div>
-            </Modal>
+                    </div> : 'Loading ...'
+                }
+            </Panel>
+
 
 
         </>
