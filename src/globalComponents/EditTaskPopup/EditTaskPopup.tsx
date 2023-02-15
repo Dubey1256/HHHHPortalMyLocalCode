@@ -1350,7 +1350,7 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomFooterMain = () => {
         return (
             <footer>
-                <div className="border-top d-flex justify-content-between px-4 py-2">
+                <div className="d-flex justify-content-between px-4 py-2 me-3">
                     <div>
                         <div className="">
                             Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
@@ -1424,7 +1424,7 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomFooterOther = () => {
         return (
             <footer>
-                <div className="border-top d-flex justify-content-between px-4 py-2">
+                <div className="me-3 d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
@@ -1567,7 +1567,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="input-group">
                                                 <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
                                                     <span className="form-check">
-                                                        <input className="form-check-input" type="checkbox"
+                                                        <input className="form-check-input rounded-0" type="checkbox"
                                                             checked={EditData.IsTodaysTask}
                                                             value={EditData.IsTodaysTask}
                                                             onChange={(e) => changeStatus(e)} />
@@ -1593,7 +1593,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group ">
                                                     <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
-                                                        <input type="checkbox" className="form-check-input ms-2"
+                                                        <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                             ng-model="dueDatePopUp"
                                                             ng-click="OpenDueDatePopup()" />
                                                     </span></label>
@@ -1693,7 +1693,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col">
                                                         <div
                                                             className="form-check">
-                                                            <input className="form-check-input"
+                                                            <input className="form-check-input rounded-0"
                                                                 name="Phone"
                                                                 type="checkbox" checked={PhoneStatus}
                                                                 value={`${PhoneStatus}`}
@@ -1703,7 +1703,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div
                                                             className="form-check">
-                                                            <input className="form-check-input"
+                                                            <input className="form-check-input rounded-0"
                                                                 type="checkbox"
                                                                 checked={EmailStatus}
                                                                 value={`${EmailStatus}`}
@@ -1711,15 +1711,18 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                             <label>Email Notification</label>
                                                             <div className="form-check ms-2">
-                                                                <input className="form-check-input"
-                                                                    type="radio"
+                                                                <input className="form-check-input rounded-0"
+                                                                    type="checkbox"
+                                                                    checked={OnlyCompletedStatus}
+                                                                    value={`${OnlyCompletedStatus}`}
+                                                                    onClick={(e) => CategoryChange(e, "Only Completed", 565)}
                                                                 />
                                                                 <label>Only Completed</label>
                                                             </div>
                                                         </div>
                                                         <div
                                                             className="form-check">
-                                                            <input className="form-check-input"
+                                                            <input className="form-check-input rounded-0"
                                                                 type="checkbox"
                                                                 checked={ImmediateStatus}
                                                                 value={`${ImmediateStatus}`}
@@ -1748,7 +1751,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <label className="full-width">Approval</label>
                                                         <input
                                                             type="checkbox"
-                                                            className="form-check-input"
+                                                            className="form-check-input rounded-0"
                                                             name="Approval"
                                                             checked={ApprovalStatus}
                                                             value={`${ApprovalStatus}`}
@@ -2332,7 +2335,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="input-group">
                                                             <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
                                                                 <span className="form-check">
-                                                                    <input className="form-check-input" type="checkbox"
+                                                                    <input className="form-check-input rounded-0" type="checkbox"
                                                                         checked={EditData.IsTodaysTask}
                                                                         value={EditData.IsTodaysTask}
                                                                         onChange={(e) => changeStatus(e)} />
@@ -2358,7 +2361,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 pe-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
-                                                                    <input type="checkbox" className="form-check-input ms-2"
+                                                                    <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                                         ng-model="dueDatePopUp"
                                                                         ng-click="OpenDueDatePopup()" />
                                                                 </span></label>
@@ -2406,7 +2409,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             title="Component"
                                                                             ng-model="PortfolioTypes"
                                                                             ng-click="getPortfoliosData()"
-                                                                            className="form-check-input" />
+                                                                            className="form-check-input " />
                                                                         <label className="form-check-label mb-0">Component</label>
                                                                     </span>
                                                                     <span className="form-check form-check-inline mb-0">
@@ -2458,7 +2461,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <div className="col">
                                                                     <div
                                                                         className="form-check">
-                                                                        <input className="form-check-input"
+                                                                        <input className="form-check-input rounded-0"
                                                                             name="Phone"
                                                                             type="checkbox" checked={PhoneStatus}
                                                                             value={`${PhoneStatus}`}
@@ -2468,7 +2471,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     </div>
                                                                     <div
                                                                         className="form-check">
-                                                                        <input className="form-check-input"
+                                                                        <input className="form-check-input rounded-0"
                                                                             type="checkbox"
                                                                             checked={EmailStatus}
                                                                             value={`${EmailStatus}`}
@@ -2476,7 +2479,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         />
                                                                         <label>Email Notification</label>
                                                                         <div className="form-check ms-2">
-                                                                            <input className="form-check-input"
+                                                                            <input className="form-check-input rounded-0"
                                                                                 type="checkbox"
                                                                                 checked={OnlyCompletedStatus}
                                                                                 value={`${OnlyCompletedStatus}`}
@@ -2487,7 +2490,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     </div>
                                                                     <div
                                                                         className="form-check">
-                                                                        <input className="form-check-input"
+                                                                        <input className="form-check-input rounded-0"
                                                                             type="checkbox"
                                                                             checked={ImmediateStatus}
                                                                             value={`${ImmediateStatus}`}
@@ -2516,7 +2519,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <label className="full-width">Approval</label>
                                                                     <input
                                                                         type="checkbox"
-                                                                        className="form-check-input"
+                                                                        className="form-check-input rounded-0"
                                                                         name="Approval"
                                                                         checked={ApprovalStatus}
                                                                         value={`${ApprovalStatus}`}
@@ -2544,7 +2547,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <label> Quick Approval</label>
                                                                         <input
                                                                             type="radio"
-                                                                            className="form-check-input" />
+                                                                            className="form-check-input " />
                                                                     </div>
                                                                 </div>
 
