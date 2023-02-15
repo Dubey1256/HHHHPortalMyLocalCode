@@ -47,6 +47,7 @@ export default function ComponentTable({ props }: any) {
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
+    const [Isshow, setIsshow] = React.useState(false);
    
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     IsUpdated = props.Portfolio_x0020_Type;
@@ -259,6 +260,7 @@ export default function ComponentTable({ props }: any) {
                                             if (obj.Id === activ.Id) {
                                                 obj.show = false;
                                                 obj.childs = activ.childs;
+                                                obj.childsLength = activ.childs.length;
                                             }
 
                                         })
@@ -294,6 +296,28 @@ export default function ComponentTable({ props }: any) {
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
 
+    };
+
+    const handleOpenAll = () => {
+        var Isshow1: any = Isshow == true ? false : true;
+        map(data, (obj) => {
+            obj.show = Isshow1;
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                map(obj.childs, (subchild) => {
+                    subchild.show = Isshow1;
+                    if (subchild.childs != undefined && subchild.childs.length > 0) {
+                        map(subchild.childs, (child) => {
+                            child.show = Isshow1;
+                        })
+
+                    }
+                })
+
+            }
+
+        })
+        setIsshow(Isshow1);
+        setData(data => ([...data]));
     };
 
     const addModal = () => {
@@ -894,7 +918,7 @@ export default function ComponentTable({ props }: any) {
                 }
             })
         } else
-            ComponentsData = SubComponentsData
+            ComponentsData = SubComponentsData.length === 0 ? FeatureData : SubComponentsData;
         var array: any = [];
         map(ComponentsData, (comp, index) => {
             if (comp.childs != undefined && comp.childs.length > 0) {
@@ -987,6 +1011,7 @@ export default function ComponentTable({ props }: any) {
         temp.Title = 'Tasks';
         temp.childs = [];
         //  temp.AllTeamMembers = [];
+        //  temp.AllTeamMembers = [];
         temp.TeamLeader = [];
         temp.flag = true;
         temp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service' ? GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : GlobalConstants.MAIN_SITE_URL + '/SP/SiteCollectionImages/ICONS/24/list-icon.png';
@@ -994,11 +1019,17 @@ export default function ComponentTable({ props }: any) {
 
         temp.show = true;
         ComponentsData.push(temp);
-        temp.childs = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type === 'Task' && sub.childs.length == 0));
-        temp.childsLength = temp.childs.length;
         let AllItems: any = [];
+        temp.childs = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type === 'Task' && sub.childs.length == 0));
         AllItems = ComponentsData[0].childs.filter((sub: any) => (sub.Item_x0020_Type != 'Task' || sub.childs.length > 0));
-        if (temp.childs != undefined && temp.childs.length > 0)
+        var activities = temp.childs.filter((sub: any) => (sub?.SharewebTaskType?.Title === 'Activities'));
+        if (activities != undefined && activities.length > 0) {
+            AllItems = AllItems.concat(activities);
+        }
+        temp.childs = temp.childs.filter((sub: any) => (sub?.SharewebTaskType?.Title != 'Activities'));
+        temp.childsLength = temp.childs.length;
+
+        if (temp.childs != undefined && temp.childs.length >0)
             AllItems.push(temp);
         setSubComponentsData(SubComponentsData); setFeatureData(FeatureData);
         setComponentsData(ComponentsData);
@@ -1788,7 +1819,11 @@ export default function ComponentTable({ props }: any) {
                                 <thead>
                                     <tr>
                                         <th style={{ width: "2%" }}>
-                                            <div style={{ width: "2%" }}></div>
+                                            <div style={{ width: "2%" }}>
+                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png'} />
+                                                                : <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"} />}
+                                                            </div>
+                                            </div>
                                         </th>
                                         <th style={{ width: "6%" }}>
                                             <div style={{ width: "6%" }}></div>
@@ -2235,12 +2270,13 @@ export default function ComponentTable({ props }: any) {
                                                                                                 }</td>
 
                                                                                             <td style={{ width: "7%" }}>
-                                                                                                {/* {childitem.Item_x0020_Type == 'Task' && childitem.TimeSpent != null &&
+                                                                                                {/* {childitem.Item_x0020_Type == 'Task' &&
                                                                                                 <>
-                                                                                                  {childitem.TimeSpent.toFixed(1)}
+                                                                                                  {smartTime.toFixed(1)}
                                                                                                 </>
-                                                                                                } */}
-                                                                                              </td>
+                                                                                                }
+                                                                                                 {SmartTimes? <SmartTimeTotal props={childitem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
+                                                                                            </td>
 
                                                                                             <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                             <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
@@ -2368,12 +2404,13 @@ export default function ComponentTable({ props }: any) {
                                                                                                                     </td>
 
                                                                                                                     <td style={{ width: "7%" }}>
-                                                                                                                        {/* {childinew.Item_x0020_Type == 'Task' && childitem.TimeSpent != null &&
+                                                                                                                        {/* {childinew.Item_x0020_Type == 'Task' &&
                                                                                                                             <>
-                                                                                                                            {childinew.TimeSpent.toFixed(1)}
+                                                                                                                            {smartTime.toFixed(1)}
                                                                                                                           </>
-                                                                                                                          } */}
-                                                                                                                        </td>
+                                                                                                                          }
+                                                                                                                           {SmartTimes? <SmartTimeTotal props={childinew} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
+                                                                                                                    </td>
 
                                                                                                                     <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} />}
@@ -2491,12 +2528,13 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                         </td>
 
                                                                                                                                         <td style={{ width: "7%" }}>
-                                                                                                                                            {/* {subchilditem.Item_x0020_Type == 'Task' && subchilditem.TimeSpent != null &&
+                                                                                                                                            {/* {subchilditem.Item_x0020_Type == 'Task' &&
                                                                                                                                             <>
-                                                                                                                                                 {subchilditem.TimeSpent.toFixed(1)}
+                                                                                                                                                 {smartTime.toFixed(1)}
                                                                                                                                                  </>
-                                                                                                                                                 } */}
-                                                                                                                                             </td>
+                                                                                                                                                 }
+                                                                                                                                                  {SmartTimes? <SmartTimeTotal props={subchilditem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
+                                                                                                                                           </td>
                                                                                                                                         
 
                                                                                                                                         <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
