@@ -70,7 +70,6 @@ function ComponentTable(SelectedProp: any) {
     const [IsUpdated, setIsUpdated] = React.useState('');
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [Isshow, setIsshow] = React.useState(false);
-    const [IsSmartfilter, setIsSmartfilter] = React.useState(false);
     const [checkedList, setCheckedList] = React.useState([]);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -2085,13 +2084,13 @@ function ComponentTable(SelectedProp: any) {
     const hideAllChildsMinus = (item: any) => {
         if (item?.childs?.length > 0) {
             item.Isexpend = false;
-            if (item.Item_x0020_Type === "Component" || item.Item_x0020_Type === "SubComponent" || item.Item_x0020_Type === "Feature")
+            if (item.Item_x0020_Type === "Component")
                 item.show = false;
             handleOpen(item);
             item.childs.forEach((child: any) => {
                 child.flag = child?.show == true ? child?.show : false;
-                if (child.Title.indexOf(search) > -1)
-                    child.flag = true;
+                // if (child.flag)
+                //     flag = true;
                 child.Isexpend = false;
             })
             // if (flag)
@@ -2263,7 +2262,7 @@ function ComponentTable(SelectedProp: any) {
 
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
-                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div>Service Portfolio</div>}
                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div>Event Portfolio</div>}
@@ -2275,7 +2274,7 @@ function ComponentTable(SelectedProp: any) {
                 <div className="bg-wihite border p-2">
                     <div className="togglebox">
                         <label className="toggler full_width mb-10">
-                            <span className=" siteColor" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)} >
+                            <span className=" siteColor">
                                 {/* <img className="hreflink wid22"
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" /> */}
                                 {/* <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="currentColor">
@@ -2308,160 +2307,148 @@ function ComponentTable(SelectedProp: any) {
 
                             </span>
                             <span className="pull-right bg-color">
-                                {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) &&
-                                    <span>  <img className="icon-sites-img  wid22 ml5"
-                                        title="Share SmartFilters selection" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}
-                                        src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/Service_Icons/Shareweb/Add-New.png"} />
-                                        <img className="icon-sites-img  wid22 ml5"
-                                            title="Share SmartFilters selection"
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png" />
-
-
-                                    </span>
-
-                                }
-                                {((IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) || IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) &&
-                                    <span>
-                                        <img className="icon-sites-img  wid22 ml5"
-                                            title="Share SmartFilters selection" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}
-                                            src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png"} />
-                                        <img className="icon-sites-img  wid22 ml5"
-                                            title="Share SmartFilters selection" ng-click="GenerateUrl()"
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Blue.png" />
-
-                                    </span>}
+                                {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <img className="icon-sites-img  wid22 ml5"
+                                    title="Share SmartFilters selection" ng-click="GenerateUrl()"
+                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png" />}
+                                {((IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) || IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <img className="icon-sites-img  wid22 ml5"
+                                    title="Share SmartFilters selection" ng-click="GenerateUrl()"
+                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Blue.png" />}
                             </span>
-
+                            <span className="pull-right siteColor">
+                                <span className="hreflink" ng-if="!smartfilter2.expanded">
+                                    <img ng-show="pagesType=='componentportfolio'" className="hreflink wid22"
+                                        ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png" />
+                                </span>
+                            </span>
                         </label>
-                        {IsSmartfilter ?
-                            <div className="togglecontent mt-1">
-                                <table width="100%" className="indicator_search">
-                                    <tr>
-                                        {filterGroups.map(function (item) {
-                                            return (
-                                                <>
+                        <div className="togglecontent mt-1">
+                            <table width="100%" className="indicator_search">
+                                <tr>
+                                    {filterGroups.map(function (item) {
+                                        return (
+                                            <>
 
-                                                    <td valign="top">
-                                                        <fieldset>
-                                                            {item != 'teamSites' && <legend><span className="mparent">{item}</span></legend>}
-                                                            {item == 'teamSites' && <legend><span className="mparent">Sites</span></legend>}
-                                                        </fieldset>
-                                                        {filterItems.map(function (ItemType, index) {
-                                                            return (
+                                                <td valign="top">
+                                                    <fieldset>
+                                                        {item != 'teamSites' && <legend><span className="mparent">{item}</span></legend>}
+                                                        {item == 'teamSites' && <legend><span className="mparent">Sites</span></legend>}
+                                                    </fieldset>
+                                                    {filterItems.map(function (ItemType, index) {
+                                                        return (
 
-                                                                <>
-                                                                    {ItemType.Group == item &&
-                                                                        <div style={{ display: "block" }}>
-                                                                            <>
+                                                            <>
+                                                                {ItemType.Group == item &&
+                                                                    <div style={{ display: "block" }}>
+                                                                        <>
 
-                                                                                {ItemType.TaxType != 'Status' &&
+                                                                            {ItemType.TaxType != 'Status' &&
 
-                                                                                    <div className="align-items-center d-flex">
-                                                                                        <span className="hreflink me-1 GByicon" onClick={() => handleOpen2(ItemType)}>
-                                                                                            {ItemType.childs.length > 0 &&
-                                                                                                <a title="Tap to expand the childs">
-                                                                                                    {ItemType.showItem ? <img src={ItemType.downArrowIcon} />
-                                                                                                        : <img src={ItemType.RightArrowIcon} />}
+                                                                                <div className="align-items-center d-flex">
+                                                                                    <span className="hreflink me-1 GByicon" onClick={() => handleOpen2(ItemType)}>
+                                                                                        {ItemType.childs.length > 0 &&
+                                                                                            <a title="Tap to expand the childs">
+                                                                                                {ItemType.showItem ? <img src={ItemType.downArrowIcon} />
+                                                                                                    : <img src={ItemType.RightArrowIcon} />}
 
-                                                                                                </a>}
-                                                                                        </span>
-                                                                                        <input className="me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                                        <label className="form-check-label">
-                                                                                            {ItemType.Title}
-                                                                                        </label>
-                                                                                    </div>
-                                                                                }
-                                                                                {ItemType.TaxType == 'Status' &&
-
-                                                                                    <div className="align-items-center d-flex">
-                                                                                        <input className="me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                                        <label className="form-check-label">
-                                                                                            {ItemType.Title}
-                                                                                        </label>
-                                                                                    </div>
-                                                                                }
-                                                                                <ul id="id_{ItemType.Id}"
-                                                                                    className="m-0 ps-3 pe-2">
-                                                                                    <span>
-                                                                                        {ItemType.show && (
-                                                                                            <>
-                                                                                                {ItemType.childs.map(function (child1: any, index: any) {
-                                                                                                    return (
-                                                                                                        <>
-
-                                                                                                            <div className="align-items-center d-flex">
-                                                                                                                {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                                    <span className="hreflink me-1 GByicon"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                {child1.childs.length > 0 && child1.expanded &&
-                                                                                                                    <span className="hreflink me-1 GByicon"
-                                                                                                                        ng-click="loadMoreFilters(child1);">
-                                                                                                                        <img
-                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                    </span>
-                                                                                                                }
-                                                                                                                <input type="checkbox" defaultChecked={child1.Selected == true} className="me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
-                                                                                                                <label className="form-check-label">
-                                                                                                                    {child1.Title}
-                                                                                                                </label>
-                                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="m-0 ps-3 pe-2">
-                                                                                                                    {child1.childs.map(function (child2: any) {
-                                                                                                                        <li>
-                                                                                                                            <div className="align-items-center d-flex">
-                                                                                                                                <input className=" me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
-                                                                                                                                <label className="form-check-label">
-                                                                                                                                    {child2.Title}
-                                                                                                                                </label>
-                                                                                                                            </div>
-                                                                                                                        </li>
-                                                                                                                    })}
-                                                                                                                </ul>
-                                                                                                            </div>
-
-
-                                                                                                        </>
-                                                                                                    )
-
-                                                                                                })}
-                                                                                            </>
-                                                                                        )}
+                                                                                            </a>}
                                                                                     </span>
-                                                                                </ul>
+                                                                                    <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    <label className="form-check-label">
+                                                                                        {ItemType.Title}
+                                                                                    </label>
+                                                                                </div>
+                                                                            }
+                                                                            {ItemType.TaxType == 'Status' &&
 
-                                                                            </>
+                                                                                <div className="align-items-center d-flex">
+                                                                                    <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    <label className="form-check-label">
+                                                                                        {ItemType.Title}
+                                                                                    </label>
+                                                                                </div>
+                                                                            }
+                                                                            <ul id="id_{ItemType.Id}"
+                                                                                className="m-0 ps-3 pe-2">
+                                                                                <span>
+                                                                                    {ItemType.show && (
+                                                                                        <>
+                                                                                            {ItemType.childs.map(function (child1: any, index: any) {
+                                                                                                return (
+                                                                                                    <>
+
+                                                                                                        <div className="align-items-center d-flex">
+                                                                                                            {child1.childs.length > 0 && !child1.expanded &&
+                                                                                                                <span className="hreflink me-1 GByicon"
+                                                                                                                    ng-click="loadMoreFilters(child1);">
+                                                                                                                    <img
+                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                                                                                                </span>
+                                                                                                            }
+                                                                                                            {child1.childs.length > 0 && child1.expanded &&
+                                                                                                                <span className="hreflink me-1 GByicon"
+                                                                                                                    ng-click="loadMoreFilters(child1);">
+                                                                                                                    <img
+                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                </span>
+                                                                                                            }
+                                                                                                            <input type="checkbox" defaultChecked={child1.Selected == true} className="form-check-input me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                            <label className="form-check-label">
+                                                                                                                {child1.Title}
+                                                                                                            </label>
+                                                                                                            <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="m-0 ps-3 pe-2">
+                                                                                                                {child1.childs.map(function (child2: any) {
+                                                                                                                    <li>
+                                                                                                                        <div className="align-items-center d-flex">
+                                                                                                                            <input className="form-check-input me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                            <label className="form-check-label">
+                                                                                                                                {child2.Title}
+                                                                                                                            </label>
+                                                                                                                        </div>
+                                                                                                                    </li>
+                                                                                                                })}
+                                                                                                            </ul>
+                                                                                                        </div>
 
 
-                                                                        </div>
-                                                                    }
-                                                                </>
+                                                                                                    </>
+                                                                                                )
 
-                                                            )
-                                                        })}
+                                                                                            })}
+                                                                                        </>
+                                                                                    )}
+                                                                                </span>
+                                                                            </ul>
 
-                                                    </td>
+                                                                        </>
 
-                                                </>
-                                            )
-                                        })}
-                                    </tr>
-                                </table>
-                                <div className="text-end mt-3">
-                                    <button type="button" className="btn btn-primary"
-                                        title="Smart Filter" onClick={() => Updateitem()}>
-                                        Update Filters
-                                    </button>
-                                    <button type="button" className="btn btn-grey ms-2" title="Clear All"
-                                        onClick={() => Clearitem()} >
-                                        Clear Filters
-                                    </button>
-                                </div>
 
+                                                                    </div>
+                                                                }
+                                                            </>
+
+                                                        )
+                                                    })}
+
+                                                </td>
+
+                                            </>
+                                        )
+                                    })}
+                                </tr>
+                            </table>
+                            <div className="text-end mt-3">
+                                <button type="button" className="btn btn-primary"
+                                    title="Smart Filter" onClick={() => Updateitem()}>
+                                    Update Filters
+                                </button>
+                                <button type="button" className="btn btn-grey ms-2" title="Clear All"
+                                    onClick={() => Clearitem()} >
+                                    Clear Filters
+                                </button>
                             </div>
-                            : ''}
+
+                        </div>
+
                     </div>
                 </div>
             </section>
@@ -2484,9 +2471,6 @@ function ComponentTable(SelectedProp: any) {
                                         <label className="ms-1 me-1"> | </label>
                                         <label>
                                             {FeatureData.length} of {FeatureData.length} Features
-                                        </label>
-                                        <label>
-                                            {TotalTask.length} of {TaggedAllTask.length} Tasks
                                         </label>
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
@@ -2554,7 +2538,7 @@ function ComponentTable(SelectedProp: any) {
                                                         </th>
                                                         <th style={{ width: "2%" }}>
                                                             <div className="smart-relative sign hreflink">
-                                                                <span className=''><input type="checkbox" /></span>
+                                                                <span className='pe-2'><input type="checkbox" /></span>
                                                             </div>
 
                                                         </th>
@@ -2577,6 +2561,8 @@ function ComponentTable(SelectedProp: any) {
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
+
+
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "18%" }}>
@@ -2591,8 +2577,8 @@ function ComponentTable(SelectedProp: any) {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "15%" }}>
-                                                            <div style={{ width: "14%" }} className="smart-relative">
+                                                        <th style={{ width: "17%" }}>
+                                                            <div style={{ width: "16%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                 // onChange={event => handleChange(event, 'Team')} 
@@ -2655,6 +2641,7 @@ function ComponentTable(SelectedProp: any) {
                                                                         <td className="p-0" colSpan={11}>
                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
+
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
                                                                                             {item.childs != undefined &&
@@ -2671,11 +2658,12 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
                                                                                             {/* checked={item.checked === true ? true : false} */}
-                                                                                            <span className=''><input type="checkbox"
+                                                                                            <span className='pe-2'><input type="checkbox"
                                                                                                 onChange={(e) => onChangeHandler(item)} /></span>
                                                                                         </div>
 
                                                                                     </td>
+
 
                                                                                     <td style={{ width: "9%" }}>
                                                                                         <div className="">
@@ -2747,7 +2735,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 )
                                                                                             })}</div>
                                                                                     </td>
-                                                                                    <td style={{ width: "15%" }}>
+                                                                                    <td style={{ width: "17%" }}>
                                                                                         <div>
                                                                                             <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
@@ -2792,7 +2780,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             </td>
                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                 <div className="accordian-header" >
-                                                                                                                    <span className=''><input type="checkbox" /></span>
+                                                                                                                    <span className='pe-2'><input type="checkbox" /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -2872,7 +2860,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         )
                                                                                                                     })}</div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "15%" }}>
+                                                                                                            <td style={{ width: "17%" }}>
                                                                                                                 <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
@@ -2890,7 +2878,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                             {childitem.show && childitem.childs.length > 0 && (
                                                                                                 <>
                                                                                                     {childitem.childs.map(function (childinew: any) {
-                                                                                                        if (childinew.flag === true) {
+                                                                                                        if (childinew.flag == true) {
                                                                                                             return (
                                                                                                                 <>
                                                                                                                     <tr >
@@ -2912,7 +2900,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     </td>
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                         <div className="accordian-header" >
-                                                                                                                                            <span className=''><input type="checkbox" /></span>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
@@ -2995,7 +2983,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                 )
                                                                                                                                             })}</div>
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "15%" }}>
+                                                                                                                                    <td style={{ width: "17%" }}>
                                                                                                                                         <div>
                                                                                                                                             <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
@@ -3014,124 +3002,123 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     {childinew.show && childinew.childs.length > 0 && (
                                                                                                                         <>
                                                                                                                             {childinew.childs.map(function (subchilditem: any) {
-                                                                                                                                if (subchilditem.flag === true) {
-                                                                                                                                    return (
 
-                                                                                                                                        <>
-                                                                                                                                            <tr >
-                                                                                                                                                <td className="p-0" colSpan={11}>
-                                                                                                                                                    <table className="table m-0" style={{ width: "100%" }}>
-                                                                                                                                                        <tr className="for-c02">
-                                                                                                                                                            <td style={{ width: "2%" }}>
-                                                                                                                                                                <div className="accordian-header" onClick={() => handleOpen(subchilditem)}>
-                                                                                                                                                                    {subchilditem.childs.length > 0 &&
-                                                                                                                                                                        <a className='hreflink'
-                                                                                                                                                                            title="Tap to expand the childs">
-                                                                                                                                                                            {/* <div className="sign">{subchilditem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                                return (
+
+                                                                                                                                    <>
+                                                                                                                                        <tr >
+                                                                                                                                            <td className="p-0" colSpan={11}>
+                                                                                                                                                <table className="table m-0" style={{ width: "100%" }}>
+                                                                                                                                                    <tr className="for-c02">
+                                                                                                                                                        <td style={{ width: "2%" }}>
+                                                                                                                                                            <div className="accordian-header" onClick={() => handleOpen(subchilditem)}>
+                                                                                                                                                                {subchilditem.childs.length > 0 &&
+                                                                                                                                                                    <a className='hreflink'
+                                                                                                                                                                        title="Tap to expand the childs">
+                                                                                                                                                                        {/* <div className="sign">{subchilditem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                                                                                                     : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                                                                                                                 </div> */}
-                                                                                                                                                                        </a>
-                                                                                                                                                                    }
-
-                                                                                                                                                                </div>
-                                                                                                                                                            </td>
-                                                                                                                                                            <td style={{ width: "2%" }}>
-                                                                                                                                                                <div className="accordian-header" >
-                                                                                                                                                                    <span className=''><input type="checkbox" /></span>
-                                                                                                                                                                </div>
-
-                                                                                                                                                            </td>
-                                                                                                                                                            {/* <td style={{ width: "2%" }}></td> */}
-                                                                                                                                                            <td style={{ width: "9%" }}>  <div className="d-flex">
-                                                                                                                                                                <span>
-
-                                                                                                                                                                    <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                                                                                                                                                        <img className="icon-sites-img ml20 me-1" src={subchilditem.SiteIcon}></img>
-                                                                                                                                                                        {/* <img className="icon-sites-img"
-                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
                                                                                                                                                                     </a>
-
-                                                                                                                                                                </span>
-                                                                                                                                                                {search != undefined && search != '' && subchilditem.childs?.length > 0 ?
-                                                                                                                                                                    <>
-                                                                                                                                                                        {subchilditem?.Isexpend ?
-                                                                                                                                                                            <span>
-                                                                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(subchilditem)}>
-                                                                                                                                                                                    <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
-                                                                                                                                                                                </a>
-                                                                                                                                                                            </span>
-                                                                                                                                                                            : ''}
-                                                                                                                                                                        {!subchilditem?.Isexpend ?
-                                                                                                                                                                            <span>
-                                                                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(subchilditem)}>
-                                                                                                                                                                                    <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
-                                                                                                                                                                                </a>
-                                                                                                                                                                            </span>
-                                                                                                                                                                            : ''}
-                                                                                                                                                                    </> : ''}
-                                                                                                                                                                <span className="">{subchilditem.Shareweb_x0020_ID}</span>
-                                                                                                                                                            </div>
-                                                                                                                                                            </td>
-
-                                                                                                                                                            <td style={{ width: "22%" }}>
-                                                                                                                                                                {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                                                ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
-                                                                                                                                                                </a>}
-                                                                                                                                                                {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
-                                                                                                                                                                ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
-                                                                                                                                                                </a>}
-                                                                                                                                                                {subchilditem.childs.length > 0 &&
-                                                                                                                                                                    <span className='ms-1'>({subchilditem.childs.length})</span>
                                                                                                                                                                 }
 
-                                                                                                                                                                {subchilditem.Short_x0020_Description_x0020_On != null &&
-                                                                                                                                                                    // <span data-bs-toggle="tooltip" data-bs-placement="auto" title={subchilditem.Short_x0020_Description_x0020_On}><img
-                                                                                                                                                                    //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                                                                    // </span>
-                                                                                                                                                                    <div className='popover__wrapper ms-1'>
-                                                                                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                                                                        {/* <span className="tooltipte">
+                                                                                                                                                            </div>
+                                                                                                                                                        </td>
+                                                                                                                                                        <td style={{ width: "2%" }}>
+                                                                                                                                                            <div className="accordian-header" >
+                                                                                                                                                                <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                                            </div>
+
+                                                                                                                                                        </td>
+                                                                                                                                                        {/* <td style={{ width: "2%" }}></td> */}
+                                                                                                                                                        <td style={{ width: "9%" }}>  <div className="d-flex">
+                                                                                                                                                            <span>
+
+                                                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                                                                                    <img className="icon-sites-img ml20 me-1" src={subchilditem.SiteIcon}></img>
+                                                                                                                                                                    {/* <img className="icon-sites-img"
+                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" /> */}
+                                                                                                                                                                </a>
+
+                                                                                                                                                            </span>
+                                                                                                                                                            {search != undefined && search != '' && subchilditem.childs?.length > 0 ?
+                                                                                                                                                                <>
+                                                                                                                                                                    {subchilditem?.Isexpend ?
+                                                                                                                                                                        <span>
+                                                                                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(subchilditem)}>
+                                                                                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                                                                            </a>
+                                                                                                                                                                        </span>
+                                                                                                                                                                        : ''}
+                                                                                                                                                                    {!subchilditem?.Isexpend ?
+                                                                                                                                                                        <span>
+                                                                                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(subchilditem)}>
+                                                                                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                                                                            </a>
+                                                                                                                                                                        </span>
+                                                                                                                                                                        : ''}
+                                                                                                                                                                </> : ''}
+                                                                                                                                                            <span className="">{subchilditem.Shareweb_x0020_ID}</span>
+                                                                                                                                                        </div>
+                                                                                                                                                        </td>
+
+                                                                                                                                                        <td style={{ width: "22%" }}>
+                                                                                                                                                            {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
+                                                                                                                                                            </a>}
+                                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
+                                                                                                                                                            </a>}
+                                                                                                                                                            {subchilditem.childs.length > 0 &&
+                                                                                                                                                                <span className='ms-1'>({subchilditem.childs.length})</span>
+                                                                                                                                                            }
+
+                                                                                                                                                            {subchilditem.Short_x0020_Description_x0020_On != null &&
+                                                                                                                                                                // <span data-bs-toggle="tooltip" data-bs-placement="auto" title={subchilditem.Short_x0020_Description_x0020_On}><img
+                                                                                                                                                                //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                                                // </span>
+                                                                                                                                                                <div className='popover__wrapper ms-1'>
+                                                                                                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                                                    {/* <span className="tooltipte">
                                                                                                                                                                     <span className="tooltiptext">
                                                                                                                                                                         <div className="tooltip_Desc">
                                                                                                                                                                             <span> {subchilditem.Short_x0020_Description_x0020_On}</span>
                                                                                                                                                                         </div>
                                                                                                                                                                     </span>
                                                                                                                                                                 </span> */}
-                                                                                                                                                                        <div className="popover__content">
-                                                                                                                                                                            {subchilditem.Short_x0020_Description_x0020_On}
-                                                                                                                                                                        </div>
+                                                                                                                                                                    <div className="popover__content">
+                                                                                                                                                                        {subchilditem.Short_x0020_Description_x0020_On}
                                                                                                                                                                     </div>
-                                                                                                                                                                }
-                                                                                                                                                            </td>
-                                                                                                                                                            <td style={{ width: "18%" }}>
-                                                                                                                                                                <div>
-                                                                                                                                                                    {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: { Title: string; }) {
-                                                                                                                                                                        return (
-                                                                                                                                                                            <span className="ClientCategory-Usericon"
-                                                                                                                                                                                title={client.Title}>
-                                                                                                                                                                                <a>{client.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                                                                            </span>
-                                                                                                                                                                        )
-                                                                                                                                                                    })}</div>
-                                                                                                                                                            </td>
-                                                                                                                                                            <td style={{ width: "15%" }}>
-                                                                                                                                                                <div>
-                                                                                                                                                                    <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
-                                                                                                                                                                </div></td>
-                                                                                                                                                            <td style={{ width: "6%" }}>{subchilditem.PercentComplete}</td>
-                                                                                                                                                            <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
-                                                                                                                                                            <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
-                                                                                                                                                            <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                                            <td style={{ width: "3%" }}> {subchilditem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} ></img>}</td>
-                                                                                                                                                        </tr>
-                                                                                                                                                    </table>
-                                                                                                                                                </td>
-                                                                                                                                            </tr>
-                                                                                                                                        </>
-                                                                                                                                    )
-                                                                                                                                }
+                                                                                                                                                                </div>
+                                                                                                                                                            }
+                                                                                                                                                        </td>
+                                                                                                                                                        <td style={{ width: "18%" }}>
+                                                                                                                                                            <div>
+                                                                                                                                                                {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                                                                                                    return (
+                                                                                                                                                                        <span className="ClientCategory-Usericon"
+                                                                                                                                                                            title={client.Title}>
+                                                                                                                                                                            <a>{client.Title.slice(0, 2).toUpperCase()}</a>
+                                                                                                                                                                        </span>
+                                                                                                                                                                    )
+                                                                                                                                                                })}</div>
+                                                                                                                                                        </td>
+                                                                                                                                                        <td style={{ width: "17%" }}>
+                                                                                                                                                            <div>
+                                                                                                                                                                <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                                                                            </div></td>
+                                                                                                                                                        <td style={{ width: "6%" }}>{subchilditem.PercentComplete}</td>
+                                                                                                                                                        <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
+                                                                                                                                                        <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
+                                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                                        <td style={{ width: "3%" }}> {subchilditem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} ></img>}</td>
+                                                                                                                                                    </tr>
+                                                                                                                                                </table>
+                                                                                                                                            </td>
+                                                                                                                                        </tr>
+                                                                                                                                    </>
+                                                                                                                                )
                                                                                                                             })}
                                                                                                                         </>
                                                                                                                     )}
