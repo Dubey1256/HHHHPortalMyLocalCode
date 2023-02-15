@@ -2222,16 +2222,16 @@ function EditProjectPopup(item: any) {
                                 <div>
                                     <div>
                                         <span>
-                                            <a target="_blank"
-                                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData.Id}&name=${EditData.Title}`}>
+                                            <a target="_blank" data-interception
+                                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${EditData.Id}`}>
                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" /> Go to Profile page
                                             </a>||
                                             <img className="mail-width mx-2"
                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
-                                            <a href={`mailto:?subject=${('Test')}&body=${EditData.component_x0020_link}`}> Share this task ||</a>
+                                            <a data-interception href={`mailto:?subject=${('Test')}&body=${EditData.component_x0020_link}`}> Share this task ||</a>
                                         </span>
                                         <span className="p-1">|</span>
-                                        <a className="p-1" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
+                                        <a data-interception className="p-1" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
                                             target="_blank">Open out-of-the-box form</a>
                                         <button type="button" className="btn btn-primary " onClick={(e) => SaveData()}>Save</button>
                                         <button type="button" className="btn btn-default btn-default ms-1" onClick={setModalIsOpenToFalse}>Cancel</button>
