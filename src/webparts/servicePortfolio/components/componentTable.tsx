@@ -2570,8 +2570,8 @@ function ComponentTable(SelectedProp: any) {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "22%" }}>
-                                                            <div style={{ width: "21%" }} className="smart-relative">
+                                                        <th style={{ width: "21%" }}>
+                                                            <div style={{ width: "20%" }} className="smart-relative">
                                                                 <input type="search" placeholder="Title" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Title')} />
 
                                                                 <span className="sorticon">
@@ -2643,7 +2643,7 @@ function ComponentTable(SelectedProp: any) {
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "3%" }}></th>
-                                                        <th style={{ width: "3%" }}></th>
+                                                        <th style={{ width: "2%" }}></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2713,7 +2713,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                         </div>
                                                                                     </td>
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
-                                                                                    <td style={{ width: "22%" }}>
+                                                                                    <td style={{ width: "21%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                                         >
@@ -2762,7 +2762,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "3%" }}>{item.siteType === "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
+                                                                                    <td style={{ width: "2%" }}>{item.siteType === "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
                                                                                         {item.siteType != "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
                                                                                 </tr>
@@ -2833,7 +2833,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             </div>
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "22%" }}>
+                                                                                                            <td style={{ width: "21%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                                 ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
@@ -2883,7 +2883,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                            <td style={{ width: "3%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
+                                                                                                            <td style={{ width: "2%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
                                                                                                                 {childitem.siteType == "Master Tasks" &&
                                                                                                                     <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
                                                                                                                 {childitem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
@@ -2952,7 +2952,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     </div>
                                                                                                                                     </td>
 
-                                                                                                                                    <td style={{ width: "22%" }}>
+                                                                                                                                    <td style={{ width: "21%" }}>
 
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
@@ -3010,7 +3010,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
                                                                                                                                     <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "3%" }}> {childinew.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}
+                                                                                                                                    <td style={{ width: "2%" }}> {childinew.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">   <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} /></a>}</td>
                                                                                                                                 </tr>
                                                                                                                             </table>
@@ -3079,7 +3079,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             </div>
                                                                                                                                                             </td>
 
-                                                                                                                                                            <td style={{ width: "22%" }}>
+                                                                                                                                                            <td style={{ width: "21%" }}>
                                                                                                                                                                 {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                                                                                 ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
@@ -3130,7 +3130,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                                             <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                             <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                                            <td style={{ width: "3%" }}> {subchilditem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} ></img>}</td>
+                                                                                                                                                            <td style={{ width: "2%" }}> {subchilditem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} ></img>}</td>
                                                                                                                                                         </tr>
                                                                                                                                                     </table>
                                                                                                                                                 </td>
