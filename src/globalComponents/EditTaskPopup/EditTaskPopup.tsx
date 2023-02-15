@@ -77,6 +77,7 @@ const EditTaskPopup = (Items: any) => {
     const [PriorityStatus, setPriorityStatus] = React.useState();
     const [PhoneStatus, setPhoneStatus] = React.useState(false);
     const [EmailStatus, setEmailStatus] = React.useState(false);
+    const [OnlyCompletedStatus, setOnlyCompletedStatus] = React.useState(false);
     const [ImmediateStatus, setImmediateStatus] = React.useState(false);
     const [ApprovalStatus, setApprovalStatus] = React.useState(false);
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = React.useState(false);
@@ -132,6 +133,7 @@ const EditTaskPopup = (Items: any) => {
                 let emailCheck = category.search("Email");
                 let ImmediateCheck = category.search("Immediate");
                 let ApprovalCheck = category.search("Approval");
+                let OnlyCompletedCheck = category.search("Only Completed");
                 if (phoneCheck >= 0) {
                     setPhoneStatus(true)
                 } else {
@@ -151,6 +153,11 @@ const EditTaskPopup = (Items: any) => {
                     setApprovalStatus(true)
                 } else {
                     setApprovalStatus(false)
+                }
+                if (OnlyCompletedCheck >= 0) {
+                    setOnlyCompletedStatus(true);
+                } else {
+                    setOnlyCompletedStatus(false);
                 }
             }
         }
@@ -1050,6 +1057,10 @@ const EditTaskPopup = (Items: any) => {
             if (type == "Approval") {
                 setApprovalStatus(false)
             }
+            if (type == "Only Completed") {
+                setOnlyCompletedStatus(false)
+            }
+
 
         } else {
             let category: any = tempCategoryData + ";" + type;
@@ -1072,6 +1083,9 @@ const EditTaskPopup = (Items: any) => {
             }
             if (type == "Approval") {
                 setApprovalStatus(true)
+            }
+            if (type == "Only Completed") {
+                setOnlyCompletedStatus(true)
             }
         }
     }
@@ -2463,7 +2477,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         <label>Email Notification</label>
                                                                         <div className="form-check ms-2">
                                                                             <input className="form-check-input"
-                                                                                type="radio"
+                                                                                type="checkbox"
+                                                                                checked={OnlyCompletedStatus}
+                                                                                value={`${OnlyCompletedStatus}`}
+                                                                                onClick={(e) => CategoryChange(e, "Only Completed", 565)}
                                                                             />
                                                                             <label>Only Completed</label>
                                                                         </div>
@@ -2480,7 +2497,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     {ShareWebTypeData != undefined && ShareWebTypeData?.length > 0 ?
                                                                         <div>
                                                                             {ShareWebTypeData?.map((type: any, index: number) => {
-                                                                                if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email") {
+                                                                                if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                                     return (
                                                                                         <div className="Component-container-edit-task d-flex my-1 justify-content-between">
                                                                                             <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
