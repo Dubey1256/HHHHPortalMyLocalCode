@@ -2262,7 +2262,7 @@ function ComponentTable(SelectedProp: any) {
 
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
-                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div>Service Portfolio</div>}
                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
                         {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div>Event Portfolio</div>}
@@ -2352,7 +2352,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                             </a>}
                                                                                     </span>
-                                                                                    <input className="me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
                                                                                     <label className="form-check-label">
                                                                                         {ItemType.Title}
                                                                                     </label>
@@ -2361,7 +2361,7 @@ function ComponentTable(SelectedProp: any) {
                                                                             {ItemType.TaxType == 'Status' &&
 
                                                                                 <div className="align-items-center d-flex">
-                                                                                    <input className="me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                    <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
                                                                                     <label className="form-check-label">
                                                                                         {ItemType.Title}
                                                                                     </label>
@@ -2391,7 +2391,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                                                 </span>
                                                                                                             }
-                                                                                                            <input type="checkbox" defaultChecked={child1.Selected == true} className="me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                            <input type="checkbox" defaultChecked={child1.Selected == true} className="form-check-input me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
                                                                                                             <label className="form-check-label">
                                                                                                                 {child1.Title}
                                                                                                             </label>
@@ -2399,7 +2399,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 {child1.childs.map(function (child2: any) {
                                                                                                                     <li>
                                                                                                                         <div className="align-items-center d-flex">
-                                                                                                                            <input className=" me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                            <input className="form-check-input me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
                                                                                                                             <label className="form-check-label">
                                                                                                                                 {child2.Title}
                                                                                                                             </label>
@@ -2472,9 +2472,6 @@ function ComponentTable(SelectedProp: any) {
                                         <label>
                                             {FeatureData.length} of {FeatureData.length} Features
                                         </label>
-                                        <label>
-                                            {TaggedAllTask.length} of {TotalTask.length} Tasks
-                                        </label>
                                         <span className="g-search">
                                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
                                             <span className="gsearch-btn" ><i><FaSearch /></i></span>
@@ -2541,7 +2538,7 @@ function ComponentTable(SelectedProp: any) {
                                                         </th>
                                                         <th style={{ width: "2%" }}>
                                                             <div className="smart-relative sign hreflink">
-                                                                <span className=''><input type="checkbox" /></span>
+                                                                <span className='pe-2'><input type="checkbox" /></span>
                                                             </div>
 
                                                         </th>
@@ -2564,6 +2561,8 @@ function ComponentTable(SelectedProp: any) {
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                                     <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                                 </span>
+
+
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "18%" }}>
@@ -2578,8 +2577,8 @@ function ComponentTable(SelectedProp: any) {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "15%" }}>
-                                                            <div style={{ width: "14%" }} className="smart-relative">
+                                                        <th style={{ width: "17%" }}>
+                                                            <div style={{ width: "16%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                 // onChange={event => handleChange(event, 'Team')} 
@@ -2642,6 +2641,7 @@ function ComponentTable(SelectedProp: any) {
                                                                         <td className="p-0" colSpan={11}>
                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
+
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
                                                                                             {item.childs != undefined &&
@@ -2658,11 +2658,12 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
                                                                                             {/* checked={item.checked === true ? true : false} */}
-                                                                                            <span className=''><input type="checkbox"
+                                                                                            <span className='pe-2'><input type="checkbox"
                                                                                                 onChange={(e) => onChangeHandler(item)} /></span>
                                                                                         </div>
 
                                                                                     </td>
+
 
                                                                                     <td style={{ width: "9%" }}>
                                                                                         <div className="">
@@ -2734,7 +2735,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 )
                                                                                             })}</div>
                                                                                     </td>
-                                                                                    <td style={{ width: "15%" }}>
+                                                                                    <td style={{ width: "17%" }}>
                                                                                         <div>
                                                                                             <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
@@ -2779,7 +2780,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             </td>
                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                 <div className="accordian-header" >
-                                                                                                                    <span className=''><input type="checkbox" /></span>
+                                                                                                                    <span className='pe-2'><input type="checkbox" /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -2859,7 +2860,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         )
                                                                                                                     })}</div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "15%" }}>
+                                                                                                            <td style={{ width: "17%" }}>
                                                                                                                 <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
@@ -2899,7 +2900,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     </td>
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                         <div className="accordian-header" >
-                                                                                                                                            <span className=''><input type="checkbox" /></span>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
@@ -2982,7 +2983,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                 )
                                                                                                                                             })}</div>
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "15%" }}>
+                                                                                                                                    <td style={{ width: "17%" }}>
                                                                                                                                         <div>
                                                                                                                                             <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
@@ -3024,7 +3025,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                         </td>
                                                                                                                                                         <td style={{ width: "2%" }}>
                                                                                                                                                             <div className="accordian-header" >
-                                                                                                                                                                <span className=''><input type="checkbox" /></span>
+                                                                                                                                                                <span className='pe-2'><input type="checkbox" /></span>
                                                                                                                                                             </div>
 
                                                                                                                                                         </td>
@@ -3103,7 +3104,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                     )
                                                                                                                                                                 })}</div>
                                                                                                                                                         </td>
-                                                                                                                                                        <td style={{ width: "15%" }}>
+                                                                                                                                                        <td style={{ width: "17%" }}>
                                                                                                                                                             <div>
                                                                                                                                                                 <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
                                                                                                                                                             </div></td>
