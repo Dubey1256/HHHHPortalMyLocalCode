@@ -23,7 +23,6 @@ import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
-var smartTime: Number = 0  ;
 export default function ComponentTable({ props }: any) {
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -48,20 +47,11 @@ export default function ComponentTable({ props }: any) {
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
-    const [SmartTimes, setSmartTimes] = React.useState(false);
+    const [Isshow, setIsshow] = React.useState(false);
+   
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     IsUpdated = props.Portfolio_x0020_Type;
     // for smarttime
-    function CallBackSumSmartTime(item: any) {
- 
-        smartTime = item;
-     
-     
-      }
-     
-      function getSmartTime() {
-        setSmartTimes(true)
-      }
     
     var IsExitSmartfilter = function (array: any, Item: any) {
         var isExists = false;
@@ -306,6 +296,28 @@ export default function ComponentTable({ props }: any) {
         item.show = item.show = item.show == true ? false : true;
         setData(maidataBackup => ([...maidataBackup]));
 
+    };
+
+    const handleOpenAll = () => {
+        var Isshow1: any = Isshow == true ? false : true;
+        map(data, (obj) => {
+            obj.show = Isshow1;
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                map(obj.childs, (subchild) => {
+                    subchild.show = Isshow1;
+                    if (subchild.childs != undefined && subchild.childs.length > 0) {
+                        map(subchild.childs, (child) => {
+                            child.show = Isshow1;
+                        })
+
+                    }
+                })
+
+            }
+
+        })
+        setIsshow(Isshow1);
+        setData(data => ([...data]));
     };
 
     const addModal = () => {
@@ -1807,7 +1819,11 @@ export default function ComponentTable({ props }: any) {
                                 <thead>
                                     <tr>
                                         <th style={{ width: "2%" }}>
-                                            <div style={{ width: "2%" }}></div>
+                                            <div style={{ width: "2%" }}>
+                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png'} />
+                                                                : <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"} />}
+                                                            </div>
+                                            </div>
                                         </th>
                                         <th style={{ width: "6%" }}>
                                             <div style={{ width: "6%" }}></div>
@@ -1846,8 +1862,8 @@ export default function ComponentTable({ props }: any) {
                                                 </span>
                                             </div>
                                         </th>
-                                        <th style={{ width: "7%" }}>
-                                            <div style={{ width: "6%" }} className="smart-relative">
+                                        <th style={{ width: "4%" }}>
+                                            <div style={{ width: "4%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="%"
                                                     title="Percentage Complete" className="full_width searchbox_height"
                                                 // onChange={(e) => handleChange1(e, "ClientCategory")} 
@@ -1961,8 +1977,8 @@ export default function ComponentTable({ props }: any) {
                                                                 </span> */}
                                             </div>
                                         </th>
-                                        <th style={{ width: "9%" }}>
-                                            <div style={{ width: "8%" }} className="smart-relative">
+                                        <th style={{ width: "11%" }}>
+                                            <div style={{ width: "10%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
                                                     title="Created Date" className="full_width searchbox_height"
                                                 // onChange={(e) => handleChange1(e, "ItemRank")} 
@@ -2110,7 +2126,7 @@ export default function ComponentTable({ props }: any) {
                                                                                 )
                                                                             })}</div>
                                                                     </td>
-                                                                    <td style={{ width: "7%" }}>{item.PercentComplete}</td>
+                                                                    <td style={{ width: "4%" }}>{item.PercentComplete}</td>
                                                                     <td style={{ width: "7%" }}>{item.ItemRank}</td>
                                                                     <td style={{ width: "10%" }}>
                                                                         <div>
@@ -2121,7 +2137,7 @@ export default function ComponentTable({ props }: any) {
 
 
                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
-                                                                    <td style={{ width: "9%" }}>
+                                                                    <td style={{ width: "11%" }}>
                                                                         {(item.CreatedDateImg != undefined && item.CreatedDateImg.length === 0 && item.Created != null) ?
                                                                             <>
                                                                                 {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
@@ -2143,11 +2159,15 @@ export default function ComponentTable({ props }: any) {
                                                                             </>
                                                                         }
                                                                     </td>
-                                                                   
-                                                                        <td style={{ width: "7%" }}>
-                                                                            <div></div>
-                                                                        </td>
-                                                                    
+
+                                                                    <td style={{ width: "7%" }}>
+                                                                        {/* {item.Item_x0020_Type == 'Task' && item.TimeSpent != null &&
+                                                                            <>
+                                                                            {item.TimeSpent.toFixed(1)}
+                                                                          </>
+                                                                          } */}
+                                                                    </td>
+
                                                                     <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                     <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />}
                                                                         {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
@@ -2220,13 +2240,13 @@ export default function ComponentTable({ props }: any) {
                                                                                                         )
                                                                                                     })}</div>
                                                                                             </td>
-                                                                                            <td style={{ width: "7%" }}>{childitem.PercentComplete}</td>
+                                                                                            <td style={{ width: "4%" }}>{childitem.PercentComplete}</td>
                                                                                             <td style={{ width: "7%" }}>{childitem.ItemRank}</td>
                                                                                             <td style={{ width: "10%" }}><div>
                                                                                                 <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
                                                                                             </div></td>
                                                                                             <td style={{ width: "9%" }}>{childitem.DueDate}</td>
-                                                                                            <td style={{ width: "9%" }}>
+                                                                                            <td style={{ width: "11%" }}>
                                                                                                 {(childitem.CreatedDateImg != undefined && childitem.CreatedDateImg.length === 0 && childitem.Created != null) ?
                                                                                                     <>
                                                                                                         {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
@@ -2241,18 +2261,23 @@ export default function ComponentTable({ props }: any) {
                                                                                                                     {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
                                                                                                                     <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
-                                                                                                                                                <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
-                                                                                                                                            </a>
-                                                                                                                                        </span>
-                                                                                                                                    )
-                                                                                                                                }) : ""}
-                                                                                                                            </>
-                                                                                                                        }</td>
-                                                                                          
-                                                                                                <td style={{ width: "7%" }}>
-                                                                                                    <div></div>
-                                                                                                </td>
-                                                                                            
+                                                                                                                        <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
+                                                                                                                    </a>
+                                                                                                                </span>
+                                                                                                            )
+                                                                                                        }) : ""}
+                                                                                                    </>
+                                                                                                }</td>
+
+                                                                                            <td style={{ width: "7%" }}>
+                                                                                                {/* {childitem.Item_x0020_Type == 'Task' &&
+                                                                                                <>
+                                                                                                  {smartTime.toFixed(1)}
+                                                                                                </>
+                                                                                                }
+                                                                                                 {SmartTimes? <SmartTimeTotal props={childitem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
+                                                                                            </td>
+
                                                                                             <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                             <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
                                                                                                 {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
@@ -2337,7 +2362,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                 )
                                                                                                                             })}</div>
                                                                                                                     </td>
-                                                                                                                    <td style={{ width: "7%" }}>{childinew.PercentComplete}</td>
+                                                                                                                    <td style={{ width: "4%" }}>{childinew.PercentComplete}</td>
                                                                                                                     <td style={{ width: "7%" }}>{childinew.ItemRank}</td>
                                                                                                                     <td style={{ width: "10%" }}>
                                                                                                                         <div>
@@ -2354,7 +2379,7 @@ export default function ComponentTable({ props }: any) {
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "9%" }}>{childinew.DueDate}</td>
-                                                                                                                    <td style={{ width: "9%" }}>
+                                                                                                                    <td style={{ width: "11%" }}>
                                                                                                                         {(childinew.CreatedDateImg != undefined && childinew.CreatedDateImg.length === 0 && childinew.Created != null) ?
                                                                                                                             <>
                                                                                                                                 {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
@@ -2377,11 +2402,16 @@ export default function ComponentTable({ props }: any) {
                                                                                                                             </>
                                                                                                                         }
                                                                                                                     </td>
-                                                                                                                    
-                                                                                                                        <td style={{ width: "7%" }}>
-                                                                                                                            <div></div>
-                                                                                                                        </td>
-                                                                                                                    
+
+                                                                                                                    <td style={{ width: "7%" }}>
+                                                                                                                        {/* {childinew.Item_x0020_Type == 'Task' &&
+                                                                                                                            <>
+                                                                                                                            {smartTime.toFixed(1)}
+                                                                                                                          </>
+                                                                                                                          }
+                                                                                                                           {SmartTimes? <SmartTimeTotal props={childinew} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
+                                                                                                                    </td>
+
                                                                                                                     <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} />}
                                                                                                                         {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
@@ -2464,7 +2494,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                     )
                                                                                                                                                 })}</div>
                                                                                                                                         </td>
-                                                                                                                                        <td style={{ width: "7%" }}>{subchilditem.PercentComplete}</td>
+                                                                                                                                        <td style={{ width: "4%" }}>{subchilditem.PercentComplete}</td>
                                                                                                                                         <td style={{ width: "7%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                         <td style={{ width: "10%" }}>
                                                                                                                                             <div>
@@ -2473,7 +2503,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                         </td>
 
                                                                                                                                         <td style={{ width: "9%" }}>{subchilditem.DueDate}</td>
-                                                                                                                                        <td style={{ width: "9%" }}>
+                                                                                                                                        <td style={{ width: "11%" }}>
                                                                                                                                             {(subchilditem.CreatedDateImg != undefined && subchilditem.CreatedDateImg.length === 0 && subchilditem.Created != null) ?
                                                                                                                                                 <>
                                                                                                                                                     {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
@@ -2496,12 +2526,18 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                 </>
                                                                                                                                             }
                                                                                                                                         </td>
-                                                                                                                                        {subchilditem.Item_x0020_Type == 'Task' &&
-                                                                                                                                            <td style={{ width: "7%" }}>
-                                                                                                                                                <div></div>
-                                                                                                                                            </td>
-                                                                                                                                        }
-                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' &&  subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+
+                                                                                                                                        <td style={{ width: "7%" }}>
+                                                                                                                                            {/* {subchilditem.Item_x0020_Type == 'Task' &&
+                                                                                                                                            <>
+                                                                                                                                                 {smartTime.toFixed(1)}
+                                                                                                                                                 </>
+                                                                                                                                                 }
+                                                                                                                                                  {SmartTimes? <SmartTimeTotal props={subchilditem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
+                                                                                                                                           </td>
+                                                                                                                                        
+
+                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                                                         <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(subchilditem)} />}
                                                                                                                                             {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
                                                                                                                                     </tr>
@@ -2583,7 +2619,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                                         )
                                                                                                                                                                     })}</div>
                                                                                                                                                             </td>
-                                                                                                                                                            <td style={{ width: "7%" }}>{nextsubchilditem.PercentComplete}</td>
+                                                                                                                                                            <td style={{ width: "4%" }}>{nextsubchilditem.PercentComplete}</td>
                                                                                                                                                             <td style={{ width: "7%" }}>{nextsubchilditem.ItemRank}</td>
                                                                                                                                                             <td style={{ width: "10%" }}>
                                                                                                                                                                 <div>
@@ -2592,7 +2628,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                             </td>
 
                                                                                                                                                             <td style={{ width: "9%" }}>{nextsubchilditem.DueDate}</td>
-                                                                                                                                                            <td style={{ width: "9%" }}>
+                                                                                                                                                            <td style={{ width: "11%" }}>
                                                                                                                                                                 {(nextsubchilditem.CreatedDateImg != undefined && nextsubchilditem.CreatedDateImg.length === 0 && nextsubchilditem.Created != null) ?
                                                                                                                                                                     <>
                                                                                                                                                                         {nextsubchilditem.Created != null ? Moment(nextsubchilditem.Created).format('DD/MM/YYYY') : ""}
