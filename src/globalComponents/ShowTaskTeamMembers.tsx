@@ -17,7 +17,7 @@ function ShowTaskTeamMembers(item: any) {
 
         //  setTeamMember((TeamMember: any) => (...TeamMember: any));
     }
-    const getTaskUsers = async () => {
+    const getTaskUsersNew = async () => {
         TaskUsers = (item.TaskUsers?.length===0) ?  await globalCommon.loadTaskUsers() : item.TaskUsers;
         console.log(Response);
         Item.AllTeamMembers = []
@@ -70,7 +70,7 @@ function ShowTaskTeamMembers(item: any) {
          setItemMember(Item);
     }
     React.useEffect(() => {
-        getTaskUsers();
+        getTaskUsersNew()
     }, [])
 
     return (

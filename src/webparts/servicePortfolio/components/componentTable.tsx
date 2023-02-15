@@ -71,6 +71,7 @@ function ComponentTable(SelectedProp: any) {
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [Isshow, setIsshow] = React.useState(false);
     const [checkedList, setCheckedList] = React.useState([]);
+    const [IsSmartfilter, setIsSmartfilter] = React.useState(false);
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
     var IsExitSmartfilter = function (array: any, Item: any) {
@@ -2307,12 +2308,28 @@ function ComponentTable(SelectedProp: any) {
 
                             </span>
                             <span className="pull-right bg-color">
-                                {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <img className="icon-sites-img  wid22 ml5"
-                                    title="Share SmartFilters selection" ng-click="GenerateUrl()"
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png" />}
-                                {((IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) || IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <img className="icon-sites-img  wid22 ml5"
-                                    title="Share SmartFilters selection" ng-click="GenerateUrl()"
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Blue.png" />}
+                                {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) &&
+                                    <span>  <img className="icon-sites-img  wid22 ml5"
+                                        title="Share SmartFilters selection" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}
+                                        src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Add-New.png"} />
+                                        <img className="icon-sites-img  wid22 ml5"
+                                            title="Share SmartFilters selection"
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png" />
+
+
+                                    </span>
+
+                                }
+                                {((IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) || IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) &&
+                                    <span>
+                                        <img className="icon-sites-img  wid22 ml5"
+                                            title="Share SmartFilters selection" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}
+                                            src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png"} />
+                                        <img className="icon-sites-img  wid22 ml5"
+                                            title="Share SmartFilters selection" ng-click="GenerateUrl()"
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Blue.png" />
+
+                                    </span>}
                             </span>
                             <span className="pull-right siteColor">
                                 <span className="hreflink" ng-if="!smartfilter2.expanded">
