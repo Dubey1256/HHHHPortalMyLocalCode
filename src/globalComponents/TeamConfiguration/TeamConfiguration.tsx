@@ -499,7 +499,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     <div>
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
-                                            <img title="Drag user here to  remove user from team for this Network Activity." className="full-width"
+                                            <img title="Drag user here to  remove user from team for this Network Activity." className="width-75"
                                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
                                         </div>
                                     </div>
