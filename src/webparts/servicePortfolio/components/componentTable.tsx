@@ -2273,9 +2273,9 @@ function ComponentTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="bg-wihite border p-2">
-                    <div className="togglebox">
+                    <div className="togglebox" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}>
                         <label className="toggler full_width mb-10">
-                            <span className=" siteColor">
+                            <span className=" siteColor" >
                                 {/* <img className="hreflink wid22"
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" /> */}
                                 {/* <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="currentColor">
@@ -2338,133 +2338,135 @@ function ComponentTable(SelectedProp: any) {
                                 </span>
                             </span>
                         </label>
-                        <div className="togglecontent mt-1">
-                            <table width="100%" className="indicator_search">
-                                <tr>
-                                    {filterGroups.map(function (item) {
-                                        return (
-                                            <>
+                        {IsSmartfilter ?
+                            <div className="togglecontent mt-1">
+                                <table width="100%" className="indicator_search">
+                                    <tr>
+                                        {filterGroups.map(function (item) {
+                                            return (
+                                                <>
 
-                                                <td valign="top">
-                                                    <fieldset>
-                                                        {item != 'teamSites' && <legend><span className="mparent">{item}</span></legend>}
-                                                        {item == 'teamSites' && <legend><span className="mparent">Sites</span></legend>}
-                                                    </fieldset>
-                                                    {filterItems.map(function (ItemType, index) {
-                                                        return (
+                                                    <td valign="top">
+                                                        <fieldset>
+                                                            {item != 'teamSites' && <legend><span className="mparent">{item}</span></legend>}
+                                                            {item == 'teamSites' && <legend><span className="mparent">Sites</span></legend>}
+                                                        </fieldset>
+                                                        {filterItems.map(function (ItemType, index) {
+                                                            return (
 
-                                                            <>
-                                                                {ItemType.Group == item &&
-                                                                    <div style={{ display: "block" }}>
-                                                                        <>
+                                                                <>
+                                                                    {ItemType.Group == item &&
+                                                                        <div style={{ display: "block" }}>
+                                                                            <>
 
-                                                                            {ItemType.TaxType != 'Status' &&
+                                                                                {ItemType.TaxType != 'Status' &&
 
-                                                                                <div className="align-items-center d-flex">
-                                                                                    <span className="hreflink me-1 GByicon" onClick={() => handleOpen2(ItemType)}>
-                                                                                        {ItemType.childs.length > 0 &&
-                                                                                            <a title="Tap to expand the childs">
-                                                                                                {ItemType.showItem ? <img src={ItemType.downArrowIcon} />
-                                                                                                    : <img src={ItemType.RightArrowIcon} />}
+                                                                                    <div className="align-items-center d-flex">
+                                                                                        <span className="hreflink me-1 GByicon" onClick={() => handleOpen2(ItemType)}>
+                                                                                            {ItemType.childs.length > 0 &&
+                                                                                                <a title="Tap to expand the childs">
+                                                                                                    {ItemType.showItem ? <img src={ItemType.downArrowIcon} />
+                                                                                                        : <img src={ItemType.RightArrowIcon} />}
 
-                                                                                            </a>}
+                                                                                                </a>}
+                                                                                        </span>
+                                                                                        <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <label className="form-check-label">
+                                                                                            {ItemType.Title}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                }
+                                                                                {ItemType.TaxType == 'Status' &&
+
+                                                                                    <div className="align-items-center d-flex">
+                                                                                        <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <label className="form-check-label">
+                                                                                            {ItemType.Title}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                }
+                                                                                <ul id="id_{ItemType.Id}"
+                                                                                    className="m-0 ps-3 pe-2">
+                                                                                    <span>
+                                                                                        {ItemType.show && (
+                                                                                            <>
+                                                                                                {ItemType.childs.map(function (child1: any, index: any) {
+                                                                                                    return (
+                                                                                                        <>
+
+                                                                                                            <div className="align-items-center d-flex">
+                                                                                                                {child1.childs.length > 0 && !child1.expanded &&
+                                                                                                                    <span className="hreflink me-1 GByicon"
+                                                                                                                        ng-click="loadMoreFilters(child1);">
+                                                                                                                        <img
+                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
+                                                                                                                    </span>
+                                                                                                                }
+                                                                                                                {child1.childs.length > 0 && child1.expanded &&
+                                                                                                                    <span className="hreflink me-1 GByicon"
+                                                                                                                        ng-click="loadMoreFilters(child1);">
+                                                                                                                        <img
+                                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                                                    </span>
+                                                                                                                }
+                                                                                                                <input type="checkbox" defaultChecked={child1.Selected == true} className="form-check-input me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                <label className="form-check-label">
+                                                                                                                    {child1.Title}
+                                                                                                                </label>
+                                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="m-0 ps-3 pe-2">
+                                                                                                                    {child1.childs.map(function (child2: any) {
+                                                                                                                        <li>
+                                                                                                                            <div className="align-items-center d-flex">
+                                                                                                                                <input className="form-check-input me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                                <label className="form-check-label">
+                                                                                                                                    {child2.Title}
+                                                                                                                                </label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                    })}
+                                                                                                                </ul>
+                                                                                                            </div>
+
+
+                                                                                                        </>
+                                                                                                    )
+
+                                                                                                })}
+                                                                                            </>
+                                                                                        )}
                                                                                     </span>
-                                                                                    <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                                    <label className="form-check-label">
-                                                                                        {ItemType.Title}
-                                                                                    </label>
-                                                                                </div>
-                                                                            }
-                                                                            {ItemType.TaxType == 'Status' &&
+                                                                                </ul>
 
-                                                                                <div className="align-items-center d-flex">
-                                                                                    <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                                    <label className="form-check-label">
-                                                                                        {ItemType.Title}
-                                                                                    </label>
-                                                                                </div>
-                                                                            }
-                                                                            <ul id="id_{ItemType.Id}"
-                                                                                className="m-0 ps-3 pe-2">
-                                                                                <span>
-                                                                                    {ItemType.show && (
-                                                                                        <>
-                                                                                            {ItemType.childs.map(function (child1: any, index: any) {
-                                                                                                return (
-                                                                                                    <>
-
-                                                                                                        <div className="align-items-center d-flex">
-                                                                                                            {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                                <span className="hreflink me-1 GByicon"
-                                                                                                                    ng-click="loadMoreFilters(child1);">
-                                                                                                                    <img
-                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
-                                                                                                                </span>
-                                                                                                            }
-                                                                                                            {child1.childs.length > 0 && child1.expanded &&
-                                                                                                                <span className="hreflink me-1 GByicon"
-                                                                                                                    ng-click="loadMoreFilters(child1);">
-                                                                                                                    <img
-                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                                </span>
-                                                                                                            }
-                                                                                                            <input type="checkbox" defaultChecked={child1.Selected == true} className="form-check-input me-1" ng-model="child1.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
-                                                                                                            <label className="form-check-label">
-                                                                                                                {child1.Title}
-                                                                                                            </label>
-                                                                                                            <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="m-0 ps-3 pe-2">
-                                                                                                                {child1.childs.map(function (child2: any) {
-                                                                                                                    <li>
-                                                                                                                        <div className="align-items-center d-flex">
-                                                                                                                            <input className="form-check-input me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
-                                                                                                                            <label className="form-check-label">
-                                                                                                                                {child2.Title}
-                                                                                                                            </label>
-                                                                                                                        </div>
-                                                                                                                    </li>
-                                                                                                                })}
-                                                                                                            </ul>
-                                                                                                        </div>
+                                                                            </>
 
 
-                                                                                                    </>
-                                                                                                )
+                                                                        </div>
+                                                                    }
+                                                                </>
 
-                                                                                            })}
-                                                                                        </>
-                                                                                    )}
-                                                                                </span>
-                                                                            </ul>
+                                                            )
+                                                        })}
 
-                                                                        </>
+                                                    </td>
 
+                                                </>
+                                            )
+                                        })}
+                                    </tr>
+                                </table>
+                                <div className="text-end mt-3">
+                                    <button type="button" className="btn btn-primary"
+                                        title="Smart Filter" onClick={() => Updateitem()}>
+                                        Update Filters
+                                    </button>
+                                    <button type="button" className="btn btn-grey ms-2" title="Clear All"
+                                        onClick={() => Clearitem()} >
+                                        Clear Filters
+                                    </button>
+                                </div>
 
-                                                                    </div>
-                                                                }
-                                                            </>
-
-                                                        )
-                                                    })}
-
-                                                </td>
-
-                                            </>
-                                        )
-                                    })}
-                                </tr>
-                            </table>
-                            <div className="text-end mt-3">
-                                <button type="button" className="btn btn-primary"
-                                    title="Smart Filter" onClick={() => Updateitem()}>
-                                    Update Filters
-                                </button>
-                                <button type="button" className="btn btn-grey ms-2" title="Clear All"
-                                    onClick={() => Clearitem()} >
-                                    Clear Filters
-                                </button>
                             </div>
-
-                        </div>
+                            : ''}
 
                     </div>
                 </div>
@@ -3138,7 +3140,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         </>
                                                                                                                                     )
                                                                                                                                 }
-                                                                                                                            })}
+                                                                                                                            })}it
                                                                                                                         </>
                                                                                                                     )}
 
