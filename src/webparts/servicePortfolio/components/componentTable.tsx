@@ -794,6 +794,7 @@ function ComponentTable(SelectedProp: any) {
         }
         var pattern: any = getRegexPattern(keywordList);
         //let Title :any =(...item.Title)
+        item.TitleNew = item.Title;
         item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
         // item.Title = item.Title;
         keywordList = [];
@@ -854,7 +855,7 @@ function ComponentTable(SelectedProp: any) {
         var filterglobal = e.target.value.toLowerCase();
         if (filterglobal != undefined && filterglobal.length >= 1) {
             var searchTerms = stringToArray(filterglobal);
-            $.each(data, function (pareIndex: any, item: any) {
+            $.each(maidataBackup, function (pareIndex: any, item: any) {
                 item.flag = false;
                 item.isSearch = true;
                 item.show = false;
@@ -870,9 +871,9 @@ function ComponentTable(SelectedProp: any) {
                         child1.flag = (getSearchTermAvialable1(searchTerms, child1, Title));
                         if (child1.flag) {
                             item.childs[parentIndex].flag = true;
-                            data[pareIndex].flag = true;
+                            maidataBackup[pareIndex].flag = true;
                             item.childs[parentIndex].show = true;
-                            data[pareIndex].show = true;
+                            maidataBackup[pareIndex].show = true;
                             if (!isItemExistsNew(AllFilteredTagNews, item)) {
                                 AllFilteredTagNews.push(item)
                             }
@@ -890,8 +891,8 @@ function ComponentTable(SelectedProp: any) {
                                     child1.childs[index].flag = true;
                                     child1.childs[index].show = true;
                                     item.childs[parentIndex].show = true;
-                                    data[pareIndex].flag = true;
-                                    data[pareIndex].show = true;
+                                    maidataBackup[pareIndex].flag = true;
+                                    maidataBackup[pareIndex].show = true;
                                     if (!isItemExistsNew(AllFilteredTagNews, item)) {
                                         AllFilteredTagNews.push(item)
                                     }
@@ -913,8 +914,8 @@ function ComponentTable(SelectedProp: any) {
                                             child1.childs[index].flag = true;
                                             child1.childs[index].show = true;
                                             item.childs[parentIndex].show = true;
-                                            data[pareIndex].flag = true;
-                                            data[pareIndex].show = true;
+                                            maidataBackup[pareIndex].flag = true;
+                                            maidataBackup[pareIndex].show = true;
                                             if (!isItemExistsNew(AllFilteredTagNews, item)) {
                                                 AllFilteredTagNews.push(item)
                                             }
@@ -967,6 +968,7 @@ function ComponentTable(SelectedProp: any) {
             setData(maidataBackup);
             //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
         }
+         // setData(data => ([...maidataBackup]));
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
 
     };
@@ -1829,7 +1831,7 @@ function ComponentTable(SelectedProp: any) {
         setSubComponentsData(SubComponentsData);
         setFeatureData(FeatureData);
         setComponentsData(array);
-        setmaidataBackup(ComponentsData)
+        setmaidataBackup(array)
         setData(array);
         showProgressHide();
     }
@@ -3140,7 +3142,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         </>
                                                                                                                                     )
                                                                                                                                 }
-                                                                                                                            })}it
+                                                                                                                            })}
                                                                                                                         </>
                                                                                                                     )}
 
