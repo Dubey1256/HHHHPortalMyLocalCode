@@ -549,7 +549,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         <div className='mb-3 card commentsection'>
           <div className='card-header'>
             {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
-            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip /></span></div>
+            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip ComponentId='586' /></span></div>
 
           </div>
           <div className='card-body'>

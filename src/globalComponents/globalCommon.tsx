@@ -216,9 +216,8 @@ export const loadTaskUsers= async ()=> {
     catch (error) {
         return Promise.reject(error);
     }
-    return taskUser
-    
-    ;
+
+    return taskUser ;
 }
 export const parseJSON = (jsonItem: any) => {
     var json = [];

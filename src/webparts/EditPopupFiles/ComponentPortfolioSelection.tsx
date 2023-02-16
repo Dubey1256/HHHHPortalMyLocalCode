@@ -403,7 +403,7 @@ const ComponentPortPolioPopup = (item: any) => {
                         <div className="col-sm-12 p-0 smart">
                             <div className="section-event">
                                 <div className="wrapper">
-                                    <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                                    <table className="mb-0 table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                         <thead>
                                             <tr>
                                                 <th style={{ width: "2%" }}>
