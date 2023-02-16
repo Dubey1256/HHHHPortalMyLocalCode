@@ -53,6 +53,7 @@ function Portfolio({ ID }: any) {
     const [IsTask, setIsTask] = React.useState(false);
     const [AllTaskuser, setAllTaskuser] = React.useState([]);
     const [questionandhelp, setquestionandhelp] = React.useState([])
+    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
         setIsActive(false);
@@ -637,8 +638,8 @@ function Portfolio({ ID }: any) {
                                         })}
                                     </div>
                                 </div>
-                                <section className='row pe-1 accordionbox'>
-                                    <div className="accordion   overflow-hidden">
+                                <section className='row  accordionbox'>
+                                    <div className="accordion  pe-1 overflow-hidden">
                                         {/* description */}
                                         {data.map(item =>
                                             <>
@@ -1077,7 +1078,7 @@ function Portfolio({ ID }: any) {
                 </div>
             </section>
             {/* table secation artical */}
-            <section className="TableSection">
+            <section className="TableSection" id={tablecontiner}>
                 {/* {data.map(item => (
                                 <Groupbyt  title={item.Title} level={item.PortfolioLevel}/>))} */}
                 {/* <Groupby/> */}

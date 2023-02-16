@@ -52,9 +52,8 @@ function Tooltip(props: any) {
             .get();
             ComponentData=res[0]
           }
-       
-          if (ComponentData?.Id != undefined) {
-            window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=` + ComponentData?.Id + "&Siteurl=" + Href);
+          if(componentID != undefined){
+            window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ComponentID=` + componentID + "&Siteurl=" + Href);
           }
       
 
