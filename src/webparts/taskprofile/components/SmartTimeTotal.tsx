@@ -8,11 +8,14 @@ const SmartTimeTotalFunction=(item:any)=>{
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
     const [AllUser, setAllUser] = React.useState([])
-    const [isTimeEntry,setisTimeEntry]=React.useState(false)
+    const [isTimeEntry,setisTimeEntry]=React.useState(false);
+    const [hoverTimeshow,sethoverTimeshow]=React.useState(false)
     const [smartTimeTotal,setsmartTimeTotal] = React.useState(0);
     const [AdditionalTime, setAdditionalTime] = React.useState([]);
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
+
     // const[isModalOpen,setisModalOpen]=React.useState(false);
+
     // const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
     // // var changeTime = 0;
     // var NewParentId: any = ''
@@ -237,7 +240,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                 }
             })
         })
-        // setAllTimeSpentDetails(AllTimeSpentDetails)
+      
 
     };
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
@@ -326,78 +329,78 @@ const SmartTimeTotalFunction=(item:any)=>{
                 $.each(type.AdditionalTime,function(index:any,time:any){
                     TotalTime=TotalTime+parseFloat(time.TaskTime);
                   })
-                
-                // item.CallBackSumSmartTime(TotalTime);
+               
+                type.totalTimeSpend=TotalTime;
                 setsmartTimeTotal(TotalTime);
 
             }
-             return type.isShifted === false });
+             return type.isShifted === true });
         
-        $.each(AllTimeSpentDetails, function (index: any, items: any) {
+        // $.each(AllTimeSpentDetails, function (index: any, items: any) {
            
            
-            if (items.AdditionalTime.length === 0) {
+        //     if (items.AdditionalTime.length === 0) {
               
-                items.isAvailableToDelete = true;
-            }
-            if (items.AdditionalTime != undefined && items.AdditionalTime.length > 0) {
-                $.each(items.AdditionalTime, function (index: any, type: any) {
-                    if (type.Id != undefined)
-                        type.Id = type.ID;
-                })
-            }
-        });
+        //         items.isAvailableToDelete = true;
+        //     }
+        //     if (items.AdditionalTime != undefined && items.AdditionalTime.length > 0) {
+        //         $.each(items.AdditionalTime, function (index: any, type: any) {
+        //             if (type.Id != undefined)
+        //                 type.Id = type.ID;
+        //         })
+        //     }
+        // });
        
-        $.each(AllTimeSpentDetails, function (index: any, items: any) {
-            if (items.AdditionalTime.length > 0) {
-                $.each(items.AdditionalTime, function (index: any, val: any) {
-                    var NewDate = val.TaskDate;
-                    try {
-                        // getDateForTimeEntry(NewDate, val);
-                    } catch (e) { }
-                })
-            }
-        })
-        $.each(AllTimeSpentDetails, function (index: any, items: any) {
-            if (items.Category.Title === undefined)
-                checkCategory(items, 319);
-            else
-                checkCategory(items, items.Category.Id);
-        })
-        var IsTimeSheetAvailable = false;
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
-            if (items.Childs.length > 0) {
-                IsTimeSheetAvailable = true;
-            }
-        });
+        // $.each(AllTimeSpentDetails, function (index: any, items: any) {
+        //     if (items.AdditionalTime.length > 0) {
+        //         $.each(items.AdditionalTime, function (index: any, val: any) {
+        //             var NewDate = val.TaskDate;
+        //             try {
+        //                 // getDateForTimeEntry(NewDate, val);
+        //             } catch (e) { }
+        //         })
+        //     }
+        // })
+        // $.each(AllTimeSpentDetails, function (index: any, items: any) {
+        //     if (items.Category.Title === undefined)
+        //         checkCategory(items, 319);
+        //     else
+        //         checkCategory(items, items.Category.Id);
+        // })
+        // var IsTimeSheetAvailable = false;
+        // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
+        //     if (items.Childs.length > 0) {
+        //         IsTimeSheetAvailable = true;
+        //     }
+        // });
 
-        var AdditionalTimes: any = []
+        // var AdditionalTimes: any = []
 
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
+        // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
 
-            if (items.Childs != undefined && items.Childs.length > 0) {
-                $.each(items.Childs, function (index: any, child: any) {
-                  if(child.TimesheetTitle.Id != undefined){
-                    if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
-                        $.each(child.AdditionalTime, function (index: any, Subchild: any) {
-                            if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
+        //     if (items.Childs != undefined && items.Childs.length > 0) {
+        //         $.each(items.Childs, function (index: any, child: any) {
+        //           if(child.TimesheetTitle.Id != undefined){
+        //             if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
+        //                 $.each(child.AdditionalTime, function (index: any, Subchild: any) {
+        //                     if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
 
-                                AdditionalTimes.push(Subchild)
+        //                         AdditionalTimes.push(Subchild)
 
-                            }
+        //                     }
 
                         
-                        })
+        //                 })
 
-                    }
-                }
-                })
-            }
+        //             }
+        //         }
+        //         })
+        //     }
 
 
-        });
+        // });
 
-        setAdditionalTime(AdditionalTimes)
+        // setAdditionalTime(AdditionalTimes)
        
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
@@ -428,25 +431,42 @@ const SmartTimeTotalFunction=(item:any)=>{
     }
      const CallBackTimesheet=()=> {
         setisTimeEntry(false)
-    //  this.getSmartTime();
-  }
+        // GetSmartMetadata();
+     }
     return(
         <>
            {smartTimeTotal.toFixed(1)}
-           <span> <a onClick={OpenTimeEntry}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a></span>
-            {/* <span><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}   onMouseOver={(e) => setisModalOpen(true)}
-                                onMouseOut={(e) => setisModalOpen(false)}/></span>
+           {/* <span> <a onClick={OpenTimeEntry}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a></span> */}
+            <span><a onClick={OpenTimeEntry}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}  
+             onMouseOver={(e) => sethoverTimeshow(true)}
+             onMouseOut={(e) => sethoverTimeshow(false)}/></a></span>
 
 
-                               {isModalOpen?  <div className='imghover' >
-          <div className="popup">
-            <div className="parentDiv">
-              <span style={{ color: 'white' }}>{item.Title}</span>
-               
-            </div>
-          </div>
-        </div>:null}  */}
-         {isTimeEntry ? <TimeEntry data={item.props} isopen={isTimeEntry} CallBackTimesheet={() => {CallBackTimesheet() }} /> : ''}
+            {/* {hoverTimeshow?  <div >
+           <span>{item.props.Title}</span>
+              {AllTimeSpentDetails.length>0&&AllTimeSpentDetails.map((items:any)=>{
+              return(
+                <>
+                {items.AdditionalTime.length>0&& items.AdditionalTime.map((details:any)=>{
+                   return(
+                    <>
+                    <div>
+                    <div className="img  "> <span><img src={details.AuthorImage}></img></span></div>
+                        <span>{details.TaskTime}</span>
+                    </div>
+                    <div>
+                        <span>{details.TaskDate}</span>
+                        <span>{details.TaskTime.toFixed(1)}</span>
+                        <span>{details.TaskTime?.Description}</span>
+                    </div>
+                    </>
+                   ) 
+                })}
+                </>
+               )}
+              )}
+               </div>:null}  */}
+            {isTimeEntry ? <TimeEntry data={item.props} isopen={isTimeEntry} CallBackTimesheet={() => {CallBackTimesheet() }} /> : ''}
               </>
     )
    
