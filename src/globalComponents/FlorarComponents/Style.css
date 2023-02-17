@@ -1,0 +1,178 @@
+.App {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+.fr-toolbar .fr-btn-grp {
+    margin: 0 !important;
+}
+
+.grayTableBorder,
+.grayTableBorder tr th,
+.grayTableBorder tr td {
+    border: 1px solid lightgray !important;
+    border-collapse: collapse;
+}
+
+.blackTableBorder,
+.blackTableBorder tr th,
+.blackTableBorder tr td {
+    border: 1px solid black !important;
+    border-collapse: collapse;
+}
+
+.noTableBorder,
+.noTableBorder tr th,
+.noTableBorder tr td {
+    border: none !important;
+    border-collapse: collapse;
+}
+
+body {
+	font-family: sans-serif;
+}
+a {
+	color: #369;
+}
+.box {
+    width: 485px;
+    float: left;
+}
+.note {
+	width: 500px;
+	margin: 50px auto;
+	font-size: 1.1em;
+	color: #333;
+	text-align: justify;
+}
+#drop-area {
+    position: relative;
+	border: 2px solid #ccc;
+	width: 480px;
+    height: 400px;
+	overflow: hidden;
+    margin-bottom: 10px;
+}
+#drop-area .controll-panel {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+#drop-area .controll-panel .item {
+    display: inline-block;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #23232360;
+}
+#drop-area .controll-panel .item i {
+    color: #fff;
+}
+#drop-area label {
+	margin-bottom: 0;
+    height: 100%;
+    width: 100%;
+    display: block;
+}
+#drop-area .uploadIcon {
+	border: none;
+    height: 100%;
+}
+#drop-area .uploadIcon i {
+    margin: 0 auto;
+    display: block;
+    width: 60px;
+    position: relative;
+    top: 45%;
+}
+#drop-area.highlight {
+	border-color: purple;
+}
+p {
+	margin-top: 0;
+}
+.my-form {
+	margin-bottom: 10px;
+}
+#gallery {
+    height: 100%;
+}
+#gallery img {
+	vertical-align: middle;
+    width: 100%;
+}
+.button {
+	display: inline-block;
+	padding: 10px;
+	background: #ccc;
+	cursor: pointer;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
+.button:hover {
+	background: #ddd;
+}
+#fileElem {
+	display: none;
+}
+#sendForm {
+    width: 100%;
+}
+#sendForm .areapaste input {
+    padding-left: 10px;
+    width: 320px;
+    height: 35px;
+    font-size: 16px;
+}
+
+/*_______________*/
+#details_img {
+    padding: 20px;
+    float: left;
+    width: 630px;
+}
+#details_img .list .item {
+    margin-bottom: 10px;
+}
+#details_img .list .item .attr {
+    width: 120px;
+}
+#details_img .list .item .attr,
+#details_img .list .item .data{
+    display: inline-block;
+}
+#container-image .container {
+    width: 200px;
+    display: inline-block;
+}
+
+
+element.style {
+    top: 0px;
+    bottom: auto;
+    /* display: none; */
+}
+
+/* this is for florar editor custom CSS */
+
+.fr-toolbar.fr-bottom, .fr-toolbar.fr-top{
+    display: none !important;
+  
+}
+.fr-box.fr-basic.fr-top .fr-wrapper a{
+    display: none !important;
+}
+.fr-box.fr-basic .fr-element{
+    border-top: 5px solid #000066;
+}
+
+.fr-second-toolbar {
+    display: none !important;
+}
+.fr-sticky-off{
+    display: none !important;
+}
+
+.fr-popup .fr-buttons{
+    display: none !important;
+
+}

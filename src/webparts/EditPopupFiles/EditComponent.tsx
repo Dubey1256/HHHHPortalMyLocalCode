@@ -70,6 +70,12 @@ function EditInstitution(item: any) {
     const [AssignUser, setAssignUser] = React.useState(undefined);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [editorState, setEditorState] = React.useState(EditorState.createEmpty());
+    const [datepicker, setdatepicker] = React.useState(false);
+
+    // Date picker closer
+    function datepickercl(){
+        setdatepicker(true)
+    }
     // $('.ms-Dialog-main .main-153').hide();
     const setModalIsOpenToTrue = (e: any) => {
         // e.preventDefault()
@@ -1304,6 +1310,7 @@ function EditInstitution(item: any) {
                                                             value={EditData.StartDate}
                                                             onChange={handleDatestart}
                                                             dateFormat="dd/MM/yyyy"
+                                                            
 
                                                         />
                                                        
@@ -1317,6 +1324,7 @@ function EditInstitution(item: any) {
                                                             value={EditData.DueDate}
                                                             onChange={handleDatedue}
                                                             dateFormat="dd/MM/yyyy"
+                                                           
 
                                                         />
                                                     </div>
@@ -1330,6 +1338,7 @@ function EditInstitution(item: any) {
                                                             dateFormat="dd/MM/yyyy"
                                                             value={EditData.CompletedDate}
                                                             onChange={handleDate}
+                                                            
 
                                                         />
                                                     </div>

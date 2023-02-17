@@ -203,7 +203,7 @@ const Picker = (item: any) => {
                                     <div className="pb-3 mb-0">
                                         <div id="addNewTermDescription">
                                             <p className="mb-1"> New items are added under the currently selected item.
-                                                <span><a className="hreflink" ng-click="gotomanagetaxonomy();"> Add New Item </a></span>
+                                                <span><a className="hreflink" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
                                             </p>
                                         </div>
                                         <div id="SendFeedbackTr">

@@ -144,7 +144,7 @@ const SmartInformation = (props: any) => {
         <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
           {popupEdit ? `Add SmartInformation - ${allValue.Title}` : `Add SmartInformation - ${taskInfo.Title}`}
         </div>
-        <Tooltip />
+        <Tooltip ComponentId='993'/>
       </>
     );
   };

@@ -1188,11 +1188,15 @@ function TimeEntryPopup(item: any) {
     }
 
     const UpdateAdditionaltime = async (child: any) => {
+        var Dateee =''
         if(editeddata != undefined){
-           var a = new Date(editeddata)
-           var Dateee = Moment(a).format('DD/MM/YYYY')
+           var a =  Moment(editeddata).format()
+            Dateee = Moment(a).format('DD/MM/YYYY')
         }
-        var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+        else{
+            Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+        }
+         
         var DateFormate = new Date(Eyd)
         var UpdatedData: any = []
         $.each(saveEditTaskTime, function (index: any, update: any) {
@@ -1656,8 +1660,8 @@ function TimeEntryPopup(item: any) {
             setediteddata(finalDate)
         }
         if(type == 'Today'){
-           // var newStartDate: any = Moment().format("DD/MM/YYYY")
-            var a1 = date.split("/"); 
+            var newStartDate: any = Moment().format("DD/MM/YYYY")
+            var a1 = newStartDate.split("/"); 
             a1 = a1[2] + a1[1] + a1[0];
             var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
             setchangeDates(finalDate)
@@ -1667,7 +1671,7 @@ function TimeEntryPopup(item: any) {
        if(Popup == 'Add'){
         if(type == 'firstdate'){
             var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-            var a1 = date.split("/"); 
+            var a1 = newStartDate.split("/"); 
             a1[0] = '01'
             a1 = a1[2] + a1[1] + a1[0];
             var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
@@ -1676,7 +1680,7 @@ function TimeEntryPopup(item: any) {
         }
         if(type == '15thdate'){
            var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-            var a1 = date.split("/"); 
+            var a1 = newStartDate.split("/"); 
             a1[0] = '15'
             a1 = a1[2] + a1[1] + a1[0];
             var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
@@ -1685,7 +1689,7 @@ function TimeEntryPopup(item: any) {
         }
         if(type == '1Jandate'){
          var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-             var a1 = date.split("/"); 
+             var a1 = newStartDate.split("/"); 
             a1[1] = '01'
             a1[0] = '01'
             a1 = a1[2] + a1[1] + a1[0];
@@ -1695,7 +1699,7 @@ function TimeEntryPopup(item: any) {
         }
         if(type == 'Today'){
            var newStartDate: any = Moment().format("DD/MM/YYYY")
-            var a1 = date.split("/"); 
+            var a1 = newStartDate.split("/"); 
             a1 = a1[2] + a1[1] + a1[0];
             var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
             setchangeDates(finalDate)
@@ -2620,7 +2624,7 @@ function TimeEntryPopup(item: any) {
                                                             <label
                                                                 ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
                                                             <input type="text"
-                                                               
+                                                               className='form-control'
                                                                 name="timeSpent"
                                                                 ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
                                                                 value={TimeInMinutes >= 0 ? (TimeInMinutes == 0 ? child.TaskTimeInMin : TimeInMinutes) : child.TaskTimeInMin}  onChange={(e) => changeTimeFunction(e, 'Edit')} />
