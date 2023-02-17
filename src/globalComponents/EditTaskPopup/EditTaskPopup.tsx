@@ -1138,15 +1138,18 @@ const EditTaskPopup = (Items: any) => {
     }
 
     //***************** This is for image Upload Section  Functions *****************
-
-    let contentTarget = document.getElementById("imageUpload");
-
-    const FlorarImageUploadComponentCallBack =(dt:any)=>{
-         setUploadBtnStatus(false);
-         console.log("Call Back String Data From Florar Editor ============",dt );
+    const FlorarImageUploadComponentCallBack = (dt: any) => {
+        setUploadBtnStatus(false);
+        let DataObject: any = {
+            data_url: dt,
+            file: "Image/jpg"
+        }
+        let arrayIndex: any = TaskImages?.length
+        TaskImages.push(DataObject)
+        if (dt.length > 0) {
+            onUploadImageFunction(TaskImages, [arrayIndex]);
+        }
     }
-
-
     const onUploadImageFunction = async (
         imageList: ImageListType,
         addUpdateIndex: number[] | undefined) => {
@@ -1207,6 +1210,7 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getById(listId).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
+                setUploadBtnStatus(false);
             })().catch(console.log)
         } else {
             (async () => {
@@ -1214,6 +1218,7 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getByTitle(listName).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
+                setUploadBtnStatus(false);
             })().catch(console.log)
         }
     }
@@ -2940,13 +2945,11 @@ const EditTaskPopup = (Items: any) => {
                                         Close
                                     </button>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
             </Panel>
-
         </>
     )
 }

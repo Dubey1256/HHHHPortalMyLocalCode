@@ -52,8 +52,11 @@ const froalaEditorConfig = {
                         var base64String: any = reader.result;
                         console.log('Base64 String - ', base64String);
                         ImageRawData = base64String.substring(base64String.indexOf(', ') + 1)
+                        
                     }
-                    this.imageArrayUpdateFunction(ImageRawData);
+                    if(ImageRawData.length > 0){
+                        this.imageArrayUpdateFunction(ImageRawData);
+                    }
                 }
             }
             editor.popups.hideAll();
@@ -96,9 +99,7 @@ export default class App extends React.Component<ITeamConfigurationProps> {
     private imageArrayUpdateFunction = (ImageData: any) => {
         let tempArray = ImageData.toString();
         let data1 = tempArray.split('"')
-        console.log("data Array sdvjfmksezxdrctbhnj =====", data1)
-
-        this.props.callBack(ImageData);
+        this.props.callBack(data1[1]);
     }
 
 }
