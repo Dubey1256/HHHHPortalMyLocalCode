@@ -1205,7 +1205,7 @@ function TimeEntryPopup(item: any) {
 
                     updateitem.Id = child.ID;
                     updateitem.TaskTime = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
-                    updateitem.TaskTimeInMinute = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMinutes;
+                    updateitem.TaskTimeInMin = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
                     updateitem.TaskDate = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
 
                     updateitem.Description = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
@@ -1494,7 +1494,15 @@ function TimeEntryPopup(item: any) {
             }
 
         });
-        var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+        var Dateee =''
+        if(editeddata != undefined){
+           var a =  Moment(editeddata).format()
+            Dateee = Moment(a).format('DD/MM/YYYY')
+        }
+        else{
+            Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+        }
+       // var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
         //var DateFormate = new Date(Eyd)
 
         $.each(TaskCate, function (index: any, subItem: any) {
@@ -1513,7 +1521,7 @@ function TimeEntryPopup(item: any) {
                     update['MainParentId'] = AddMainParent;
                     update['ParentID'] = AddParent;
                     update['TaskTime'] = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
-                    update['TaskTimeInMin'] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMinutes;
+                    update['TaskTimeInMin'] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
                     update['TaskDate'] = Dateee != 'Invalid date' && Dateee != "" && Dateee != undefined ? Dateee : child.TaskDate;
                     update['Description'] = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
                     subItem.AdditionalTime.push(update)
@@ -2627,7 +2635,7 @@ function TimeEntryPopup(item: any) {
                                                                className='form-control'
                                                                 name="timeSpent"
                                                                 ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                                value={TimeInMinutes >= 0 ? (TimeInMinutes == 0 ? child.TaskTimeInMin : TimeInMinutes) : child.TaskTimeInMin}  onChange={(e) => changeTimeFunction(e, 'Edit')} />
+                                                                value={(TimeInMinutes > 0 || TimeInMinutes == undefined)  ? TimeInMinutes : child.TaskTimeInMin}  onChange={(e) => changeTimeFunction(e, 'Edit')} />
 
                                                         </div>
                                                         <div className="col-sm-3 ps-0">
