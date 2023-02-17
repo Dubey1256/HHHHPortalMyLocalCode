@@ -242,7 +242,7 @@ export default function ComponentTable({ props }: any) {
                                         result.ClientCategory.push(catego);
                                     })
                                 }
-                                if (result.Id === 1587 || result.Id === 104)
+                                if (result.Id === 498 || result.Id === 104)
                                     console.log(result);
                                 result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
                                 if (result['Shareweb_x0020_ID'] == undefined) {

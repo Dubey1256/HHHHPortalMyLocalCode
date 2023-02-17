@@ -99,10 +99,10 @@ export const getTaskId=(item: any)=> {
                 Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
             }
         }
-        if (item.Component != undefined && item.Events != undefined && item.Services != undefined)
-            // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
+        if (item.Component != undefined && item.Events != undefined && item.Services != undefined){
+        if (item.Events.length > 0 && item.Services.length > 0 && item.Component.length > 0) 
             Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-        //}
+        }
         if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
             Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
         }
