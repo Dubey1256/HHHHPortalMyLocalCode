@@ -24,7 +24,7 @@ import CommentBoxComponent from "./CommentBoxComponent";
 import TimeEntryPopup from './TimeEntryComponent';
 import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
-
+import FlorarImageUploadComponent from '../FlorarComponents/FlorarImageUploadComponent';
 
 
 var AllMetaData: any = []
@@ -1141,6 +1141,11 @@ const EditTaskPopup = (Items: any) => {
 
     let contentTarget = document.getElementById("imageUpload");
 
+    const FlorarImageUploadComponentCallBack =(dt:any)=>{
+         setUploadBtnStatus(false);
+         console.log("Call Back String Data From Florar Editor ============",dt );
+    }
+
 
     const onUploadImageFunction = async (
         imageList: ImageListType,
@@ -1266,7 +1271,6 @@ const EditTaskPopup = (Items: any) => {
             })().catch(console.log)
         }
         setTaskImages(EditData.UploadedImage);
-
     }
 
     const MouseHoverImageFunction = (e: any, HoverImageData: any) => {
@@ -1328,7 +1332,7 @@ const EditTaskPopup = (Items: any) => {
                         {`${EditData.TaskId} ${EditData.Title}`}
                     </span>
                 </div>
-                <Tooltip />
+                <Tooltip ComponentId={Items.Items.Id} />
             </div>
         );
     };
@@ -1342,7 +1346,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Site
                     </span>
                 </div>
-                <Tooltip />
+                <Tooltip ComponentId={Items.Items.Id} />
             </div>
         );
     };
@@ -1663,7 +1667,7 @@ const EditTaskPopup = (Items: any) => {
                                                     {smartComponentData ? smartComponentData?.map((com: any) => {
                                                         return (
                                                             <>
-                                                                <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
+                                                                <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
                                                                         <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -2132,23 +2136,30 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         {UploadBtnStatus ?
                                                             <div>
-                                                                <div className="drag-upload-image mt-1"
+                                                                {/* <div className="drag-upload-image mt-1"
                                                                     style={isDragging ? { border: '1px solid red' } : undefined}
                                                                     onClick={onImageUpload}
                                                                     {...dragProps}
                                                                 >
                                                                     Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
-                                                                </div>
+                                                                </div> */}
+                                                                <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
+
                                                             </div> : null}
                                                         {TaskImages?.length == 0 ? <div>
-                                                            <div className="drag-upload-image mt-1"
+                                                            {/* <div className="drag-upload-image mt-1"
                                                                 style={isDragging ? { border: '1px solid red' } : undefined}
                                                                 onClick={onImageUpload}
                                                                 {...dragProps}
                                                             >
                                                                 Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
-                                                            </div>
+                                                            </div> */}
+                                                            <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
+
                                                         </div> : null}
+                                                        {/* <div>
+                                                            <FlorarImageUploadComponent />
+                                                        </div> */}
 
                                                         {/* <button onClick={onImageRemoveAll}>Upload item-images</button> */}
 
@@ -2431,7 +2442,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 {smartComponentData ? smartComponentData?.map((com: any) => {
                                                                     return (
                                                                         <>
-                                                                            <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
+                                                                            <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                 <a>
                                                                                     <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
