@@ -7,8 +7,7 @@ import * as moment from 'moment';
 import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 
-export const pageContext= async() =>
-{
+export const pageContext = async () => {
     let result;
     try {
         result = (await pnp.sp.site.getContextInfo());
@@ -18,10 +17,10 @@ export const pageContext= async() =>
     }
 
     return result;
-    
-} 
 
-export const getData = async (url:any,listId:any,query:any) => {
+}
+
+export const getData = async (url: any, listId: any, query: any) => {
     const web = new Web(url);
     let result;
     try {
@@ -32,10 +31,10 @@ export const getData = async (url:any,listId:any,query:any) => {
     }
 
     return result;
-    
+
 }
 
-export const addData = async (url:any,listId:any,item:any) => {
+export const addData = async (url: any, listId: any, item: any) => {
     const web = new Web(url);
     let result;
     try {
@@ -47,7 +46,7 @@ export const addData = async (url:any,listId:any,item:any) => {
     return result;
 }
 
-export const updateItemById = async (url:any,listId:any,item:any,itemId:any) => {
+export const updateItemById = async (url: any, listId: any, item: any, itemId: any) => {
     const web = new Web(url);
     let result;
     try {
@@ -59,7 +58,7 @@ export const updateItemById = async (url:any,listId:any,item:any,itemId:any) => 
     return result;
 }
 
-export const deleteItemById = async (url:any,listId:any,item:any,itemId:any) => {
+export const deleteItemById = async (url: any, listId: any, item: any, itemId: any) => {
     const web = new Web(url);
     let result;
     try {
@@ -71,130 +70,130 @@ export const deleteItemById = async (url:any,listId:any,item:any,itemId:any) => 
     return result;
 }
 
-export const getTaskId=(item: any)=> {
+export const getTaskId = (item: any) => {
     let Shareweb_x0020_ID = undefined;
     try {
-    
-    if (item != undefined && item.SharewebTaskType == undefined) {
-        Shareweb_x0020_ID = 'T' + item.Id;
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
-        Shareweb_x0020_ID = 'T' + item.Id;
-        if (item.SharewebTaskType.Title == 'MileStone')
-            Shareweb_x0020_ID = 'M' + item.Id;
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
-        if (item.Component != undefined) {
-            if (item.Component != undefined && item.Component.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
-            }
-        }
-        if (item.Services != undefined) {
-            if (item.Services != undefined && item.Services.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
-            }
-        }
-        if (item.Events != undefined) {
-            if (item.Events != undefined && item.Events.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
-            }
-        }
-        if (item.Component != undefined && item.Events != undefined && item.Services != undefined)
-            // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-        //}
-        if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-        }
-        if (item.SharewebTaskType.Title == 'Project')
-            Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
 
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Workstream' || item.SharewebTaskType.Title == 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
-        if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-            // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-            // }
+        if (item != undefined && item.SharewebTaskType == undefined) {
+            Shareweb_x0020_ID = 'T' + item.Id;
         }
-        if (item.Component != undefined) {
-            if (item.Component != undefined && item.Component.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No == undefined && item.SharewebTaskLevel2No == undefined) {
+            Shareweb_x0020_ID = 'T' + item.Id;
+            if (item.SharewebTaskType.Title == 'MileStone')
+                Shareweb_x0020_ID = 'M' + item.Id;
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Activities' || item.SharewebTaskType.Title == 'Project') && item.SharewebTaskLevel1No != undefined) {
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item.Component.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
+                }
             }
-        }
-        if (item.Services != undefined) {
-            if (item.Services != undefined && item.Services.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item.Services.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
+                }
             }
-        }
-        if (item.Events != undefined) {
-            if (item.Events != undefined && item.Events.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
+                }
             }
-        }
-        if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-        }
-        if (item.SharewebTaskType.Title == 'Step')
-            Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
+            if (item.Component != undefined && item.Events != undefined && item.Services != undefined) {
+                if (item.Events.length > 0 && item.Services.length > 0 && item.Component.length > 0)
+                    Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
+            }
+            if (item.Component == undefined && item.Events == undefined && item.Services == undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
+            }
+            if (item.SharewebTaskType.Title == 'Project')
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
 
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
-        if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-            // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-            //  }
         }
-        if (item.Component != undefined) {
-            if (item.Component != undefined && item.Component.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Workstream' || item.SharewebTaskType.Title == 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                // }
             }
-        }
-        if (item.Services != undefined) {
-            if (item.Services != undefined && item.Services.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item.Component.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
             }
-        }
-        if (item.Events != undefined) {
-            if (item.Events != undefined && item.Events.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item.Services.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
             }
-        }
-        if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-        }
-        if (item.SharewebTaskType.Title == 'MileStone') {
-            Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
-        }
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No == undefined) {
-        if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-            //  if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
-            // }
-        }
-        if (item.Component != undefined) {
-            if (item.Component != undefined && item.Component.length > 0) {
-                Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
+                }
             }
-        }
-        if (item.Services != undefined) {
-            if (item.Services != undefined && item.Services.length > 0) {
-                Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
             }
-        }
-        if (item.Events != undefined) {
-            if (item.Events != undefined && item.Events.length > 0) {
-                Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
-            }
-        }
-        if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
-            Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
-        }
-        if (item.SharewebTaskType.Title == 'MileStone') {
-            Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
-        }
+            if (item.SharewebTaskType.Title == 'Step')
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
 
-    }
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                // if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                //  }
+            }
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item.Component.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item.Services.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+                }
+            }
+            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
+            }
+            if (item.SharewebTaskType.Title == 'MileStone') {
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
+            }
+        }
+        else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title == 'Task' || item.SharewebTaskType.Title == 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No == undefined) {
+            if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
+                //  if (!item.Events.results.length > 0 && !item.Services.results.length > 0 && !item.Component.results.length > 0) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                // }
+            }
+            if (item.Component != undefined) {
+                if (item.Component != undefined && item.Component.length > 0) {
+                    Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Services != undefined) {
+                if (item.Services != undefined && item.Services.length > 0) {
+                    Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Events != undefined) {
+                if (item.Events != undefined && item.Events.length > 0) {
+                    Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
+                }
+            }
+            if (item.Component == undefined && item.Services == undefined && item.Events == undefined) {
+                Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
+            }
+            if (item.SharewebTaskType.Title == 'MileStone') {
+                Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
+            }
+
+        }
     }
     catch (error) {
         return Promise.reject(error);
@@ -202,7 +201,7 @@ export const getTaskId=(item: any)=> {
     return Shareweb_x0020_ID;
 }
 
-export const loadTaskUsers= async ()=> {
+export const loadTaskUsers = async () => {
     let taskUser;
     try {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -216,7 +215,7 @@ export const loadTaskUsers= async ()=> {
     catch (error) {
         return Promise.reject(error);
     }
-    return taskUser ;
+    return taskUser;
 }
 export const parseJSON = (jsonItem: any) => {
     var json = [];
@@ -227,7 +226,7 @@ export const parseJSON = (jsonItem: any) => {
     }
     return json;
 };
-export const  GetIconImageUrl =(listName: any, listUrl: any, Item: any) =>{
+export const GetIconImageUrl = (listName: any, listUrl: any, Item: any) => {
     var IconUrl = '';
     if (listName != undefined) {
         let TaskListsConfiguration = parseJSON(GlobalConstants.LIST_CONFIGURATIONS_TASKS);
@@ -249,69 +248,69 @@ export const  GetIconImageUrl =(listName: any, listUrl: any, Item: any) =>{
     }
     return IconUrl;
 }
-export const makePostDataForApprovalProcess =  async (postData:any)=> {
-    var TaskUsers:any=[];
+export const makePostDataForApprovalProcess = async (postData: any) => {
+    var TaskUsers: any = [];
     await loadTaskUsers().then(function (data) {
-             TaskUsers = data;
-            var UserManager: any[] = [];
-            TaskUsers.map((user:any)=> {
-                if (user?.Approver?.results?.length > 0) {
-                    user.Approver.results.map((approver:any)=> {
-                        UserManager.push(approver?.Id)
+        TaskUsers = data;
+        var UserManager: any[] = [];
+        TaskUsers.map((user: any) => {
+            if (user?.Approver?.results?.length > 0) {
+                user.Approver.results.map((approver: any) => {
+                    UserManager.push(approver?.Id)
+                })
+            }
+        })
+        var Item = { TaskUsers: '', postData: '' };
+        if ((postData?.Categories?.toLowerCase().indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
+            //postData.PercentComplete = 0.01;
+            //postData.Status = "For Approval";
+            var isAvailable = false;
+            if (postData?.Responsible_x0020_TeamId?.results?.length > 0) {
+                postData.Responsible_x0020_TeamId.results.map((user: any) => {
+                    UserManager.map((ID: any) => {
+                        if (ID == user) {
+                            isAvailable = true;
+                        }
                     })
-                }
-            })
-            var Item = {TaskUsers:'',postData:''};
-            if ((postData?.Categories?.toLowerCase().indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
-                //postData.PercentComplete = 0.01;
-                //postData.Status = "For Approval";
-                var isAvailable = false;
-                if (postData?.Responsible_x0020_TeamId?.results?.length > 0) {
-                    postData.Responsible_x0020_TeamId.results.map((user:any)=> {
-                      UserManager.map((ID:any)=> {
+                })
+            }
+            if (!isAvailable) {
+                var TeamMembersID: any[] = [];
+                if (postData?.Team_x0020_MembersId?.results?.length > 0) {
+                    postData.Team_x0020_MembersId.results((user: any) => {
+                        UserManager.map((ID: any) => {
                             if (ID == user) {
-                                isAvailable = true;
+                                TeamMembersID.push(user);
                             }
                         })
                     })
                 }
-                if (!isAvailable) {
-                    var TeamMembersID: any[] = [];
-                    if (postData?.Team_x0020_MembersId?.results?.length > 0) {
-                        postData.Team_x0020_MembersId.results((user:any)=> {
-                            UserManager.map((ID:any)=> {
-                                if (ID == user) {
-                                    TeamMembersID.push(user);
-                                }
-                            })
-                        })
-                    }
-                    UserManager.map((ID:any)=> {
-                        TeamMembersID.push(ID);
-                    })
-                    postData.Team_x0020_MembersId = { results: TeamMembersID };
-                }
-                if ( postData?.AssignedToId?.results?.length > 0 && UserManager?.length > 0) {
-                    UserManager.map((ID:any)=> {
-                        postData.AssignedToId.results.push(ID);
-                    })
-                }
-                else {
-                    postData.AssignedToId = { results: UserManager };
-                }
+                UserManager.map((ID: any) => {
+                    TeamMembersID.push(ID);
+                })
+                postData.Team_x0020_MembersId = { results: TeamMembersID };
             }
-            Item.TaskUsers = TaskUsers;
-            Item.postData = postData;
-            Promise.resolve(Item);
-        },
-            function (error) {
-                Promise.reject(error)
-            });
+            if (postData?.AssignedToId?.results?.length > 0 && UserManager?.length > 0) {
+                UserManager.map((ID: any) => {
+                    postData.AssignedToId.results.push(ID);
+                })
+            }
+            else {
+                postData.AssignedToId = { results: UserManager };
+            }
+        }
+        Item.TaskUsers = TaskUsers;
+        Item.postData = postData;
+        Promise.resolve(Item);
+    },
+        function (error) {
+            Promise.reject(error)
+        });
     return Promise;
-    
+
 }
-export const GetImmediateTaskNotificationEmails = async (item:any, isLoadNotification:any, rootsite:any) => {
-    let pageContent=await pageContext()
+export const GetImmediateTaskNotificationEmails = async (item: any, isLoadNotification: any, rootsite: any) => {
+    let pageContent = await pageContext()
     var isLoadNotification = isLoadNotification;
     var CurrentItem = item;
     var Allmail: any[] = [];
@@ -319,10 +318,10 @@ export const GetImmediateTaskNotificationEmails = async (item:any, isLoadNotific
     if ((item != undefined) && (item.PercentComplete == 80 || item.PercentComplete == 93)) {
         query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=TaskStatusNotification eq " + item?.PercentComplete + "";
     }
-    if  ((item?.PercentComplete == 80 && item?.newCategories == 'Immediate') || (item?.PercentComplete == 90 && item?.newCategories == 'Immediate') || (item?.PercentComplete == 90 && item?.newCategories == 'Email Notification')) {
+    if ((item?.PercentComplete == 80 && item?.newCategories == 'Immediate') || (item?.PercentComplete == 90 && item?.newCategories == 'Immediate') || (item?.PercentComplete == 90 && item?.newCategories == 'Email Notification')) {
         query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter=TaskStatusNotification eq " + item?.PercentComplete + " or AssingedToUser/Id eq " + item?.Author?.Id + "";
     }
-    if  (item?.PercentComplete == 5 && item?.newCategories == 'Immediate') {
+    if (item?.PercentComplete == 5 && item?.newCategories == 'Immediate') {
         query = "Id,Title,IsTaskNotifications,AssingedToUser/Title,AssingedToUser/EMail,AssingedToUser/Name,AssingedToUser/Id&$expand=AssingedToUser&$filter= AssingedToUser/Id eq " + item?.Author?.Id + "";
     }
     if (item == undefined) {
@@ -332,14 +331,14 @@ export const GetImmediateTaskNotificationEmails = async (item:any, isLoadNotific
     if (item?.TeamLeadersId != undefined) {
         var filter = '';
         if (item?.TeamLeadersId != undefined) {
-          item.TeamLeadersId.map((UserId:any, indexing:any) =>{
+            item.TeamLeadersId.map((UserId: any, indexing: any) => {
                 if (item.TeamLeadersId.length - 1 != indexing)
                     filter = filter + 'AssingedToUser/Id eq ' + UserId + ' or ';
                 else
                     filter = filter + 'AssingedToUser/Id eq ' + UserId;
             })
         } else {
-            item.TeamLeadersId.map((UserId:any, indexing:any) =>{
+            item.TeamLeadersId.map((UserId: any, indexing: any) => {
                 if (item.TeamLeadersId.length - 1 != indexing)
                     filter = filter + 'AssingedToUser/Id eq ' + UserId + ' or ';
                 else
@@ -353,21 +352,21 @@ export const GetImmediateTaskNotificationEmails = async (item:any, isLoadNotific
     }
     if (query != undefined && query != '') {
         var listID = rootsite != undefined ? rootsite.TaskUserlistId : GlobalConstants.ADMIN_TASK_USERS_LISTID;
-       await getData(rootsite != undefined ? rootsite.SiteUrl : pageContent?.WebFullUrl,  listID , query )
-            .then((data:any)=> {
+        await getData(rootsite != undefined ? rootsite.SiteUrl : pageContent?.WebFullUrl, listID, query)
+            .then((data: any) => {
                 var Allusers = data?.data
                 if (item != undefined && item.TeamLeadersId != undefined && isLoadNotification != undefined && isLoadNotification != '' && isLoadNotification == 'ApprovalMail') {
-                 Allusers.map((user:any)=> {
+                    Allusers.map((user: any) => {
                         if (CurrentItem?.Author?.Id == user?.AssingedToUserId) {
                             if (user?.Approver?.results?.length > 0)
-                              user.Approver.results.map((approver:any)=> {
+                                user.Approver.results.map((approver: any) => {
                                     Allmail.push(approver?.EMail);
                                 })
                         }
                     })
                 }
                 else {
-                    Allusers.map((user:any)=> {
+                    Allusers.map((user: any) => {
                         if (user?.Email != null || user?.Email != undefined) {
                             Allmail.push(user?.Email);
                         }
@@ -380,7 +379,7 @@ export const GetImmediateTaskNotificationEmails = async (item:any, isLoadNotific
                 }
                 if (Allmail == undefined || Allmail.length == 0 && isLoadNotification == 'ApprovalMail')
                     alert("User has no Approver to send an email");
-                    Promise.resolve(Allmail);
+                Promise.resolve(Allmail);
 
             },
                 function (error) {
@@ -388,7 +387,7 @@ export const GetImmediateTaskNotificationEmails = async (item:any, isLoadNotific
                 });
     }
     else {
-        Promise.resolve(Allmail);     
+        Promise.resolve(Allmail);
 
         if (isLoadNotification == 'ApprovalMail')
             alert("User has no Approver to send an email");
@@ -397,7 +396,7 @@ export const GetImmediateTaskNotificationEmails = async (item:any, isLoadNotific
 
 }
 
-export const getMultiUserValues =  (item:any)=> {
+export const getMultiUserValues = (item: any) => {
     var users = '';
     var isuserexists = false;
     var userarray = [];
@@ -410,7 +409,7 @@ export const getMultiUserValues =  (item:any)=> {
         users = users.slice(0, -2);
     return users;
 };
-export const getListNameFromItemProperties = (item:any)=> {
+export const getListNameFromItemProperties = (item: any) => {
     var listName = [];
     var metadataType = item.__metadata.type;
     if (metadataType != undefined)
@@ -421,7 +420,7 @@ export const getListNameFromItemProperties = (item:any)=> {
     return listName;
 }
 
-export const ConvertLocalTOServerDate = async (LocalDateTime:any, dtformat:any)=> {
+export const ConvertLocalTOServerDate = async (LocalDateTime: any, dtformat: any) => {
     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
 
     // below logic works fine in all condition 
@@ -524,9 +523,9 @@ export const ConvertLocalTOServerDate = async (LocalDateTime:any, dtformat:any)=
 
 // }
 
-export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, listId:any, item:any, RecipientMail:any, isLoadNotification:any, rootSite:any)=> {
+export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any, listId: any, item: any, RecipientMail: any, isLoadNotification: any, rootSite: any) => {
     await GetImmediateTaskNotificationEmails(item, isLoadNotification, rootSite)
-        .then(async (ToEmails:any)=> {
+        .then(async (ToEmails: any) => {
             if (isLoadNotification == false)
                 ToEmails = [];
             if (RecipientMail?.Email != undefined && ToEmails?.length == 0) {
@@ -535,9 +534,9 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
             if (ToEmails.length > 0) {
                 var query = '';
                 query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,component_x0020_link,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,SharewebTaskType/Id,SharewebTaskType/Title,Shareweb_x0020_ID,CompletedDate,SharewebTaskLevel1No,SharewebTaskLevel2No&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,SharewebCategories,SharewebTaskType,Services,Events&$filter=Id eq " + itemId;
-               await getData(siteUrl,listId , query)
-                    .then(async (data:any)=> {
-                        data?.data?.map((item:any)=> {
+                await getData(siteUrl, listId, query)
+                    .then(async (data: any) => {
+                        data?.data?.map((item: any) => {
                             item.PercentageCompleted = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
                             item.PercentComplete = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
                             if (item.PercentageCompleted != undefined) {
@@ -547,17 +546,17 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                                 item.PercentComplete = parseInt((item?.PercentComplete).toFixed(0));
                             }
                             item.taskLeader = 'None';
-                            if ( item?.AssignedTo?.results?.length > 0)
+                            if (item?.AssignedTo?.results?.length > 0)
                                 item.taskLeader = getMultiUserValues(item);
                         })
                         var UpdateItem = data?.data[0];
                         if (item?.PercentComplete != undefined) {
                             item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
                             item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
-                            
+
                             item.PercentageCompleted = item.PercentComplete;
                         }
-                        if ( item?.siteType != undefined) {
+                        if (item?.siteType != undefined) {
                             item.siteType = item.siteType.replace(/_x0020_/g, ' ');
                         }
                         var siteType = getListNameFromItemProperties(UpdateItem);
@@ -579,7 +578,7 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                             UpdateItem.Editor1 = UpdateItem.Editor.Title;
                         } else
                             UpdateItem.Editor1 = '';
-                        if ( UpdateItem?.component_x0020_link?.Url != undefined)
+                        if (UpdateItem?.component_x0020_link?.Url != undefined)
                             UpdateItem.URL = UpdateItem.component_x0020_link.Url;
                         else
                             UpdateItem.URL = '';
@@ -623,20 +622,20 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                             UpdateItem.Title = '';
                         UpdateItem.AssignedToTitle = '';
                         if (UpdateItem?.AssignedTo?.results != undefined) {
-                           UpdateItem.AssignedTo.results.map((item:any)=> {
+                            UpdateItem.AssignedTo.results.map((item: any) => {
                                 UpdateItem.AssignedToTitle += item.Title + ';';
                             })
                         }
                         UpdateItem.ComponentName = '';
                         if (UpdateItem?.Component?.results != undefined) {
-                        UpdateItem.Component.results.map((item:any)=> {
+                            UpdateItem.Component.results.map((item: any) => {
                                 UpdateItem.ComponentName += item.Title + ';';
                             })
                         }
                         UpdateItem.Category = '';
                         UpdateItem.Categories = '';
                         if (UpdateItem?.SharewebCategories?.results != undefined) {
-                             UpdateItem.SharewebCategories.results.map((item:any)=> {
+                            UpdateItem.SharewebCategories.results.map((item: any) => {
                                 UpdateItem.Categories += item.Title + ';';
                                 UpdateItem.Category += item.Title + ',';
                             })
@@ -647,7 +646,7 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                         UpdateItem.AllComments = '';
                         if (UpdateItem?.Comments != undefined) {
                             Commentdata = JSON.parse(UpdateItem.Comments);
-                           Commentdata.map((comment:any)=> {
+                            Commentdata.map((comment: any) => {
                                 UpdateItem.AllComments += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
                                     '<span>' +
                                     '<div style="margin-bottom:5px;">' +
@@ -668,11 +667,11 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                                 var Description = JSON.parse(UpdateItem?.FeedBack);
                                 if (Description?.length > 0) {
                                     UpdateItem.Description = '';
-                                 Description[0]?.FeedBackDescriptions?.map((description:any, index:any)=> {
+                                    Description[0]?.FeedBackDescriptions?.map((description: any, index: any) => {
                                         var index1 = index + 1;
                                         var Comment = '';
                                         if (description?.Comments?.length > 0) {
-                                           description.Comments.map((val:any)=> {
+                                            description.Comments.map((val: any) => {
                                                 Comment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
                                                     '<span>' +
                                                     '<div style="margin-bottom:5px;">' +
@@ -696,12 +695,12 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                                             Comment +
                                             '</td>' +
                                             '</tr>';
-                                        if (  description?.Subtext?.length > 0) {
-                                            description.Subtext.map((Childdescription:any, Childindex:any)=> {
+                                        if (description?.Subtext?.length > 0) {
+                                            description.Subtext.map((Childdescription: any, Childindex: any) => {
                                                 var Childindex1 = Childindex + 1;
                                                 var ChildComment = '';
-                                                if ( Childdescription?.Comments?.length > 0) {
-                                                    description.Comments.map((Childval:any)=> {
+                                                if (Childdescription?.Comments?.length > 0) {
+                                                    description.Comments.map((Childval: any) => {
                                                         ChildComment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
                                                             '<span>' +
                                                             '<div style="margin-bottom:5px;">' +
@@ -736,11 +735,11 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                             }
 
                         }
-                        let pageContent=await pageContext()
-                        var siteUrl = pageContent?.SiteFullUrl+'/sp';
+                        let pageContent = await pageContext()
+                        var siteUrl = pageContent?.SiteFullUrl + '/sp';
                         var Name = '';
                         var OtherDetails = '';
-                        let Subject : any = '';
+                        let Subject: any = '';
                         var TaskDescriptionStart = '';
                         var NoOfApprovalTask = '';
                         var TaskDescription = '';
@@ -757,25 +756,25 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                         }
                         else {
                             if (item?.PercentComplete == 5 && item?.newCategories == 'Immediate') {
-                              
+
                                 Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
                             }
-                            if (item?.TeamLeadersId?.length>0 && item?.CategoriesType == undefined && item?.isApprovalRejection == undefined) {
-                              
+                            if (item?.TeamLeadersId?.length > 0 && item?.CategoriesType == undefined && item?.isApprovalRejection == undefined) {
+
                                 Subject = "[" + item?.siteType + " - " + UpdateItem?.Category + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
                             }
                             if ((item != undefined && (item?.PercentComplete == 80 && item.newCategories == undefined) || (item.PercentComplete == 80 && item.newCategories != undefined && item.newCategories != 'Immediate' && item.newCategories != 'Email Notification'))) {
-                              
+
                                 Subject = "[" + item?.siteType + " - " + UpdateItem?.Category + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
                             }
                             if (item != undefined && item?.PercentComplete == 93) {
                                 if (item?.newCategories == undefined || item?.newCategories == null)
                                     item.newCategories = '';
-                              
+
                                 Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
                             }
                             if ((item != undefined && (item?.PercentComplete == 80 && item?.newCategories != undefined && item?.newCategories == 'Immediate'))) {
-                              
+
                                 Subject = "[" + item?.siteType + " - " + item?.newCategories + " (" + item?.PercentComplete + "%)] " + item?.Title + "";
                             }
 
@@ -955,11 +954,11 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                         if (CC.length > 1)
                             CC.splice(1, 1);
                         //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
-                        if ( RecipientMail?.length > 0) {
+                        if (RecipientMail?.length > 0) {
                             if (ToEmails == undefined) {
                                 ToEmails = [];
                             }
-                           RecipientMail.map((mail:any)=> {
+                            RecipientMail.map((mail: any) => {
                                 ToEmails.push(mail.Email);
                             })
 
@@ -970,7 +969,7 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
                             body = body,
                             subject = Subject,
                             ReplyTo = "deepak@hochhuth-consulting.de";
-                       sendEmail(from, to, body, subject, ReplyTo, cc);
+                        sendEmail(from, to, body, subject, ReplyTo, cc);
                     }, function (error) {
                         console.log(error);
                     })
@@ -979,20 +978,20 @@ export const sendImmediateEmailNotifications = async (itemId:any, siteUrl:any, l
 
             function (error) { });
 }
-export const sendEmail = async (from:any, to:any, body:any, subject:any, ReplyTo:any, cc:any)=> {
+export const sendEmail = async (from: any, to: any, body: any, subject: any, ReplyTo: any, cc: any) => {
 
     let result;
     try {
-        result = (await  sp.utility.sendEmail({
+        result = (await sp.utility.sendEmail({
             To: ['abhishek.tiwari@smalsus.com'],
             Subject: subject,
             Body: body
-          }));
+        }));
     }
     catch (error) {
         return Promise.reject(error);
     }
 
     return result;
-   
+
 }

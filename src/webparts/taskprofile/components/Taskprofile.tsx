@@ -18,9 +18,10 @@ import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import RelevantDocuments from './RelevantDocuments';
 import  SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
+import { Sync } from '@material-ui/icons';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
-var smartTime: Number = 0                                   ;
+// var smartTime: Number = 0                                   ;
 var ClientTimeArray:any=[];
 
 export interface ITaskprofileState {
@@ -103,6 +104,19 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       })
     }
     else if(task.Services.length>0){
+      await this.loadComponentsDataForTasks(task);
+      await this.getAllTaskData();
+      if(this.count == 0){
+        this.breadcrumb();
+        this.count++;
+      }
+      // console.log('Array for Breadcrumb');
+      // console.log(this.maincollection);
+      this.setState({
+        maincollection: this.maincollection
+      })
+    }
+    else if(task.Services.length==0&& task.Component.length==0){
       await this.loadComponentsDataForTasks(task);
       await this.getAllTaskData();
       if(this.count == 0){
@@ -294,13 +308,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     };
 
     // console.log(tempTask);
-
+    
     this.setState({
       Result: tempTask
     }, () => {
       this.getSmartTime();
-      this.loadOtherDetailsForComponents(this.taskResult);
-   
+    this.loadOtherDetailsForComponents(this.taskResult); 
+    
     });
   }
 //  private shortBackgroundComment=(a:any,b:any)=>a.Created-b.Created;
@@ -593,8 +607,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private async onPost() {
-    // console.log('post');
-    // console.log(this.state.Result["FeedBack"]);
+  
 
     let web = new Web(this.props.siteUrl);
     const i = await web.lists.getByTitle(this.state.listName)
@@ -626,18 +639,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     })
     this.GetResult();
   }
-  private CallBackSumSmartTime(item: any) {
+  // private CallBackSumSmartTime(item: any) {
  
-    smartTime = item
+  //   smartTime = item
  
  
-  }
-  private CallBackTimesheet() {
-    this.setState({
-      isTimeEntry: false
-    })
-     this.getSmartTime();
-  }
+  // }
+  // private CallBackTimesheet() {
+  //   this.setState({
+  //     isTimeEntry: false
+  //   })
+  //    this.getSmartTime();
+  // }
   private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
     if (dtformat == undefined || dtformat == '')
       dtformat = "DD/MM/YYYY";
@@ -813,7 +826,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         breadcrumbitem = {};
       })
     }
-    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult.Events != undefined && this.taskResult.Events.length == 0) {
+    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult.Events == undefined) {
       self.breadcrumbOtherHierarchy(breadcrumbitem);
       breadcrumbitem = {};
     }
@@ -937,6 +950,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         <a   target="_blank" data-interception="off" className="ng-binding" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + breadcrumbitem.Subchild.Id}>{breadcrumbitem.Subchild.Title}</a>
                       </li>
                     }
+                     {breadcrumbitem.Subchild== undefined &&breadcrumbitem.Child==undefined&&  this.state.Result["Services"].length==0&&
+                      this.state.Result["Component"].length == 0 &&breadcrumbitem.ParentTask != undefined &&
+                      <li className="ng-scope" ng-if="breadcrumbitem.Subchild!=undefined">
+                      <a   target="_blank" data-interception="off" className="ng-binding" href="https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Dashboard.aspx">Dashboard </a>
+                      </li>
+                    }
                     {breadcrumbitem.ParentTask != undefined &&
                       <li>
                        <a >
@@ -965,8 +984,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
             </a>
             </span>
-            <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
-          
+            {this.state.Result.sitePage=="SP"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
+            {this.state.Result.sitePage=="SH"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
             </h2>
         </section>
         <section>
@@ -998,10 +1017,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-fxdark'>SmartTime Total</dt>
                     <dd className='bg-light '>
-                      <span className="me-1">{smartTime.toFixed(1)}</span>
-                      <a onClick={(e) => this.EditData(e, this.state.Result)}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a>
-                    </dd>
-                    {this.state.smarttimefunction? <SmartTimeTotal props={this.state.Result} CallBackSumSmartTime={this.CallBackSumSmartTime} /> : null}
+                      <span className="me-1"> {this.state.smarttimefunction? <SmartTimeTotal props={this.state.Result} /> : null}</span>
+                  </dd>
+                 
                   </dl>
                 </div>
 
@@ -1023,8 +1041,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
                           <div className="img  "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}>
-                           {this.state.Result["TeamMembers"][0].userImage!=null&&<img className="imgAuthor activeimg" src={this.state.Result["TeamMembers"][0].userImage}></img>}
-                           {this.state.Result["TeamMembers"][0].userImage==null&&<span className="imgAuthor activeimg bg-fxdark" >{this.state.Result["TeamMembers"][0].Suffix}</span>}
+                           {this.state.Result["TeamMembers"][0].userImage!=null&&<img className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0].userImage}></img>}
+                           {this.state.Result["TeamMembers"][0].userImage==null&&<span className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}`} >{this.state.Result["TeamMembers"][0].Suffix}</span>}
                             </a>
                             </div>
                         }
@@ -1218,7 +1236,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    <div className={this.state.Result["BasicImageInfo"] != null &&this.state.Result["BasicImageInfo"] .length>0 ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 mt-2"}>
+                    <div className={this.state.Result["BasicImageInfo"] != null &&this.state.Result["BasicImageInfo"] .length>0 ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 ps-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
                         this.state.Result["SharewebTaskType"] == 'Task'|| this.state.Result["SharewebTaskType"]=="Activities") && this.state.Result["FeedBack"] != null &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
@@ -1362,7 +1380,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         </div>
        
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} Call={() => { this.CallBack() }} /> : ''}
-        {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''}
+        {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
       
       </div>
     );
