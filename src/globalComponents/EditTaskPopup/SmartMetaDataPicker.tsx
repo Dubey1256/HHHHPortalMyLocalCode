@@ -10,6 +10,7 @@ import { Select } from "@material-ui/core";
 
 var Newrray: any = []
 var Autocompleteitems:any = [];
+var Autocompleteitemsarr:any = [];
 const Picker = (item: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
@@ -207,6 +208,16 @@ const Picker = (item: any) => {
     })
     }
 
+    Autocompleteitemsarr = Autocompleteitems.reduce(function (previous: any, current: any) {
+        var alredyExists = previous.filter(function (item: any) {
+            return item.Title === current.Title
+        }).length > 0
+        if (!alredyExists) {
+            previous.push(current)
+        }
+        return previous
+    }, [])
+
   
     return (
         <>
@@ -273,7 +284,7 @@ const Picker = (item: any) => {
                                <div>
       <input type="text"  className="form-control  searchbox_height"  value={value} onChange={onChange}   placeholder="Search here"  />
       <ul className="ui-menu ui-widget ui-widget-content ui-corner-all">
-{Autocompleteitems.filter((item:any) => {
+{Autocompleteitemsarr.filter((item:any) => {
 const searchTerm = value.toLowerCase();
 var fullName = item.Title!=null?item.Title.toLowerCase():"";
 return (
