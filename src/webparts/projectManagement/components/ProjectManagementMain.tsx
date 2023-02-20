@@ -9,6 +9,9 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import axios, { AxiosResponse } from 'axios';
 import TagTaskToProjectPopup from './TagTaskToProjectPopup'
 import CreateTaskFromProject from './CreateTaskFromProject';
+import TaggedPortfolio from './TaggedPortfolio';
+import * as globalCommon from '../../../globalComponents/globalCommon';
+
 
 var AllUser: any = []
 var siteConfig: any = []
@@ -30,7 +33,7 @@ const ProjectManagementMain = (props: any) => {
     const [Title, setTitle] = React.useState()
     const [projectTitle, setProjectTitle] = React.useState('')
     const [projectId, setProjectId] = React.useState(null)
-
+    const [allPortfolio, setAllPortfolio] = React.useState([])
     var QueryId: any = ''
     React.useEffect(() => {
         getQueryVariable((e: any) => e);
@@ -48,7 +51,7 @@ const ProjectManagementMain = (props: any) => {
     const Call = React.useCallback((item1) => {
         setIsComponent(false);
     }, []);
-    function getQueryVariable(variable: any) {
+    const getQueryVariable = async (variable: any) => {
 
         var query = window.location.search.substring(1);
 
@@ -86,16 +89,38 @@ const ProjectManagementMain = (props: any) => {
     }
     const GetMasterData = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let taskUsers = [];
+        let taskUsers: any = {};
         var AllUsers: any = []
         taskUsers = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
-            .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title").expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").getById(QueryId).get();
-        taskUsers.PercentComplete = (taskUsers.PercentComplete * 100).toFixed(0);
+            .select("ComponentCategory/Id", "ComponentCategory/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .getById(QueryId).get();
+        if (taskUsers.PercentComplete = undefined)
+            taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0);
         if (taskUsers.Body != undefined) {
             taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/ig, '');
         }
+        let allPortfolios: any[] = [];
+        allPortfolios = await globalCommon.getPortfolio("All")
 
+        taskUsers.smartService = [];
+        taskUsers?.ServicesId?.map((item: any) => {
+            allPortfolios?.map((portfolio: any) => {
+                if (portfolio?.Id == item) {
+                    taskUsers.smartService.push(portfolio)
+                }
+            })
+        })
+        taskUsers.smartComponent = []
+        taskUsers?.ComponentId?.map((item: any) => {
+            allPortfolios?.map((portfolio: any) => {
+                if (portfolio?.Id == item) {
+                    taskUsers.smartComponent.push(portfolio)
+                }
+            })
+        })
         AllUsers.push(taskUsers);
+
 
         AllUsers.map((items: any) => {
             items.AssignedUser = []
@@ -116,18 +141,19 @@ const ProjectManagementMain = (props: any) => {
                     })
                     items.AssignedUser.push(newuserdata);
                 })
-
             }
         })
         if (AllUsers?.length > 0) {
             setProjectTitle(AllUsers[0].Title)
         }
-
         setMasterdata(AllUsers)
-
     }
+
     const CallBack = React.useCallback(() => {
         setisOpenEditPopup(false)
+    }, [])
+    const potfolioTagCall = React.useCallback(() => {
+        GetMasterData();
     }, [])
     const GetMetaData = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -310,6 +336,7 @@ const ProjectManagementMain = (props: any) => {
         []
     )
 
+
     const LoadAllSiteTasks = function () {
         loadAdminConfigurations();
         var AllTask: any = []
@@ -325,7 +352,7 @@ const ProjectManagementMain = (props: any) => {
                     .items
                     .select("Id,StartDate,DueDate,Title,PercentComplete,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title")
                     .top(4999)
-                    .filter("Project/Id eq " + QueryId)
+                    .filter("ProjectId eq " + QueryId)
                     .expand("Project,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType")
                     .get();
                 arraycount++;
@@ -437,272 +464,279 @@ const ProjectManagementMain = (props: any) => {
     // }
     return (
         <>
-            <section>
-                <div className='container'>
-
-                    <div className='row'>
-                        <div className='d-flex justify-content-between p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
-                            <ul className="spfxbreadcrumb m-0 p-0">
-                                <li><a href='#'><FaHome /> </a></li>
-                                <li>
-                                    <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management-Overview.aspx">
-                                        Project Management
-                                    </a>
-                                </li>
-                                <li> {Masterdata.map(item =><> <a>{item.Title}</a> </>)} </li>
-                            </ul>
-                            {/* <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span> */}
-                        </div>
-
-
-                    </div>
-
-                    <div className='row'>
-                        <div className='col-sm-9 p-0' style={{ verticalAlign: "top" }}>
-                            <h2 className='heading'>
-                                <img className='circularImage rounded-circle ' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png" />
-                                {Masterdata.map(item =><> <a>{item.Title}</a> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"  onClick={(e) => EditComponentPopup(item)}></img></>)}
-                            </h2>
-                        </div>
-                        <div className='col-sm-3 pull-right' style={{ verticalAlign: "top" }}>
-                            {projectId && <CreateTaskFromProject projectItem={Masterdata[0]} pageContext={props.pageContext} projectId={projectId} callBack={tagAndCreateCallBack} />}
-                            {projectId && <TagTaskToProjectPopup projectId={projectId} callBack={tagAndCreateCallBack} projectTitle={projectTitle} />}
-
-
-                        </div>
-                    </div>
+            <div className='row'>
+                <div className='col-md-3'>
+                    <TaggedPortfolio item={Masterdata[0]} taggedComponents={Masterdata[0]?.smartComponent} taggedServices={Masterdata[0]?.smartService} call={potfolioTagCall} />
                 </div>
-            </section>
-            <section>
-                <div className='container'>
-                    <div className='row'>
-                        <div className='col-md-12 bg-white'>
-                            {Masterdata.map((item: any) => {
-                                return (
-                                    <>
+                <div className='col-md-9'>
+                    <section>
+                        <div>
 
-                                        <div className='team_member row  py-2'>
-                                            <div className='col-md-6 p-0'>
-                                                <dl>
-                                                    <dt className='bg-fxdark'>Due Date</dt>
-                                                    <dd className='bg-light'>
-
-                                                        <span>
-
-                                                            <a>{item.DueDate != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</a>
-
-                                                        </span>
-                                                        <span
-                                                            className="pull-right" title="Edit Inline"
-                                                            ng-click="EditContents(Task,'editableDueDate')">
-                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                        </span>
-                                                    </dd>
-                                                </dl>
-                                                <dl>
-                                                    <dt className='bg-fxdark'>Priority</dt>
-                                                    <dd className='bg-light'>
-
-                                                        <a>{item.Priority != null ? item.Priority : ""}</a>
-                                                        <span
-                                                            className="hreflink pull-right" title="Edit Inline"
-                                                        >
-                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                        </span>
-
-                                                    </dd>
-                                                </dl>
+                            <div className='row'>
+                                <div className='d-flex justify-content-between p-0' ng-if="(Task.Item_x0020_Type=='Component Category')">
+                                    <ul className="spfxbreadcrumb m-0 p-0">
+                                        <li><a href='#'><FaHome /> </a></li>
+                                        <li>
+                                            <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management-Overview.aspx">
+                                                Project Management
+                                            </a>
+                                        </li>
+                                        <li> {Masterdata.map(item => <> <a>{item.Title}</a> </>)} </li>
+                                    </ul>
+                                    {/* <span className="text-end"><a target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span> */}
+                                </div>
 
 
-                                            </div>
-                                            <div className='col-md-6 p-0'>
+                            </div>
 
-                                                <dl>
-                                                    <dt className='bg-fxdark'>Assigned To</dt>
-                                                    <dd className='bg-light'>
-                                                        {item.AssignedUser.map((image: any) =>
-                                                            <span className="headign" title={image.Title}><img className='circularImage rounded-circle' src={image.useimageurl} /></span>
-                                                        )}
-
-                                                    </dd>
-                                                </dl>
-                                                <dl>
-                                                    <dt className='bg-fxdark'>% Complete</dt>
-                                                    <dd className='bg-light'>
-                                                        <a>{item.PercentComplete != null ? item.PercentComplete : ""}</a>
-                                                        <span className="pull-right">
-                                                            <span className="pencil_icon">
-                                                                <span ng-show="isOwner" className="hreflink"
-                                                                    title="Edit Inline"
-                                                                >
-                                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
-                                                                </span>
-                                                            </span>
-                                                        </span>
-
-                                                    </dd>
-                                                </dl>
-
-
-                                            </div>
-                                            <div className='team_member row  py-2'>
-                                                <div className='col-md-12 p-0'>
-                                                    <dl className='bg-light p-2'>
-
-                                                        <a>{item.Body != null ? item.Body : ""}</a>
-                                                        <span
-                                                            className="hreflink pull-right" title="Edit Inline"
-                                                        >
-                                                            <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                        </span>
-
-
-                                                    </dl>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </>
-                                )
-                            })}
-
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-
-            {/* ======================================Show Table============================================================================================================================ */}
-            <div className='container'>
-                <div className="row">
-                    <div className="section-event border-top">
-                        <div className="wrapper">
-                            <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th style={{ width: "10%" }}>
-                                            <div> Task Id </div></th>
-
-                                        <th style={{ width: "25%" }}>
-                                            <div> Title </div></th>
-
-                                        <th style={{ width: "10%" }}>
-                                            <div> Portfolio Type </div>
-                                        </th>
-
-                                        <th style={{ width: "10%" }}>
-                                            <div> % Complete </div>
-                                        </th>
-
-                                        <th style={{ width: "13%" }}>
-                                            <div> Priority </div>
-                                        </th>
-
-                                        <th style={{ width: "15%" }}>
-                                            <div> Team </div>
-                                        </th>
-
-                                        <th style={{ width: "13%" }}>
-                                            <div> Due Date </div>
-                                        </th>
-
-                                        <th style={{ width: "2%" }}>
-                                        </th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    <div id="SpfxProgressbar" style={{ display: "none" }}>
-
-                                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-
+                            <div className='align-items-center d-flex justify-content-between'>
+                                <div>
+                                    <h2 className='heading'>
+                                        <img className='circularImage rounded-circle ' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png" />
+                                        {Masterdata.map(item => <> <a>{item.Title}</a> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)}></img></>)}
+                                    </h2>
+                                </div>
+                                <div>
+                                    <div className='d-flex'>
+                                        {projectId && <CreateTaskFromProject projectItem={Masterdata[0]} pageContext={props.pageContext} projectId={projectId} callBack={tagAndCreateCallBack} />}
+                                        {projectId && <TagTaskToProjectPopup projectId={projectId} callBack={tagAndCreateCallBack} projectTitle={projectTitle} />}
                                     </div>
-                                    {AllTasks.length > 0 && AllTasks && AllTasks.map(function (item, index) {
-
-
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section>
+                        <div>
+                            <div className='row'>
+                                <div className='col-md-12 bg-white'>
+                                    {Masterdata.map((item: any) => {
                                         return (
                                             <>
-                                                <tr >
-                                                    <td>
 
-                                                        <img className="circularImage rounded-circle"
-                                                            src={item.siteIcon} />
+                                                <div className='team_member row  py-2'>
+                                                    <div className='col-md-6 p-0'>
+                                                        <dl>
+                                                            <dt className='bg-fxdark'>Due Date</dt>
+                                                            <dd className='bg-light'>
 
+                                                                <span>
 
-                                                    </td>
-                                                    <td>{item.Shareweb_x0020_ID}</td>
-                                                    <td>
-                                                        <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
+                                                                    <a>{item.DueDate != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}</a>
 
-                                                    </td>
-                                                    <td>
-                                                        {item.Component != undefined &&
-                                                            <>
-                                                                {item.Component.map((types: any) => {
-                                                                    return (
-                                                                        <>
-                                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
-                                                                        </>
-                                                                    )
-                                                                })}
-                                                            </>
-                                                        }
-                                                        {item.Component == undefined &&
-                                                            <>
-                                                                {item.Services.map((types: any) => {
-                                                                    return (
-                                                                        <>
-                                                                            <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
-                                                                        </>
-                                                                    )
-                                                                })}
-                                                            </>
-                                                        }
-                                                    </td>
-                                                    <td><span className="ml-2">{item.PercentComplete}</span></td>
-                                                    <td>{item.Priority}</td>
-                                                    <td>
-                                                        {item.AllTeamMember != undefined &&
-                                                            item.AllTeamMember.map((users: any) => {
-                                                                return (
-                                                                    <>
-                                                                        <span className="headign" title={users.Title}><img className="circularImage rounded-circle" src={users.useimageurl} /></span>
-                                                                    </>
-                                                                )
-                                                            })
+                                                                </span>
+                                                                <span
+                                                                    className="pull-right" title="Edit Inline"
+                                                                    ng-click="EditContents(Task,'editableDueDate')">
+                                                                    <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                                </span>
+                                                            </dd>
+                                                        </dl>
+                                                        <dl>
+                                                            <dt className='bg-fxdark'>Priority</dt>
+                                                            <dd className='bg-light'>
 
-                                                        }
-                                                    </td>
-                                                    <td><span className="ml-2">{item?.DueDate!=undefined ? Moment(item.DueDate).format('DD/MM/YYYY'):''}</span></td>
-                                                    <td onClick={() => EditPopup(item)}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img></td>
+                                                                <a>{item.Priority != null ? item.Priority : ""}</a>
+                                                                <span
+                                                                    className="hreflink pull-right" title="Edit Inline"
+                                                                >
+                                                                    <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                                </span>
+
+                                                            </dd>
+                                                        </dl>
 
 
-                                                </tr>
+                                                    </div>
+                                                    <div className='col-md-6 p-0'>
 
+                                                        <dl>
+                                                            <dt className='bg-fxdark'>Assigned To</dt>
+                                                            <dd className='bg-light'>
+                                                                {item.AssignedUser.map((image: any) =>
+                                                                    <span className="headign" title={image.Title}><img className='circularImage rounded-circle' src={image.useimageurl} /></span>
+                                                                )}
+
+                                                            </dd>
+                                                        </dl>
+                                                        <dl>
+                                                            <dt className='bg-fxdark'>% Complete</dt>
+                                                            <dd className='bg-light'>
+                                                                <a>{item.PercentComplete != null ? item.PercentComplete : ""}</a>
+                                                                <span className="pull-right">
+                                                                    <span className="pencil_icon">
+                                                                        <span ng-show="isOwner" className="hreflink"
+                                                                            title="Edit Inline"
+                                                                        >
+                                                                            <i className="fa fa-pencil" aria-hidden="true"></i>
+                                                                        </span>
+                                                                    </span>
+                                                                </span>
+
+                                                            </dd>
+                                                        </dl>
+
+
+                                                    </div>
+                                                    <div className='team_member row  py-2'>
+                                                        <div className='col-md-12 p-0'>
+                                                            <dl className='bg-light p-2'>
+
+                                                                <a>{item.Body != null ? item.Body : ""}</a>
+                                                                <span
+                                                                    className="hreflink pull-right" title="Edit Inline"
+                                                                >
+                                                                    <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                                </span>
+
+
+                                                            </dl>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </>
-
-
                                         )
-
                                     })}
 
+                                </div>
+
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ======================================Show Table============================================================================================================================ */}
+                    <div>
+                        <div className="row">
+                            <div className="section-event border-top">
+                                <div className="wrapper">
+                                    <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th style={{ width: "10%" }}>
+                                                    <div> Task Id </div></th>
+
+                                                <th style={{ width: "25%" }}>
+                                                    <div> Title </div></th>
+
+                                                <th style={{ width: "10%" }}>
+                                                    <div> Portfolio Type </div>
+                                                </th>
+
+                                                <th style={{ width: "10%" }}>
+                                                    <div> % Complete </div>
+                                                </th>
+
+                                                <th style={{ width: "13%" }}>
+                                                    <div> Priority </div>
+                                                </th>
+
+                                                <th style={{ width: "15%" }}>
+                                                    <div> Team </div>
+                                                </th>
+
+                                                <th style={{ width: "13%" }}>
+                                                    <div> Due Date </div>
+                                                </th>
+
+                                                <th style={{ width: "2%" }}>
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <div id="SpfxProgressbar" style={{ display: "none" }}>
+
+                                                <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+
+                                            </div>
+                                            {AllTasks.length > 0 && AllTasks && AllTasks.map(function (item, index) {
 
 
-                                </tbody>
+                                                return (
+                                                    <>
+                                                        <tr >
+                                                            <td>
+
+                                                                <img className="circularImage rounded-circle"
+                                                                    src={item.siteIcon} />
+
+
+                                                            </td>
+                                                            <td>{item.Shareweb_x0020_ID}</td>
+                                                            <td>
+                                                                <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
+
+                                                            </td>
+                                                            <td>
+                                                                {item.Component != undefined &&
+                                                                    <>
+                                                                        {item.Component.map((types: any) => {
+                                                                            return (
+                                                                                <>
+                                                                                    <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                                                </>
+                                                                            )
+                                                                        })}
+                                                                    </>
+                                                                }
+                                                                {item.Component == undefined &&
+                                                                    <>
+                                                                        {item.Services.map((types: any) => {
+                                                                            return (
+                                                                                <>
+                                                                                    <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
+                                                                                </>
+                                                                            )
+                                                                        })}
+                                                                    </>
+                                                                }
+                                                            </td>
+                                                            <td><span className="ml-2">{item.PercentComplete}</span></td>
+                                                            <td>{item.Priority}</td>
+                                                            <td>
+                                                                {item.AllTeamMember != undefined &&
+                                                                    item.AllTeamMember.map((users: any) => {
+                                                                        return (
+                                                                            <>
+                                                                                <span className="headign" title={users.Title}><img className="circularImage rounded-circle" src={users.useimageurl} /></span>
+                                                                            </>
+                                                                        )
+                                                                    })
+
+                                                                }
+                                                            </td>
+                                                            <td><span className="ml-2">{item?.DueDate != undefined ? Moment(item.DueDate).format('DD/MM/YYYY') : ''}</span></td>
+                                                            <td onClick={() => EditPopup(item)}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img></td>
+
+
+                                                        </tr>
+
+                                                    </>
+
+
+                                                )
+
+                                            })}
 
 
 
-                            </table>
+                                        </tbody>
+
+
+
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div id="SpfxProgressbar" style={{ display: "none" }}>
+                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                    </div>
+                    {isOpenEditPopup ? <EditTaskPopup Items={passdata} Call={CallBack} /> : ''}
+                    {IsComponent && <EditProjectPopup props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 </div>
             </div>
-            <div id="SpfxProgressbar" style={{ display: "none" }}>
-                <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-            </div>
-            {isOpenEditPopup ? <EditTaskPopup Items={passdata} Call={CallBack} /> : ''}
-            {IsComponent && <EditProjectPopup props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
         </>
     )
 }
