@@ -997,3 +997,139 @@ export const sendEmail = async (from:any, to:any, body:any, subject:any, ReplyTo
     return result;
    
 }
+export const getPortfolio = async (type:any) => {
+    let result;
+    try {
+        var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
+        var SubComponentsData: any[] = [];
+        var FeatureData: any[] = [];
+        if (type != undefined) {
+            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+            let componentDetails = [];
+            if(type=='All'){
+                componentDetails = await web.lists
+                .getById(GlobalConstants.MASTER_TASKS_LISTID)
+                .items
+                .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+                .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
+                .top(4999)
+                .get()
+            }else{
+                componentDetails = await web.lists
+                .getById(GlobalConstants.MASTER_TASKS_LISTID)
+                .items
+                .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+                .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory").filter("Portfolio_x0020_Type eq '" + type + "'")
+                .top(4999)
+                .get()
+            }
+            
+    
+        
+          let Response: ArrayLike<any>=[];
+          Response= await loadTaskUsers();
+            
+            $.each(componentDetails, function (index: any, result: any) {
+      
+                result.TitleNew = result.Title;
+                result.TeamLeaderUser = []
+                result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
+    
+                if (result.DueDate == 'Invalid date' || '') {
+                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                }
+                if (result.PercentComplete != undefined)
+                    result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+    
+                if (result.Short_x0020_Description_x0020_On != undefined) {
+                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                }
+    
+                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                    $.each(result.AssignedTo, function (index: any, Assig: any) {
+                        if (Assig.Id != undefined) {
+                            $.each(Response, function (index: any, users: any) {
+    
+                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                    users.ItemCover = users.Item_x0020_Cover;
+                                    result.TeamLeaderUser.push(users);
+                                }
+    
+                            })
+                        }
+                    })
+                }
+                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                    $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                        if (Assig.Id != undefined) {
+                            $.each(Response, function (index: any, users: any) {
+                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                    users.ItemCover = users.Item_x0020_Cover;
+                                    result.TeamLeaderUser.push(users);
+                                }
+    
+                            })
+                        }
+                    })
+                }
+    
+                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                        result.ClientCategory.push(catego);
+                    })
+                }
+                if (result.Item_x0020_Type == 'Root Component') {
+                    result['Child'] = [];
+                    RootComponentsData.push(result);
+                }
+                if (result.Item_x0020_Type == 'Component') {
+                    result['Child'] = [];
+                    ComponentsData.push(result);
+    
+    
+                }
+    
+                if (result.Item_x0020_Type == 'SubComponent') {
+                    result['Child'] = [];
+                    SubComponentsData.push(result);
+    
+    
+                }
+                if (result.Item_x0020_Type == 'Feature') {
+                    result['Child'] = [];
+                    FeatureData.push(result);
+                }
+            });
+    
+            $.each(SubComponentsData, function (index: any, subcomp: any) {
+                if (subcomp.Title != undefined) {
+                    $.each(FeatureData, function (index: any, featurecomp: any) {
+                        if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                            subcomp['Child'].push(featurecomp);;
+                        }
+                    })
+                }
+            })
+    
+            $.each(ComponentsData, function (index: any, subcomp: any) {
+                if (subcomp.Title != undefined) {
+                    $.each(SubComponentsData, function (index: any, featurecomp: any) {
+                        if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                            subcomp['Child'].push(featurecomp);;
+                        }
+                    })
+                }
+            })
+            result = componentDetails;
+            //maidataBackup.push(ComponentsData)
+            // setmaidataBackup(ComponentsData)
+           
+        }
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+
+    return result;
+ 
+}

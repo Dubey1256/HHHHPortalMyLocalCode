@@ -91,6 +91,7 @@ function CreateTaskComponent(props: any) {
     }
     const Call = (propsItems: any, type: any) => {
         setIsComponent(false);
+        setIsServices(false);
         if (type === "LinkedComponent") {
             if (propsItems?.linkedComponent?.length > 0) {
                 setSave({ ...save, linkedServices: propsItems.linkedComponent });
