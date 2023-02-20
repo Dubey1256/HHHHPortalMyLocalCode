@@ -1049,17 +1049,17 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             </div>
                         }
                          
-                        {/* {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length ==2&&  <div className="img mx-2"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}>
+                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length ==2&&  <div className="img mx-2"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}>
                            {this.state.Result["TeamMembers"][1].userImage!=null&&<img className={`imgAuthor ${this.state.Result["TeamMembers"][1].activeimg2}`} src={this.state.Result["TeamMembers"][1].userImage}></img>}
                            {this.state.Result["TeamMembers"][1].userImage==null&&<span className={`imgAuthor ${this.state.Result["TeamMembers"][1].activeimg2}`} >{this.state.Result["TeamMembers"][1 ].Suffix}</span>}
                             </a>
                             </div>
-                        } */}
-                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 1 &&
+                        }
+                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 2 &&
                           <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
                             <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
                               <div>
-                                {this.state.Result["TeamMembers"].slice(1).map((rcData: any, i: any) => {
+                                {this.state.Result["TeamMembers"].slice(2).map((rcData: any, i: any) => {
 
                                   return <div className="team_Members_Item" style={{ padding: '2px' }}>
                                     <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
@@ -1279,8 +1279,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       <div className="col-sm-5 bg-white col-sm-5 pt-3 p-0">
                         {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].map((imgData: any, i: any) => {
                           return <div className="taskimage border mb-3">
-                            {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
-
                             <a className='images' target="_blank" data-interception="off" href={imgData.ImageUrl}>
                               <img alt={imgData.ImageName} src={imgData.Url}
                                 onMouseOver={(e) => this.OpenModal(e, imgData)}
