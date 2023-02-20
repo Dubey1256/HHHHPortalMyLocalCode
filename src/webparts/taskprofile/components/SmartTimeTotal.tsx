@@ -1,8 +1,10 @@
+import { styled } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import TimeEntry from './TimeEntry';
 var AllUsers: any = [];
 var AllTimeSpentDetails: any = [];
+let AllAvailableTitle :any= [];
 var TaskCate:any=[]
 const SmartTimeTotalFunction=(item:any)=>{
     var TaskTimeSheetCategoriesGrouping: any = [];
@@ -11,17 +13,10 @@ const SmartTimeTotalFunction=(item:any)=>{
     const [isTimeEntry,setisTimeEntry]=React.useState(false);
     const [hoverTimeshow,sethoverTimeshow]=React.useState(false)
     const [smartTimeTotal,setsmartTimeTotal] = React.useState(0);
-    const [AdditionalTime, setAdditionalTime] = React.useState([]);
+    const [additionalTime, setAdditionalTime] = React.useState([]);
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
 
-    // const[isModalOpen,setisModalOpen]=React.useState(false);
-
-    // const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
-    // // var changeTime = 0;
-    // var NewParentId: any = ''
-    // var NewParentTitle: any = ''
-   
-    // var mainParentId: any = ''
+ 
     
     console.log(item.props);
     console.log(AllTimeSheetDataNew);
@@ -42,10 +37,7 @@ const SmartTimeTotalFunction=(item:any)=>{
         await GetTaskUsers();
 
     }
-    // if(smartTimeTotal!=null){
-    //      console.log("smartTimeTotal",smartTimeTotal)
-    //     item.CallBackSumSmartTime(smartTimeTotal);
-    // }
+    
     const GetTaskUsers = async () => {
         let web = new Web(item.props.siteUrl);
         let taskUsers = [];
@@ -65,14 +57,14 @@ const SmartTimeTotalFunction=(item:any)=>{
 
         TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
         TaskTimeSheetCategoriesGrouping = TaskTimeSheetCategoriesGrouping.concat(TaskTimeSheetCategories);
-       // TaskTimeSheetCategoriesGrouping.push({ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 319, "Title": "Others", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": null, "TaxType": "TimesheetCategories", "Selectable": true, "ParentID": "ParentID", "SmartSuggestions": false, "ID": 319 });
+     
 
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
 
             categoryTitle.Childs = [];
             categoryTitle.Expanded = true;
             categoryTitle.flag = true;
-            // categoryTitle.AdditionalTime = [];
+        
             categoryTitle.isAlreadyExist = false;
             categoryTitle.AdditionalTimeEntry = undefined;
             categoryTitle.Author = {};
@@ -134,11 +126,10 @@ const SmartTimeTotalFunction=(item:any)=>{
 
                     if (allurls.length === count) {
                         
-                        let TotalPercentage = 0
-                        let TotalHours = 0;
+                 
                         let totletimeparentcount = 0;
                   
-                        let AllAvailableTitle = [];
+                        
                        
 
                         $.each(AllTimeSpentDetails, async function (index: any, item: any) {
@@ -155,38 +146,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                             item.listId = null;
                             item.siteName = null
                             item.siteUrl = null;
-                            // if (NewParentId == item.Id) {
-                            //     var TimeInH: any = changeTime / 60
-                            //     item.TimesheetTitle.Title = NewParentTitle;
-                            //     item.TimesheetTitle.Id = mainParentId;
-                            //     item.AdditionalTime = []
-                            //     var update: any = {};
-                            //     update['AuthorName'] = item.Author.Title;
-                            //     update['AuthorImage'] = item.AuthorImage;
-                            //     update['ID'] = 0;
-                            //     update['MainParentId'] = mainParentId;
-                            //     update['ParentID'] = NewParentId;
-                            //     update['TaskTime'] = TimeInH;
-                            //     // update['TaskDate'] =  Moment(changeDates).format('DD/MM/YYYY');
-                            //     update['Description'] = newData.Description
-                            //     item.AdditionalTime.push(update)
-                            //     let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-
-                            //     await web.lists.getById('464fb776-e4b3-404c-8261-7d3c50ff343f').items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(NewParentId).update({
-
-
-                            //         AdditionalTimeEntry: JSON.stringify(item.AdditionalTime),
-                            //         TimesheetTitleId: mainParentId
-
-                            //     }).then((res: any) => {
-
-                            //         console.log(res);
-                                    
-
-
-                            //     })
-
-                            // }
+                           
 
                             if (item.TimesheetTitle.Id != undefined) {
                                 if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
@@ -207,7 +167,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                                     }
                                 }
                                 setAllUser(AllUsers)
-
+                                 
                                 $.each(AllUsers, function (index: any, taskUser: any) {
                                     if (taskUser.AssingedToUserId === item.AuthorId) {
                                         item.AuthorName = taskUser.Title;
@@ -216,7 +176,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                                 });
                                 if (item.TaskTime != undefined) {
                                     var TimeInHours = item.TaskTime / 60;
-                                    // item.IntegerTaskTime = item.TaskTime / 60;
+                                 
                                     item.TaskTime = TimeInHours.toFixed(2);
                                 }
                             } else {
@@ -226,8 +186,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                             if (item.AdditionalTime === undefined) {
                                 item.AdditionalTime = [];
                             }
-                            // item.ServerTaskDate = angular.copy(item.TaskDate);
-                            // item.TaskDate = SharewebCommonFactoryService.ConvertLocalTOServerDate(item.TaskDate, 'DD/MM/YYYY');
+                          
                             item.isShifted = false;
 
                         })
@@ -299,175 +258,121 @@ const SmartTimeTotalFunction=(item:any)=>{
                             value.AuthorImage = val.AuthorImage
                             value.show = true;
                             if (val.changeDates != undefined)
-                                // value.TaskDate = Moment(val.changeDates).format('DD/MM/YYYY');
+                           
                             if (val.Modified != undefined)
-                                // value.Modified = Moment(val.Modified).format('DD/MM/YYYY');
+                                
 
 
                             if (!isItemExists(items.AdditionalTime, value.ID))
                                 items.AdditionalTime.push(value);
-
-
-                        })
-                        // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
-                        //     if (items.Id == NewCategoryId) {
-                        //         items.Childs.push(val);
-                        //     }
-                        // });
-                        //  setAdditionalTime(item.AdditionalTime)
-
-
-                    }
+                          })
+                        }
                 })
             }
         })
+        // total time code 
         var TotalTime =0.0;
-        
+       
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { 
             if(type.AdditionalTime!=undefined&&type.AdditionalTime.length>0){
-              
+                       
                 $.each(type.AdditionalTime,function(index:any,time:any){
                     TotalTime=TotalTime+parseFloat(time.TaskTime);
+                    
                   })
                
                 type.totalTimeSpend=TotalTime;
                 setsmartTimeTotal(TotalTime);
-
             }
              return type.isShifted === true });
-        
-        // $.each(AllTimeSpentDetails, function (index: any, items: any) {
-           
-           
-        //     if (items.AdditionalTime.length === 0) {
-              
-        //         items.isAvailableToDelete = true;
-        //     }
-        //     if (items.AdditionalTime != undefined && items.AdditionalTime.length > 0) {
-        //         $.each(items.AdditionalTime, function (index: any, type: any) {
-        //             if (type.Id != undefined)
-        //                 type.Id = type.ID;
-        //         })
-        //     }
-        // });
-       
-        // $.each(AllTimeSpentDetails, function (index: any, items: any) {
-        //     if (items.AdditionalTime.length > 0) {
-        //         $.each(items.AdditionalTime, function (index: any, val: any) {
-        //             var NewDate = val.TaskDate;
-        //             try {
-        //                 // getDateForTimeEntry(NewDate, val);
-        //             } catch (e) { }
-        //         })
-        //     }
-        // })
-        // $.each(AllTimeSpentDetails, function (index: any, items: any) {
-        //     if (items.Category.Title === undefined)
-        //         checkCategory(items, 319);
-        //     else
-        //         checkCategory(items, items.Category.Id);
-        // })
-        // var IsTimeSheetAvailable = false;
-        // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
-        //     if (items.Childs.length > 0) {
-        //         IsTimeSheetAvailable = true;
-        //     }
-        // });
-
-        // var AdditionalTimes: any = []
-
-        // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
-
-        //     if (items.Childs != undefined && items.Childs.length > 0) {
-        //         $.each(items.Childs, function (index: any, child: any) {
-        //           if(child.TimesheetTitle.Id != undefined){
-        //             if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
-        //                 $.each(child.AdditionalTime, function (index: any, Subchild: any) {
-        //                     if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
-
-        //                         AdditionalTimes.push(Subchild)
-
-        //                     }
-
-                        
-        //                 })
-
-        //             }
-        //         }
-        //         })
-        //     }
-
-
-        // });
-
-        // setAdditionalTime(AdditionalTimes)
-       
-        setTimeSheet(TaskTimeSheetCategoriesGrouping);
-
-
-
-
-     
-
+       let newArray:any=[];
+      AllTimeSpentDetails.map((items:any)=>{
+        let parentfound=false;
+     if(newArray.length==0){
+        newArray.push(items);
+     }
+     else if(newArray.length>0){
+        newArray.map((child:any)=>{
+    if(child.AuthorId==items.AuthorId){
+        child.AdditionalTime.push(items.AdditionalTime[0])
+    parentfound=true;
     }
-    const checkCategory = function (item: any, category: any) {
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
-            if (categoryTitle.Id === category) {
-                // item.isShow = true;
-                if (categoryTitle.Childs.length === 0) {
-                    categoryTitle.Childs = [];
-                }
-                if (!isItemExists(categoryTitle.Childs, item.Id)) {
-                    item.show = true;
-                    categoryTitle.Childs.push(item);
-                }
-            }
+     })
+        if(parentfound==false){
+            newArray.push(items);  
+        }
+        }
+      })
+      console.log(newArray);
+
+      if(newArray.length>0){
+        newArray.map((items:any)=>{
+            var hoverTime=0;
+            if(items.AdditionalTime.length>0){
+                $.each(items.AdditionalTime,function(index:any,time:any){
+                    hoverTime=hoverTime+parseFloat(time.TaskTime);
+                  })
+             }
+            items.hoverTime=hoverTime;
         })
-        
-       
-    }
+      }
+        setAdditionalTime(newArray)
+       setTimeSheet(TaskTimeSheetCategoriesGrouping);
+      }
+   
     const OpenTimeEntry=()=>{
         setisTimeEntry(true)
     }
      const CallBackTimesheet=()=> {
         setisTimeEntry(false)
-        // GetSmartMetadata();
+        AllTimeSpentDetails=[];
+        GetSmartMetadata();
      }
     return(
         <>
+       {console.log(AllAvailableTitle)} 
+        {console.log(additionalTime)}
            {smartTimeTotal.toFixed(1)}
-           {/* <span> <a onClick={OpenTimeEntry}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a></span> */}
-            <span><a onClick={OpenTimeEntry}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}  
-             onMouseOver={(e) => sethoverTimeshow(true)}
-             onMouseOut={(e) => sethoverTimeshow(false)}/></a></span>
-
-
-            {/* {hoverTimeshow?  <div >
-           <span>{item.props.Title}</span>
-              {AllTimeSpentDetails.length>0&&AllTimeSpentDetails.map((items:any)=>{
+           <span className='openhoverpopup'>
+        
+            <a className='hoverimg' onClick={OpenTimeEntry}><img className='ms-1' src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}/>
+            </a>
+            
+          <div className='hoverpopup'>
+           <div className='hoverpopuptitle'>{item.props.Title}</div>
+           <div className='hoverpopupbody'>
+           <table className='table mb-0'>
+                  <tbody>
+              {additionalTime.length>0 && additionalTime.map((items:any)=>{
               return(
                 <>
-                {items.AdditionalTime.length>0&& items.AdditionalTime.map((details:any)=>{
+                 <tr className='for-c0l'>
+                                    <td style={{width:"20%"}}>
+                                       <img  style={{width:"30px"}} src={items.AuthorImage}></img>
+                                    </td>
+                                    <td style={{width:"80%"}}  colSpan={2}>{items.hoverTime}</td>
+                                </tr>
+                  
+                {items?.AdditionalTime?.length>0&& items?.AdditionalTime?.map((details:any)=>{
                    return(
-                    <>
-                    <div>
-                    <div className="img  "> <span><img src={details.AuthorImage}></img></span></div>
-                        <span>{details.TaskTime}</span>
-                    </div>
-                    <div>
-                        <span>{details.TaskDate}</span>
-                        <span>{details.TaskTime.toFixed(1)}</span>
-                        <span>{details.TaskTime?.Description}</span>
-                    </div>
-                    </>
-                   ) 
+                       <>       <tr>
+                                    <td style={{width:"20%"}}>{details.TaskDate}</td>
+                                    <td style={{width:"10%"}}>{details?.TaskTime}</td>
+                                    <td style={{width:"70%"}}>{details.Description}</td>
+                                </tr>
+                         </>
+                    ) 
                 })}
                 </>
-               )}
-              )}
-               </div>:null}  */}
+                )}
+              )}  
+               </tbody>
+              </table>
+              </div> </div>
+              </span>
             {isTimeEntry ? <TimeEntry data={item.props} isopen={isTimeEntry} CallBackTimesheet={() => {CallBackTimesheet() }} /> : ''}
-              </>
+            </>
+              
     )
    
       
