@@ -1,9 +1,0 @@
-.fr-toolbar.fr-bottom, .fr-toolbar.fr-top{
-    border-radius: 0px !important;
-    border-top: 5px solid #000066;
-}
-
-.fr-wrapper a, .fr-second-toolbar{
-    display: none !important;
-}
-

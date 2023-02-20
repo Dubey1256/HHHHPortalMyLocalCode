@@ -1,5 +1,4 @@
 import * as React from "react";
-import "./StyleF.css";
 import "froala-editor/js/plugins.pkgd.min.js";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 import * as $ from "jquery"
@@ -165,7 +164,7 @@ export default class App extends React.Component<ITeamConfigurationProps> {
     public render(): React.ReactElement<{}> {
        
         return (
-            <div className="col">
+            <div className="col froala-comment-box" id="uploadCommentFroalaEditor">
                 <Froala
                     model={this.props.EditorValue}
                     onModelChange={this.onModelChange}

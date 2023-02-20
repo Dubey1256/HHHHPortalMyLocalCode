@@ -1,5 +1,4 @@
 import * as React from 'react';
-import "./Style.css";
 import "froala-editor/js/plugins.pkgd.min.js";
 import "froala-editor/js/froala_editor.pkgd.min.js";
 import "froala-editor/css/froala_style.min.css";
@@ -68,7 +67,7 @@ const froalaEditorConfig = {
 export default class App extends React.Component<ITeamConfigurationProps> {
     public render(): React.ReactElement<{}> {
         return (
-            <div  className="Florar-Editor-Image-Upload-Container" id="UpdateTestCase">
+            <div  className="Florar-Editor-Image-Upload-Container" id="uploadImageFroalaEditor">
                 <Froala
                     model={defaultContent}
                     onModelChange={this.onModelChange}
