@@ -1,8 +1,9 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from 'react';
-import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
+// import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
 import AddCommentComponent from './AddCommentComponent';
 import Example from "./SubCommentComponent";
+import FroalaCommentBox from '../FlorarComponents/FroalaCommentBoxComponent'
 
 
 const CommentBoxComponent = (commentData: any) => {
@@ -139,11 +140,17 @@ const CommentBoxComponent = (commentData: any) => {
                                 </div>
                                 <div className="d-flex">
                                     <span className="border p-1 me-1">{i + 1}</span>
-                                    <HtmlEditorCard
+                                    {/* <HtmlEditorCard
                                         editorValue={obj.Title != undefined ? obj.Title : ''}
                                         HtmlEditorStateChange={HtmlEditorCallBack}
                                     >
-                                    </HtmlEditorCard>
+                                    </HtmlEditorCard> */}
+                                    <FroalaCommentBox
+                                        EditorValue={obj.Title != undefined ? obj.Title : ''}
+                                        callBack={HtmlEditorCallBack}
+                                    >
+                                    </FroalaCommentBox>
+                                    
                                 </div>
                             </div>
                             <div>
