@@ -609,7 +609,7 @@ function Portfolio({ ID }: any) {
                                                             <dl>
                                                                 <dt className='bg-fxdark'>Parent</dt>
                                                                 <dd className='bg-light'>
-                                                                    <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Parent.Id}`}>{item.Parent.Title}</a>
+                                                                    <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}>{item.Parent.Title}</a>
                                                                     <span className="pull-right">
                                                                         <span className="pencil_icon">
                                                                             <span className="hreflink"

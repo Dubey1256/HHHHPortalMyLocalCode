@@ -7,13 +7,15 @@ import { ImPriceTags } from 'react-icons/im';
 import { Select } from "@material-ui/core";
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 
+
 var Newrray: any = []
+var Autocompleteitems:any = [];
 const Picker = (item: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
     const [update, set] = React.useState([]);
-
+    const [value, setValue] = React.useState("");
 
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
@@ -21,6 +23,7 @@ const Picker = (item: any) => {
     } 
     React.useEffect(() => {
         loadGmBHTaskUsers();
+     
     }, [])
     const closePopupSmartTaxanomy = () => {
         //Example(item);
@@ -75,7 +78,9 @@ const Picker = (item: any) => {
                 })
                 TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData);
                 setAllCategories(TaxonomyItems)
+               
                 setPopupSmartTaxanomy(true)
+              
 
             },
             error: function (error) {
@@ -160,7 +165,49 @@ const Picker = (item: any) => {
         setSelect(select => ([...select]));
        
        
+        
+         
+        
     }
+    // Autosuggestion
+
+    const onChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setValue(event.target.value);
+      };
+      const onSearch = (searchTerm: React.SetStateAction<string>) => {
+        setValue(searchTerm);
+      
+        
+        // our api to fetch the search result
+        console.log("search ", searchTerm);
+      };
+      
+      if (AllCategories.length > 0) {
+        AllCategories.map((item:any)=>{
+            if (item.newTitle != undefined) {
+                item['Newlabel'] = item.newTitle;
+                Autocompleteitems.push(item)
+                if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+                    item.childs.map((childitem:any)=>{
+                        if (childitem.newTitle != undefined) {
+                            childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+                            Autocompleteitems.push(childitem)
+                        }
+                        if (childitem.childs.length > 0) {
+                            childitem.childs.map((subchilditem:any)=>{
+                                if (subchilditem.newTitle != undefined) {
+                                    subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+                                    Autocompleteitems.push(subchilditem)
+                                }
+                            })
+                        }
+                    })
+                }
+    }
+    })
+    }
+
+  
     return (
         <>
             <Panel
@@ -213,7 +260,7 @@ const Picker = (item: any) => {
                                         </div>
                                         {/* <div className="block col p-1"> {select}</div> */}
                                     </div>
-                                    <div className="mx-auto">
+                                    <div className="d-end">
                                         <button type="button" className="btn btn-primary" onClick={saveCategories}>
                                             OK
                                         </button>
@@ -223,7 +270,29 @@ const Picker = (item: any) => {
                         </section>
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
-                                <input type="text" placeholder="Search here" id="txtnewsmartpicker" className="form-control  searchbox_height" />
+                               <div>
+      <input type="text"  className="form-control  searchbox_height"  value={value} onChange={onChange}   placeholder="Search here"  />
+      <ul className="ui-menu ui-widget ui-widget-content ui-corner-all">
+{Autocompleteitems.filter((item:any) => {
+const searchTerm = value.toLowerCase();
+var fullName = item.Title!=null?item.Title.toLowerCase():"";
+return (
+searchTerm &&
+fullName.startsWith(searchTerm) &&
+fullName !== searchTerm
+);
+})
+.slice(0, 10)
+.map((item:any) => (
+
+<li   className="ui-menu-item" key={item.Title} onClick={() => onSearch(item.Title)} >
+<a>{item.Newlabel}</a>
+{/* onClick={() =><EditEmployeeContact id={item.Id}/> */}
+</li>
+))}
+</ul>
+
+    </div>
                             </div>
 
                                  
@@ -311,7 +380,7 @@ const Picker = (item: any) => {
 
                     </div>
                     <footer className="float-end">
-                        <button type="button" className="btn btn-primary px-3" onClick={saveCategories}>
+                        <button type="button" className="btn btn-primary" onClick={saveCategories}>
                             OK
                         </button>
                     </footer>
