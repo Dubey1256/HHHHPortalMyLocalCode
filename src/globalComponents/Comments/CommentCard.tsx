@@ -164,7 +164,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           'Name': senderObject[0].Email,
           'Suffix': senderObject[0].Suffix,
           'Title': senderObject[0].Title,
-          'userImage': senderObject[0].Item_x0020_Cover.Url
+          'userImage': senderObject[0]?.Item_x0020_Cover?.Url
         })
       }
     }
@@ -364,7 +364,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         'Name': senderObject[0].Email,
         'Suffix': senderObject[0].Suffix,
         'Title': senderObject[0].Title,
-        'userImage': senderObject[0].Item_x0020_Cover.Url
+        'userImage': senderObject[0]?.Item_x0020_Cover?.Url
       })
     }
     return userDeatails;
@@ -384,7 +384,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         'Name': senderObject[0].Email,
         'Suffix': senderObject[0].Suffix,
         'Title': senderObject[0].Title,
-        'userImage': senderObject[0].Item_x0020_Cover.Url
+        'userImage': senderObject[0]?.Item_x0020_Cover?.Url
       }
     }
     return userDeatails;
@@ -549,7 +549,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         <div className='mb-3 card commentsection'>
           <div className='card-header'>
             {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
-            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip /></span></div>
+            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip ComponentId='586'/></span></div>
 
           </div>
           <div className='card-body'>
@@ -567,7 +567,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </div>
 
               <span className='clintlist'>
-                <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue} onChange={(e) => this.setMentionValue(e)}
+                <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue?this.state.mentionValue:""} onChange={(e) => this.setMentionValue(e)}
                   className="form-control"
                   classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} />
@@ -576,7 +576,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
             </div>
             <div>
-              <textarea id='txtComment'  onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
+              <textarea id='txtComment' value={ this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
               {/* <p className="ng-hide">
                                             <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
                                             Comment shouldn't be empty

@@ -16,7 +16,7 @@ const RelevantDocuments = (props: any) => {
         const web = new Web(props.siteUrl);
         var filter = (`${props.siteName}/Id eq ${props.ID}`);
         console.log(filter);
-        await web.lists.getById("d0f88b8f-d96d-4e12-b612-2706ba40fb08").items.select("Id,Title,Priority_x0020_Rank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+        await web.lists.getByTitle("Documents").items.select("Id,Title,Priority_x0020_Rank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
             .expand("Author,Editor").filter(`${props.siteName}/Id eq ${props.ID}`).top(4999)
             .get()
             .then((Data: any[]) => {

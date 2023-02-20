@@ -7,13 +7,16 @@ import { ImPriceTags } from 'react-icons/im';
 import { Select } from "@material-ui/core";
 //import '../../webparts/taskDashboard/components/TaskDashboard.scss';
 
+
 var Newrray: any = []
+var Autocompleteitems:any = [];
+var Autocompleteitemsarr:any = [];
 const Picker = (item: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
     const [update, set] = React.useState([]);
-
+    const [value, setValue] = React.useState("");
 
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
@@ -21,6 +24,7 @@ const Picker = (item: any) => {
     } 
     React.useEffect(() => {
         loadGmBHTaskUsers();
+     
     }, [])
     const closePopupSmartTaxanomy = () => {
         //Example(item);
@@ -75,7 +79,9 @@ const Picker = (item: any) => {
                 })
                 TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData);
                 setAllCategories(TaxonomyItems)
+               
                 setPopupSmartTaxanomy(true)
+              
 
             },
             error: function (error) {
@@ -112,14 +118,7 @@ const Picker = (item: any) => {
             }
         });
     }
-    var isItemExists = (items: any, columnName: any) => {
-        var flag = false;
-        $.each(items, function (index: any, item: any) {
-            if (item.Id == columnName)
-                flag = true;
-        });
-        return flag;
-    }
+   
     
     const selectPickerData = (item: any) => {
         Newrray.push(item)
@@ -131,13 +130,16 @@ const Picker = (item: any) => {
     const showSelectedData =(itemss:any)=>{
         var categoriesItem:any = []
         itemss.forEach(function(val:any){
-           
             if (val.Title != undefined) {
-                (!isItemExists(itemss,val.Id))
                 categoriesItem.push(val);
+               
             }
         })
-        setSelect(categoriesItem)
+        const uniqueNames = categoriesItem.filter((val:any, id:any, array:any) => {
+            return array.indexOf(val) == id;  
+         })
+         console.log(uniqueNames)
+        setSelect(uniqueNames)
     }
     function Example(callBack: any, type: any) {
         Newrray = []
@@ -164,7 +166,59 @@ const Picker = (item: any) => {
         setSelect(select => ([...select]));
        
        
+        
+         
+        
     }
+    // Autosuggestion
+
+    const onChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setValue(event.target.value);
+      };
+      const onSearch = (searchTerm: React.SetStateAction<string>) => {
+        setValue(searchTerm);
+      
+        
+        // our api to fetch the search result
+        console.log("search ", searchTerm);
+      };
+      
+      if (AllCategories.length > 0) {
+        AllCategories.map((item:any)=>{
+            if (item.newTitle != undefined) {
+                item['Newlabel'] = item.newTitle;
+                Autocompleteitems.push(item)
+                if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+                    item.childs.map((childitem:any)=>{
+                        if (childitem.newTitle != undefined) {
+                            childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+                            Autocompleteitems.push(childitem)
+                        }
+                        if (childitem.childs.length > 0) {
+                            childitem.childs.map((subchilditem:any)=>{
+                                if (subchilditem.newTitle != undefined) {
+                                    subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+                                    Autocompleteitems.push(subchilditem)
+                                }
+                            })
+                        }
+                    })
+                }
+    }
+    })
+    }
+
+    Autocompleteitemsarr = Autocompleteitems.reduce(function (previous: any, current: any) {
+        var alredyExists = previous.filter(function (item: any) {
+            return item.Title === current.Title
+        }).length > 0
+        if (!alredyExists) {
+            previous.push(current)
+        }
+        return previous
+    }, [])
+
+  
     return (
         <>
             <Panel
@@ -207,7 +261,7 @@ const Picker = (item: any) => {
                                     <div className="pb-3 mb-0">
                                         <div id="addNewTermDescription">
                                             <p className="mb-1"> New items are added under the currently selected item.
-                                                <span><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx"className="hreflink" ng-click="gotomanagetaxonomy();"> Add New Item </a></span>
+                                                <span><a className="hreflink" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
                                             </p>
                                         </div>
                                         <div id="SendFeedbackTr">
@@ -217,7 +271,7 @@ const Picker = (item: any) => {
                                         </div>
                                         {/* <div className="block col p-1"> {select}</div> */}
                                     </div>
-                                    <div className="mx-auto">
+                                    <div className="d-end">
                                         <button type="button" className="btn btn-primary" onClick={saveCategories}>
                                             OK
                                         </button>
@@ -227,7 +281,29 @@ const Picker = (item: any) => {
                         </section>
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
-                                <input type="text" placeholder="Search here" id="txtnewsmartpicker" className="form-control  searchbox_height" />
+                               <div>
+      <input type="text"  className="form-control  searchbox_height"  value={value} onChange={onChange}   placeholder="Search here"  />
+      <ul className="ui-menu ui-widget ui-widget-content ui-corner-all">
+{Autocompleteitemsarr.filter((item:any) => {
+const searchTerm = value.toLowerCase();
+var fullName = item.Title!=null?item.Title.toLowerCase():"";
+return (
+searchTerm &&
+fullName.startsWith(searchTerm) &&
+fullName !== searchTerm
+);
+})
+.slice(0, 10)
+.map((item:any) => (
+
+<li   className="ui-menu-item" key={item.Title} onClick={() => onSearch(item.Title)} >
+<a>{item.Newlabel}</a>
+{/* onClick={() =><EditEmployeeContact id={item.Id}/> */}
+</li>
+))}
+</ul>
+
+    </div>
                             </div>
 
                                  
@@ -264,10 +340,10 @@ const Picker = (item: any) => {
                                 {AllCategories.map(function (item: any) {
                                     return (
                                         <>
-                                            <li>
+                                            <li onClick={() => selectPickerData(item)}>
 
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <a className="hreflink" ng-click="selectnewItem(item);" onClick={() => selectPickerData(item)}>
+                                                    <a className="hreflink" ng-click="selectnewItem(item);" >
                                                         <img className="flag_icon"
                                                             style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
                                                         {item.Title}
@@ -281,10 +357,10 @@ const Picker = (item: any) => {
                                                         return (
                                                             <>
                                                              {child1.Item_x005F_x0020_Cover != null &&
-                                                                <li>
+                                                                <li onClick={() => selectPickerData(child1)}>
 
                                                                    
-                                                                        <a className="hreflink" ng-click="selectnewItem(child1);" onClick={() => selectPickerData(child1)}>
+                                                                        <a className="hreflink" ng-click="selectnewItem(child1);" >
                                                                             <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
                                                                                 style={{ height: "12px", width: "18px;" }}
                                                                                 src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title} 
@@ -295,20 +371,10 @@ const Picker = (item: any) => {
                                                                                     <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
                                                                                     </div>
                                                                                 </div>
-                                                                                {/* <span ng-show="child1.Description1 != null" className="project-tool top-assign">
-                                                                                <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                <span className="tooltipte">
-                                                                                    <span className="tooltiptext">
-                                                                                        <div className="tooltip_Desc">
-                                                                                            <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
-                                                                                        </div>
-                                                                                    </span>
-                                                                                </span>
-                                                                            </span> */}
+                                                                                
                                                                         </a>
                                                                     
 
-                                                                  
                                                                 </li>
                                                     }
                                                             </>
@@ -325,7 +391,7 @@ const Picker = (item: any) => {
 
                     </div>
                     <footer className="float-end">
-                        <button type="button" className="btn btn-primary px-3" onClick={saveCategories}>
+                        <button type="button" className="btn btn-primary" onClick={saveCategories}>
                             OK
                         </button>
                     </footer>

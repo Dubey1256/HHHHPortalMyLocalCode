@@ -1119,7 +1119,7 @@ export default function ComponentTable({ props }: any) {
     }
 
 
-   // Expand Table 
+    // Expand Table 
     const expndpopup = (e: any) => {
 
         settablecontiner(e);
@@ -1852,7 +1852,7 @@ export default function ComponentTable({ props }: any) {
                             <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                 <thead>
                                     <tr>
-                                         <th style={{ width: "2%" }}>
+                                        <th style={{ width: "2%" }}>
                                             <div style={{ width: "2%" }}>
                                             <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png'} />
                                                                 : <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"} />}
@@ -2742,3 +2742,6 @@ export default function ComponentTable({ props }: any) {
         </div>
     );
 }
+
+
+

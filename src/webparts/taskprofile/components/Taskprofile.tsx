@@ -5,21 +5,23 @@ import * as moment from 'moment';
 import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
 // import { escape } from '@microsoft/sp-lodash-subset';
-import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
+import{ Web} from "sp-pnp-js";
 // import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
+// import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
 import * as globalCommon from '../../../globalComponents/globalCommon'
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
-import RelevantDocuments from './RelevantDocuments'
+import RelevantDocuments from './RelevantDocuments';
+import  SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
+import { Sync } from '@material-ui/icons';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
-var smartTime: Number = 0                                   ;
+// var smartTime: Number = 0                                   ;
 var ClientTimeArray:any=[];
 
 export interface ITaskprofileState {
@@ -49,6 +51,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private site: any;
   count: number=0;
   backGroundComment=false;
+  this: any;
   public constructor(props: ITaskprofileProps, state: ITaskprofileState) {
     super(props);
     const params = new URLSearchParams(window.location.search);
@@ -94,8 +97,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         this.breadcrumb();
         this.count++;
       }
-      console.log('Array for Breadcrumb');
-      console.log(this.maincollection);
+      // console.log('Array for Breadcrumb');
+      // console.log(this.maincollection);
       this.setState({
         maincollection: this.maincollection
       })
@@ -107,8 +110,21 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         this.breadcrumb();
         this.count++;
       }
-      console.log('Array for Breadcrumb');
-      console.log(this.maincollection);
+      // console.log('Array for Breadcrumb');
+      // console.log(this.maincollection);
+      this.setState({
+        maincollection: this.maincollection
+      })
+    }
+    else if(task.Services.length==0&& task.Component.length==0){
+      await this.loadComponentsDataForTasks(task);
+      await this.getAllTaskData();
+      if(this.count == 0){
+        this.breadcrumb();
+        this.count++;
+      }
+      // console.log('Array for Breadcrumb');
+      // console.log(this.maincollection);
       this.setState({
         maincollection: this.maincollection
       })
@@ -142,10 +158,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         .orderBy('Modified', false)
         .getAll(4000);
 
-      console.log(AllDataMatches);
+      // console.log(AllDataMatches);
       this.gAllDataMatches = AllDataMatches;
-      console.log('All Component : ');
-      console.log(this.gAllDataMatches)
+      // console.log('All Component : ');
+      // console.log(this.gAllDataMatches)
       if (AllDataMatches[0] != undefined && AllDataMatches[0].Item_x0020_Type != undefined && AllDataMatches[0].Item_x0020_Type == 'Component') {
         return AllDataMatches;
       }
@@ -194,19 +210,19 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let web = new Web(this.props.siteUrl);
     let taskDetails :any = [];
     let listInfo = await web.lists.getByTitle(this.state.listName).get();
-    console.log(listInfo);
+    // console.log(listInfo);
     taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "DueDate","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("Team_x0020_Members","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "DueDate","SmartInformation/Id","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("Team_x0020_Members","SmartInformation","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
 
     taskDetails["listName"] = this.state.listName;
     taskDetails["siteType"] = this.state.listName;
     taskDetails["siteUrl"] = this.props.siteUrl;
-    console.log(taskDetails);
+    // console.log(taskDetails);
     taskDetails.TaskId= globalCommon.getTaskId(taskDetails);
     var category=""
 
@@ -233,14 +249,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    var array2:any=taskDetails["AssignedTo"]!=undefined?taskDetails["AssignedTo"]:[]
    if( taskDetails["Team_x0020_Members"]!=undefined){
    taskDetails.array=array2.concat(taskDetails["Team_x0020_Members"].filter((item:any)=>array2.Id!=item.Id))
-    console.log(taskDetails.array);
+    // console.log(taskDetails.array);
    }
    var OffshoreComments:any=[];
    if(taskDetails["OffshoreComments"] != null){
     OffshoreComments=JSON.parse(taskDetails["OffshoreComments"])
    }
-    console.log(taskDetails)
-    console.log(category);
+    // console.log(taskDetails)
+    // console.log(category);
     taskDetails["Categories"]=category;
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
@@ -250,6 +266,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state.listName),
+      sitePage: this.props.Context._pageContext._web.title,
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
       OffshoreComments:OffshoreComments.length>0?OffshoreComments.reverse():null,
@@ -286,17 +303,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       ModifiedBy: taskDetails["Editor"],
       listId: listInfo.Id,
       Attachments: taskDetails["Attachments"],
-      AttachmentFiles: taskDetails["AttachmentFiles"]
+      AttachmentFiles: taskDetails["AttachmentFiles"],
+      SmartInformationId:taskDetails["SmartInformation"]
     };
 
-    console.log(tempTask);
-
+    // console.log(tempTask);
+    
     this.setState({
       Result: tempTask
     }, () => {
       this.getSmartTime();
-      this.loadOtherDetailsForComponents(this.taskResult);
-   
+    this.loadOtherDetailsForComponents(this.taskResult); 
+    
     });
   }
 //  private shortBackgroundComment=(a:any,b:any)=>a.Created-b.Created;
@@ -369,13 +387,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .expand('AssingedToUser')
       .get();
       taskUsers.map((item:any,index:any)=>{
-        if(this.props.Context._pageContext._user.loginName===item.Email&&item.Company=="Smalsus"){
+        if(this.props.Context?._pageContext?._user.loginName===item.Email&&item.Company=="Smalsus"){
          this.backGroundComment=true;
         }
       })
     this.taskUsers = taskUsers;
 
-    console.log(this.taskUsers);
+    // console.log(this.taskUsers);
    
   }
  
@@ -392,7 +410,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
        
         else if(ClientTime!=null){
          ClientTimeArray= JSON.parse(ClientTime);
-         console.log(ClientTimeArray);
+        //  console.log(ClientTimeArray);
         }
  
    
@@ -406,7 +424,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       
       .expand('Parent').filter("TaxType eq 'Client Category'").top(4000)
       .get();
-    console.log(smartMetaData);
+    // console.log(smartMetaData);
     ClientCategory .map((item:any,index:any)=>{
     smartMetaData.map((items:any,index:any)=>{
     if(item.Id==items.Id){
@@ -432,6 +450,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
  
 
   private GetSiteIcon(listName: string) {
+    console.log(this.state.Result)
     if(listName!=undefined){
       let siteicon = '';
       if (listName.toLowerCase() == 'migration') {
@@ -481,7 +500,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   
       if (listName.toLowerCase() == 'kathabeck')
         siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png';
-  
+        if (listName.toLowerCase() == 'tasks'&&this.props.Context._pageContext._web.title=="SH") {
+          siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png';
+        }
       return siteicon;
     }
    
@@ -501,8 +522,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           'Name': senderObject[0].Email,
           'Suffix': senderObject[0].Suffix,
           'Title': senderObject[0].Title,
-          'userImage': senderObject[0].Item_x0020_Cover.Url,
-          'activeimg2':UsersValues[index].workingMember?UsersValues[index].workingMember:"",
+          'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
+          'activeimg2':UsersValues[index].workingMember?UsersValues[index]?.workingMember:"",
         })
       }
     }
@@ -523,7 +544,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         'Name': senderObject[0].Email,
         'Suffix': senderObject[0].Suffix,
         'Title': senderObject[0].Title,
-        'userImage': senderObject[0]?.Item_x0020_Cover?.Url
+        'userImage': senderObject[0].Item_x0020_Cover!=null? senderObject[0].Item_x0020_Cover.Url:""
       })
     }
     return userDeatails;
@@ -539,7 +560,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     }
     //debugger;
     e.preventDefault();
-    console.log(item);
+    // console.log(item);
     this.setState({
       isModalOpen: true,
       imageInfo: item,
@@ -586,8 +607,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private async onPost() {
-    console.log('post');
-    console.log(this.state.Result["FeedBack"]);
+  
 
     let web = new Web(this.props.siteUrl);
     const i = await web.lists.getByTitle(this.state.listName)
@@ -619,18 +639,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     })
     this.GetResult();
   }
-  private CallBackSumSmartTime(item: any) {
+  // private CallBackSumSmartTime(item: any) {
  
-    smartTime = item
+  //   smartTime = item
  
  
-  }
-  private CallBackTimesheet() {
-    this.setState({
-      isTimeEntry: false
-    })
-     this.getSmartTime();
-  }
+  // }
+  // private CallBackTimesheet() {
+  //   this.setState({
+  //     isTimeEntry: false
+  //   })
+  //    this.getSmartTime();
+  // }
   private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
     if (dtformat == undefined || dtformat == '')
       dtformat = "DD/MM/YYYY";
@@ -806,7 +826,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         breadcrumbitem = {};
       })
     }
-    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult.Events != undefined && this.taskResult.Events.length == 0) {
+    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult.Events == undefined) {
       self.breadcrumbOtherHierarchy(breadcrumbitem);
       breadcrumbitem = {};
     }
@@ -902,15 +922,17 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <ul className="spfxbreadcrumb m-0 p-0">
                 {this.state.maincollection.map((breadcrumbitem: any) => {
                   return <>
-
+                   {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0)|| (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 )&&
                     <li>
-                      {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
-                        <a   target="_blank" data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">Component Portfolio</a>
-                      }
-                      {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
-                        <a   target="_blank" data-interception="off"  href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Service-Portfolio.aspx">Service Portfolio</a>
-                      }
-                    </li>
+                    {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
+                      <a   target="_blank" data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">Component Portfolio</a>
+                    }
+                    {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
+                      <a   target="_blank" data-interception="off"  href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Service-Portfolio.aspx">Service Portfolio</a>
+                    }
+                  </li>
+                   }
+                   
 
                     {breadcrumbitem.Parentitem != undefined &&
                       <li>
@@ -928,6 +950,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       <li className="ng-scope" ng-if="breadcrumbitem.Subchild!=undefined">
                       
                         <a   target="_blank" data-interception="off" className="ng-binding" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + breadcrumbitem.Subchild.Id}>{breadcrumbitem.Subchild.Title}</a>
+                      </li>
+                    }
+                     {breadcrumbitem.Subchild== undefined &&breadcrumbitem.Child==undefined&&  this.state.Result["Services"].length==0&&
+                      this.state.Result["Component"].length == 0 &&breadcrumbitem.ParentTask != undefined &&
+                      <li className="ng-scope" ng-if="breadcrumbitem.Subchild!=undefined">
+                      <a   target="_blank" data-interception="off" className="ng-binding" href="https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Dashboard.aspx"> <span className="ng-binding">Dashboard</span> </a>
                       </li>
                     }
                     {breadcrumbitem.ParentTask != undefined &&
@@ -948,21 +976,23 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }
 
         <section className='row p-0'>
-          <h2 className="heading d-flex justify-content-between align-items-center">
+          <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
             <span>
-            <img className="imgWid29 pe-1 " src={this.state.Result["SiteIcon"]} />
+            {this.state.Result["SiteIcon"]!=""&&<img className="imgWid29 pe-1 " src={this.state.Result["SiteIcon"]} />}
+            {this.state.Result["SiteIcon"]===""&&<img className="imgWid29 pe-1 " src=""/>}
             {this.state.Result['Title']}
+             {/* {this.props.Context._pageContext.web.title=="SH"} */}
             <a className="hreflink ng-scope ps-2" onClick={() => this.OpenEditPopUp()}>
               <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
             </a>
             </span>
-            <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
-          
+            {this.state.Result.sitePage=="SP"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
+            {this.state.Result.sitePage=="SH"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
             </h2>
         </section>
         <section>
           <div className='row'>
-            <div className="col-9 bg-white">
+            <div className="col-9 ps-0 bg-white">
               <div className="team_member row">
                 <div className='col-md-4 p-0'>
                   <dl>
@@ -989,10 +1019,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-fxdark'>SmartTime Total</dt>
                     <dd className='bg-light '>
-                      <span className="me-1">{smartTime.toFixed(1)}</span>
-                      <a onClick={(e) => this.EditData(e, this.state.Result)}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a>
-                    </dd>
-                    {this.state.smarttimefunction? <SmartTimeTotal props={this.state.Result} CallBackSumSmartTime={this.CallBackSumSmartTime} /> : null}
+                      <span className="me-1"> {this.state.smarttimefunction? <SmartTimeTotal props={this.state.Result} /> : null}</span>
+                  </dd>
+                 
                   </dl>
                 </div>
 
@@ -1002,24 +1031,43 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     <dd className='bg-light'>
                       <div className="d-flex align-items-center">
                         {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 && this.state.Result["TeamLeader"].map((rcData: any, i: any) => {
-                          return <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off" title={rcData.Title}><img className="imgAuthor" src={rcData.userImage}></img></a></div>
+                          return <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off" title={rcData.Title}>
+                           {rcData.userImage!=null&&<img className="imgAuthor" src={rcData.userImage}></img>} 
+                           {rcData.userImage==null&&<span className="imgAuthor bg-fxdark" >{rcData.Suffix}</span>} 
+                            </a>
+                            </div>
                         })}
                         {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 &&
                           <div></div>
                         }
 
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                          <div className="user_Member_img activeimg "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}><img className="imgAuthor" src={this.state.Result["TeamMembers"][0].userImage}></img></a></div>
+                          <div className="img  "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}>
+                           {this.state.Result["TeamMembers"][0].userImage!=null&&<img className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0].userImage}></img>}
+                           {this.state.Result["TeamMembers"][0].userImage==null&&<span className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}`} >{this.state.Result["TeamMembers"][0].Suffix}</span>}
+                            </a>
+                            </div>
                         }
-                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 1 &&
+                         
+                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length ==2&&  <div className="img mx-2"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}>
+                           {this.state.Result["TeamMembers"][1].userImage!=null&&<img className={`imgAuthor ${this.state.Result["TeamMembers"][1].activeimg2}`} src={this.state.Result["TeamMembers"][1].userImage}></img>}
+                           {this.state.Result["TeamMembers"][1].userImage==null&&<span className={`imgAuthor ${this.state.Result["TeamMembers"][1].activeimg2}`} >{this.state.Result["TeamMembers"][1 ].Suffix}</span>}
+                            </a>
+                            </div>
+                        }
+                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 2 &&
                           <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
                             <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
                               <div>
-                                {this.state.Result["TeamMembers"].slice(1).map((rcData: any, i: any) => {
+                                {this.state.Result["TeamMembers"].slice(2).map((rcData: any, i: any) => {
 
                                   return <div className="team_Members_Item" style={{ padding: '2px' }}>
                                     <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
-                                      <img className={`imgAuthor ${rcData.activeimg2}`}src={rcData.userImage}></img></a></div>
+                                    {rcData.userImage!=null &&<img className={`imgAuthor ${rcData.activeimg2}`}src={rcData.userImage}></img>}
+                                    
+                                     {rcData.userImage==null&&<span className={`imgAuthor ${rcData.activeimg2}bg-fxdark`}>{rcData.Suffix}</span>} 
+                                      </a>
+                                      </div>
                                     <div className='mx-2'>{rcData.Title}</div>
                                   </div>
 
@@ -1058,7 +1106,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     <dd className='bg-light'>
                       {moment(this.state.Result["Created"]).format("DD/MM/YYYY")} | <span className='ms-1'>
                         {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
-                         <a title={this.state.Result["Author"][0].Title} ><img className="imgAuthor" src={this.state.Result["Author"][0].userImage} ></img></a>
+                         <a title={this.state.Result["Author"][0].Title} >
+                          {this.state.Result["Author"][0].userImage!==""&&<img className="imgAuthor" src={this.state.Result["Author"][0].userImage} ></img>}
+                          {this.state.Result["Author"][0].userImage===""&&<span className="imgAuthor">{this.state.Result["Author"][0].Suffix}</span>}
+                          </a>
                          
                         }
                       </span>
@@ -1194,7 +1245,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    <div className={this.state.Result["BasicImageInfo"] != null &&this.state.Result["BasicImageInfo"] .length>0 ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 mt-2"}>
+                    <div className={this.state.Result["BasicImageInfo"] != null &&this.state.Result["BasicImageInfo"] .length>0 ?"col-sm-8 pe-0 mt-2":"col-sm-12 pe-0 ps-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
                         this.state.Result["SharewebTaskType"] == 'Task'|| this.state.Result["SharewebTaskType"]=="Activities") && this.state.Result["FeedBack"] != null &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
@@ -1228,8 +1279,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       <div className="col-sm-5 bg-white col-sm-5 pt-3 p-0">
                         {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].map((imgData: any, i: any) => {
                           return <div className="taskimage border mb-3">
-                            {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
-
                             <a className='images' target="_blank" data-interception="off" href={imgData.ImageUrl}>
                               <img alt={imgData.ImageName} src={imgData.Url}
                                 onMouseOver={(e) => this.OpenModal(e, imgData)}
@@ -1302,8 +1351,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
                       </div>
                       <div>Last modified <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
+                      <span>{this.state.itemID?<VersionHistoryPopup taskId={this.state.itemID}listId={this.state.Result.listId} isOpen={this.state.isopenversionHistory}/>:''}</span>
                       </div>
-                      <div> {this.state.itemID?<VersionHistoryPopup taskId={this.state.itemID}listId={this.state.Result.listId} isOpen={this.state.isopenversionHistory}/>:''}</div>
+                     
                     </div>
                    
                   
@@ -1319,7 +1369,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <div>
               <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
               </div>
-              {/* <div><SmartInformation /></div> */}
+              <div>{this.state.Result.Id&&<SmartInformation  Id={this.state.Result.Id}siteurl={this.state.Result.siteUrl}listName={this.state.Result.listName}spPageContext={this.props.Context._pageContext._web}/>}</div>
                <div>  <RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID}siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments></div>
             
             </div>
@@ -1337,7 +1387,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         </div>
        
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} Call={() => { this.CallBack() }} /> : ''}
-        {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''}
+        {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
       
       </div>
     );
