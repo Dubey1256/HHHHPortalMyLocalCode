@@ -6,7 +6,9 @@ import AddCommentComponent from './AddCommentComponent'
 
 export default function FroalaCommnetBoxes(textItems: any) {
     const TextItems = textItems.textItems;
-    const callBack = textItems.callBack
+    const callBack = textItems.callBack;
+    const ItemId: any = textItems.ItemId;
+    const SiteUrl = textItems.SiteUrl
     const [State, setState] = useState([]);
     const [Texts, setTexts] = useState(false);
     const [btnStatus, setBtnStatus] = useState(false);
@@ -186,6 +188,13 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                     <span> | </span>
                                     <span className="mx-1">
                                         <span className="hreflink" style={{ color: "#000066" }} onClick={() => postBtnHandle(i)}> Add Comment </span>
+                                    </span>
+                                    <span> | </span>
+                                    <span className="mx-1">
+                                        <a target="_blank" data-interception="off" href={SiteUrl?
+                                            `https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ItemID=${ItemId}?Siteurl=${SiteUrl}`
+                                            : `https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx?ItemID=${ItemId}`}
+                                            className="hreflink" style={{ color: "#000066" }}> Create Task </a>
                                     </span>
                                     <span> | </span>
                                     <span className="mx-1">

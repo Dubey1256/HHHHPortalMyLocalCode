@@ -337,12 +337,19 @@ const EditTaskPopup = (Items: any) => {
                 if (item.PercentComplete != undefined) {
                     let statusValue = item.PercentComplete * 100;
                     item.PercentComplete = statusValue;
-                    StatusArray?.map((item: any) => {
-                        if (statusValue == item.value) {
-                            setPercentCompleteStatus(item.status);
-                            setTaskStatus(item.taskStatusComment);
-                        }
-                    })
+                    if (statusValue < 70 && statusValue > 20) {
+                        setTaskStatus("In Progress");
+                        setPercentCompleteStatus(`${statusValue}`);
+                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}`})
+                    }else{
+                        StatusArray?.map((item: any) => {
+                            if (statusValue == item.value) {
+                                setPercentCompleteStatus(item.status);
+                                setTaskStatus(item.taskStatusComment);
+                            }
+                        })
+                    }
+                  
                 }
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
@@ -456,6 +463,35 @@ const EditTaskPopup = (Items: any) => {
             console.log("Error :", error.message);
         }
     }
+
+
+    //    *********** This is for status section Functions **************
+
+    const StatusAutoSuggestion = (e: any) => {
+        console.log("Status Enter in input======", e.target.value);
+        let StatusInput = e.target.value;
+        if (StatusInput < 70 && StatusInput > 20) {
+            setTaskStatus("In Progress");
+            setPercentCompleteStatus(StatusInput);
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput})
+        }else{
+            StatusArray.map((percentStatus:any, index:number)=>{
+                if(percentStatus.value == StatusInput){
+                    setTaskStatus(percentStatus.taskStatusComment);
+                    setPercentCompleteStatus(percentStatus.status);
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput})
+                }
+            })
+        }
+        if(StatusInput == 0){
+            setTaskStatus("");
+            setPercentCompleteStatus(null);
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: null})
+        }
+        // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
+
+    }
+
     const PercentCompleted = (StatusData: any) => {
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
@@ -1035,9 +1071,6 @@ const EditTaskPopup = (Items: any) => {
             }
         })
         setShareWebTypeData(tempArray2);
-    }
-    const StatusAutoSuggestion = (e: any) => {
-
     }
 
 
@@ -1952,7 +1985,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" placeholder="% Complete" className="form-control px-2" disabled
+                                                <input type="text" placeholder="% Complete" className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
@@ -2177,7 +2210,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Title != null ? <>
                                             <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} />
+                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} ItemId={EditData.Id} SiteUrl={EditData.component_x0020_link} />
                                         </>
                                             : null}
                                     </div>
@@ -2708,7 +2741,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">Status</label>
-                                                            <input type="text" placeholder="% Complete" className="form-control px-2" disabled
+                                                            <input type="text" placeholder="% Complete" className="form-control px-2"
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
                                                             <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
@@ -2861,7 +2894,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div>
                                         {EditData.Title != null ? <>
                                             <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} />
+                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} ItemId={EditData.Id} SiteUrl={EditData.component_x0020_link} />
                                         </>
                                             : null}
                                     </div>

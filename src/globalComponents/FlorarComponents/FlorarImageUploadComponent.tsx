@@ -68,7 +68,7 @@ const froalaEditorConfig = {
 export default class App extends React.Component<ITeamConfigurationProps> {
     public render(): React.ReactElement<{}> {
         return (
-            <div className="App" id="UpdateTestCase">
+            <div  className="Florar-Editor-Image-Upload-Container" id="UpdateTestCase">
                 <Froala
                     model={defaultContent}
                     onModelChange={this.onModelChange}
