@@ -44,6 +44,8 @@ function EditInstitution(item: any) {
 
     const [CompoenetItem, setComponent] = React.useState([]);
     const [update, setUpdate] = React.useState(0);
+    const [isDropItem, setisDropItem] = React.useState(false);
+    const [isDropItemRes, setisDropItemRes] = React.useState(false);
     const [EditData, setEditData] = React.useState<any>({});
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
@@ -278,9 +280,9 @@ function EditInstitution(item: any) {
             // .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
             .getByTitle('Master Tasks')
             .items
-            .select("ComponentCategory/Id", "ComponentCategory/Title", "ComponentPortfolio/Id", "ComponentPortfolio/Title", "ServicePortfolio/Id", "ServicePortfolio/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .select("ComponentPortfolio/Id", "ComponentPortfolio/Title", "ServicePortfolio/Id", "ServicePortfolio/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title","Responsible_x0020_Team/Id","Responsible_x0020_Team/Title")
 
-            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "ComponentPortfolio", "ServicePortfolio", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .expand("ClientCategory", "AssignedTo", "Component", "ComponentPortfolio", "ServicePortfolio", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories","Responsible_x0020_Team")
             .filter("Id eq " + item.props.Id + "")
             .get()
         console.log(componentDetails);
@@ -823,39 +825,48 @@ function EditInstitution(item: any) {
                 }
             })
         }
+        if(isDropItemRes == true){
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo.map((taskInfo) => {
                 AssignedToIds.push(taskInfo.Id);
             })
-        } else {
+        } 
+        }
+     else {
             if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
                 EditData.AssignedTo.map((taskInfo: any) => {
                     AssignedToIds.push(taskInfo.Id);
                 })
             }
         }
+       if(isDropItem == true){
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers.map((taskInfo) => {
                 TeamMemberIds.push(taskInfo.Id);
             })
-        } else {
+        } 
+       }
+     else {
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
                 EditData.Team_x0020_Members.map((taskInfo: any) => {
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
-        }
-        if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-            TaskResponsibleTeam.map((taskInfo) => {
-                ResponsibleTeamIds.push(taskInfo.Id);
-            })
-        } else {
-            if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
-                EditData.Responsible_x0020_Team.map((taskInfo: any) => {
-                    ResponsibleTeamIds.push(taskInfo.Id);
-                })
-            }
-        }
+     }
+     
+        // if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+        //     TaskResponsibleTeam.map((taskInfo) => {
+        //         ResponsibleTeamIds.push(taskInfo.Id);
+        //     })
+        // }
+      
+       
+        //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
+        //         EditData.Responsible_x0020_Team.map((taskInfo: any) => {
+        //             ResponsibleTeamIds.push(taskInfo.Id);
+        //         })
+        //     }
+        
         // if (Items.smartComponent != undefined) {
         //     Items.smartComponent.map((com: any) => {
         //         // if (com.Title != undefined) {
@@ -986,9 +997,11 @@ function EditInstitution(item: any) {
     var CheckCategory:any=[]
     CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199,"ParentId":225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276,"ParentId":225 }, {  "TaxType": "Categories", "Title": "Approval", "Id": 227,"ParentId":225 },
             { "TaxType": "Categories", "Title": "Immediate", "Id": 228,"parentId":225 });
-
+   
     const DDComponentCallBack = (dt: any) => {
         setTeamConfig(dt)
+        setisDropItem(dt.isDrop)
+        setisDropItemRes(dt.isDropRes)
         console.log(TeamConfig)
         if (dt?.AssignedTo?.length > 0) {
             let tempArray: any = [];
@@ -1015,7 +1028,7 @@ function EditInstitution(item: any) {
             console.log("Team Config member=====", tempArray)
 
         }
-        if (dt?.ResponsibleTeam?.length > 0) {
+        if (dt.ResponsibleTeam != undefined && dt.ResponsibleTeam.length > 0) {
             let tempArray: any = [];
             dt.ResponsibleTeam?.map((arrayData: any) => {
                 if (arrayData.AssingedToUser != null) {
@@ -1027,6 +1040,9 @@ function EditInstitution(item: any) {
             setTaskResponsibleTeam(tempArray);
             console.log("Team Config reasponsible ===== ", tempArray)
 
+        }
+        else{
+            setTaskResponsibleTeam([])
         }
     }
     var itemInfo = {

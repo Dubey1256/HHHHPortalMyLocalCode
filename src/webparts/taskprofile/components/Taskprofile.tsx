@@ -922,15 +922,17 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <ul className="spfxbreadcrumb m-0 p-0">
                 {this.state.maincollection.map((breadcrumbitem: any) => {
                   return <>
-
+                   {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0)|| (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 )&&
                     <li>
-                      {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
-                        <a   target="_blank" data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">Component Portfolio</a>
-                      }
-                      {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
-                        <a   target="_blank" data-interception="off"  href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Service-Portfolio.aspx">Service Portfolio</a>
-                      }
-                    </li>
+                    {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
+                      <a   target="_blank" data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">Component Portfolio</a>
+                    }
+                    {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
+                      <a   target="_blank" data-interception="off"  href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Service-Portfolio.aspx">Service Portfolio</a>
+                    }
+                  </li>
+                   }
+                   
 
                     {breadcrumbitem.Parentitem != undefined &&
                       <li>
@@ -953,7 +955,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                      {breadcrumbitem.Subchild== undefined &&breadcrumbitem.Child==undefined&&  this.state.Result["Services"].length==0&&
                       this.state.Result["Component"].length == 0 &&breadcrumbitem.ParentTask != undefined &&
                       <li className="ng-scope" ng-if="breadcrumbitem.Subchild!=undefined">
-                      <a   target="_blank" data-interception="off" className="ng-binding" href="https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Dashboard.aspx">Dashboard </a>
+                      <a   target="_blank" data-interception="off" className="ng-binding" href="https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Dashboard.aspx"> <span className="ng-binding">Dashboard</span> </a>
                       </li>
                     }
                     {breadcrumbitem.ParentTask != undefined &&
@@ -974,7 +976,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }
 
         <section className='row p-0'>
-          <h2 className="heading d-flex justify-content-between align-items-center">
+          <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
             <span>
             {this.state.Result["SiteIcon"]!=""&&<img className="imgWid29 pe-1 " src={this.state.Result["SiteIcon"]} />}
             {this.state.Result["SiteIcon"]===""&&<img className="imgWid29 pe-1 " src=""/>}
@@ -990,7 +992,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         </section>
         <section>
           <div className='row'>
-            <div className="col-9 bg-white">
+            <div className="col-9 ps-0 bg-white">
               <div className="team_member row">
                 <div className='col-md-4 p-0'>
                   <dl>
@@ -1046,6 +1048,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             </a>
                             </div>
                         }
+                         
+                        {/* {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length ==2&&  <div className="img mx-2"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0].Id}&Name=${this.state.Result["TeamMembers"][0].Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0].Title}>
+                           {this.state.Result["TeamMembers"][1].userImage!=null&&<img className={`imgAuthor ${this.state.Result["TeamMembers"][1].activeimg2}`} src={this.state.Result["TeamMembers"][1].userImage}></img>}
+                           {this.state.Result["TeamMembers"][1].userImage==null&&<span className={`imgAuthor ${this.state.Result["TeamMembers"][1].activeimg2}`} >{this.state.Result["TeamMembers"][1 ].Suffix}</span>}
+                            </a>
+                            </div>
+                        } */}
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 1 &&
                           <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
                             <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
