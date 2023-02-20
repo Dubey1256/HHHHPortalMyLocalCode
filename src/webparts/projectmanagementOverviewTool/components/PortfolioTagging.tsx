@@ -5,45 +5,57 @@ import { Version } from '@microsoft/sp-core-library';
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
-var serachTitle: any = '';
-const ComponentPortPolioPopup = (item: any) => {
+let serachTitle: any = '';
+let selectedComponent:any=[];
+const PortfolioTagging = (item: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [backupComponentsData, setBackupComponentsData] = React.useState([]);
     const [componentsData, setComponentsData] = React.useState([]);
     const [table, setTable] = React.useState(componentsData);
     const [CheckBoxdata, setcheckbox] = React.useState([]);
-    const [selectedComponent, selctedCompo] = React.useState('');
-    const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [maidataBackup, setmaidataBackup] = React.useState([])
-    const [TotalTask, setTotalTask] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
+    const [TotalTask, setTotalTask] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
+    const [search, setSearch]: [string, (search: string) => void] = React.useState("");
+    // const [selectedComponent, selctedCompo] = React.useState([]);
     React.useEffect(() => {
-        if (item.smartComponent != undefined && item.smartComponent.length > 0)
-            selctedCompo(item.smartComponent[0]);
+         selectedComponent=[];
+        if(item?.type == 'Service'){
+            if (item?.props?.smartService!= undefined && item?.props?.smartService?.length > 0)
+            selectedComponent=item.props.smartService;
+        }else if(item?.type === "Component"){
+            if (item?.props?.smartComponent!= undefined && item?.props?.smartComponent?.length > 0)
+            selectedComponent=item.props.smartComponent;
+        }
+        
 
         GetComponents();
     },
         []);
     function Example(callBack: any, type: any) {
 
-        item.Call(callBack.props, type);
+        item.Call(callBack?.props, type);
 
     }
 
     const setModalIsOpenToFalse = () => {
-        Example(item, "SmartComponent");
+        Example(undefined, item?.type);
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
-
-        if (item.props.smartComponent != undefined && item.props.smartComponent.length == 0)
-            item.props.smartComponent = CheckBoxdata;
-        else {
-            item.props.smartComponent = [];
-            item.props.smartComponent = CheckBoxdata;
+        if(item?.type == 'Service'){
+            if(item?.props?.smartService!=undefined){
+                item.props.smartService = selectedComponent;
+            }
+            
+        }else{
+            if(item?.props?.smartComponent!=undefined){
+                item.props.smartComponent = selectedComponent;
+            }
         }
-        Example(item, "SmartComponent");
+        
+        Example(item, item?.type);
         setModalIsOpen(false);
     }
 
@@ -270,174 +282,162 @@ const ComponentPortPolioPopup = (item: any) => {
         //console.log(this.taskUsers);
 
     }
+    var isItemExist = function(search:any){
+        let result =false;
+        selectedComponent?.filter(function(comp:any){
+           if(comp?.Id===search?.Id){
+            result= true;
+           }
+        });
+        return result
+      }
     const GetComponents = async () => {
         var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
         var SubComponentsData: any[] = [];
         var FeatureData: any[] = [];
-
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let componentDetails = [];
-        componentDetails = await web.lists
-            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-            .getByTitle('Master Tasks')
-            .items
-            //.getById(this.state.itemID)
-            .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
-            .top(4999)
-            .get()
-
-        console.log(componentDetails);
-        await GetTaskUsers();
-
-        $.each(componentDetails, function (index: any, result: any) {
-            result.TitleNew = result.Title;
-            result.TeamLeaderUser = []
-            result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
-
-            if (result.DueDate == 'Invalid date' || '') {
-                result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-            }
-            if (result.PercentComplete != undefined)
-                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-            if (result.Short_x0020_Description_x0020_On != undefined) {
-                result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-            }
-
-            if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                $.each(result.AssignedTo, function (index: any, Assig: any) {
-                    if (Assig.Id != undefined) {
-                        $.each(Response, function (index: any, users: any) {
-
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                users.ItemCover = users.Item_x0020_Cover;
-                                result.TeamLeaderUser.push(users);
-                            }
-
-                        })
-                    }
-                })
-            }
-            if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
-                    if (Assig.Id != undefined) {
-                        $.each(Response, function (index: any, users: any) {
-                            if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                users.ItemCover = users.Item_x0020_Cover;
-                                result.TeamLeaderUser.push(users);
-                            }
-
-                        })
-                    }
-                })
-            }
-
-            if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                    result.ClientCategory.push(catego);
-                })
-            }
-            if (result.Item_x0020_Type == 'Root Component') {
-                result['Child'] = [];
-                RootComponentsData.push(result);
-            }
-            if (result.Item_x0020_Type == 'Component') {
-                result['Child'] = [];
-                ComponentsData.push(result);
+        if (item?.type != undefined) {
 
 
-            }
+            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+            let componentDetails = [];
+            componentDetails = await web.lists
+                //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+                .getByTitle('Master Tasks')
+                .items
+                //.getById(this.state.itemID)
+                .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+                .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory").filter("Portfolio_x0020_Type eq '" + item?.type + "'")
+                .top(4999)
+                .get()
 
-            if (result.Item_x0020_Type == 'SubComponent') {
-                result['Child'] = [];
-                SubComponentsData.push(result);
+            console.log(componentDetails);
+            await GetTaskUsers();
+            
+            $.each(componentDetails, function (index: any, result: any) {
+                result.checked= isItemExist(result)
+                result.TitleNew = result.Title;
+                result.TeamLeaderUser = []
+                result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
+
+                if (result.DueDate == 'Invalid date' || '') {
+                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                }
+                if (result.PercentComplete != undefined)
+                    result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                if (result.Short_x0020_Description_x0020_On != undefined) {
+                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                }
+
+                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                    $.each(result.AssignedTo, function (index: any, Assig: any) {
+                        if (Assig.Id != undefined) {
+                            $.each(Response, function (index: any, users: any) {
+
+                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                    users.ItemCover = users.Item_x0020_Cover;
+                                    result.TeamLeaderUser.push(users);
+                                }
+
+                            })
+                        }
+                    })
+                }
+                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                    $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                        if (Assig.Id != undefined) {
+                            $.each(Response, function (index: any, users: any) {
+                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                    users.ItemCover = users.Item_x0020_Cover;
+                                    result.TeamLeaderUser.push(users);
+                                }
+
+                            })
+                        }
+                    })
+                }
+
+                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                        result.ClientCategory.push(catego);
+                    })
+                }
+                if (result.Item_x0020_Type == 'Root Component') {
+                    result['Child'] = [];
+                    RootComponentsData.push(result);
+                }
+                if (result.Item_x0020_Type == 'Component') {
+                    result['Child'] = [];
+                    ComponentsData.push(result);
 
 
-            }
-            if (result.Item_x0020_Type == 'Feature') {
-                result['Child'] = [];
-                FeatureData.push(result);
-            }
-        });
+                }
 
-        $.each(SubComponentsData, function (index: any, subcomp: any) {
-            if (subcomp.Title != undefined) {
-                $.each(FeatureData, function (index: any, featurecomp: any) {
-                    if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        subcomp['Child'].push(featurecomp);;
-                    }
-                })
+                if (result.Item_x0020_Type == 'SubComponent') {
+                    result['Child'] = [];
+                    SubComponentsData.push(result);
+
+
+                }
+                if (result.Item_x0020_Type == 'Feature') {
+                    result['Child'] = [];
+                    FeatureData.push(result);
+                }
+            });
+
+            $.each(SubComponentsData, function (index: any, subcomp: any) {
+                if (subcomp.Title != undefined) {
+                    $.each(FeatureData, function (index: any, featurecomp: any) {
+                        if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                            subcomp['Child'].push(featurecomp);;
+                        }
+                    })
+                }
+            })
+
+            $.each(ComponentsData, function (index: any, subcomp: any) {
+                if (subcomp.Title != undefined) {
+                    $.each(SubComponentsData, function (index: any, featurecomp: any) {
+                        if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                            subcomp['Child'].push(featurecomp);;
+                        }
+                    })
+                }
+            })
+            //maidataBackup.push(ComponentsData)
+            // setmaidataBackup(ComponentsData)
+            setComponentsData(ComponentsData);
+            setmaidataBackup(ComponentsData)
+            setModalIsOpen(true)
+        }
+    }
+    const selectPortfolio = (item: any) => {
+        let itemAlreadySelect = false;
+        let componentArray=selectedComponent;
+        componentArray?.map((comp: any,index:any) => {
+            if(comp?.Id==item.Id){
+                componentArray.splice(index,1)
+                itemAlreadySelect=true;
             }
         })
-
-        $.each(ComponentsData, function (index: any, subcomp: any) {
-            if (subcomp.Title != undefined) {
-                $.each(SubComponentsData, function (index: any, featurecomp: any) {
-                    if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        subcomp['Child'].push(featurecomp);;
-                    }
-                })
-            }
-        })
-        //maidataBackup.push(ComponentsData)
-         setmaidataBackup(ComponentsData)
-        setComponentsData(ComponentsData);
-        setmaidataBackup(ComponentsData)
-        setModalIsOpen(true)
-
+        if(itemAlreadySelect==false){
+            componentArray.push(item)
+        }
+        selectedComponent=componentArray
+        setComponentsData(ComponentsData => ([...ComponentsData]));
     }
-// For searching
-var stringToArray = function (input: any) {
-    if (input) {
-        return input.match(/\S+/g);
-    } else {
-        return [];
-    }
-};
-var getRegexPattern = function (keywordArray: any) {
-    var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
-    return new RegExp(pattern, "gi");
-};
-var getHighlightdata = function (item: any, searchTerms: any) {
-    var keywordList = [];
-    if (serachTitle != undefined && serachTitle != '') {
-        keywordList = stringToArray(serachTitle);
-    } else {
-        keywordList = stringToArray(serachTitle);
-    }
-    var pattern: any = getRegexPattern(keywordList);
-    //let Title :any =(...item.Title)
-    item.TitleNew = item.Title;
-    item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
-    // item.Title = item.Title;
-    keywordList = [];
-    pattern = '';
-}
-var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
-    var isSearchTermAvailable = true;
-    $.each(searchTerms, function (index: any, val: any) {
-        if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
-            isSearchTermAvailable = true;
-            getHighlightdata(item, val.toLowerCase());
 
-        } else
-            isSearchTermAvailable = false;
-    })
-    return isSearchTermAvailable;
-}
-  
 
     return (
         <Panel
-            headerText={`Select Components`}
+            headerText={`Select ` + item?.type}
             type={PanelType.large}
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
             isBlocking={false}
         >
             <div>
-                <div className="modal-body">
+                <div className={item?.type == 'Service' ? 'serviepannelgreena modal-body' : 'modal-body'}>
                     <div className="Alltable mt-10">
                         <div className="col-sm-12 p-0 smart">
                             <div className="section-event">
@@ -482,7 +482,9 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 </th>
                                                 <th style={{ width: "18%" }}>
                                                     <div style={{ width: "17%" }} className="smart-relative ">
-                                                        <input id="searchClientCategory" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} type="search" placeholder="Client Category" title="Client Category" className="full_width searchbox_height" />
+                                                        <input id="searchClientCategory" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} type="search" placeholder="Client Category"
+                                                            title="Client Category" className="full_width searchbox_height"
+                                                        />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -492,7 +494,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "20%" }}>
                                                     <div style={{ width: "19%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
-                                                            title="Client Category" className="full_width searchbox_height" 
+                                                            title="Client Category" className="full_width searchbox_height"
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -504,7 +506,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
-                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'PercentComplete')}
+                                                            title="Client Category" className="full_width searchbox_height"
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -516,10 +518,10 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative corm-control">
                                                         <input id="searchClientCategory" type="search" placeholder="Item Rank"
-                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'ItemRank')}
+                                                            title="Client Category" className="full_width searchbox_height"
                                                         />
                                                         <span className="sorticon">
-                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                         </span>
                                                     </div>
@@ -527,7 +529,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Due"
-                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'DueDate')}
+                                                            title="Client Category" className="full_width searchbox_height"
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -565,7 +567,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
 
                                                                         </td>
                                                                         <td style={{ width: "2%" }}>
-                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { item.checked = !item.checked; setcheckbox([item.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : item]) }} ></input>
+                                                                            <input type="checkbox" name="Active" defaultChecked={item.checked} checked={item.checked} onClick={() => { item.checked = !item.checked; selectPortfolio(item) }} ></input>
 
                                                                         </td>
 
@@ -616,17 +618,17 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                                                     </span>
                                                                                 </span>
                                                                             } */}
-                                                                           <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                            <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item?.Id}
                                                                             >
                                                                                 <span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
                                                                                 {/* {item.Title} */}
                                                                             </a>
-                                                                            
-                                                                            
-                                                                               
 
-                                                                            
+
+
+
+
                                                                             {item?.childs != undefined &&
                                                                                 <span className='ms-1'>({item?.childsLength})</span>
                                                                             }
@@ -698,7 +700,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setcheckbox([childitem.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : childitem]) }} ></input>
+                                                                                                <input type="checkbox" name="Active" defaultChecked={childitem.checked} checked={childitem.checked} onClick={() => { childitem.checked = !childitem.checked; selectPortfolio(item) }} ></input>
                                                                                             </td>
                                                                                             <td style={{ width: "4%" }}> <div>
 
@@ -791,7 +793,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
 
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setcheckbox([childinew.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : childinew]) }}  ></input></td>
+                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" defaultChecked={childinew.checked}  checked={childinew.checked} onClick={() => { childinew.checked = !childinew.checked; selectPortfolio(item) }}  ></input></td>
                                                                                                             <td style={{ width: "4%" }}> <div>
                                                                                                                 <span>
 
@@ -889,4 +891,5 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
         </Panel >
     )
 }
-export default ComponentPortPolioPopup;
+
+export default PortfolioTagging
