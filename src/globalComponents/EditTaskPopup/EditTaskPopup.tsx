@@ -488,6 +488,18 @@ const EditTaskPopup = (Items: any) => {
             setPercentCompleteStatus(null);
             setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: null})
         }
+        if (StatusInput == 80) {
+            // let tempArray: any = [];
+            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
+              
+            } else {
+                setWorkingMember(143);
+            }
+            EditData.IsTodaysTask = false;
+            EditData.CompletedDate = undefined;
+        }
+
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
 
     }
@@ -501,24 +513,7 @@ const EditTaskPopup = (Items: any) => {
             // let tempArray: any = [];
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
                 setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
-                // EditData.Team_x0020_Members?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "QA") {
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(143);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
+              
             } else {
                 setWorkingMember(143);
             }
@@ -551,24 +546,7 @@ const EditTaskPopup = (Items: any) => {
 
             } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
                 setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-                // EditData.Team_x0020_Members?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "Development") {
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(156);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
+               
             } else {
                 setWorkingMember(156);
             }
