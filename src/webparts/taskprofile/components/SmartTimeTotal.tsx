@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-
+import TimeEntry from './TimeEntry';
 var AllUsers: any = [];
 var AllTimeSpentDetails: any = [];
 var TaskCate:any=[]
@@ -8,16 +8,17 @@ const SmartTimeTotalFunction=(item:any)=>{
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
     const [AllUser, setAllUser] = React.useState([])
-    const [smartTimeTotal,setsmartTimeTotal] = React.useState(null);
+    const [isTimeEntry,setisTimeEntry]=React.useState(false)
+    const [smartTimeTotal,setsmartTimeTotal] = React.useState(0);
     const [AdditionalTime, setAdditionalTime] = React.useState([]);
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
-    const[isModalOpen,setisModalOpen]=React.useState(false);
-    const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
-    var changeTime = 0;
-    var NewParentId: any = ''
-    var NewParentTitle: any = ''
+    // const[isModalOpen,setisModalOpen]=React.useState(false);
+    // const [newData, setNewData] = React.useState({ Title: '', TaskDate: '', Description: '', TimeSpentInMinute: '', TimeSpentInHours: '', TaskTime: '' })
+    // // var changeTime = 0;
+    // var NewParentId: any = ''
+    // var NewParentTitle: any = ''
    
-    var mainParentId: any = ''
+    // var mainParentId: any = ''
     
     console.log(item.props);
     console.log(AllTimeSheetDataNew);
@@ -326,7 +327,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                     TotalTime=TotalTime+parseFloat(time.TaskTime);
                   })
                 
-                item.CallBackSumSmartTime(TotalTime);
+                // item.CallBackSumSmartTime(TotalTime);
                 setsmartTimeTotal(TotalTime);
 
             }
@@ -422,8 +423,17 @@ const SmartTimeTotalFunction=(item:any)=>{
         
        
     }
+    const OpenTimeEntry=()=>{
+        setisTimeEntry(true)
+    }
+     const CallBackTimesheet=()=> {
+        setisTimeEntry(false)
+    //  this.getSmartTime();
+  }
     return(
-        <div>
+        <>
+           {smartTimeTotal.toFixed(1)}
+           <span> <a onClick={OpenTimeEntry}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} /></a></span>
             {/* <span><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}   onMouseOver={(e) => setisModalOpen(true)}
                                 onMouseOut={(e) => setisModalOpen(false)}/></span>
 
@@ -436,8 +446,11 @@ const SmartTimeTotalFunction=(item:any)=>{
             </div>
           </div>
         </div>:null}  */}
-              </div>
+         {isTimeEntry ? <TimeEntry data={item.props} isopen={isTimeEntry} CallBackTimesheet={() => {CallBackTimesheet() }} /> : ''}
+              </>
     )
+   
+      
 
 }
 export default SmartTimeTotalFunction;

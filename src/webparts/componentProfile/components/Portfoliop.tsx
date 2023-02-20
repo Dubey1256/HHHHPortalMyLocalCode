@@ -53,7 +53,6 @@ function Portfolio({ ID }: any) {
     const [IsTask, setIsTask] = React.useState(false);
     const [AllTaskuser, setAllTaskuser] = React.useState([]);
     const [questionandhelp, setquestionandhelp] = React.useState([])
-    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const handleOpen = (item: any) => {
         setIsActive(current => !current);
         setIsActive(false);
@@ -388,706 +387,712 @@ function Portfolio({ ID }: any) {
     return (
         <div className={TypeSite == 'Service' ? 'serviepannelgreena' : ""}>
             {/* breadcrumb & title */}
-            <section>
-                <div className='col'>
-                    <div className='d-flex justify-content-between p-0' >
-                        <ul className="spfxbreadcrumb m-0 p-0">
-                            <li><a href='#'><FaHome /> </a></li>
-                            {data.map((item: any) => {
-                                return (
-                                    <>
-                                        <li>
-                                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                                            {item.Portfolio_x0020_Type != undefined &&
-                                                <a target='_blank' data-interception="off"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${item.Portfolio_x0020_Type}-Portfolio.aspx`}>
-                                                    {item.Portfolio_x0020_Type}-Portfolio
-                                                </a>
-                                            }
-                                        </li>
-                                        {(item.Item_x0020_Type == 'SubComponent' || item.Item_x0020_Type == 'Feature') &&
-                                            <li>
-                                                {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                                                {item.Parent != undefined &&
-                                                    <a target='_blank' data-interception="off"
-                                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}>
-                                                        {item.Parent.Title}
-                                                    </a>
-                                                }
-                                            </li>
-                                        }
-
-                                        <li><a>{item.Title}</a></li>
-                                    </>
-                                )
-                            })}
-                        </ul>
-                        </div>
-                </div>
-                <div className='col'>
-                    <div className='p-0' style={{ verticalAlign: "top" }}>
-                        {data.map(item =>
-                            <>
-                                <h2 className='heading d-flex justify-content-between align-items-center'>
-                                    <span>
-                                    {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type == 'SubComponent' &&
-                                        <>
-                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
-
-                                            </span>
-                                        </>
-                                    }
-                                    {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type == 'SubComponent' &&
-                                        <>
-                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
-
-                                            </span>
-                                        </>
-                                    }
-
-                                    {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type == 'Feature' &&
-                                        <>
-                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{item.Title}</a>   <span style={{ paddingLeft: "3%" }}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
-
-                                            </span>
-                                        </>
-                                    }
-                                    {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type == 'Feature' &&
-                                        <>
-                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
-
-                                            </span>
-                                        </>
-                                    }
-                                    {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type != 'SubComponent' && item.Item_x0020_Type != 'Feature' &&
-                                        <>
-                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
-
-                                            </span>
-
-                                        </>
-                                    }
-                                    {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type != 'SubComponent' && item.Item_x0020_Type != 'Feature' &&
-                                        <>
-                                            <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
-
-                                            </span>
-
-
-                                        </>}
-                                        </span>
-                                        <span className="text-end fs-6"><a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-Old.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
-                                        
-                                </h2>
-
-                            </>
-                        )}
-                    </div>
-                </div>
-
-            </section>
-            {/* left bar  & right bar */}
-            <section>
-                <div className='row'>
-                    <div className='col-md-9 bg-white'>
-                        <div className='team_member row  py-2'>
-                            <div className='col-md-8'>
-                                <div className='row mb-2'>
-                                    <div className='col-md-6 pe-0'>
-                                        <dl>
-                                            <dt className='bg-fxdark'>Due Date</dt>
-                                            <dd className='bg-light'>
-                                                <span>
-                                                    {/* <i> 02/12/2019</i> */}
-                                                    {data.map(item =>
-                                                        <a>{item.DueDate != null ? Moment(item.DueDate).format('DD/MM/YYYY') : ""}</a>
-                                                    )}
-                                                    {/* {data.map(item =>  <i>{item.DueDate}</i>)} */}
-                                                </span>
-
-                                            </dd>
-                                        </dl>
-                                        <dl>
-                                            <dt className='bg-fxdark'>Start Date</dt>
-                                            <dd className='bg-light'>
-                                                {data.map(item =>
-                                                    <a>{item.StartDate != null ? Moment(item.StartDate).format('DD/MM/YYYY') : ""}</a>
-                                                )}
-
-                                            </dd>
-                                        </dl>
-                                        <dl>
-                                            <dt className='bg-fxdark'>Status</dt>
-                                            <dd className='bg-light'>{data.map(item => <a>{item.Status}</a>)}</dd>
-                                        </dl>
-                                        <dl>
-                                            <dt className='bg-fxdark'>Team Members</dt>
-                                            <dd className='bg-light d-flex'>
-                                        {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
-                                    <>
-                                            <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
-                                             <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
-                                            </a>
-                                           
-                                            </>
-                                    ):""}
-                                     <div className='px-1'>|</div>
-                                            {AllTeamMember != null && AllTeamMember.length > 0 &&
-                  <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
-                }
-                {AllTeamMember != null && AllTeamMember.length > 1 &&
-                  <div className="user_Member_img_suffix2 multimember" onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
-                   {showBlock &&
-                    <span className="tooltiptext" >
-                      <div>                        
-                          { AllTeamMember.slice(1).map( (rcData:any,i:any)=> {
-                            
-                            return  <div className="team_Members_Item" style={{padding: '2px'}}>
-                              <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
-                                <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
-                              <div>{rcData.Title}</div>
-                            </div>
-                                                    
-                          })
-                          }
-                       
-                      </div>
-                    </span>
-                    }
-                  </div>                        
-                }   
-                                            {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
-                                            <>
-                                                    <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
-                                                    <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
-                                                   </a>
-                                            </>
-                                            ):""} */}
-
-                                  </dd>
-                                        </dl>
-                                        <dl>
-                                            <dt className='bg-fxdark'>Item Rank</dt>
-                                            <dd className='bg-light'>
-                                                {data.map(item => <a>{item.ItemRank}</a>)}
-
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                    <div className='col-md-6 p-0'>
-                                        <dl>
-                                            <dt className='bg-fxdark'>Priority</dt>
-                                            <dd className='bg-light'>
-                                                {data.map(item =>
-                                                    <a>{item.Priority != null ? item.Priority : ""}</a>)}
-
-                                            </dd>
-                                        </dl>
-                                        <dl>
-                                            <dt className='bg-fxdark'>Completion Date</dt>
-                                            <dd className='bg-light'>
-                                                {data.map(item =>
-                                                    <a>{item.CompletedDate != null ? Moment(item.CompletedDate).format('DD/MM/YYYY') : ""}</a>)}
-
-                                            </dd>
-                                        </dl>
-                                        <dl>
-                                            <dt className='bg-fxdark'>Categories</dt>
-                                            <dd className='bg-light text-break'>{data.map(item => <a>{item.Categories}</a>)}</dd>
-                                        </dl>
-                                        <dl>
-                                            <dt className='bg-fxdark'>% Complete</dt>
-                                            <dd className='bg-light'>
-                                                {data.map(item => <a>{(item.PercentComplete * 100).toFixed(0)}</a>)}
-
-                                            </dd>
-                                        </dl>
-                                        {data.map((item: any) => {
-                                            return (
-                                                <>
-                                                    {item.Parent.Title != undefined &&
-                                                        <dl>
-                                                            <dt className='bg-fxdark'>Parent</dt>
-                                                            <dd className='bg-light'>
-                                                                <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Parent.Id}`}>{item.Parent.Title}</a>
-                                                                <span className="pull-right">
-                                                                    <span className="pencil_icon">
-                                                                        <span className="hreflink"
-
-                                                                        >
-                                                                            {item.Portfolio_x0020_Type == 'Component' &&
-                                                                                <>
-                                                                                    <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${item.Parent.Id}`}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />    </a>
-
-                                                                                </>
-                                                                            }
-                                                                            {item.Portfolio_x0020_Type == 'Service' &&
-                                                                                <>
-                                                                                    <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${item.Parent.Id}`}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> </a>
-
-
-                                                                                </>}
-
-                                                                        </span>
-                                                                    </span>
-                                                                </span>
-                                                            </dd>
-                                                        </dl>
-                                                    }
-                                                </>)
-                                        })}
-                                    </div>
-                                </div>
-                                <section className='row  accordionbox'>
-                                    <div className="accordion  pe-1 overflow-hidden">
-                                        {/* description */}
-                                        {data.map(item =>
-                                            <>
-                                                {item.Body !== null &&
-                                                    <div className="card shadow-none  mb-2">
-                                                        <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen6(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showb ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>   Description</span></button></div>
-                                                            <div className="accordion-collapse collapse show"  >
-                                                                {item.showb &&
-                                                                    <div className="accordion-body pt-1" id="testDiv1">
-                                                                        {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
-                                                                        {data.map(item =>
-                                                                            <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
-                                                                                {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
-                                                                            </p>)}
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                } </>)}
-
-                                        {/* Short description */}
-                                        {data.map(item =>
-                                            <>
-                                                {item.Short_x0020_Description_x0020_On !== null &&
-                                                    <div className="card shadow-none  mb-2">
-                                                        <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
-                                                            <div className="accordion-collapse collapse show"  >
-                                                                {item.show &&
-                                                                    <div className="accordion-body pt-1" id="testDiv1">
-                                                                        {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
-                                                                        {data.map(item =>
-                                                                            <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Short_x0020_Description_x0020_On }}>
-                                                                                {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
-                                                                            </p>)}
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                } </>)}
-
-                                        {/* Question description */}
-                                        {AllQuestion != undefined && AllQuestion.length != 0 && data.map(item =>
-                                            <>
-
-
-                                                <div className="card shadow-none Qapannel  mb-2">
-
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Question  Description</span></button></div>
-
-
-
-
-                                                    {item.showQues &&
-                                                        <>
-                                                       <div className='px-2 my-2'>
-                                                            {AllQuestion.map(item =>
-                                                                <div id="t_draggable1" className='mb-2'>
-                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  {item.Title}</span></button></div>
-                                                                    <div className="accordion-collapse collapse show"  >
-                                                                        {item.showQues &&
-                                                                            <div className="accordion-body pt-1" id="testDiv1">
-                                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
-
-                                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
-                                                                                    {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
-                                                                                </p>
-                                                                            </div>
-                                                                        }
-                                                                    </div>
-                                                                </div>
-
-                                                            )}
-                                                            </div>
-                                                        </>
-                                                    }</div>
-                                            </>
-                                        )}
-                                        {/* Help description */}
-                                        {AllHelp != undefined && AllHelp.length != 0 && data.map(item =>
-                                            <>
-
-
-                                                <div className="card shadow-none Qapannel  mb-2">
-
-                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen10(item)} ><button className="accordion-button btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showHelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Help  Description</span></button></div>
-
-
-
-
-                                                    {item.showHelp &&
-                                                        <>
-                                                       <div className='px-2 my-2'>
-                                                            {AllHelp.map(item =>
-                                                                <div id="t_draggable1" className='mb-2'>
-                                                                    <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen10(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                        <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showHelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  {item.Title}</span></button></div>
-                                                                    <div className="accordion-collapse collapse show"  >
-                                                                        {item.showHelp &&
-                                                                            <div className="accordion-body pt-1" id="testDiv1">
-                                                                                {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
-
-                                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
-                                                                                    {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
-                                                                                </p>
-                                                                            </div>
-                                                                        }
-                                                                    </div>
-                                                                </div>
-
-                                                            )}
-                                                            </div>
-                                                        </>
-                                                    }</div>
-                                            </>
-                                        )}
-
-                                        {/* Background */}
-                                        {data.map(item =>
-                                            <>
-                                                {item.Background !== null &&
-                                                    <div className="card shadow-none  mb-2">
-                                                        <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen1(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                <span className="sign">{item.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
-                                                            <div className="accordion-collapse collapse show" >
-                                                                {item.showl &&
-                                                                    <div className="accordion-body pt-1" id="testDiv1">
-                                                                        <p className="m-0" >{data.map(item => <a>{item.Background}</a>)}</p>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }</>)}
-                                        {/* Idea */}
-                                        {data.map(item =>
-                                            <>
-                                                {item.Idea !== null &&
-                                                    <div className="card shadow-none mb-2">
-                                                        <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Idea</span></button></div>
-                                                            <div className="accordion-collapse collapse show"  >
-                                                                {item.shows &&
-                                                                    <div className="accordion-body pt-1" id="testDiv1">
-                                                                        <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Idea }}></p>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }</>)}
-                                        {/* Value Added */}
-                                        {data.map(item =>
-                                            <>
-                                                {item.ValueAdded !== null &&
-                                                    <div className="card shadow-none mb-2">
-                                                        <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen4(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                <span className="sign">{item.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
-                                                            <div className="accordion-collapse collapse show"  >
-                                                                {item.showj &&
-                                                                    <div className="accordion-body pt-1" id="testDiv1">
-                                                                        <p className="m-0" dangerouslySetInnerHTML={{ __html: item.ValueAdded }}></p>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }</>)}
-                                        {/* Help Information Help_x0020_Information */}
-                                        {data.map(item =>
-                                            <>
-                                                {item.Help_x0020_Information !== null &&
-                                                    <div className="card shadow-none mb-2">
-                                                        <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen7(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                <span className="sign">{item.showhelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Help Information</span></button></div>
-                                                            <div className="accordion-collapse collapse show"  >
-                                                                {item.showhelp &&
-                                                                    <div className="accordion-body pt-1" id="testDiv1">
-                                                                        <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Help_x0020_Information }}></p>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }</>)}
-
-                                         {/* Technical Explanation */}
-                                                {data.map(item =>
-                                            <>
-                                                {item.TechnicalExplanations !== null &&
-                                                    <div className="card shadow-none mb-2">
-                                                        <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen9(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                <span className="sign">{item.showtech ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900">Technical Explanation</span></button></div>
-                                                            <div className="accordion-collapse collapse show"  >
-                                                                {item.showtech &&
-                                                                    <div className="accordion-body pt-1" id="testDiv1">
-                                                                        <p className="m-0" dangerouslySetInnerHTML={{ __html: item.TechnicalExplanations }}></p>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }</>)}
-                                        {/* Deliverables */}
-                                        {data.map(item =>
-                                            <>
-                                                {item.Deliverables !== null &&
-                                                    <div className="card shadow-none mb-2">
-                                                        <div className="accordion-item border-0" id="t_draggable1">
-                                                            <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen5(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
-                                                                <span className="sign">{item.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
-                                                            <div className="accordion-collapse collapse show"  >
-                                                                {item.showm &&
-                                                                    <div className="accordion-body pt-1" id="testDiv1">
-                                                                        <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Deliverables }}></p>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                }</>)}
-                                    </div>
-                                </section>
-                            </div>
-                            <div className='col-md-4 p-0'>
+            <section className="ContentSection">
+                <section>
+                    <div className='col'>
+                        <div className='d-flex justify-content-between p-0' >
+                            <ul className="spfxbreadcrumb m-0 p-0">
+                                <li><a href='#'><FaHome /> </a></li>
                                 {data.map((item: any) => {
                                     return (
                                         <>
-                                            {item.Portfolio_x0020_Type == "Component" &&
-                                                <dl>
-                                                    <dt className='bg-fxdark'>Service Portfolio</dt>
-                                                    <dd className='bg-light'><a style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></dd>
-                                                </dl>
+                                            <li>
+                                                {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                                                {item.Portfolio_x0020_Type != undefined &&
+                                                    <a target='_blank' data-interception="off"
+                                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${item.Portfolio_x0020_Type}-Portfolio.aspx`}>
+                                                        {item.Portfolio_x0020_Type}-Portfolio
+                                                    </a>
+                                                }
+                                            </li>
+                                            {(item.Item_x0020_Type == 'SubComponent' || item.Item_x0020_Type == 'Feature') &&
+                                                <li>
+                                                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                                                    {item.Parent != undefined &&
+                                                        <a target='_blank' data-interception="off"
+                                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}>
+                                                            {item.Parent.Title}
+                                                        </a>
+                                                    }
+                                                </li>
                                             }
-                                            {item.Portfolio_x0020_Type == "Service" &&
-                                                <dl>
-                                                    <dt className='bg-fxdark'>Component Portfolio</dt>
-                                                    <dd className='bg-light'><a style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}>{item.ComponentPortfolio.Title}</a></dd>
-                                                </dl>
-                                            }
+
+                                            <li><a>{item.Title}</a></li>
                                         </>
                                     )
                                 })}
-                                {myarray1.length != 0 &&
-                                    <dl className='Sitecomposition'>
-                                        <div className="dropdown">
-                                            {data.map(item =>
-                                                <a className="sitebutton  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
-                                                    <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition
+                            </ul>
+                            </div>
+                    </div>
+                    <div className='col'>
+                        <div className='p-0' style={{ verticalAlign: "top" }}>
+                            {data.map(item =>
+                                <>
+                                    <h2 className='heading d-flex justify-content-between align-items-center'>
+                                        <span>
+                                        {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type == 'SubComponent' &&
+                                            <>
+                                                <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+
+                                                </span>
+                                            </>
+                                        }
+                                        {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type == 'SubComponent' &&
+                                            <>
+                                                <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+
+                                                </span>
+                                            </>
+                                        }
+
+                                        {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type == 'Feature' &&
+                                            <>
+                                                <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png" />    <a>{item.Title}</a>   <span style={{ paddingLeft: "3%" }}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+
+                                                </span>
+                                            </>
+                                        }
+                                        {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type == 'Feature' &&
+                                            <>
+                                                <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+
+                                                </span>
+                                            </>
+                                        }
+                                        {item.Portfolio_x0020_Type == 'Component' && item.Item_x0020_Type != 'SubComponent' && item.Item_x0020_Type != 'Feature' &&
+                                            <>
+                                                <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" />    <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+
+                                                </span>
+
+                                            </>
+                                        }
+                                        {item.Portfolio_x0020_Type == 'Service' && item.Item_x0020_Type != 'SubComponent' && item.Item_x0020_Type != 'Feature' &&
+                                            <>
+                                                <img className='client-icons' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />  <a>{item.Title}</a>   <span> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />
+
+                                                </span>
+
+
+                                            </>}
+                                            </span>
+                                            <span className="text-end fs-6"><a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-Old.aspx?taskId=${ID}`}>Old Portfolio profile page</a></span>
+                                            
+                                    </h2>
+
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                </section>
+                {/* left bar  & right bar */}
+                <section>
+                    <div className='row'>
+                        <div className='col-md-9 bg-white'>
+                            <div className='team_member row  py-2'>
+                                <div className='col-md-8'>
+                                    <div className='row mb-2'>
+                                        <div className='col-md-6 pe-0'>
+                                            <dl>
+                                                <dt className='bg-fxdark'>Due Date</dt>
+                                                <dd className='bg-light'>
+                                                    <span>
+                                                        {/* <i> 02/12/2019</i> */}
+                                                        {data.map(item =>
+                                                            <a>{item.DueDate != null ? Moment(item.DueDate).format('DD/MM/YYYY') : ""}</a>
+                                                        )}
+                                                        {/* {data.map(item =>  <i>{item.DueDate}</i>)} */}
+                                                    </span>
+
+                                                </dd>
+                                            </dl>
+                                            <dl>
+                                                <dt className='bg-fxdark'>Start Date</dt>
+                                                <dd className='bg-light'>
+                                                    {data.map(item =>
+                                                        <a>{item.StartDate != null ? Moment(item.StartDate).format('DD/MM/YYYY') : ""}</a>
+                                                    )}
+
+                                                </dd>
+                                            </dl>
+                                            <dl>
+                                                <dt className='bg-fxdark'>Status</dt>
+                                                <dd className='bg-light'>{data.map(item => <a>{item.Status}</a>)}</dd>
+                                            </dl>
+                                            <dl>
+                                                <dt className='bg-fxdark'>Team Members</dt>
+                                                <dd className='bg-light d-flex'>
+                                            {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
+                                        <>
+                                                <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
+                                                <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
                                                 </a>
-                                            )}
+                                            
+                                                </>
+                                        ):""}
+                                        <div className='px-1'>|</div>
+                                                {AllTeamMember != null && AllTeamMember.length > 0 &&
+                    <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
+                    }
+                    {AllTeamMember != null && AllTeamMember.length > 1 &&
+                    <div className="position-relative user_Member_img_suffix2 multimember" onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
+                    {showBlock &&
+                        <span className="tooltiptext" >
+                        <div>                        
+                            { AllTeamMember.slice(1).map( (rcData:any,i:any)=> {
+                                
+                                return  <div className="team_Members_Item" style={{padding: '2px'}}>
+                                <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                    <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
+                                <div>{rcData.Title}</div>
+                                </div>
+                                                        
+                            })
+                            }
+                        
+                        </div>
+                        </span>
+                        }
+                    </div>                        
+                    }   
+                                                {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
+                                                <>
+                                                        <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
+                                                        <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
+                                                    </a>
+                                                </>
+                                                ):""} */}
+
+                                    </dd>
+                                            </dl>
+                                            <dl>
+                                                <dt className='bg-fxdark'>Item Rank</dt>
+                                                <dd className='bg-light'>
+                                                    {data.map(item => <a>{item.ItemRank}</a>)}
+
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                        <div className='col-md-6 p-0'>
+                                            <dl>
+                                                <dt className='bg-fxdark'>Priority</dt>
+                                                <dd className='bg-light'>
+                                                    {data.map(item =>
+                                                        <a>{item.Priority != null ? item.Priority : ""}</a>)}
+
+                                                </dd>
+                                            </dl>
+                                            <dl>
+                                                <dt className='bg-fxdark'>Completion Date</dt>
+                                                <dd className='bg-light'>
+                                                    {data.map(item =>
+                                                        <a>{item.CompletedDate != null ? Moment(item.CompletedDate).format('DD/MM/YYYY') : ""}</a>)}
+
+                                                </dd>
+                                            </dl>
+                                            <dl>
+                                                <dt className='bg-fxdark'>Categories</dt>
+                                                <dd className='bg-light text-break'>{data.map(item => <a>{item.Categories}</a>)}</dd>
+                                            </dl>
+                                            <dl>
+                                                <dt className='bg-fxdark'>% Complete</dt>
+                                                <dd className='bg-light'>
+                                                    {data.map(item => <a>{(item.PercentComplete * 100).toFixed(0)}</a>)}
+
+                                                </dd>
+                                            </dl>
+                                            {data.map((item: any) => {
+                                                return (
+                                                    <>
+                                                        {item.Parent.Title != undefined &&
+                                                            <dl>
+                                                                <dt className='bg-fxdark'>Parent</dt>
+                                                                <dd className='bg-light'>
+                                                                    <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${item.Parent.Id}`}>{item.Parent.Title}</a>
+                                                                    <span className="pull-right">
+                                                                        <span className="pencil_icon">
+                                                                            <span className="hreflink"
+
+                                                                            >
+                                                                                {item.Portfolio_x0020_Type == 'Component' &&
+                                                                                    <>
+                                                                                        <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${item.Parent.Id}`}><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />    </a>
+
+                                                                                    </>
+                                                                                }
+                                                                                {item.Portfolio_x0020_Type == 'Service' &&
+                                                                                    <>
+                                                                                        <a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${item.Parent.Id}`}> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" /> </a>
+
+
+                                                                                    </>}
+
+                                                                            </span>
+                                                                        </span>
+                                                                    </span>
+                                                                </dd>
+                                                            </dl>
+                                                        }
+                                                    </>)
+                                            })}
+                                        </div>
+                                    </div>
+                                    <section className='row  accordionbox'>
+                                        <div className="accordion  pe-1 overflow-hidden">
+                                            {/* description */}
                                             {data.map(item =>
                                                 <>
-                                                    {item.showk &&
-                                                        <div className='spxdropdown-menu'>
-                                                            <ul>
-                                                                {myarray1.map((items: any) =>
-                                                                    <li className="dropdown-item">
-                                                                        {items.Title != 'Gender'&&
-                                                                        <>
-                                                                        <span>
-                                                                            <img style={{ width: "22px" }} title={items.Title} src={items.SiteImages} data-themekey="#" />
-                                                                        </span>
-                                                                        <span >
-                                                                            {/* {{item.ClienTimeDescription.substring(0,2)}}% */}
-                                                                            {/* {data.map(item =><i>{item.ClienTimeDescription.substring(0,2)}%</i>)} */}
-                                                                            {(items.ClienTimeDescription != undefined) &&
-                                                                                <span className="ng-binding">
-                                                                                    {/* {item.ClienTimeDescription}% */}
-                                                                                    {/* <>
-                                                                                      {parseInt(items.ClienTimeDescription).toFixed(2)}%
-                                                                                   </> */}
-                                                                                    {items.ClienTimeDescription.length === undefined &&
-                                                                                        <>
-                                                                                            {(items.ClienTimeDescription).toFixed(2)}%
-                                                                                        </>
-                                                                                    }
-                                                                                    {(items.ClienTimeDescription.length <= 2 || items.ClienTimeDescription.length > 2) &&
-                                                                                        <>
-                                                                                            {parseInt(items.ClienTimeDescription).toFixed(2)}%
-                                                                                        </>}
+                                                    {item.Body !== null &&
+                                                        <div className="card shadow-none  mb-2">
+                                                            <div className="accordion-item border-0" id="t_draggable1">
+                                                                <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen6(item)} ><button className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showb ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>   Description</span></button></div>
+                                                                <div className="accordion-collapse collapse show"  >
+                                                                    {item.showb &&
+                                                                        <div className="accordion-body pt-1" id="testDiv1">
+                                                                            {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                            {data.map(item =>
+                                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
+                                                                                    {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                                </p>)}
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    } </>)}
 
+                                            {/* Short description */}
+                                            {data.map(item =>
+                                                <>
+                                                    {item.Short_x0020_Description_x0020_On !== null &&
+                                                        <div className="card shadow-none  mb-2">
+                                                            <div className="accordion-item border-0" id="t_draggable1">
+                                                                <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.show ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Short  Description</span></button></div>
+                                                                <div className="accordion-collapse collapse show"  >
+                                                                    {item.show &&
+                                                                        <div className="accordion-body pt-1" id="testDiv1">
+                                                                            {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                                                            {data.map(item =>
+                                                                                <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Short_x0020_Description_x0020_On }}>
+                                                                                    {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                                </p>)}
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    } </>)}
+
+                                            {/* Question description */}
+                                            {AllQuestion != undefined && AllQuestion.length != 0 && data.map(item =>
+                                                <>
+
+
+                                                    <div className="card shadow-none Qapannel  mb-2">
+
+                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Question  Description</span></button></div>
+
+
+
+
+                                                        {item.showQues &&
+                                                            <>
+                                                        <div className='px-2 my-2'>
+                                                                {AllQuestion.map(item =>
+                                                                    <div id="t_draggable1" className='mb-2'>
+                                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen8(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                            <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showQues ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  {item.Title}</span></button></div>
+                                                                        <div className="accordion-collapse collapse show"  >
+                                                                            {item.showQues &&
+                                                                                <div className="accordion-body pt-1" id="testDiv1">
+                                                                                    {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+
+                                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
+                                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                                    </p>
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+
+                                                                )}
+                                                                </div>
+                                                            </>
+                                                        }</div>
+                                                </>
+                                            )}
+                                            {/* Help description */}
+                                            {AllHelp != undefined && AllHelp.length != 0 && data.map(item =>
+                                                <>
+
+
+                                                    <div className="card shadow-none Qapannel  mb-2">
+
+                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen10(item)} ><button className="accordion-button btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                            <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showHelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Help  Description</span></button></div>
+
+
+
+
+                                                        {item.showHelp &&
+                                                            <>
+                                                        <div className='px-2 my-2'>
+                                                                {AllHelp.map(item =>
+                                                                    <div id="t_draggable1" className='mb-2'>
+                                                                        <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen10(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                            <span className="fw-medium font-sans-serif text-900"><span className="sign">{item.showHelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  {item.Title}</span></button></div>
+                                                                        <div className="accordion-collapse collapse show"  >
+                                                                            {item.showHelp &&
+                                                                                <div className="accordion-body pt-1" id="testDiv1">
+                                                                                    {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+
+                                                                                    <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Body }}>
+                                                                                        {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                                                    </p>
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+
+                                                                )}
+                                                                </div>
+                                                            </>
+                                                        }</div>
+                                                </>
+                                            )}
+
+                                            {/* Background */}
+                                            {data.map(item =>
+                                                <>
+                                                    {item.Background !== null &&
+                                                        <div className="card shadow-none  mb-2">
+                                                            <div className="accordion-item border-0" id="t_draggable1">
+                                                                <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen1(item)} ><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <span className="sign">{item.showl ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Background</span></button></div>
+                                                                <div className="accordion-collapse collapse show" >
+                                                                    {item.showl &&
+                                                                        <div className="accordion-body pt-1" id="testDiv1">
+                                                                            <p className="m-0" >{data.map(item => <a>{item.Background}</a>)}</p>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }</>)}
+                                            {/* Idea */}
+                                            {data.map(item =>
+                                                <>
+                                                    {item.Idea !== null &&
+                                                        <div className="card shadow-none mb-2">
+                                                            <div className="accordion-item border-0" id="t_draggable1">
+                                                                <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen2(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <span className="sign">{item.shows ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Idea</span></button></div>
+                                                                <div className="accordion-collapse collapse show"  >
+                                                                    {item.shows &&
+                                                                        <div className="accordion-body pt-1" id="testDiv1">
+                                                                            <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Idea }}></p>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }</>)}
+                                            {/* Value Added */}
+                                            {data.map(item =>
+                                                <>
+                                                    {item.ValueAdded !== null &&
+                                                        <div className="card shadow-none mb-2">
+                                                            <div className="accordion-item border-0" id="t_draggable1">
+                                                                <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen4(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <span className="sign">{item.showj ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Value Added</span></button></div>
+                                                                <div className="accordion-collapse collapse show"  >
+                                                                    {item.showj &&
+                                                                        <div className="accordion-body pt-1" id="testDiv1">
+                                                                            <p className="m-0" dangerouslySetInnerHTML={{ __html: item.ValueAdded }}></p>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }</>)}
+                                            {/* Help Information Help_x0020_Information */}
+                                            {data.map(item =>
+                                                <>
+                                                    {item.Help_x0020_Information !== null &&
+                                                        <div className="card shadow-none mb-2">
+                                                            <div className="accordion-item border-0" id="t_draggable1">
+                                                                <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen7(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <span className="sign">{item.showhelp ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900"> Help Information</span></button></div>
+                                                                <div className="accordion-collapse collapse show"  >
+                                                                    {item.showhelp &&
+                                                                        <div className="accordion-body pt-1" id="testDiv1">
+                                                                            <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Help_x0020_Information }}></p>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }</>)}
+
+                                            {/* Technical Explanation */}
+                                                    {data.map(item =>
+                                                <>
+                                                    {item.TechnicalExplanations !== null &&
+                                                        <div className="card shadow-none mb-2">
+                                                            <div className="accordion-item border-0" id="t_draggable1">
+                                                                <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen9(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <span className="sign">{item.showtech ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900">Technical Explanation</span></button></div>
+                                                                <div className="accordion-collapse collapse show"  >
+                                                                    {item.showtech &&
+                                                                        <div className="accordion-body pt-1" id="testDiv1">
+                                                                            <p className="m-0" dangerouslySetInnerHTML={{ __html: item.TechnicalExplanations }}></p>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }</>)}
+                                            {/* Deliverables */}
+                                            {data.map(item =>
+                                                <>
+                                                    {item.Deliverables !== null &&
+                                                        <div className="card shadow-none mb-2">
+                                                            <div className="accordion-item border-0" id="t_draggable1">
+                                                                <div className="card-header p-0 border-bottom-0 " onClick={() => handleOpen5(item)}><button className="accordion-button  btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none" data-bs-toggle="collapse">
+                                                                    <span className="sign">{item.showm ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span className="fw-medium font-sans-serif text-900" > Deliverables</span></button></div>
+                                                                <div className="accordion-collapse collapse show"  >
+                                                                    {item.showm &&
+                                                                        <div className="accordion-body pt-1" id="testDiv1">
+                                                                            <p className="m-0" dangerouslySetInnerHTML={{ __html: item.Deliverables }}></p>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }</>)}
+                                        </div>
+                                    </section>
+                                </div>
+                                <div className='col-md-4 p-0'>
+                                    {data.map((item: any) => {
+                                        return (
+                                            <>
+                                                {item.Portfolio_x0020_Type == "Component" &&
+                                                    <dl>
+                                                        <dt className='bg-fxdark'>Service Portfolio</dt>
+                                                        <dd className='bg-light'><a style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></dd>
+                                                    </dl>
+                                                }
+                                                {item.Portfolio_x0020_Type == "Service" &&
+                                                    <dl>
+                                                        <dt className='bg-fxdark'>Component Portfolio</dt>
+                                                        <dd className='bg-light'><a style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}>{item.ComponentPortfolio.Title}</a></dd>
+                                                    </dl>
+                                                }
+                                            </>
+                                        )
+                                    })}
+                                    {myarray1.length != 0 &&
+                                        <dl className='Sitecomposition'>
+                                            <div className="dropdown">
+                                                {data.map(item =>
+                                                    <a className="sitebutton  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
+                                                        <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition
+                                                    </a>
+                                                )}
+                                                {data.map(item =>
+                                                    <>
+                                                        {item.showk &&
+                                                            <div className='spxdropdown-menu'>
+                                                                <ul>
+                                                                    {myarray1.map((items: any) =>
+                                                                        <li className="dropdown-item">
+                                                                            {items.Title != 'Gender'&&
+                                                                            <>
+                                                                            <span>
+                                                                                <img style={{ width: "22px" }} title={items.Title} src={items.SiteImages} data-themekey="#" />
+                                                                            </span>
+                                                                            <span >
+                                                                                {/* {{item.ClienTimeDescription.substring(0,2)}}% */}
+                                                                                {/* {data.map(item =><i>{item.ClienTimeDescription.substring(0,2)}%</i>)} */}
+                                                                                {(items.ClienTimeDescription != undefined) &&
+                                                                                    <span className="ng-binding">
+                                                                                        {/* {item.ClienTimeDescription}% */}
+                                                                                        {/* <>
+                                                                                        {parseInt(items.ClienTimeDescription).toFixed(2)}%
+                                                                                    </> */}
+                                                                                        {items.ClienTimeDescription.length === undefined &&
+                                                                                            <>
+                                                                                                {(items.ClienTimeDescription).toFixed(2)}%
+                                                                                            </>
+                                                                                        }
+                                                                                        {(items.ClienTimeDescription.length <= 2 || items.ClienTimeDescription.length > 2) &&
+                                                                                            <>
+                                                                                                {parseInt(items.ClienTimeDescription).toFixed(2)}%
+                                                                                            </>}
+
+                                                                                    </span>
+                                                                                }
+                                                                            </span>
+                                                                            {items.Title == 'EPS' &&
+                                                                                <span>
+                                                                                    {myarray3.length != 0 ? myarray3.map((client: any) => {
+                                                                                        return (
+                                                                                            <div className="Members-Item">
+                                                                                                <div className="user-Member-img"   >
+                                                                                                    {(client.Id > 340 && client.Id < 420) &&
+                                                                                                        <span>
+                                                                                                            {client.Title}
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )
+                                                                                    }) : ""}
                                                                                 </span>
                                                                             }
-                                                                        </span>
-                                                                        {items.Title == 'EPS' &&
-                                                                            <span>
-                                                                                {myarray3.length != 0 ? myarray3.map((client: any) => {
-                                                                                    return (
-                                                                                        <div className="Members-Item">
-                                                                                            <div className="user-Member-img"   >
-                                                                                                {(client.Id > 340 && client.Id < 420) &&
-                                                                                                    <span>
-                                                                                                        {client.Title}
-                                                                                                    </span>
-                                                                                                }
+                                                                            {items.Title == 'Education' &&
+                                                                                <span>
+                                                                                    {myarray3.length != 0 ? myarray3.map((client: any) => {
+                                                                                        return (
+                                                                                            <div className="Members-Item">
+                                                                                                <div className="user-Member-img">
+                                                                                                    {(client.Id > 609 && client.Id < 631) &&
+                                                                                                        <span>
+                                                                                                            {client.Title}
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                </div>
                                                                                             </div>
-                                                                                        </div>
-                                                                                    )
-                                                                                }) : ""}
-                                                                            </span>
-                                                                        }
-                                                                        {items.Title == 'Education' &&
-                                                                            <span>
-                                                                                {myarray3.length != 0 ? myarray3.map((client: any) => {
-                                                                                    return (
-                                                                                        <div className="Members-Item">
-                                                                                            <div className="user-Member-img">
-                                                                                                {(client.Id > 609 && client.Id < 631) &&
-                                                                                                    <span>
-                                                                                                        {client.Title}
-                                                                                                    </span>
-                                                                                                }
+                                                                                        )
+                                                                                    }) : ""}
+                                                                                </span>
+                                                                            }
+                                                                            {items.Title == 'EI' &&
+                                                                                <span  >
+                                                                                    {myarray3.length != 0 ? myarray3.map((client: any) => {
+                                                                                        return (
+                                                                                            <div className="Members-Item">
+                                                                                                <div className="user-Member-img"
+                                                                                                >
+                                                                                                    {(client.Id > 419 && client.Id < 435) &&
+                                                                                                        <span>
+                                                                                                            {client.Title}
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                </div>
                                                                                             </div>
-                                                                                        </div>
-                                                                                    )
-                                                                                }) : ""}
-                                                                            </span>
-                                                                        }
-                                                                        {items.Title == 'EI' &&
-                                                                            <span  >
-                                                                                {myarray3.length != 0 ? myarray3.map((client: any) => {
-                                                                                    return (
-                                                                                        <div className="Members-Item">
-                                                                                            <div className="user-Member-img"
-                                                                                            >
-                                                                                                {(client.Id > 419 && client.Id < 435) &&
-                                                                                                    <span>
-                                                                                                        {client.Title}
-                                                                                                    </span>
-                                                                                                }
+                                                                                        )
+                                                                                    }) : ""}
+                                                                                </span>
+                                                                            }
+                                                                            {items.Title == 'Migration' &&
+                                                                                <span  >
+                                                                                    {myarray3.length != 0 ? myarray3.map((client: any) => {
+                                                                                        return (
+                                                                                            <div className="Members-Item">
+                                                                                                <div className="user-Member-img"
+                                                                                                >
+                                                                                                    {(client.Id > 630 && client.Id < 640) &&
+                                                                                                        <span>
+                                                                                                            {client.Title}
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                </div>
                                                                                             </div>
-                                                                                        </div>
-                                                                                    )
-                                                                                }) : ""}
-                                                                            </span>
-                                                                        }
-                                                                        {items.Title == 'Migration' &&
-                                                                            <span  >
-                                                                                {myarray3.length != 0 ? myarray3.map((client: any) => {
-                                                                                    return (
-                                                                                        <div className="Members-Item">
-                                                                                            <div className="user-Member-img"
-                                                                                            >
-                                                                                                {(client.Id > 630 && client.Id < 640) &&
-                                                                                                    <span>
-                                                                                                        {client.Title}
-                                                                                                    </span>
-                                                                                                }
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    )
-                                                                                }) : ""}
-                                                                            </span>
-                                                                        }
-                                                                        </>}
-                                                                    </li>
-                                                                )}
-                                                            </ul>
-                                                        </div>
-                                                    }</>
-                                            )}
-                                        </div>
-                                    </dl>
-                                }
+                                                                                        )
+                                                                                    }) : ""}
+                                                                                </span>
+                                                                            }
+                                                                            </>}
+                                                                        </li>
+                                                                    )}
+                                                                </ul>
+                                                            </div>
+                                                        }</>
+                                                )}
+                                            </div>
+                                        </dl>
+                                    }
+                                </div>
                             </div>
-                        </div>
 
-                    </div>
-                    <div className='col-md-3'>
-                        <aside>
-                            {/* <div className='mb-3 card'>
-                                    <div className='card-header'>
-                                        <div className='card-actions float-end'>  <Tooltip /></div>
-                                        <div className="mb-0 card-title h5">Smart Information</div>
-                                    </div>
-                                    <div className='card-body'>
-                                        <div className="border-bottom pb-2"><a title="+ Add SmartInformation" ng-click="editSmartInfoItem(item,'add')"><Smartinfo/>+ Add SmartInformation</a></div>
-                                    </div>
-                                </div>
-                                <div className='mb-3 card' ng-if="isOwner==true">
-                                    <div className='card-header'>
-                                        <div className='card-actions float-end'>  <Tooltip /></div>
-                                        <div className="mb-0 card-title h5">Add & Connect Tool</div>
-                                    </div>
-                                    <div className='card-body'>
-                                        <div className="border-bottom pb-2"> <a ng-click="TagItems();">
-                                            Click here to add more content
-                                        </a></div>
-                                    </div>
-                                </div>
-                                {FolderData!=undefined&&
-                                <>
-                                  {FolderData.map(item =>{
-                                    return(
-                                <div className='mb-3 card'>
-                                    <div className='card-header'>
-                                        <div className='card-actions float-end'>  <Tooltip /></div>
-                                        <div className="mb-0 card-title h5">Main Folder</div>
-                                    </div>
-                                    <div className='card-body'>
-                                        <div className="border-bottom pb-2">
-                                                <div>
-                                                    <img  data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
-                                                    <a className="hreflink ng-binding" target="_blank" href={item.EncodedAbsUrl}>
-                                                        {item.FileLeafRef}
-                                                    </a>
-                                                </div>
+                        </div>
+                        <div className='col-md-3'>
+                            <aside>
+                                {/* <div className='mb-3 card'>
+                                        <div className='card-header'>
+                                            <div className='card-actions float-end'>  <Tooltip /></div>
+                                            <div className="mb-0 card-title h5">Smart Information</div>
+                                        </div>
+                                        <div className='card-body'>
+                                            <div className="border-bottom pb-2"><a title="+ Add SmartInformation" ng-click="editSmartInfoItem(item,'add')"><Smartinfo/>+ Add SmartInformation</a></div>
                                         </div>
                                     </div>
+                                    <div className='mb-3 card' ng-if="isOwner==true">
+                                        <div className='card-header'>
+                                            <div className='card-actions float-end'>  <Tooltip /></div>
+                                            <div className="mb-0 card-title h5">Add & Connect Tool</div>
+                                        </div>
+                                        <div className='card-body'>
+                                            <div className="border-bottom pb-2"> <a ng-click="TagItems();">
+                                                Click here to add more content
+                                            </a></div>
+                                        </div>
+                                    </div>
+                                    {FolderData!=undefined&&
+                                    <>
+                                    {FolderData.map(item =>{
+                                        return(
+                                    <div className='mb-3 card'>
+                                        <div className='card-header'>
+                                            <div className='card-actions float-end'>  <Tooltip /></div>
+                                            <div className="mb-0 card-title h5">Main Folder</div>
+                                        </div>
+                                        <div className='card-body'>
+                                            <div className="border-bottom pb-2">
+                                                    <div>
+                                                        <img  data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
+                                                        <a className="hreflink ng-binding" target="_blank" href={item.EncodedAbsUrl}>
+                                                            {item.FileLeafRef}
+                                                        </a>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )})} </>
+                                }  */}
+                                <div className='mb-3 card'>
+                                    <>
+                                        {data.map(item =>
+                                            <CommentCard siteUrl={"https://hhhhteams.sharepoint.com/sites/HHHH/SP"} userDisplayName={item.userDisplayName} listName={"Master Tasks"} itemID={item.Id}></CommentCard>
+                                        )}
+                                    </>
                                 </div>
-                            )})} </>
-                               }  */}
-                            <div className='mb-3 card'>
-                                <>
-                                    {data.map(item =>
-                                        <CommentCard siteUrl={"https://hhhhteams.sharepoint.com/sites/HHHH/SP"} userDisplayName={item.userDisplayName} listName={"Master Tasks"} itemID={item.Id}></CommentCard>
-                                    )}
-                                </>
-                            </div>
-                        </aside>
+                            </aside>
+                        </div>
                     </div>
-                </div>
+                </section>
             </section>
             {/* table secation artical */}
-            <section className="TableSection" id={tablecontiner}>
-                {/* {data.map(item => (
-                                <Groupbyt  title={item.Title} level={item.PortfolioLevel}/>))} */}
-                {/* <Groupby/> */}
-                {/* {data.map(item => (
-                                <Groupby Id={item.Id} level={item.PortfolioLevel}/>
-                                ))} */}
-                {data.map(item => (
-                    <ComponentTable props={item} NextProp={myarray2} />
-                ))}
+            <section className="TableContentSection taskprofilepagegreen">
+                <div className="container-fluid">
+                    <section className="TableSection" >
+                        {/* {data.map(item => (
+                                        <Groupbyt  title={item.Title} level={item.PortfolioLevel}/>))} */}
+                        {/* <Groupby/> */}
+                        {/* {data.map(item => (
+                                        <Groupby Id={item.Id} level={item.PortfolioLevel}/>
+                                        ))} */}
+                        {data.map(item => (
+                            <ComponentTable props={item} NextProp={myarray2} />
+                        ))}
+                    </section>
+                </div>
             </section>
             <div className="col-sm-12 pad0">
                 {data.map((item: any) => {

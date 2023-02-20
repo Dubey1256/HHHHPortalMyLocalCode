@@ -12,16 +12,16 @@ function TimeEntry(props: any) {
   return (
     <>
       <Panel
-        headerText={`All Time Entry -${props.props.Title}`}
+        headerText={`All Time Entry -${props.data.Title}`}
         isOpen={props.isopen}
         onDismiss={handleClose}
         isBlocking={false}
         type={PanelType.large}
       >
         <div className="modal-body">
-          <TimeEntryPopup props={props.props} />
+          <TimeEntryPopup props={props.data} />
         </div>
-        <footer>
+        <footer className="mt-3">
           <Button variant="primary" onClick={handleClose}>
             OK
           </Button>
