@@ -5,7 +5,6 @@ import { Version } from '@microsoft/sp-core-library';
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
-
 var serachTitle: any = '';
 const ComponentPortPolioPopup = (item: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -13,12 +12,12 @@ const ComponentPortPolioPopup = (item: any) => {
     const [componentsData, setComponentsData] = React.useState([]);
     const [table, setTable] = React.useState(componentsData);
     const [CheckBoxdata, setcheckbox] = React.useState([]);
-    const [maidataBackup, setmaidataBackup] = React.useState([])
-    const [SubComponentsData, setSubComponentsData] = React.useState([])
-    const [TotalTask, setTotalTask] = React.useState([])
-    const [FeatureData, setFeatureData] = React.useState([])
-    const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [selectedComponent, selctedCompo] = React.useState('');
+    const [search, setSearch]: [string, (search: string) => void] = React.useState("");
+    const [maidataBackup, setmaidataBackup] = React.useState([])
+    const [TotalTask, setTotalTask] = React.useState([])
+    const [SubComponentsData, setSubComponentsData] = React.useState([])
+    const [FeatureData, setFeatureData] = React.useState([])
     React.useEffect(() => {
         if (item.smartComponent != undefined && item.smartComponent.length > 0)
             selctedCompo(item.smartComponent[0]);
@@ -382,12 +381,52 @@ const ComponentPortPolioPopup = (item: any) => {
             }
         })
         //maidataBackup.push(ComponentsData)
-        // setmaidataBackup(ComponentsData)
+         setmaidataBackup(ComponentsData)
         setComponentsData(ComponentsData);
         setmaidataBackup(ComponentsData)
         setModalIsOpen(true)
 
     }
+// For searching
+var stringToArray = function (input: any) {
+    if (input) {
+        return input.match(/\S+/g);
+    } else {
+        return [];
+    }
+};
+var getRegexPattern = function (keywordArray: any) {
+    var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
+    return new RegExp(pattern, "gi");
+};
+var getHighlightdata = function (item: any, searchTerms: any) {
+    var keywordList = [];
+    if (serachTitle != undefined && serachTitle != '') {
+        keywordList = stringToArray(serachTitle);
+    } else {
+        keywordList = stringToArray(serachTitle);
+    }
+    var pattern: any = getRegexPattern(keywordList);
+    //let Title :any =(...item.Title)
+    item.TitleNew = item.Title;
+    item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+    // item.Title = item.Title;
+    keywordList = [];
+    pattern = '';
+}
+var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
+    var isSearchTermAvailable = true;
+    $.each(searchTerms, function (index: any, val: any) {
+        if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+            isSearchTermAvailable = true;
+            getHighlightdata(item, val.toLowerCase());
+
+        } else
+            isSearchTermAvailable = false;
+    })
+    return isSearchTermAvailable;
+}
+  
 
     return (
         <Panel
@@ -443,9 +482,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 </th>
                                                 <th style={{ width: "18%" }}>
                                                     <div style={{ width: "17%" }} className="smart-relative ">
-                                                        <input id="searchClientCategory" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} type="search" placeholder="Client Category"
-                                                            title="Client Category" className="full_width searchbox_height"
-                                                        />
+                                                        <input id="searchClientCategory" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} type="search" placeholder="Client Category" title="Client Category" className="full_width searchbox_height" />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -455,7 +492,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 <th style={{ width: "20%" }}>
                                                     <div style={{ width: "19%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
-                                                            title="Client Category" className="full_width searchbox_height"
+                                                            title="Client Category" className="full_width searchbox_height" 
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -467,7 +504,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
-                                                            title="Client Category" className="full_width searchbox_height"
+                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'PercentComplete')}
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -479,10 +516,10 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative corm-control">
                                                         <input id="searchClientCategory" type="search" placeholder="Item Rank"
-                                                            title="Client Category" className="full_width searchbox_height"
+                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'ItemRank')}
                                                         />
                                                         <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                         </span>
                                                     </div>
@@ -490,7 +527,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Due"
-                                                            title="Client Category" className="full_width searchbox_height"
+                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'DueDate')}
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>

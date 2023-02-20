@@ -51,6 +51,7 @@
     "react-datepicker": "^4.8.0",
     "react-dom": "17.0.1",
     "react-draft-wysiwyg": "^1.15.0",
+    "react-froala-wysiwyg": "^4.0.17",
     "react-icons": "^4.7.1",
     "react-icons-md": "^1.1.0",
     "react-images-uploading": "^3.1.7",

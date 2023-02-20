@@ -365,7 +365,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let TeamConfiguration = {
             TeamMemberUsers: this.state.TeamMemberUsers,
             ResponsibleTeam: this.state.ResponsibleTeam,
-            AssignedTo: this.state.AssignedToUsers
+            AssignedTo: this.state.AssignedToUsers,
+            isDrop : true,
+            isDropRes : true
         }
         //set state of array element
         this.setState({
@@ -428,6 +430,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 }
                             </div>
                             <div className="row">
+                                
                                 <div className="col-sm-7">
                                     <h6>Team Members</h6>
                                     <div className="d-flex p-1  UserTimeTabGray">
