@@ -25,6 +25,7 @@ import Tooltip from "../../../globalComponents/Tooltip";
 // import ImagesC from "./Image";
 import { AllOut } from "@material-ui/icons";
 import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
+import PortfolioTagging from "./PortfolioTagging";
 
 var PostTechnicalExplanations = ''
 var PostDeliverables = ''
@@ -37,10 +38,11 @@ var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = []
 var BackupCat: any = ''
+let portfolioType = ''
 let listID = "EC34B38F-0669-480A-910C-F84E92E58ADF"
 function EditProjectPopup(item: any) {
     // Id:any
-
+    const [IsPortfolio, setIsPortfolio] = React.useState(false);
     const [CompoenetItem, setComponent] = React.useState([]);
     const [update, setUpdate] = React.useState(0);
     const [EditData, setEditData] = React.useState<any>({});
@@ -48,6 +50,7 @@ function EditProjectPopup(item: any) {
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
     const [isOpenPicker, setIsOpenPicker] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
+
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [CollapseExpend, setCollapseExpend] = React.useState(true);
@@ -98,26 +101,38 @@ function EditProjectPopup(item: any) {
         setDate(date);
         setComponent(EditData => ([...EditData]));
     };
-    const Call = React.useCallback((item1: any, type: any) => {
-        if (type == "SmartComponent") {
-            if (EditData != undefined && item1 != undefined) {
-                item.props.smartComponent = item1.smartComponent;
-                setSmartComponentData(item1.smartComponent);
-            }
+    const Call = React.useCallback((item: any, type: any) => {
+        setIsPortfolio(false);
+        // if (type == "SmartComponent") {
+        //     if (EditData != undefined && item1 != undefined) {
+        //         item.props.smartComponent = item1.smartComponent;
+        //         setSmartComponentData(item1.smartComponent);
+        //     }
 
+        // }
+        
+        if (type === "Service") {
+            if (item?.smartService?.length > 0) {
+                setLinkedComponentData(item.smartService);
+            }
+        }
+        if (type === "Component") {
+            if (item?.smartComponent?.length > 0) {
+                setSmartComponentData(item.smartComponent);
+            }
         }
 
         if (type == "Category") {
-            if (item1 != undefined && item1.Categories != "") {
+            if (item != undefined && item.Categories != "") {
                 var title: any = {};
-                title.Title = item1.categories;
-                item1.categories.map((itenn: any) => {
+                title.Title = item.categories;
+                item.categories.map((itenn: any) => {
                     if (!isItemExists(CategoriesData, itenn.Id)) {
                         CategoriesData.push(itenn);
                     }
 
                 })
-                item1.SharewebCategories.map((itenn: any) => {
+                item.SharewebCategories.map((itenn: any) => {
                     CategoriesData.push(itenn)
                 })
 
@@ -129,11 +144,11 @@ function EditProjectPopup(item: any) {
             }
         }
         if (type == "LinkedComponent") {
-            if (item1?.linkedComponent?.length > 0) {
+            if (item?.linkedComponent?.length > 0) {
                 // Item.props.linkedComponent = item1.linkedComponent;
                 // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-                setLinkedComponentData(item1.linkedComponent);
-                console.log("Popup component linkedComponent", item1.linkedComponent)
+                setLinkedComponentData(item.linkedComponent);
+                // console.log("Popup component linkedComponent", item.linkedComponent)
             }
         }
         if (CategoriesData != undefined) {
@@ -271,9 +286,8 @@ function EditProjectPopup(item: any) {
             // .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
             .getByTitle('Master Tasks')
             .items
-            .select("ComponentCategory/Id", "ComponentCategory/Title", "ComponentPortfolio/Id", "ComponentPortfolio/Title", "ServicePortfolio/Id", "ServicePortfolio/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-
-            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "ComponentPortfolio", "ServicePortfolio", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .select("ComponentCategory/Id", "ComponentCategory/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id","Services/Id","Services/Title","Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
             .filter("Id eq " + item.props.Id + "")
             .get()
         console.log(componentDetails);
@@ -325,13 +339,7 @@ function EditProjectPopup(item: any) {
             }
             item.smartComponent = [];
             item.smartCategories = [];
-            if (item.ComponentPortfolio != undefined) {
-                if (item.ComponentPortfolio.Id != undefined) {
-                    if (item.smartComponent != undefined)
-                        item.smartComponent.push({ 'Title': item.ComponentPortfolio.Title, 'Id': item.ComponentPortfolio.Id });
-
-                }
-            }
+            
             if (item.Sitestagging != undefined && item.Sitestagging != null) {
                 item.Sitestagging = JSON.parse(item.Sitestagging)
                 item.Sitestagging.forEach(function (site: any) {
@@ -392,6 +400,9 @@ function EditProjectPopup(item: any) {
             }
             if (item.Component?.length > 0) {
                 setSmartComponentData(item.Component);
+            }
+            if (item.Services?.length > 0) {
+                setLinkedComponentData(item.Services);
             }
             var Rr: any = []
             if (item.ServicePortfolio != undefined) {
@@ -701,6 +712,30 @@ function EditProjectPopup(item: any) {
 
         setComponent(EditData => ([...EditData]));
     }
+    const EditPortfolio = (item: any, type: any) => {
+        if(type=='Component'){
+            if (item.Component != undefined) {
+                item.smartComponent=[];
+                if (item.smartComponent != undefined) {
+                    item?.Component?.map((com:any)=>{
+                        item.smartComponent.push({ 'Title': com?.Title, 'Id': com?.Id });
+                    })
+                }
+            }
+        }else if(type=='Service'){
+            if (item.Services != undefined) {
+                item.smartService=[];
+                if (item.smartService != undefined) {
+                    item?.Services?.map((com:any)=>{
+                        item.smartService.push({ 'Title': com?.Title, 'Id': com?.Id });
+                    })
+                }
+            }
+        }
+        portfolioType = type
+        setIsPortfolio(true);
+        setSharewebComponent(item);
+    }
     const setPriorityNew = function (e: any, item: any) {
         item.Priority_x0020_Rank = e.target.value;
         switch (item.Priority_x0020_Rank) {
@@ -773,15 +808,7 @@ function EditProjectPopup(item: any) {
         var smartComponentsIds: any[] = [];
         var RelevantPortfolioIds = ''
         var Items = EditData;
-        if (smartComponentData != undefined && smartComponentData.length > 0) {
-            smartComponentData.map((com: any) => {
-                if (smartComponentData != undefined && smartComponentData.length >= 0) {
-                    $.each(smartComponentData, function (index: any, smart: any) {
-                        smartComponentsIds.push(smart.Id);
-                    })
-                }
-            })
-        }
+       
         if (NewArray != undefined && NewArray.length > 0) {
             NewArray.map((NeitemA: any) => {
                 CategoriesData.push(NeitemA)
@@ -799,15 +826,7 @@ function EditProjectPopup(item: any) {
                 CategoryID.push(category.Id)
             }
         })
-        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-            linkedComponentData?.map((com: any) => {
-                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                    $.each(linkedComponentData, function (index: any, smart: any) {
-                        RelevantPortfolioIds = smart.Id
-                    })
-                }
-            })
-        }
+        
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo.map((taskInfo) => {
                 AssignedToIds.push(taskInfo.Id);
@@ -841,6 +860,18 @@ function EditProjectPopup(item: any) {
                 })
             }
         }
+        let selectedComponent: any[] = [];
+        if (smartComponentData !== undefined && smartComponentData.length > 0) {
+            $.each(smartComponentData, function (index: any, smart: any) {
+                selectedComponent.push(smart?.Id);
+            })
+        }
+        let selectedService: any[] = [];
+        if (linkedComponentData !== undefined && linkedComponentData.length > 0) {
+            $.each(linkedComponentData, function (index: any, smart: any) {
+                selectedService.push(smart?.Id);
+            })
+        }
         // if (Items.smartComponent != undefined) {
         //     Items.smartComponent.map((com: any) => {
         //         // if (com.Title != undefined) {
@@ -868,7 +899,8 @@ function EditProjectPopup(item: any) {
 
             ItemRank: ItemRank,
             Priority_x0020_Rank: Items.Priority_x0020_Rank,
-            ComponentId: { "results": smartComponentsIds },
+            ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
+            ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
             Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
             StartDate: Startdate != undefined ? new Date(Startdate).toDateString() : Startdate,
             DueDate: date != undefined ? new Date(date).toDateString() : date,
@@ -1076,9 +1108,17 @@ function EditProjectPopup(item: any) {
                 NewArray.push(catTitle)
             }
         })
-
-
-
+    }
+    const unTagService=(array:any,index:any)=>{
+        array.splice(index,1);
+        setLinkedComponentData(array);
+        setEditData(EditData)
+        
+    }
+    const unTagComponent=(array:any,index:any)=>{
+        array.splice(index,1);
+        setSmartComponentData(array)
+        setEditData(EditData)
     }
     return (
         <>
@@ -1782,7 +1822,7 @@ function EditProjectPopup(item: any) {
                                     </div>
 
                                     <div className="mx-0 row ">
-                                        <div className="col-6 ps-0 mt-2">
+                                        <div className="col-sm-12 mt-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Item Rank</label>
                                                 <select className="full_width searchbox_height" defaultValue={EditData.ItemRankTitle} onChange={(e) => EditData.ItemRankTitle = e.target.value}>
@@ -1803,84 +1843,89 @@ function EditProjectPopup(item: any) {
                                                     defaultValue={EditData.Deliverable_x002d_Synonyms != undefined ? EditData.Deliverable_x002d_Synonyms : ""} onChange={(e) => EditData.Deliverable_x002d_Synonyms = e.target.value} />
                                             </div>
                                         </div> */}
-                                        <div className="col-6 ps-0 pe-0 mt-2 ">
-                                            {EditData?.Item_x0020_Type == 'Project' &&
-                                                <div className="input-group">
-                                                    <label className="form-label full-width">
-                                                        Component Portfolio
-                                                    </label>
-                                                    <input type="text"
-                                                        className="form-control" />
-                                                    <span className="input-group-text">
-                                                        <svg onClick={(e) => EditComponent(EditData, 'Componet')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+                                        {EditData?.Item_x0020_Type == 'Project' &&
+                                            <div className="row ps-0 pe-0 mt-2 ">
+                                                <div className="col-sm-6">
+                                                    <div className="input-group full-width">
+                                                        <label className="form-label full-width">
+                                                            Component Portfolio
+                                                        </label>
+                                                        <input type="text"
+                                                            className="form-control" />
+                                                        <span className="input-group-text">
+                                                            <svg onClick={(e) => EditPortfolio(EditData, 'Component')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
 
-                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            }
-                                            {/* {EditData.Portfolio_x0020_Type == 'Component' &&
-                                                <div className="input-group">
-                                                    <label className="form-label full-width">
-                                                        Service Portfolio
-                                                    </label>
-                                                    <input type="text"
-                                                        className="form-control" />
-                                                    <span className="input-group-text">
-                                                        <svg onClick={(e) => EditComponent(EditData, 'Componet')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                                            </svg>
+                                                        </span>
+                                                    </div>
 
-                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            } */}
-                                            {EditData.Portfolio_x0020_Type == 'Component' &&
-                                                <div className="input-group">
 
-                                                    {
-                                                        linkedComponentData?.length > 0 ? <div>
-                                                            {linkedComponentData?.map((com: any) => {
+                                                    <div className="  inner-tabb">
+                                                        <div>
+
+                                                            {smartComponentData ? smartComponentData?.map((com: any,index:any) => {
                                                                 return (
                                                                     <>
                                                                         <div className="d-flex Component-container-edit-task">
-                                                                            <div>
-                                                                                <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
-                                                                                    {com.Title}
-                                                                                </a>
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
-                                                                            </div>
+                                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                            <a>
+                                                                                <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => unTagComponent(smartComponentData,index)} />
+                                                                            </a>
                                                                         </div>
                                                                     </>
                                                                 )
-                                                            })}
-                                                        </div> : null
+                                                            }) : null}
 
-                                                    }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6">
+
+                                                    <div className="input-group full-width">
+                                                        <label className="form-label full-width">
+                                                            Service Portfolio
+                                                        </label>
+                                                        <input type="text"
+                                                            className="form-control" />
+                                                        <span className="input-group-text">
+                                                            <svg onClick={(e) => EditPortfolio(EditData, 'Service')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+
+                                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+
+
+                                                    <div className="inner-tabb full-width">
+
+                                                        {
+                                                            linkedComponentData?.length > 0 ? <div>
+                                                                {linkedComponentData?.map((com: any, index: any) => {
+                                                                    return (
+                                                                        <>
+                                                                            <div className="d-flex Component-container-edit-task">
+                                                                                <div>
+                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                        {com.Title}
+                                                                                    </a>
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => unTagService(linkedComponentData,index)} />
+                                                                                </div>
+                                                                            </div>
+                                                                        </>
+                                                                    )
+                                                                })}
+                                                            </div> : null
+
+                                                        }
+
+                                                    </div>
+
 
                                                 </div>
-                                            }
 
-                                            <div className="col-sm-12  inner-tabb">
-                                                <div>
-
-                                                    {smartComponentData ? smartComponentData?.map((com: any) => {
-                                                        return (
-                                                            <>
-                                                                <div className="d-flex Component-container-edit-task">
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                                    <a>
-                                                                        <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
-                                                                    </a>
-                                                                </div>
-                                                            </>
-                                                        )
-                                                    }) : null}
-
-
-                                                </div>
                                             </div>
-
-                                        </div>
+                                        }
 
                                     </div>
                                     <div className="mx-0 row mt-2">
@@ -1923,10 +1968,10 @@ function EditProjectPopup(item: any) {
                                                 />
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                     <div className="mx-0 row mt-2 ">
-                                    
+
                                         <div className="col-sm-6 p-0">
                                             <div className="input-group mb-2">
                                                 <label className="form-label  full-width">Status</label>
@@ -1980,71 +2025,71 @@ function EditProjectPopup(item: any) {
                                             </div>
                                         </div>
                                         <div className="col">
-                                        <div className="input-group position-relative">
-                                            <label className="form-label  full-width">Categories </label>
-                                            <input type="text" className="form-control"
-                                                defaultValue={EditData.Facebook != null ? EditData.Facebook.Description : ""} />
+                                            <div className="input-group position-relative">
+                                                <label className="form-label  full-width">Categories </label>
+                                                <input type="text" className="form-control"
+                                                    defaultValue={EditData.Facebook != null ? EditData.Facebook.Description : ""} />
 
-                                            <span className="input-group-text"  >
+                                                <span className="input-group-text"  >
 
-                                                <svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+                                                    <svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
 
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
 
-                                                </svg>
+                                                    </svg>
 
-                                            </span>
-                                        </div>
+                                                </span>
+                                            </div>
 
 
-                                        <div className="col-sm-11  inner-tabb">
+                                            <div className="col-sm-11  inner-tabb">
 
-                                            <div className="col">
                                                 <div className="col">
+                                                    <div className="col">
 
-                                                    {CheckCategory.map((type: any) => {
-                                                        return (
-                                                            <>
+                                                        {CheckCategory.map((type: any) => {
+                                                            return (
+                                                                <>
 
-                                                                <div className="form-check">
-                                                                    <input className="form-check-input" checked={BackupCat == type.Id ? checkedCat : false}
-                                                                        type="checkbox"
-                                                                        onClick={() => checkCat(type.Title)} />
-                                                                    <label className="form-check-label">{type.Title}</label>
-                                                                </div>
-                                                            </>
-                                                        )
-
-
+                                                                    <div className="form-check">
+                                                                        <input className="form-check-input" checked={BackupCat == type.Id ? checkedCat : false}
+                                                                            type="checkbox"
+                                                                            onClick={() => checkCat(type.Title)} />
+                                                                        <label className="form-check-label">{type.Title}</label>
+                                                                    </div>
+                                                                </>
+                                                            )
 
 
-                                                    })}
 
-                                                    {CategoriesData != undefined ?
-                                                        <div>
-                                                            {CategoriesData?.map((type: any, index: number) => {
-                                                                return (
-                                                                    <>
-                                                                        {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
-                                                                            <div className="Component-container-edit-task d-flex my-1 justify-content-between">
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
-                                                                                    {type.Title}
-                                                                                </a>
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type.Id)} className="p-1" />
-                                                                            </div>
-                                                                        }
-                                                                    </>
-                                                                )
-                                                            })}
-                                                        </div> : null
-                                                    }
+                                                        })}
+
+                                                        {CategoriesData != undefined ?
+                                                            <div>
+                                                                {CategoriesData?.map((type: any, index: number) => {
+                                                                    return (
+                                                                        <>
+                                                                            {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
+
+                                                                                <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                        {type.Title}
+                                                                                    </a>
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type.Id)} className="p-1" />
+                                                                                </div>
+                                                                            }
+                                                                        </>
+                                                                    )
+                                                                })}
+                                                            </div> : null
+                                                        }
+                                                    </div>
+
+
                                                 </div>
-
-
                                             </div>
                                         </div>
-                                    </div>
                                         {/* <div className="col-sm-4 ps-0 ">
                                             <div className="input-group">
                                                 <label className="form-label  full-width">Synonyms </label>
@@ -2088,7 +2133,7 @@ function EditProjectPopup(item: any) {
                                         </div> */}
                                     </div>
                                     <div className="row mb-2 mt-2 ">
-                                       
+
                                         {/* <div className="col-sm-6">
                                             <div className="input-group mb-2">
                                                 <label className="form-label  full-width">Time </label>
@@ -2175,7 +2220,7 @@ function EditProjectPopup(item: any) {
                                             </div>
                                         </div>
                                     </div>
-                                   
+
 
                                 </div>
                                 <div className="col-sm-4  ">
@@ -2244,7 +2289,7 @@ function EditProjectPopup(item: any) {
 
 
 
-                        {(IsComponent && item.props.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
+                        {IsPortfolio && <PortfolioTagging props={SharewebComponent} type={portfolioType} Call={Call}></PortfolioTagging>}
                         {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
                     </div>
                 }
