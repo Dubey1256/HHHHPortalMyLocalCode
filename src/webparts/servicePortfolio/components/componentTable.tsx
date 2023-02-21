@@ -1635,7 +1635,7 @@ function ComponentTable(SelectedProp: any) {
     } else if (IsUpdated != SelectedProp.SelectedProp) {
         setIsUpdated(SelectedProp.SelectedProp)
     }
-    let props =IsUpdated;
+    let props =undefined;
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
     React.useEffect(() => {
         showProgressBar();
@@ -3517,12 +3517,12 @@ function ComponentTable(SelectedProp: any) {
                             </div>
                         </div></section>
                 </div></section>
-
+ 
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            <Panel    type={PanelType.large} isOpen={addModalOpen} isBlocking={false}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props}/> 
+            <Panel    type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall}  PortfolioType ={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props}/> 
             </Panel>
         </div >
     );

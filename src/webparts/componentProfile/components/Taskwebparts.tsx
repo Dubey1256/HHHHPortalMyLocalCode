@@ -2736,7 +2736,7 @@ export default function ComponentTable({ props }: any) {
             {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
             
             <Modal show={addModalOpen} isOpen={addModalOpen} isBlocking={false}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props}/> 
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall}   PortfolioType ={IsUpdated} Close={CloseCall} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props}/> 
             </Modal>
             
         </div>
