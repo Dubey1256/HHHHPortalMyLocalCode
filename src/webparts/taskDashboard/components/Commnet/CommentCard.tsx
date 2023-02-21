@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Web } from "sp-pnp-js";
+import pnp, { Web } from "sp-pnp-js";
 //import '../../webparts/cssFolder/foundation.scss'
 //import '../../webparts/cssFolder/foundationmin.scss';
 import '../foundation.scss';
@@ -11,7 +11,8 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 import "@pnp/sp/sputilities";
-import { sp } from "@pnp/sp";
+import { spfi } from '@pnp/sp/presets/all';
+
  
 export interface ICommentCardProps {
   siteUrl? : string;
@@ -20,7 +21,7 @@ export interface ICommentCardProps {
   itemID? : number;
   Context?:any;
 }
-
+const sp = spfi();
 export interface ICommentCardState {  
   Result : any;
   listName : string;
@@ -56,7 +57,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     this.GetResult();    
     console.log(this.props.Context);
-    sp.setup({
+    pnp.setup({
       spfxContext: this.props.Context
     }); 
     
