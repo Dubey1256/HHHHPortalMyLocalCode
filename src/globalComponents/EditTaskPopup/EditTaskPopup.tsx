@@ -26,7 +26,6 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from '../FlorarComponents/FlorarImageUploadComponent';
 
-
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -37,6 +36,7 @@ var tempShareWebTypeData: any = [];
 var tempCategoryData: any;
 var SiteTypeBackupArray: any = [];
 var ImageBackupArray: any = [];
+let AutoCompleteItemsArray: any = [];
 const EditTaskPopup = (Items: any) => {
     const [images, setImages] = React.useState([]);
     const [TaskImages, setTaskImages] = React.useState([]);
@@ -46,6 +46,7 @@ const EditTaskPopup = (Items: any) => {
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState('');
     const [ShareWebTypeData, setShareWebTypeData] = React.useState([]);
+    const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
@@ -155,6 +156,7 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     setApprovalStatus(false)
                 }
+
                 if (OnlyCompletedCheck >= 0) {
                     setOnlyCompletedStatus(true);
                 } else {
@@ -171,6 +173,80 @@ const EditTaskPopup = (Items: any) => {
         }
 
     }, []);
+
+    // ********** this is for smart category Related all function and callBack function for Picker Component Popup ********
+
+
+    const SelectCategoryCallBack = React.useCallback((selectCategoryData: any) => {
+        setIsComponentPicker(false);
+        selectCategoryData.map((existingData: any) => {
+            let elementFound: any = false;
+            tempShareWebTypeData.map((currentData: any) => {
+                if (existingData.Title == currentData.Title) {
+                    elementFound = true
+                }
+            })
+            if (!elementFound) {
+                let category: any = tempCategoryData ? tempCategoryData + ";" + selectCategoryData[0]?.Title : selectCategoryData[0]?.Title;
+                setCategoriesData(category);
+                tempShareWebTypeData.push(selectCategoryData[0]);
+                setShareWebTypeData(tempShareWebTypeData);
+                let phoneCheck = category.search("Phone");
+                let emailCheck = category.search("Email");
+                let ImmediateCheck = category.search("Immediate");
+                let ApprovalCheck = category.search("Approval");
+                let OnlyCompletedCheck = category.search("Only Completed");
+                if (phoneCheck >= 0) {
+                    setPhoneStatus(true)
+                } else {
+                    setPhoneStatus(false)
+                }
+                if (emailCheck >= 0) {
+                    setEmailStatus(true)
+                } else {
+                    setEmailStatus(false)
+                }
+                if (ImmediateCheck >= 0) {
+                    setImmediateStatus(true)
+                } else {
+                    setImmediateStatus(false)
+                }
+                if (ApprovalCheck >= 0) {
+                    setApprovalStatus(true)
+                } else {
+                    setApprovalStatus(false)
+                }
+                if (OnlyCompletedCheck >= 0) {
+                    setOnlyCompletedStatus(true);
+                } else {
+                    setOnlyCompletedStatus(false);
+                }
+            }
+        })
+
+    }, [])
+
+    const smartCategoryPopup = React.useCallback(() => {
+        setIsComponentPicker(false);
+    }, [])
+
+    const autoSuggestionsForCategor = (e: any) => {
+        let searchedKey: any = e.target.value;
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            AutoCompleteItemsArray?.map((itemData: any) => {
+                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            })
+            setSearchedCategoryData(tempArray)
+        } else {
+            setSearchedCategoryData([]);
+        }
+    }
+
+    // *********** End Smart Category Function **********
+
     function EditComponentCallback() {
         Items.Items.Call();
     }
@@ -196,6 +272,8 @@ const EditTaskPopup = (Items: any) => {
         let MetaData: any = [];
         let siteConfig: any = [];
         let tempArray: any = [];
+        let smartCategory: any = [];
+        let Autocompleteitems: any = [];
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
             .items
@@ -204,7 +282,8 @@ const EditTaskPopup = (Items: any) => {
             .expand('Author,Editor')
             .get()
 
-        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites')
+        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
+        smartCategory = getSmartMetadataItemsByTaxType(MetaData, 'Categories');
         siteConfig?.map((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "QA" && site.Title !== "SDC Sites") {
                 site.BtnStatus = false;
@@ -215,6 +294,39 @@ const EditTaskPopup = (Items: any) => {
         tempArray?.map((tempData: any) => {
             SiteTypeBackupArray.push(tempData);
         })
+        if (smartCategory.length > 0 && smartCategory != undefined) {
+            smartCategory.map((item: any) => {
+                if (item.newTitle != undefined) {
+                    item['Newlabel'] = item.newTitle;
+                    Autocompleteitems.push(item)
+                    if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+                        item.childs.map((childitem: any) => {
+                            if (childitem.newTitle != undefined) {
+                                childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+                                Autocompleteitems.push(childitem)
+                            }
+                            if (childitem.childs.length > 0) {
+                                childitem.childs.map((subchilditem: any) => {
+                                    if (subchilditem.newTitle != undefined) {
+                                        subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+                                        Autocompleteitems.push(subchilditem)
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }
+            })
+        }
+        AutoCompleteItemsArray = Autocompleteitems.reduce(function (previous: any, current: any) {
+            var alredyExists = previous.filter(function (item: any) {
+                return item.Title === current.Title
+            }).length > 0
+            if (!alredyExists) {
+                previous.push(current)
+            }
+            return previous
+        }, [])
 
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
@@ -404,6 +516,7 @@ const EditTaskPopup = (Items: any) => {
                     let emailCheck = item.Categories.search("Email");
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
+                    let OnlyCompletedCheck = item.Categories.search("Only Completed");
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true)
                     } else {
@@ -423,6 +536,11 @@ const EditTaskPopup = (Items: any) => {
                         setApprovalStatus(true)
                     } else {
                         setApprovalStatus(false)
+                    }
+                    if (OnlyCompletedCheck >= 0) {
+                        setOnlyCompletedStatus(true);
+                    } else {
+                        setOnlyCompletedStatus(false);
                     }
                 }
                 if (item.SharewebCategories != undefined && item.SharewebCategories?.length > 0) {
@@ -486,7 +604,7 @@ const EditTaskPopup = (Items: any) => {
         }
         if (StatusInput == 0) {
             setTaskStatus(null);
-            setPercentCompleteStatus(null);
+            setPercentCompleteStatus('');
             setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: null })
         }
         if (StatusInput == 80) {
@@ -565,7 +683,7 @@ const EditTaskPopup = (Items: any) => {
             })
         }
 
-        if(StatusInput == 2){
+        if (StatusInput == 2) {
             setInputFieldDisable(true)
             StatusArray.map((percentStatus: any, index: number) => {
                 if (percentStatus.value == StatusInput) {
@@ -575,7 +693,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
-        if(StatusInput != 2){
+        if (StatusInput != 2) {
             setInputFieldDisable(false)
         }
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
@@ -586,13 +704,13 @@ const EditTaskPopup = (Items: any) => {
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
         setPercentCompleteCheck(false);
-        if(StatusData.value == 2){
+        if (StatusData.value == 2) {
             setInputFieldDisable(true)
         }
-        if(StatusData.value != 2){
+        if (StatusData.value != 2) {
             setInputFieldDisable(false)
         }
-        
+
         if (StatusData.value == 80) {
             // let tempArray: any = [];
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
@@ -1666,12 +1784,25 @@ const EditTaskPopup = (Items: any) => {
                                                         Categories
                                                     </label>
                                                     <input type="text" className="form-control"
-                                                        id="txtCategories" />
+                                                        id="txtCategories" onChange={(e) => autoSuggestionsForCategor(e)} />
                                                     <span className="input-group-text">
                                                         <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                             onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
                                                     </span>
                                                 </div>
+                                                {SearchedCategoryData?.length > 0 ? (
+                                                    <div className="searchtable-smart-category">
+                                                        <ul className="list-group">
+                                                            {SearchedCategoryData.map((item: any) => {
+                                                                return (
+                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectCategoryCallBack(item)} >
+                                                                        <a>{item.Newlabel}</a>
+                                                                    </li>
+                                                                )
+                                                            }
+                                                            )}
+                                                        </ul>
+                                                    </div>) : null}
                                                 <div className="col">
                                                     <div className="col">
                                                         <div
@@ -1715,7 +1846,7 @@ const EditTaskPopup = (Items: any) => {
                                                         {ShareWebTypeData != undefined && ShareWebTypeData?.length > 0 ?
                                                             <div>
                                                                 {ShareWebTypeData?.map((type: any, index: number) => {
-                                                                    if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email") {
+                                                                    if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                         return (
                                                                             <div className="Component-container-edit-task d-flex my-1 justify-content-between">
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
@@ -1926,7 +2057,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" placeholder="% Complete"  disabled={InputFieldDisable} className="form-control px-2"
+                                                <input type="text" placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
@@ -1935,7 +2066,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </svg>
                                                 </span>
 
-                                                {EditData.PercentComplete != null ?
+                                                {PercentCompleteStatus?.length > 0 ?
                                                     <span className="full-width">
                                                         <input type='radio' className="my-2" checked />
                                                         <label className="ps-2">
@@ -2198,7 +2329,7 @@ const EditTaskPopup = (Items: any) => {
 
                     {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}>
                     </ComponentPortPolioPopup>}
-                    {IsComponentPicker && <Picker props={ShareWebComponent} Call={Call}></Picker>}
+                    {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" CallBack={SelectCategoryCallBack} closePopupCallBack={smartCategoryPopup}></Picker>}
                     {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call}></LinkedComponent>}
                 </div>
             </Panel>
@@ -2441,12 +2572,25 @@ const EditTaskPopup = (Items: any) => {
                                                                     Categories
                                                                 </label>
                                                                 <input type="text" className="form-control"
-                                                                    id="txtCategories" />
+                                                                    id="txtCategories" onChange={(e) => autoSuggestionsForCategor(e)} />
                                                                 <span className="input-group-text">
                                                                     <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                         onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
                                                                 </span>
                                                             </div>
+                                                            {SearchedCategoryData?.length > 0 ? (
+                                                                <div className="searchtable-smart-category">
+                                                                    <ul className="list-group">
+                                                                        {SearchedCategoryData.map((item: any) => {
+                                                                            return (
+                                                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectCategoryCallBack(item)} >
+                                                                                    <a>{item.Newlabel}</a>
+                                                                                </li>
+                                                                            )
+                                                                        }
+                                                                        )}
+                                                                    </ul>
+                                                                </div>) : null}
                                                             <div className="col">
                                                                 <div className="col">
                                                                     <div
@@ -2645,7 +2789,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} placeholder="Url" onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, ComponentLink: e.target.value })}
                                                             />
                                                             <span className="input-group-text">
-                                                                <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off" aria-disabled={EditData.component_x0020_link != null? false: true}
+                                                                <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off" aria-disabled={EditData.component_x0020_link != null ? false : true}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
                                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3677 13.2672C11.023 13.7134 9.87201 14.4471 8.99831 15.4154C6.25928 18.4508 6.34631 23.1488 9.19578 26.0801C10.6475 27.5735 12.4385 28.3466 14.4466 28.3466H15.4749V27.2499V26.1532H14.8471C12.6381 26.1532 10.4448 24.914 9.60203 23.1898C8.93003 21.8151 8.9251 19.6793 9.5906 18.3208C10.4149 16.6384 11.9076 15.488 13.646 15.1955C14.7953 15.0022 22.5955 14.9933 23.7189 15.184C26.5649 15.6671 28.5593 18.3872 28.258 21.3748C27.9869 24.0644 26.0094 25.839 22.9861 26.1059L21.9635 26.1961V27.2913V28.3866L23.2682 28.3075C27.0127 28.0805 29.7128 25.512 30.295 21.6234C30.8413 17.9725 28.3779 14.1694 24.8492 13.2166C24.1713 13.0335 23.0284 12.9942 18.5838 13.0006C13.785 13.0075 13.0561 13.0388 12.3677 13.2672ZM23.3224 19.8049C18.7512 20.9519 16.3624 26.253 18.4395 30.6405C19.3933 32.6554 20.9948 34.0425 23.1625 34.7311C23.9208 34.9721 24.5664 35 29.3689 35C34.1715 35 34.8171 34.9721 35.5754 34.7311C38.1439 33.9151 39.9013 32.1306 40.6772 29.5502C41 28.4774 41.035 28.1574 40.977 26.806C40.9152 25.3658 40.8763 25.203 40.3137 24.0261C39.0067 21.2919 36.834 19.8097 33.8475 19.6151L32.5427 19.53V20.6267V21.7236L33.5653 21.8132C35.9159 22.0195 37.6393 23.0705 38.4041 24.7641C39.8789 28.0293 38.2035 31.7542 34.8532 32.6588C33.8456 32.9309 25.4951 32.9788 24.1462 32.7205C22.4243 32.3904 21.0539 31.276 20.2416 29.5453C19.8211 28.6492 19.7822 28.448 19.783 27.1768C19.7837 26.0703 19.8454 25.6485 20.0853 25.1039C20.4635 24.2463 21.3756 23.2103 22.1868 22.7175C22.8985 22.2851 24.7121 21.7664 25.5124 21.7664H26.0541V20.6697V19.573L25.102 19.5851C24.5782 19.5919 23.7775 19.6909 23.3224 19.8049Z" fill="#333333" />
@@ -2691,7 +2835,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </svg>
                                                             </span>
 
-                                                            {EditData.PercentComplete != null ?
+                                                            {PercentCompleteStatus?.length > 0 ?
                                                                 <span className="full-width">
                                                                     <input type='radio' className="my-2" checked />
                                                                     <label className="ps-2">
