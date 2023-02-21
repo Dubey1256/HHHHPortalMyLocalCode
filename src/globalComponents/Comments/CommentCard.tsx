@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-
+import pnp from "sp-pnp-js";
 /*
 import 'setimmediate'; 
 import { Editor } from "react-draft-wysiwyg";
@@ -10,12 +10,12 @@ import draftToHtml from 'draftjs-to-html';
 */
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
-import { sp } from "@pnp/sp";
 import Tooltip from '../Tooltip';
 import "@pnp/sp/sputilities";
 import * as moment from "moment-timezone";
 import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import { spfi } from '@pnp/sp/presets/all';
 
 export interface ICommentCardProps {
   siteUrl?: string;
@@ -25,7 +25,7 @@ export interface ICommentCardProps {
   Context?: any;
 
 }
-
+const sp = spfi();
 export interface ICommentCardState {
   Result: any;
   listName: string;
@@ -76,7 +76,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     this.GetResult();
     console.log(this.props.Context);
-    sp.setup({
+    pnp.setup({
       spfxContext: this.props.Context
     });
   }

@@ -2,10 +2,10 @@ import * as React from "react";
 import { useEffect, useState } from 'react';
 import pnp, { Web } from "sp-pnp-js";
 import "@pnp/sp/sputilities";
-import { sp } from "@pnp/sp";
 import * as moment from 'moment';
 import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
+import { spfi } from "@pnp/sp/presets/all";
 
 export const pageContext = async () => {
     let result;
@@ -19,7 +19,7 @@ export const pageContext = async () => {
     return result;
 
 }
-
+const sp = spfi();
 export const getData = async (url: any, listId: any, query: any) => {
     const web = new Web(url);
     let result;
