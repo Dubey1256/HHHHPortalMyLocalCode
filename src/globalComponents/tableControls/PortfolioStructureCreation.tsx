@@ -523,7 +523,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     }
 
-    RemoveFeedbackColumn = (index: any, type: any) => {
+    RemoveFeedbackColumn = (index: any, type: any) => { 
         let ChildItemTitle = this.state.ChildItemTitle;
         if (type == 'Description') {
             ChildItemTitle[index].Child.splice(0, 1);
