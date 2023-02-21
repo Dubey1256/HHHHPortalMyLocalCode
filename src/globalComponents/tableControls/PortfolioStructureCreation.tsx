@@ -46,15 +46,15 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             ChildItemTitle: [],
             AllComponents: [],
         }
-
-        this.Load()
+        this.LoadSPComponents();
+        this.Load();
     }
 
     private async LoadSPComponents() {
-        var metadatItem: any = []
         let SPDetails: any = [];
         let filtertitle = this.state.PortfolioType.split(' ')[0];
-        var select: any = '=Title,Id,PageUrl,WebpartId,Component/Id,Component/Title,Service/Id,Service/Title&$expand=Component,Service&$top=4999$&filter=PortfolioType eq ' + filtertitle + ''
+        this.Portfolio_x0020_Type =filtertitle;
+        var select: any = 'Title,Id,PageUrl,WebpartId,Component/Id,Component/Title,Service/Id,Service/Title&$expand=Component,Service$&filter=PortfolioType eq ' + filtertitle + ''
         SPDetails = await globalCommon.getData(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.SPCOMPONENTS_LISTID, select);
         console.log(SPDetails);
         this.setState({
@@ -523,7 +523,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     }
 
-    RemoveFeedbackColumn = (index: any, type: any) => { 
+    RemoveFeedbackColumn = (index: any, type: any) => {
         let ChildItemTitle = this.state.ChildItemTitle;
         if (type == 'Description') {
             ChildItemTitle[index].Child.splice(0, 1);
