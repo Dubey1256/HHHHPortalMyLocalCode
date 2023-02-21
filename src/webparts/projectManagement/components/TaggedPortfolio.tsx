@@ -91,7 +91,7 @@ const TaggedPortfolio = (props: any) => {
   return (
     <>
 
-      <ul className="nav nav-tabs" id="myTab" role="tablist">
+      {/* <ul className="nav nav-tabs" id="myTab" role="tablist">
         <li className="nav-item" role="presentation">
           <button className="nav-link active" id="Components-tab" data-bs-toggle="tab" data-bs-target="#Components" type="button" role="tab" aria-controls="Components" aria-selected="true">Components</button>
         </li>
@@ -99,10 +99,78 @@ const TaggedPortfolio = (props: any) => {
           <button className="nav-link" id="Services-tab" data-bs-toggle="tab" data-bs-target="#Services" type="button" role="tab" aria-controls="Services" aria-selected="false">Services</button>
         </li>
 
-      </ul>
-      <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
+      </ul> */}
+      <div className="" id="myTabContent">
+      <div className="col">
+        <div className="card mb-4 rounded-3 shadow-sm">
+          <div className="card-header py-2">
+            <div className="my-0 fw-normal fs-6">Components</div>
+          </div>
+          <div className="card-body">
+          {
+            props?.taggedComponents?.length > 0 ?
+              <table className="table">
+                <tbody>
+                  {
+                    props?.taggedComponents?.map((component: any) => {
+                      return (
+                        <tr>
+                          <td>
+                            <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${component?.Id}`}>{component?.Title}</a></span>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  }
+                </tbody>
+              </table>
+              :
+              <div className="border rounded-2 p-3 text-center">
+                No Tagged Component
+              </div>
+              }
+              <div className="text-end mt-2 bt-2">
+                <a onClick={(e) => EditPortfolio(props?.item, 'Component')}>Tag Components</a>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div className="col">
+        <div className="card mb-4 rounded-3 shadow-sm">
+          <div className="card-header py-2">
+            <div className="my-0 fw-normal fs-6">Services</div>
+          </div>
+          <div className="card-body">
+          {
+            props?.taggedServices?.length > 0 ?
+              <table className="table">
+                <tbody>
+                  {
+                    props?.taggedServices?.map((service: any) => {
+                      return (
+                        <tr>
+                          <td>
+                            <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${service?.Id}`}>{service?.Title}</a></span>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  }
 
-        <div className="tab-pane fade show active" id="Components" role="tabpanel" aria-labelledby="Components-tab">
+                </tbody>
+              </table>
+              :
+              <div className="border rounded-2 p-3 text-center">
+              No Tagged Service
+            </div>
+              }
+              <div className="text-end mt-2 bt-2">
+                <a onClick={(e) => EditPortfolio(props?.item, 'Service')}>Tag Services</a>
+              </div>
+          </div>
+        </div>
+      </div>
+        {/* <div className="tab-pane fade show active" id="Components" role="tabpanel" aria-labelledby="Components-tab">
           {
             props?.taggedComponents?.length > 0 ?
               <table className="table">
@@ -152,7 +220,7 @@ const TaggedPortfolio = (props: any) => {
           <div className="text-end mt-2 bt-2">
             <button type="button" className="btn btn-primary " onClick={(e) => EditPortfolio(props?.item, 'Service')}>Tag Services</button>
           </div>
-        </div>
+        </div> */}
 
 
 
