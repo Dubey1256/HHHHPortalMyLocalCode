@@ -162,6 +162,12 @@
         }
       ]
     },
+    "permission-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/permissionManagement/PermissionManagementWebPart.js",
+          "manifest": "./src/webparts/permissionManagement/PermissionManagementWebPart.manifest.json"
+        }]},
     "all-task-user-web-part": {
       "components": [
         {
@@ -242,6 +248,7 @@
     "HrContactSearchWebPartStrings": "lib/webparts/hrContactSearch/loc/{locale}.js",
     "MaterialUiWebPartStrings": "lib/webparts/materialUi/loc/{locale}.js",
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
+    "PermissionManagementWebPartStrings": "lib/webparts/permissionManagement/loc/{locale}.js",
     "AllTaskUserWebPartStrings": "lib/webparts/allTaskUser/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "LastModifiedItemsWebPartStrings": "lib/webparts/lastModifiedItems/loc/{locale}.js",
