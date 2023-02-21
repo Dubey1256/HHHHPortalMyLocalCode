@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-import pnp from "sp-pnp-js";
+
 /*
 import 'setimmediate'; 
 import { Editor } from "react-draft-wysiwyg";
@@ -15,7 +15,8 @@ import "@pnp/sp/sputilities";
 import * as moment from "moment-timezone";
 import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-import { spfi } from '@pnp/sp/presets/all';
+import { getSP } from '../../spservices/pnpjsConfig';
+import { spfi, SPFx as spSPFx } from "@pnp/sp";
 
 export interface ICommentCardProps {
   siteUrl?: string;
@@ -26,6 +27,7 @@ export interface ICommentCardProps {
 
 }
 const sp = spfi();
+
 export interface ICommentCardState {
   Result: any;
   listName: string;
@@ -76,9 +78,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     this.GetResult();
     console.log(this.props.Context);
-    pnp.setup({
-      spfxContext: this.props.Context
-    });
+    // sp.setup({
+    //   spfxContext: this.props.Context
+    // });
+    const sp = spfi().using(spSPFx(this.context));
   }
 
   private async GetResult() {

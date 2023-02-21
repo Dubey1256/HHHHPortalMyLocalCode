@@ -83,6 +83,7 @@ const EditTaskPopup = (Items: any) => {
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = React.useState(false);
     const [currentUserData, setCurrentUserData] = React.useState([]);
     const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
+    const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [HoverImageData, setHoverImageData] = React.useState([]);
     const [SiteTypes, setSiteTypes] = React.useState([]);
     const StatusArray = [
@@ -337,12 +338,19 @@ const EditTaskPopup = (Items: any) => {
                 if (item.PercentComplete != undefined) {
                     let statusValue = item.PercentComplete * 100;
                     item.PercentComplete = statusValue;
-                    StatusArray?.map((item: any) => {
-                        if (statusValue == item.value) {
-                            setPercentCompleteStatus(item.status);
-                            setTaskStatus(item.taskStatusComment);
-                        }
-                    })
+                    if (statusValue < 70 && statusValue > 20) {
+                        setTaskStatus("In Progress");
+                        setPercentCompleteStatus(`${statusValue}% In Progress`);
+                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
+                    } else {
+                        StatusArray?.map((item: any) => {
+                            if (statusValue == item.value) {
+                                setPercentCompleteStatus(item.status);
+                                setTaskStatus(item.taskStatusComment);
+                            }
+                        })
+                    }
+
                 }
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
@@ -456,33 +464,139 @@ const EditTaskPopup = (Items: any) => {
             console.log("Error :", error.message);
         }
     }
+
+
+    //    *********** This is for status section Functions **************
+
+    const StatusAutoSuggestion = (e: any) => {
+        console.log("Status Enter in input======", e.target.value);
+        let StatusInput = e.target.value;
+        if (StatusInput < 70 && StatusInput > 20) {
+            setTaskStatus("In Progress");
+            setPercentCompleteStatus(`${StatusInput}% In Progress`);
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+        } else {
+            StatusArray.map((percentStatus: any, index: number) => {
+                if (percentStatus.value == StatusInput) {
+                    setTaskStatus(percentStatus.taskStatusComment);
+                    setPercentCompleteStatus(percentStatus.status);
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                }
+            })
+        }
+        if (StatusInput == 0) {
+            setTaskStatus(null);
+            setPercentCompleteStatus(null);
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: null })
+        }
+        if (StatusInput == 80) {
+            // let tempArray: any = [];
+            if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
+            } else {
+                setWorkingMember(143);
+            }
+            EditData.IsTodaysTask = false;
+            EditData.CompletedDate = undefined;
+            StatusArray?.map((item: any) => {
+                if (StatusInput == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+        }
+        if (StatusInput == 5) {
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+
+            // } else {
+            //     setWorkingMember(156);
+            // }
+            EditData.CompletedDate = undefined;
+            EditData.IsTodaysTask = false;
+            StatusArray?.map((item: any) => {
+                if (StatusInput == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+        }
+        if (StatusInput == 10) {
+            EditData.CompletedDate = undefined;
+            if (EditData.StartDate == undefined) {
+                EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+            }
+            EditData.IsTodaysTask = true;
+            StatusArray?.map((item: any) => {
+                if (StatusInput == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else {
+            //     setWorkingMember(156);
+            // }
+        }
+        if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
+            setWorkingMember(9);
+            StatusArray?.map((item: any) => {
+                if (StatusInput == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+        }
+        if (StatusInput == 90) {
+            if (EditData.siteType == 'Offshore Tasks') {
+                setWorkingMember(36);
+            } else {
+                setWorkingMember(42);
+            }
+            EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
+            StatusArray?.map((item: any) => {
+                if (StatusInput == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+        }
+
+        if(StatusInput == 2){
+            setInputFieldDisable(true)
+            StatusArray.map((percentStatus: any, index: number) => {
+                if (percentStatus.value == StatusInput) {
+                    setTaskStatus(percentStatus.taskStatusComment);
+                    setPercentCompleteStatus(percentStatus.status);
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                }
+            })
+        }
+        if(StatusInput != 2){
+            setInputFieldDisable(false)
+        }
+        // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
+    }
+
     const PercentCompleted = (StatusData: any) => {
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
         setPercentCompleteCheck(false);
+        if(StatusData.value == 2){
+            setInputFieldDisable(true)
+        }
+        if(StatusData.value != 2){
+            setInputFieldDisable(false)
+        }
+        
         if (StatusData.value == 80) {
             // let tempArray: any = [];
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
                 setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
-                // EditData.Team_x0020_Members?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "QA") {
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(143);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
             } else {
                 setWorkingMember(143);
             }
@@ -491,56 +605,18 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (StatusData.value == 5) {
-            // let tempArray: any = [];
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                // EditData.AssignedTo?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "Development") {
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(156);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
 
-            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-                // EditData.Team_x0020_Members?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "Development") {
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(156);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
-            } else {
-                setWorkingMember(156);
-            }
+            // } else {
+            //     setWorkingMember(156);
+            // }
             EditData.CompletedDate = undefined;
             EditData.IsTodaysTask = false;
         }
         if (StatusData.value == 10) {
-            // let tempArray: any = [];
             EditData.CompletedDate = undefined;
             if (EditData.StartDate == undefined) {
                 EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
@@ -548,123 +624,22 @@ const EditTaskPopup = (Items: any) => {
             EditData.IsTodaysTask = true;
             // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
             //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
             // } else {
             //     setWorkingMember(156);
             // }
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                // EditData.AssignedTo?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "Development") {
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(156);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
+        }
+        // if (StatusData.value == 70) {
+        // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+        //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+        // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+        //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+        // } else {
+        //     setWorkingMember(156);
+        // }
+        // }
 
-            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-                // EditData.Team_x0020_Members?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "Development") {
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(156);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
-            } else {
-                setWorkingMember(156);
-            }
-        }
-        if (StatusData.value == 70) {
-            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-            // } else {
-            //     setWorkingMember(156);
-            // }
-            // let tempArray: any = [];
-            if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                // EditData.AssignedTo?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "Development") {
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(156);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
 
-            } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-                // EditData.Team_x0020_Members?.map((TeamItems: any) => {
-                //     taskUsers?.map((TaskUserData: any) => {
-                //         if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                //             if (TaskUserData.TimeCategory == "Development") {
-                //                 let tempArray: any = [];
-                //                 tempArray.push(TaskUserData)
-                //                 EditData.TaskAssignedUsers = tempArray;
-                //                 let updateUserArray1: any = [];
-                //                 updateUserArray1.push(tempArray[0].AssingedToUser)
-                //                 setTaskAssignedTo(updateUserArray1);
-                //             }
-                //             else {
-                //                 if (tempArray?.length == 0) {
-                //                     setWorkingMember(156);
-                //                 }
-                //             }
-                //         }
-                //     })
-                // })
-            } else {
-                setWorkingMember(156);
-            }
-        }
 
-        if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
-            setWorkingMember(9);
-        }
-        if (StatusData.value == 90) {
-            if (EditData.siteType == 'Offshore Tasks') {
-                setWorkingMember(36);
-            } else {
-                setWorkingMember(42);
-            }
-            EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
-        }
     }
 
     const setWorkingMember = (statusId: any) => {
@@ -906,7 +881,7 @@ const EditTaskPopup = (Items: any) => {
                 FeedBack: updateFeedbackArray?.length > 0 && updateFeedbackArray[0]?.FeedBackDescriptions[0]?.Title?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
                 component_x0020_link: {
                     "__metadata": { type: "SP.FieldUrlValue" },
-                    Description: "Description",
+                    Description: UpdateTaskInfo.ComponentLink ? UpdateTaskInfo.ComponentLink : (EditData.component_x0020_link ? EditData.component_x0020_link.Url : null),
                     Url: UpdateTaskInfo.ComponentLink ? UpdateTaskInfo.ComponentLink : (EditData.component_x0020_link ? EditData.component_x0020_link.Url : null)
                 },
                 BasicImageInfo: JSON.stringify(UploadImageArray)
@@ -1035,9 +1010,6 @@ const EditTaskPopup = (Items: any) => {
             }
         })
         setShareWebTypeData(tempArray2);
-    }
-    const StatusAutoSuggestion = (e: any) => {
-
     }
 
 
@@ -1954,7 +1926,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" placeholder="% Complete" className="form-control px-2" disabled
+                                                <input type="text" placeholder="% Complete"  disabled={InputFieldDisable} className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
@@ -2179,7 +2151,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Title != null ? <>
                                             <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} />
+                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} ItemId={EditData.Id} SiteUrl={EditData.component_x0020_link} />
                                         </>
                                             : null}
                                     </div>
@@ -2673,7 +2645,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} placeholder="Url" onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, ComponentLink: e.target.value })}
                                                             />
                                                             <span className="input-group-text">
-                                                                <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off"
+                                                                <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off" aria-disabled={EditData.component_x0020_link != null? false: true}
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
                                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3677 13.2672C11.023 13.7134 9.87201 14.4471 8.99831 15.4154C6.25928 18.4508 6.34631 23.1488 9.19578 26.0801C10.6475 27.5735 12.4385 28.3466 14.4466 28.3466H15.4749V27.2499V26.1532H14.8471C12.6381 26.1532 10.4448 24.914 9.60203 23.1898C8.93003 21.8151 8.9251 19.6793 9.5906 18.3208C10.4149 16.6384 11.9076 15.488 13.646 15.1955C14.7953 15.0022 22.5955 14.9933 23.7189 15.184C26.5649 15.6671 28.5593 18.3872 28.258 21.3748C27.9869 24.0644 26.0094 25.839 22.9861 26.1059L21.9635 26.1961V27.2913V28.3866L23.2682 28.3075C27.0127 28.0805 29.7128 25.512 30.295 21.6234C30.8413 17.9725 28.3779 14.1694 24.8492 13.2166C24.1713 13.0335 23.0284 12.9942 18.5838 13.0006C13.785 13.0075 13.0561 13.0388 12.3677 13.2672ZM23.3224 19.8049C18.7512 20.9519 16.3624 26.253 18.4395 30.6405C19.3933 32.6554 20.9948 34.0425 23.1625 34.7311C23.9208 34.9721 24.5664 35 29.3689 35C34.1715 35 34.8171 34.9721 35.5754 34.7311C38.1439 33.9151 39.9013 32.1306 40.6772 29.5502C41 28.4774 41.035 28.1574 40.977 26.806C40.9152 25.3658 40.8763 25.203 40.3137 24.0261C39.0067 21.2919 36.834 19.8097 33.8475 19.6151L32.5427 19.53V20.6267V21.7236L33.5653 21.8132C35.9159 22.0195 37.6393 23.0705 38.4041 24.7641C39.8789 28.0293 38.2035 31.7542 34.8532 32.6588C33.8456 32.9309 25.4951 32.9788 24.1462 32.7205C22.4243 32.3904 21.0539 31.276 20.2416 29.5453C19.8211 28.6492 19.7822 28.448 19.783 27.1768C19.7837 26.0703 19.8454 25.6485 20.0853 25.1039C20.4635 24.2463 21.3756 23.2103 22.1868 22.7175C22.8985 22.2851 24.7121 21.7664 25.5124 21.7664H26.0541V20.6697V19.573L25.102 19.5851C24.5782 19.5919 23.7775 19.6909 23.3224 19.8049Z" fill="#333333" />
@@ -2710,7 +2682,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">Status</label>
-                                                            <input type="text" placeholder="% Complete" className="form-control px-2" disabled
+                                                            <input type="text" placeholder="% Complete" className="form-control px-2" disabled={InputFieldDisable}
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
                                                             <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
@@ -2863,7 +2835,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div>
                                         {EditData.Title != null ? <>
                                             <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} />
+                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} ItemId={EditData.Id} SiteUrl={EditData.component_x0020_link} />
                                         </>
                                             : null}
                                     </div>

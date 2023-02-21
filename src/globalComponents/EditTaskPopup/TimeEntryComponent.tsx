@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
+import * as $ from 'jquery';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import * as Moment from 'moment';
 import pnp, { PermissionKind } from "sp-pnp-js";
@@ -125,6 +126,15 @@ function TimeEntryPopup(item: any) {
         }
 
 
+    }
+    var showProgressBar = () => {
+
+
+        $(' #SpfxProgressbar').show();
+    }
+    var showProgressHide = () => {
+
+        $(' #SpfxProgressbar').hide();
     }
     const changeDateDec = (val: any, Type: any) => {
 
@@ -580,7 +590,7 @@ function TimeEntryPopup(item: any) {
 
     const getStructureData = function () {
         TaskCate = AllTimeSpentDetails
-        closeTaskStatusUpdatePoup();
+        
 
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.TimesheetTitle.Id === undefined) {
@@ -759,8 +769,9 @@ function TimeEntryPopup(item: any) {
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
         if (TaskStatuspopup == true) {
-
+            
             setupdateData(updateData + 1)
+            showProgressHide()
         }
 
 
@@ -1247,10 +1258,11 @@ function TimeEntryPopup(item: any) {
     var mainParentId: any = ''
     var mainParentTitle: any = ''
     const saveTimeSpent = async () => {
+        closeTaskStatusUpdatePoup();
         var UpdatedData: any = {}
         smartTermId = "Task" + item.props.siteType + "Id";
-
-
+        showProgressBar();
+        
         var AddedData: any = []
 
         if (checkCategories == undefined && checkCategories == undefined) {
@@ -1819,6 +1831,9 @@ function TimeEntryPopup(item: any) {
 
                                                                             <>
                                                                                 <tr >
+                                                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
+                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                        </div>
                                                                                     <td className="p-0" colSpan={9}>
                                                                                         <table className="table m-0" style={{ width: "100%" }}>
                                                                                             <tr className="for-c02">
@@ -1919,6 +1934,7 @@ function TimeEntryPopup(item: any) {
                                                                                                                             <tr >
                                                                                                                                 <td className="p-0" colSpan={9}>
                                                                                                                                     <table className="table m-0" style={{ width: "100%" }}>
+                                                                                                                                   
                                                                                                                                         <tr className="for-c02">
 
                                                                                                                                             <td colSpan={2} style={{ width: "22%" }}>
