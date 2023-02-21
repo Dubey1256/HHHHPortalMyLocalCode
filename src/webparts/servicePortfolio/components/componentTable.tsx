@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 //import '../../cssFolder/foundation.scss';
-import { Modal } from 'office-ui-fabric-react';
+import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import { RxDotsVertical } from 'react-icons/rx';
@@ -23,6 +23,7 @@ import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { typography } from '@mui/system';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+import { PortfolioStructureCreationCard } from '../../../globalComponents/tableControls/PortfolioStructureCreation';
 
 
 
@@ -1634,6 +1635,7 @@ function ComponentTable(SelectedProp: any) {
     } else if (IsUpdated != SelectedProp.SelectedProp) {
         setIsUpdated(SelectedProp.SelectedProp)
     }
+    let props =IsUpdated;
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
     React.useEffect(() => {
         showProgressBar();
@@ -2460,6 +2462,14 @@ function ComponentTable(SelectedProp: any) {
         }
         setData(data => ([...data]));
     }
+    const CloseCall = React.useCallback(() => {
+        setAddModalOpen(false)
+    }, []);
+
+    const CreateOpenCall = React.useCallback((item) => {
+        setIsComponent(true);
+        setSharewebComponent(item);
+    }, []);
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
 
@@ -3511,6 +3521,9 @@ function ComponentTable(SelectedProp: any) {
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
+            <Panel    type={PanelType.large} isOpen={addModalOpen} isBlocking={false}>
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props}/> 
+            </Panel>
         </div >
     );
 }
