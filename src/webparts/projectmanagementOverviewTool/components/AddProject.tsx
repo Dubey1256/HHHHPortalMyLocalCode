@@ -119,7 +119,7 @@ const AddProject = (props: any) => {
                     <span >
                         <div>
                             <span>
-                                <input type='text' className='form-control' placeholder='Enter Task Name' value={title} onChange={(e) => { settitle(e.target.value) }} />
+                                <input type='text' className='form-control' placeholder='Enter Project Name' value={title} onChange={(e) => { settitle(e.target.value) }} />
                                 {/* <input type='text' className='form-control' placeholder='Enter Task Name' defaultValue={title} onChange={(e) => { (e: any) => settitle(e.target.value) }} /> */}
                             </span>
                         </div>

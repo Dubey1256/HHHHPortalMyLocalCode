@@ -338,7 +338,7 @@ function ComponentTable(SelectedProp: any) {
                         ItemRankItems = null;
                         PercentCompleteItems = null;
                         DueDateItems = null;
-                        SitesItems=null;
+                        SitesItems = null;
                     }
                 } else
                     commonItems = ([...PortfolioItems]);
@@ -354,7 +354,7 @@ function ComponentTable(SelectedProp: any) {
                         ItemRankItems = null;
                         PercentCompleteItems = null;
                         DueDateItems = null;
-                        SitesItems=null;
+                        SitesItems = null;
                     }
                 } else
                     commonItems = ([...ResponsibilityItems]);
@@ -370,7 +370,7 @@ function ComponentTable(SelectedProp: any) {
                         ItemRankItems = null;
                         PercentCompleteItems = null;
                         DueDateItems = null;
-                        SitesItems=null;
+                        SitesItems = null;
                     }
                 } else
                     commonItems = ([...PriorityItems]);
@@ -387,12 +387,12 @@ function ComponentTable(SelectedProp: any) {
                         ItemRankItems = null;
                         PercentCompleteItems = null;
                         DueDateItems = null;
-                        SitesItems=null;
+                        SitesItems = null;
                     }
                 } else
                     commonItems = ([...ItemRankItems]);
             }
-          
+
             if (isSitesSelected) {
                 if (commonItems != undefined && commonItems.length > 0) {
                     commonItems = getCommonItems(commonItems, SitesItems);
@@ -404,7 +404,7 @@ function ComponentTable(SelectedProp: any) {
                         ItemRankItems = null;
                         PercentCompleteItems = null;
                         DueDateItems = null;
-                        SitesItems=null;
+                        SitesItems = null;
                     }
                 } else
                     commonItems = ([...SitesItems]);
@@ -420,7 +420,7 @@ function ComponentTable(SelectedProp: any) {
                         ItemRankItems = null;
                         PercentCompleteItems = null;
                         DueDateItems = null;
-                        SitesItems=null;
+                        SitesItems = null;
                     }
                 } else
                     commonItems = ([...PercentCompleteItems]);
@@ -1355,7 +1355,7 @@ function ComponentTable(SelectedProp: any) {
             setData(maidataBackup);
             //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
         }
-         // setData(data => ([...maidataBackup]));
+        // setData(data => ([...maidataBackup]));
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
 
     };
@@ -1635,7 +1635,7 @@ function ComponentTable(SelectedProp: any) {
     } else if (IsUpdated != SelectedProp.SelectedProp) {
         setIsUpdated(SelectedProp.SelectedProp)
     }
-    let props =IsUpdated;
+    let props = undefined;
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
     React.useEffect(() => {
         showProgressBar();
@@ -3141,7 +3141,9 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             </td>
                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                 <div className="accordian-header" >
-                                                                                                                    <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                    {/* checked={item.checked === true ? true : false} */}
+                                                                                                                    <span className='pe-2'><input type="checkbox"
+                                                                                                                        onChange={(e) => onChangeHandler(childitem)} /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -3261,7 +3263,9 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     </td>
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                         <div className="accordian-header" >
-                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                            {/* checked={item.checked === true ? true : false} */}
+                                                                                                                                            <span className='pe-2'><input type="checkbox"
+                                                                                                                                                onChange={(e) => onChangeHandler(childinew)} /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
@@ -3521,8 +3525,8 @@ function ComponentTable(SelectedProp: any) {
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            <Panel    type={PanelType.large} isOpen={addModalOpen} isBlocking={false}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props}/> 
+            <Panel type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
         </div >
     );

@@ -17,6 +17,8 @@ let SitesTypes: any = []
 let subCategories: any = []
 let AllComponents: any = []
 let taskUsers: any = [];
+let taskCreated = false;
+let createdTask: any = {}
 let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
@@ -213,7 +215,7 @@ function CreateTaskComponent(props: any) {
 
 
             if (paramComponentId != undefined) {
-               
+
                 AllComponents?.map((item: any) => {
                     if (item?.Id == paramComponentId) {
                         setComponent.push(item)
@@ -283,9 +285,9 @@ function CreateTaskComponent(props: any) {
                     setRefreshPage(!refreshPage);
                 })
             }
-        } else if (props?.projectId != undefined && props?.projectItem!=undefined) {
+        } else if (props?.projectId != undefined && props?.projectItem != undefined) {
             AllComponents?.map((item: any) => {
-                if (item?.Id ==props?.projectItem?.ComponentId[0]) {
+                if (item?.Id == props?.projectItem?.ComponentId[0]) {
                     setComponent.push(item)
                     setSave({ ...save, Component: setComponent });
                     setSmartComponentData(setComponent);
@@ -783,16 +785,15 @@ function CreateTaskComponent(props: any) {
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
                         data.data.listId = selectedSite?.listId;
+                        taskCreated = true;
+                        createdTask.Id= data?.data?.Id
+                        createdTask.siteType=save.siteType
                         if (props?.projectId != undefined) {
-                            
                             EditPopup(data?.data)
-
                             props?.callBack
                         } else {
-                            window.open("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + data.data.Id + "&Site=" + save.siteType, "_self")
-
+                            EditPopup(data?.data)
                         }
-
                     })
                 }
             } catch (error) {
@@ -1132,6 +1133,10 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
+        if (taskCreated) {
+            window.open("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
+        }
+        createdTask={};
     }, [])
     const EditPopup = React.useCallback((item: any) => {
         setEditTaskPopupData({
