@@ -992,7 +992,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         </section>
         <section>
           <div className='row'>
-            <div className="col-9 ps-0 bg-white">
+            <div className="col-9 bg-white">
               <div className="team_member row">
                 <div className='col-md-4 p-0'>
                   <dl>
