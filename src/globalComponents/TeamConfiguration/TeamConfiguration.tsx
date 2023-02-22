@@ -272,7 +272,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 });
             }
         }
-
         return users;
     }
 
@@ -293,9 +292,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                     child.childs.push($data);
             }
         });
-
         this.dropSuccessHandler(true);
-
     }
 
     private onDropTeam(e: any, array: any, Team: any, AllUser: any) {
@@ -320,7 +317,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
-
         this.dropSuccessHandler(true);
     }
 
@@ -347,9 +343,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         if (!self.isItemExists(array, $data.Id)) {
             array.push($data);
         }
-
         this.dropSuccessHandler(false);
-
     }
 
     private dropSuccessHandler(isRemove: any) {
@@ -393,7 +387,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     Select Team Members
                                 </span>
                             </span>
-                            <span><Tooltip /></span>
+                            <span><Tooltip ComponentId="1745" /></span>
                         </div>
                     </div>
                     {this.state.TeamUserExpended ?
@@ -439,7 +433,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers)}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div className='d-flex flex-wrap'>
+                                                    <div className='d-flex flex-wrap' style={{height:"30px"}}>
                                                         {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
                                                             return <div
                                                                 className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
@@ -457,7 +451,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers)}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div className='d-flex flex-wrap'>
+                                                    <div className='d-flex flex-wrap' style={{height:"30px"}}>
                                                         {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                             return <div
                                                                 className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
@@ -480,7 +474,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                             onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <div className="working-box p-1" >
-                                                <div className='d-flex flex-wrap'>
+                                                <div className='d-flex flex-wrap' style={{height:"30px"}}>
                                                     {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                         return <div
                                                             className="ProirityAssignedUserPhoto"
