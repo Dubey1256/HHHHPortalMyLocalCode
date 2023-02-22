@@ -8,7 +8,7 @@ import * as globalCommon from '../globalCommon';
 
 export interface IStructureCreationProps {
     CreatOpen: (item: any) => void;
-    Close: () => void;
+    Close: (item: any) => void;
     SelectedItem: any;
     PortfolioType: any;
 }
@@ -54,7 +54,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         let SPDetails: any = [];
         let filtertitle = this.state.PortfolioType.split(' ')[0];
         this.Portfolio_x0020_Type = filtertitle;
-        var select: any = 'Title,Id,Component/Id,Component/Title,Service/Id,Service/Title&$expand=Component,Service$&filter=PortfolioType eq ' + filtertitle + ''
+        var select: any = 'Title,Id,PortfolioType$&filter=PortfolioType eq ' + filtertitle + ''
         SPDetails = await globalCommon.getData(GlobalConstants.SP_SITE_URL, GlobalConstants.MASTER_TASKS_LISTID, select);
         console.log(SPDetails);
         this.setState({
@@ -80,13 +80,13 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         this.setItemType();
     }
 
-    private closeModal(e: any) {
-        e.preventDefault();
-        this.setState({
-            isModalOpen: false
-        })
-        this.props.Close();
-    }
+    // private closeModal(e: any) {
+    //     e.preventDefault();
+    //     this.setState({
+    //         isModalOpen: false
+    //     })
+    //     this.props.Close();
+    // }
 
     private OpenModal(e: any) {
         e.preventDefault();
@@ -199,7 +199,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         } else {
             this.setState({ isModalOpen: false });
         }
-        this.props.Close();
+        //  if(i !=undefined)
+        //  Item.
+        this.props.Close(i);
     }
 
     LoadPortfolioitemParentId = async (ItemType: any, isloadEssentialDeatils: any, item: any) => {
@@ -207,19 +209,19 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             this.GetportfolioIdCount = 0;
 
         let ItemTypes = 'Component';
-        if (ItemType == undefined) {
-            if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'Root Component') {
-                ItemTypes = 'Component';
-            } else if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'Component') {
-                ItemTypes = 'SubComponent';
-            }
-            else if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'SubComponent') {
-                ItemTypes = 'Feature';
-            }
-            else if (this.state.SelectedItem != null || this.state.SelectedItem == undefined) {
-                ItemTypes = 'Component';
-            }
+        // if (ItemType == undefined) {
+        if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'Root Component') {
+            ItemTypes = 'Component';
+        } else if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'Component') {
+            ItemTypes = 'SubComponent';
         }
+        else if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'SubComponent') {
+            ItemTypes = 'Feature';
+        }
+        else if (this.state.SelectedItem != null || this.state.SelectedItem == undefined) {
+            ItemTypes = 'Component';
+        }
+        //  }
         let filter = ''
         if (ItemTypes == 'Component') {
             filter = "Item_x0020_Type eq '" + ItemTypes + "'"
@@ -338,13 +340,19 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                 //item.Title = self.state.textTitle
                 if (item.Title != undefined && item.Title != '') {
                     self.TotalCount++;
-                    self.state.TeamConfig.ResponsibleTeam.forEach(function (assignto: any) {
-                        self.AssignedIds.push(assignto.AssingedToUserId);
-                    })
-                    if (self.state.TeamConfig.TeamMemberUsers != undefined) {
-                        self.state.TeamConfig.TeamMemberUsers.forEach(function (TeamMember: any) {
-                            self.TeamMembersIds.push(TeamMember.AssingedToUserId);
-                        })
+                    if (self.state.TeamConfig != undefined) {
+                        if (self.state.TeamConfig.ResponsibleTeam != undefined && self.state.TeamConfig.ResponsibleTeam.length > 0) {
+                            self.state.TeamConfig.ResponsibleTeam.forEach(function (assignto: any) {
+                                self.AssignedIds.push(assignto.AssingedToUserId);
+                                // self.AssignedTo.push(assignto.AssingedToUserId);
+                            })
+                        }
+                        if (self.state.TeamConfig.TeamMemberUsers != undefined && self.state.TeamConfig.TeamMemberUsers.length > 0) {
+
+                            self.state.TeamConfig.TeamMemberUsers.forEach(function (TeamMember: any) {
+                                self.TeamMembersIds.push(TeamMember.AssingedToUserId);
+                            })
+                        }
                     }
                     let ClientCategoryIds: any = []
                     if (self.state.SelectedItem != undefined && self.state.SelectedItem.ClientCategory != undefined && self.state.SelectedItem.ClientCategory != undefined && self.state.SelectedItem.ClientCategory.length > 0) {
@@ -354,10 +362,11 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                     }
                     let AssignedToIds: any = []
                     let TeamMembersIds: any = []
-
-                    item.AssignedToUsers.forEach(function (user: any) {
-                        AssignedToIds.push(user.AssingedToUserId);
-                    });
+                    if (item.AssignedToUsers != undefined && item.AssignedToUsers.length > 0) {
+                        item.AssignedToUsers.forEach(function (user: any) {
+                            AssignedToIds.push(user.AssingedToUserId);
+                        });
+                    }
                     /*
                     item.TeamMemberUsers.forEach(item.TeamMemberUsers, function (user:any) {
                         TeamMembersIds.push(user.AssingedToUserId);
@@ -465,7 +474,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                 AddedCount += 1;
                 if (AddedCount == self.ChildItemTitle.length) {
                     self.setState({ isModalOpen: false });
-                    self.props.Close();
+                    //self['SelectedItem'] =SelectedItem;
+                    self.props.Close(self);
                 }
 
             });
@@ -549,7 +559,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
                         <div >
                             <div className="form-group padLR">
-                                <label className="col-sm-6  padL-0">Title</label>
+                                <label className="col-sm-6  padL-0"><strong>Title</strong> </label>
                                 <input className="form-control full_width" type="text" value={this.state.textTitle} onChange={(e) => this.handleInputChange(e)}
                                     placeholder="Enter Component Title..." ng-required="true" />
                                 {/* <span className="searchclear" ng-show="ComponentTitle.length>0" style={{ top: "39px" }}
@@ -674,11 +684,11 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                         </div>
                         <footer className='text-end  mt-2'>
                             <button type="button" className="btn btn-primary me-1" onClick={() => this.CreateFolder('CreatePopup')}
-                                ng-disabled="ComponentTitle==undefined ">
+                            >
                                 Create & Open Popup
                             </button>
                             <button type="button" className="btn btn-primary" onClick={() => this.CreateFolder('Create')}
-                                ng-disabled="ComponentTitle==undefined ">
+                            >
                                 Create
                             </button>
 
@@ -686,29 +696,147 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
 
                     </div>
-                } 
-
+                }
 
                 {this.state.OpenModal == 'SubComponent' && this.state.SelectedItem != undefined &&
 
                     <div>
                         <div>
-                            {/* <div className="modal-header">
-                     <h3 className="modal-title">
-                         <a className="hreflink" target="_blank">
-                            <img className="icon-sites-img ng-scope" 
-                            src={this.state.SelectedItem.Item_x0020_Type =='SubComponent' ? 
-                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png" :
-                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png" }/>
-                            {this.state.SelectedItem.Title} </a>- Create Child Item
-                         <span className="pull-right">
-                             
-                         </span>
-                     </h3>
-                     <button type="button" style={{minWidth:"10px"}} className="close" onClick={(e) => this.closeModal(e)}>
-                     x
-                     </button>
-                 </div> */}
+
+                            <div className='row'>
+                                {this.state.ChildItemTitle != undefined && this.state.ChildItemTitle.length > 0 &&
+                                    this.state.ChildItemTitle.map((item: any, index: number) => {
+                                        return <>
+
+                                            <div>
+                                                <div className='card mb-2 mt-2 p-0 rounded-0'>
+                                                    <div className='card-header p-1'>
+                                                        <h6 className='my-0 fw-normal'>
+                                                            {
+                                                                this.state.ChildItemTitle.length > 1 ?
+
+                                                                    <span onClick={() => this.RemoveFeedbackColumn(index, '')} className='float-end'><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none">
+                                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
+                                                                    </svg>
+                                                                    </span>
+                                                                    : ''}
+                                                        </h6>
+                                                    </div>
+                                                    <div className="card-body">
+                                                        <div className='d-flex justify-content-between align-items-center mb-0'>
+                                                            <label className='mb-1'>  <img className="icon-sites-img"
+                                                                src={item.MasterItemsType == 'SubComponent' ?
+                                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" :
+                                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"} /> <span className='ms-1'><strong>Title</strong> </span> </label>
+
+                                                            {this.state.SelectedItem.Item_x0020_Type == 'Component' &&
+                                                                <>
+                                                                    <div>
+                                                                        <span className='me-2'>
+                                                                            <input
+                                                                                type="radio"
+                                                                                value="SubComponent"
+                                                                                checked={item.MasterItemsType === 'SubComponent'}
+                                                                                onChange={(e) => this.handleTypeChange(e, index)}
+                                                                            />
+                                                                            <label className='ms-1'>SubComponent</label>
+                                                                        </span>
+                                                                        <span>
+                                                                            <input
+                                                                                type="radio"
+                                                                                value="Feature"
+                                                                                checked={item.MasterItemsType === 'Feature'}
+                                                                                onChange={(e) => this.handleTypeChange(e, index)}
+                                                                            />
+
+                                                                            <label className='ms-1'>  Feature</label>
+
+                                                                        </span>
+                                                                    </div>
+                                                                </>
+                                                            }
+                                                        </div>
+                                                        <div className="d-flex">
+
+                                                            <div className="col ">
+                                                                <input className="form-control full_width mb-10" type="text" value={this.state.ChildItemTitle[index].Title} onChange={(e) => this.handleChildItemInput(e, index)}
+                                                                    placeholder="Enter Child Item Title" ng-required="true" />
+                                                            </div>
+                                                            {/* {index != 0 &&
+                                    <div className="col-sm-1 padL-0">
+                                        <a ng-show="ChildItemTitle.length>1 && $index!=0 " style={{ cursor: "pointer" }}
+                                            title="Delete" data-toggle="modal"
+                                            onClick={() => this.RemoveFeedbackColumn(index, '')}>
+                                            <img className="" src="/_layouts/images/delete.gif" />
+                                        </a>
+                                    </div>
+                                } */}
+
+                                                        </div>
+                                                        <div className="row mt-3">
+                                                            {item.Child.length > 0 &&
+                                                                <div ng-repeat="items in item.Child">
+                                                                    <label className="  titleclrgreen "><strong>Short
+                                                                        Description</strong> </label>
+                                                                    <div className="col">
+                                                                        <textarea className='full-width' rows={4}
+                                                                            value={this.state.ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On} onChange={(e) => this.handleChildItemSD(e, index)}></textarea>
+                                                                    </div>
+                                                                    {/* <div className="col-sm-1 padL-0">
+                                            <a ng-show="$index==0" style={{ cursor: "pointer" }} title="Delete"
+                                                data-toggle="modal"
+                                                onClick={() => this.RemoveFeedbackColumn(index, 'Description')}>
+                                                <img className="" src="/_layouts/images/delete.gif" />
+                                            </a>
+                                        </div> */}
+                                                                    {/* <div className="clearfix">
+                                        </div> */}
+                                                                </div>
+                                                            }
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {index == 0 &&
+                                                    <div ng-show="$index==0" className="col-sm-12  ">
+                                                        <TeamConfigurationCard ItemInfo={this.state.SelectedItem} parentCallback={this.DDComponentCallBack} />
+                                                        <div className="clearfix">
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </>
+                                    })}
+                                <div ng-repeat-end></div>
+
+                            </div>
+                            <footer className='text-end  mt-2'>
+                                <a className="me-1" onClick={() => this.addNewTextField()} ng-click="addNewTextField()">
+                                    <img className="icon-sites-img" ng-show="Portfolio_x0020_Type=='Component'"
+                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New.png" />
+                                    Add more child items
+                                </a>
+
+                                {this.state.ChildItemTitle.length == 1 &&
+                                    <button type="button" className="btn btn-primary me-1" ng-click="createChildItems('CreatePopup');">
+                                        Create & Open Popup
+                                    </button>
+                                }
+
+                                <button type="button" className="btn btn-primary" onClick={() => this.createChildItems('Create')} ng-click="createChildItems('Create');" >
+                                    Create
+                                </button>
+
+                            </footer>
+                        </div>
+                    </div>
+
+                }
+                {/* {this.state.OpenModal == 'SubComponent' && this.state.SelectedItem != undefined &&
+
+                    <div>
+                        <div>
                             <div className='row'>
                                 {this.state.ChildItemTitle != undefined && this.state.ChildItemTitle.length > 0 &&
                                     this.state.ChildItemTitle.map((item: any, index: number) => {
@@ -826,7 +954,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                         </div>
                     </div>
 
-                }
+                } */}
 
 
 
