@@ -18,6 +18,7 @@ import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryCompone
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
+import PortfolioStructureCreationCard from '../../../globalComponents/tableControls/PortfolioStructureCreation';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
@@ -48,6 +49,7 @@ export default function ComponentTable({ props }: any) {
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
+    const [checkedList, setCheckedList] = React.useState([]);
     const [Isshow, setIsshow] = React.useState(false);
      const [tablecontiner, settablecontiner]: any = React.useState("hundred");
    
@@ -242,7 +244,7 @@ export default function ComponentTable({ props }: any) {
                                         result.ClientCategory.push(catego);
                                     })
                                 }
-                                if (result.Id === 1587 || result.Id === 104)
+                                if (result.Id === 498 || result.Id === 104)
                                     console.log(result);
                                 result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
                                 if (result['Shareweb_x0020_ID'] == undefined) {
@@ -1126,7 +1128,21 @@ export default function ComponentTable({ props }: any) {
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
-
+    const onChangeHandler = (itrm: any) => {
+        const list = [...checkedList];
+        var flag = true;
+        list.forEach((obj: any, index: any) => {
+            if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+                flag = false;
+                list.splice(index, 1);
+            }
+        })
+        if (flag)
+            list.push(itrm);
+        
+        console.log(list);
+        setCheckedList(checkedList => ([...list]));
+    };
 
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
@@ -1187,6 +1203,16 @@ export default function ComponentTable({ props }: any) {
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
     }, []);
+
+    const CloseCall = React.useCallback(() => {
+        setAddModalOpen(false)
+    }, []);
+
+    const CreateOpenCall = React.useCallback((item) => {
+        setIsComponent(true);
+        setSharewebComponent(item);
+    }, []);
+
     var myarray: any = [];
     var myarray1: any = [];
     var myarray2: any = [];
@@ -1792,8 +1818,8 @@ export default function ComponentTable({ props }: any) {
                         </span>
                     </span>
                     <span className="toolbox mx-auto">
-                        <button type="button" className="btn btn-primary"
-                            onClick={addModal} title=" Add Structure" disabled={true}>
+                         <button type="button" className="btn btn-primary"
+                            onClick={addModal} title=" Add Structure" disabled={false}>
                             Add Structure
                         </button>
                         <button type="button"
@@ -2083,7 +2109,7 @@ export default function ComponentTable({ props }: any) {
                                                                     </td>
                                                                     <td style={{ width: "6%" }}>
                                                                         <div className="d-flex">
-                                                                            <span className='pe-2'><input type="checkbox" />
+                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(item)} />
                                                                                 <a className="hreflink" data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
@@ -2708,6 +2734,11 @@ export default function ComponentTable({ props }: any) {
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
+            
+            <Modal show={addModalOpen} isOpen={addModalOpen} isBlocking={false}>
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall}   PortfolioType ={IsUpdated} Close={CloseCall} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props}/> 
+            </Modal>
+            
         </div>
     );
 }

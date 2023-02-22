@@ -161,6 +161,52 @@
           "manifest": "./src/webparts/createTask/CreateTaskWebPart.manifest.json"
         }
       ]
+    },
+    "permission-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/permissionManagement/PermissionManagementWebPart.js",
+          "manifest": "./src/webparts/permissionManagement/PermissionManagementWebPart.manifest.json"
+        }]},
+    "all-task-user-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/allTaskUser/AllTaskUserWebPart.js",
+          "manifest": "./src/webparts/allTaskUser/AllTaskUserWebPart.manifest.json"
+        }
+      ]
+    },
+    "last-modified-items-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/lastModifiedItems/LastModifiedItemsWebPart.js",
+          "manifest": "./src/webparts/lastModifiedItems/LastModifiedItemsWebPart.manifest.json"
+        }
+      ]
+    },
+    "my-pending-tasks-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/myPendingTasks/MyPendingTasksWebPart.js",
+          "manifest": "./src/webparts/myPendingTasks/MyPendingTasksWebPart.manifest.json"
+        }
+      ]
+    },
+    "manage-smart-metadata-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/manageSmartMetadata/ManageSmartMetadataWebPart.js",
+          "manifest": "./src/webparts/manageSmartMetadata/ManageSmartMetadataWebPart.manifest.json"
+        }
+      ]
+    },
+    "tasks-view-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/tasksView/TasksViewWebPart.js",
+          "manifest": "./src/webparts/tasksView/TasksViewWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -201,6 +247,13 @@
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
     "HrContactSearchWebPartStrings": "lib/webparts/hrContactSearch/loc/{locale}.js",
     "MaterialUiWebPartStrings": "lib/webparts/materialUi/loc/{locale}.js",
-    "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js"
+    "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
+    "PermissionManagementWebPartStrings": "lib/webparts/permissionManagement/loc/{locale}.js",
+    "AllTaskUserWebPartStrings": "lib/webparts/allTaskUser/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "LastModifiedItemsWebPartStrings": "lib/webparts/lastModifiedItems/loc/{locale}.js",
+    "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",
+    "ManageSmartMetadataWebPartStrings": "lib/webparts/manageSmartMetadata/loc/{locale}.js",
+    "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js"
   }
 }

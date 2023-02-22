@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
+import pnp from "sp-pnp-js";
 import { Modal } from 'office-ui-fabric-react';
 import 'setimmediate';
 import { Editor } from "react-draft-wysiwyg";
@@ -9,9 +10,10 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from 'draftjs-to-html';
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
-import { sp } from "@pnp/sp";
 import Tooltip from '../Tooltip';
 import "@pnp/sp/sputilities";
+import { spfi } from '@pnp/sp/presets/all';
+
 export interface IAncToolProps {
     siteUrl?: any;
     Task?: string;
@@ -23,6 +25,7 @@ export interface IAncToolProps {
 
 
 }
+const sp = spfi();
 
 export interface IAncToolState {
     Result: any;
@@ -70,7 +73,7 @@ export class AncTool extends React.Component<IAncToolProps, IAncToolState> {
         }
         this.GetResult();
         console.log(this.props.Context);
-        sp.setup({
+        pnp.setup({
             spfxContext: this.props.Context
         });
     }
