@@ -101,7 +101,6 @@ const Picker = (item: any) => {
                 uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
                     return array.indexOf(val) == id;
                 });
-
             }
         });
         return uniqueNames;
@@ -297,7 +296,7 @@ const Picker = (item: any) => {
                                 <div>
                                     <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
                                     {searchedData?.length > 0 ? (
-                                        <div className="searchtable-smart-category">
+                                        <div className="SearchTableCategoryComponent">
                                             <ul className="list-group">
                                                 {searchedData.map((item: any) => {
                                                     return (
@@ -369,6 +368,7 @@ const Picker = (item: any) => {
                             </div> */}
                         </div>
                         <div className='col-sm-12 categScroll'>
+
                             <ul className="categories-menu p-0">
                                 {AllCategories.map(function (item: any) {
                                     return (
@@ -394,7 +394,6 @@ const Picker = (item: any) => {
                                                                                 src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title}
                                                                             <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-
                                                                                 <div className="popover__content">
                                                                                     <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
                                                                                 </div>
