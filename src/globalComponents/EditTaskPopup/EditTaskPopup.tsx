@@ -46,6 +46,7 @@ const EditTaskPopup = (Items: any) => {
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState('');
     const [ShareWebTypeData, setShareWebTypeData] = React.useState([]);
+    const [AllCategoryData, setAllCategoryData] = React.useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
@@ -87,6 +88,7 @@ const EditTaskPopup = (Items: any) => {
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [HoverImageData, setHoverImageData] = React.useState([]);
     const [SiteTypes, setSiteTypes] = React.useState([]);
+    const [categorySearchKey, setCategorySearchKey] = React.useState('');
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -110,6 +112,7 @@ const EditTaskPopup = (Items: any) => {
         GetEditData();
         getCurrentUserDetails();
         getSmartMetaData();
+        loadAllCategoryData();
         // Descriptions();
     }, [])
 
@@ -175,9 +178,112 @@ const EditTaskPopup = (Items: any) => {
     }, []);
 
     // ********** this is for smart category Related all function and callBack function for Picker Component Popup ********
+    var SmartTaxonomyName = "Categories";
+    var AutoCompleteItems: any = [];
+    const loadAllCategoryData = function () {
+        var AllTaskusers = []
+        var AllMetaData: any = []
+        var TaxonomyItems: any = []
+        var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('01a34938-8c7e-4ea6-a003-cee649e8c67a')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '" + SmartTaxonomyName + "'")
+        $.ajax({
+            url: url,
+            method: "GET",
+            headers: {
+                "Accept": "application/json; odata=verbose"
+            },
+            success: function (data) {
+                AllTaskusers = data.d.results;
+                $.each(AllTaskusers, function (index: any, item: any) {
+                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EPS';
+                    }
+                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EI';
+                    }
+                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'Education';
+                    }
+                    else {
+                        item.newTitle = item.Title;
+                    }
+                    AllMetaData.push(item);
+                })
+                TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData);
+                setAllCategoryData(TaxonomyItems)
+            },
+            error: function (error:any) {
+                 console.log('Error:',error)
+            }
+        })
+    };
+    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any) => {
+        var TaxonomyItems: any = [];
+        var uniqueNames: any = [];
+        $.each(AllTaxonomyItems, function (index: any, item: any) {
+            if (item.ParentID == 0 && SmartTaxonomyName == item.TaxType) {
+                TaxonomyItems.push(item);
+                getChilds(item, AllTaxonomyItems);
+                if (item.childs != undefined && item.childs.length > 0) {
+                    TaxonomyItems.push(item)
+                }
+                uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
+                    return array.indexOf(val) == id;
+                });
 
+            }
+        });
+        return uniqueNames;
+    }
+    const getChilds = (item: any, items: any) => {
+        item.childs = [];
+        $.each(items, function (index: any, childItem: any) {
+            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
+                childItem.isChild = true;
+                item.childs.push(childItem);
+                getChilds(childItem, items);
+            }
+        });
+    }
 
-    const SelectCategoryCallBack = React.useCallback((selectCategoryData: any) => {
+    if (AllCategoryData?.length > 0) {
+        AllCategoryData?.map((item: any) => {
+            if (item.newTitle != undefined) {
+                item['Newlabel'] = item.newTitle;
+                AutoCompleteItems.push(item)
+                if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+                    item.childs.map((childitem: any) => {
+                        if (childitem.newTitle != undefined) {
+                            childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+                            AutoCompleteItems.push(childitem)
+                        }
+                        if (childitem.childs.length > 0) {
+                            childitem.childs.map((subchilditem: any) => {
+                                if (subchilditem.newTitle != undefined) {
+                                    subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+                                    AutoCompleteItems.push(subchilditem)
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        })
+    }
+
+    AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
+        var alredyExists = previous.filter(function (item: any) {
+            return item.Title === current.Title
+        }).length > 0
+        if (!alredyExists) {
+            previous.push(current)
+        }
+        return previous
+    }, [])
+    const SelectCategoryCallBack = React.useCallback((selectCategoryDataCallBack: any) => {
+        setSelectedCategoryData(selectCategoryDataCallBack);
+    }, [])
+
+    const setSelectedCategoryData =(selectCategoryData: any)=>{
         setIsComponentPicker(false);
         selectCategoryData.map((existingData: any) => {
             let elementFound: any = false;
@@ -223,15 +329,17 @@ const EditTaskPopup = (Items: any) => {
                 }
             }
         })
-
-    }, [])
+        setSearchedCategoryData([])
+        setCategorySearchKey("");
+    }
 
     const smartCategoryPopup = React.useCallback(() => {
         setIsComponentPicker(false);
     }, [])
 
-    const autoSuggestionsForCategor = (e: any) => {
+    const autoSuggestionsForCategory = (e: any) => {
         let searchedKey: any = e.target.value;
+        setCategorySearchKey(e.target.value);
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
             AutoCompleteItemsArray?.map((itemData: any) => {
@@ -239,7 +347,7 @@ const EditTaskPopup = (Items: any) => {
                     tempArray.push(itemData);
                 }
             })
-            setSearchedCategoryData(tempArray)
+            setSearchedCategoryData(tempArray);
         } else {
             setSearchedCategoryData([]);
         }
@@ -272,8 +380,6 @@ const EditTaskPopup = (Items: any) => {
         let MetaData: any = [];
         let siteConfig: any = [];
         let tempArray: any = [];
-        let smartCategory: any = [];
-        let Autocompleteitems: any = [];
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
             .items
@@ -283,7 +389,6 @@ const EditTaskPopup = (Items: any) => {
             .get()
 
         siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
-        smartCategory = getSmartMetadataItemsByTaxType(MetaData, 'Categories');
         siteConfig?.map((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "QA" && site.Title !== "SDC Sites") {
                 site.BtnStatus = false;
@@ -294,40 +399,41 @@ const EditTaskPopup = (Items: any) => {
         tempArray?.map((tempData: any) => {
             SiteTypeBackupArray.push(tempData);
         })
-        if (smartCategory.length > 0 && smartCategory != undefined) {
-            smartCategory.map((item: any) => {
-                if (item.newTitle != undefined) {
-                    item['Newlabel'] = item.newTitle;
-                    Autocompleteitems.push(item)
-                    if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-                        item.childs.map((childitem: any) => {
-                            if (childitem.newTitle != undefined) {
-                                childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-                                Autocompleteitems.push(childitem)
-                            }
-                            if (childitem.childs.length > 0) {
-                                childitem.childs.map((subchilditem: any) => {
-                                    if (subchilditem.newTitle != undefined) {
-                                        subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-                                        Autocompleteitems.push(subchilditem)
-                                    }
-                                })
-                            }
-                        })
-                    }
-                }
-            })
-        }
-        AutoCompleteItemsArray = Autocompleteitems.reduce(function (previous: any, current: any) {
-            var alredyExists = previous.filter(function (item: any) {
-                return item.Title === current.Title
-            }).length > 0
-            if (!alredyExists) {
-                previous.push(current)
-            }
-            return previous
-        }, [])
-
+        // if (smartCategory.length > 0 && smartCategory != undefined) {
+        //     smartCategory.map((item: any) => {
+        //         if (item.Title != undefined) {
+        //             item['Newlabel'] = item.newTitle;
+        //             AutoCompleteItems.push(item)
+        //             if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+        //                 item.childs.map((childitem: any) => {
+        //                     if (childitem.newTitle != undefined) {
+        //                         childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+        //                         AutoCompleteItems.push(childitem)
+        //                     }
+        //                     if (childitem.childs.length > 0) {
+        //                         childitem.childs.map((subchilditem: any) => {
+        //                             if (subchilditem.newTitle != undefined) {
+        //                                 subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+        //                                 AutoCompleteItems.push(subchilditem)
+        //                             }
+        //                         })
+        //                     }
+        //                 })
+        //             }
+        //         }
+        //     })
+        // }
+        // AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
+        //     var alredyExists = previous.filter(function (item: any) {
+        //         return item.Title === current.Title
+        //     }).length > 0
+        //     if (!alredyExists) {
+        //         previous.push(current)
+        //     }
+        //     return previous
+        // }, [])
+        // console.log("Final Smart Category Array 1 =======", smartCategory);
+        // console.log("Final Smart Category Array =======", AutoCompleteItems);
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];
@@ -335,16 +441,16 @@ const EditTaskPopup = (Items: any) => {
             if (taxItem.TaxType === taxType)
                 Items.push(taxItem);
         });
-
         Items.sort((a: any, b: any) => {
             return a.SortOrder - b.SortOrder;
         });
         return Items;
     }
+
+
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
         await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
-
         if (currentUserId != undefined) {
             if (taskUsers != null && taskUsers?.length > 0) {
                 taskUsers?.map((userData: any) => {
@@ -364,8 +470,6 @@ const EditTaskPopup = (Items: any) => {
     const ExpandSiteComposition = () => {
         setComposition(!composition)
     }
-
-
     var count = 0;
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
@@ -1427,9 +1531,7 @@ const EditTaskPopup = (Items: any) => {
                         {`${EditData.TaskId} ${EditData.Title}`}
                     </span>
                 </div>
-
                 <Tooltip ComponentId="1683" />
-
             </div>
         );
     };
@@ -1443,7 +1545,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Site
                     </span>
                 </div>
-                <Tooltip ComponentId={Items.Items.Id} />
+                <Tooltip ComponentId="1683" />
             </div>
         );
     };
@@ -1784,18 +1886,18 @@ const EditTaskPopup = (Items: any) => {
                                                         Categories
                                                     </label>
                                                     <input type="text" className="form-control"
-                                                        id="txtCategories" onChange={(e) => autoSuggestionsForCategor(e)} />
+                                                        id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
                                                     <span className="input-group-text">
                                                         <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                             onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
                                                     </span>
                                                 </div>
                                                 {SearchedCategoryData?.length > 0 ? (
-                                                    <div className="searchtable-smart-category">
+                                                    <div className="SmartTableOnTaskPopup">
                                                         <ul className="list-group">
                                                             {SearchedCategoryData.map((item: any) => {
                                                                 return (
-                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectCategoryCallBack(item)} >
+                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item])} >
                                                                         <a>{item.Newlabel}</a>
                                                                     </li>
                                                                 )
@@ -2572,18 +2674,18 @@ const EditTaskPopup = (Items: any) => {
                                                                     Categories
                                                                 </label>
                                                                 <input type="text" className="form-control"
-                                                                    id="txtCategories" onChange={(e) => autoSuggestionsForCategor(e)} />
+                                                                    id="txtCategories" value={categorySearchKey}onChange={(e) => autoSuggestionsForCategory(e)} />
                                                                 <span className="input-group-text">
                                                                     <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                         onClick={(e) => EditComponentPicker(EditData, 'Categories')} />
                                                                 </span>
                                                             </div>
                                                             {SearchedCategoryData?.length > 0 ? (
-                                                                <div className="searchtable-smart-category">
+                                                                <div className="SmartTableOnTaskPopup">
                                                                     <ul className="list-group">
                                                                         {SearchedCategoryData.map((item: any) => {
                                                                             return (
-                                                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectCategoryCallBack(item)} >
+                                                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item])} >
                                                                                     <a>{item.Newlabel}</a>
                                                                                 </li>
                                                                             )
