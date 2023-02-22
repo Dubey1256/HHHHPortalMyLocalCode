@@ -53,9 +53,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     private async LoadSPComponents() {
         let SPDetails: any = [];
         let filtertitle = this.state.PortfolioType.split(' ')[0];
-        this.Portfolio_x0020_Type =filtertitle;
-        var select: any = 'Title,Id,PageUrl,WebpartId,Component/Id,Component/Title,Service/Id,Service/Title&$expand=Component,Service$&filter=PortfolioType eq ' + filtertitle + ''
-        SPDetails = await globalCommon.getData(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.SPCOMPONENTS_LISTID, select);
+        this.Portfolio_x0020_Type = filtertitle;
+        var select: any = 'Title,Id,Component/Id,Component/Title,Service/Id,Service/Title&$expand=Component,Service$&filter=PortfolioType eq ' + filtertitle + ''
+        SPDetails = await globalCommon.getData(GlobalConstants.SP_SITE_URL, GlobalConstants.MASTER_TASKS_LISTID, select);
         console.log(SPDetails);
         this.setState({
             AllComponents: SPDetails
@@ -544,158 +544,149 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         */}
 
                 {this.state.OpenModal == 'Component' &&
-                    <div className="modal-dialog modal-md">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h3 className="modal-title"> Create Component
-                                    <span className="pull-right">
+                    <div >
 
-                                    </span>
-                                </h3>
-                                <button type="button" style={{ minWidth: "10px" }} className="close" onClick={(e) => this.closeModal(e)}>
-                                    &times;
-                                </button>
+
+                        <div >
+                            <div className="form-group padLR">
+                                <label className="col-sm-6  padL-0">Title</label>
+                                <input className="form-control full_width" type="text" value={this.state.textTitle} onChange={(e) => this.handleInputChange(e)}
+                                    placeholder="Enter Component Title..." ng-required="true" />
+                                {/* <span className="searchclear" ng-show="ComponentTitle.length>0" style={{ top: "39px" }}
+                                    ng-click="clearControl()">X</span> */}
                             </div>
-                            <div className="modal-body bg-f5f5 clearfix">
-                                <div className="form-group padLR">
-                                    <label className="col-sm-6 mb-5 mt-10 padL-0">Title</label>
-                                    <input className="form-control full_width" type="text" value={this.state.textTitle} onChange={(e) => this.handleInputChange(e)}
-                                        placeholder="Enter Component Title..." ng-required="true" />
-                                    <span className="searchclear" ng-show="ComponentTitle.length>0" style={{ top: "39px" }}
-                                        ng-click="clearControl()">X</span>
-                                </div>
-                                {this.state.AllFilteredAvailableComoponent.length > 0 &&
-                                    <div className="divPanelBody fortablee col-sm-12 pad0 filtericonposfix"
-                                        ng-show="AllFilteredAvailableComoponent.length>0">
-                                        <div className="container pad0 section-event pt-0 mb-10">
-                                            <ul className="table">
-                                                <li className="for-lis">
+                            {this.state.AllFilteredAvailableComoponent.length > 0 &&
+                                <div className="divPanelBody fortablee col-sm-12 pad0 filtericonposfix"
+                                    ng-show="AllFilteredAvailableComoponent.length>0">
+                                    <div className="container pad0 section-event pt-0 mb-10">
+                                        <ul className="table">
+                                            <li className="for-lis">
+                                                <div style={{ width: "1%" }}></div>
+                                                <div style={{ width: "3%" }}>
+                                                    <div style={{ width: "80%" }}></div>
+                                                </div>
+                                                <div style={{ width: "60%" }}>
+                                                    <div style={{ width: "100%" }} className="search colm-relative">
+                                                        <input type="search" id="searchTaskName" placeholder="Task Title"
+                                                            className="full_width searchbox_height"
+                                                            ng-model="category.searchTaskName" />
+                                                        <span className="searchclear" ng-show="category.searchTaskName.length>0"
+                                                            ng-click="clearSearchBox('category','searchTaskName')">X</span>
+                                                        <span className="sortingfilter">
+                                                            <span className="ml0">
+                                                                <i className="fa fa-angle-up hreflink {{orderBy=='Title'&&!reverse?'siteColor':''}}"
+                                                                    ng-click="Sortby('Title', false)"></i>
+                                                            </span><span className="ml0">
+                                                                <i className="fa fa-angle-down hreflink {{orderBy=='Title'&&reverse?'siteColor':''}}"
+                                                                    ng-click="Sortby('Title', true)"></i>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div style={{ width: "15%" }}>
+                                                    <div style={{ width: "65px" }} className="search colm-relative">
+
+                                                        <input type="search" id="searchPercentComplete" placeholder="%"
+                                                            className="full_width searchbox_height"
+                                                            ng-model="category.searchPercentCompletecreatecomponentclear" />
+                                                        <span className="searchclear"
+                                                            ng-show="category.searchPercentCompletecreatecomponentclear.length>0"
+                                                            ng-click="clearSearchBox('category','searchPercentCompletecreatecomponentclear')">X</span>
+                                                        <span className="sortingfilter">
+                                                            <span className="ml0">
+                                                                <i className="fa fa-angle-up hreflink {{orderBy=='PercentComplete'&&!reverse?'siteColor':''}}"
+                                                                    ng-click="Sortby('PercentComplete', false)"></i>
+                                                            </span><span className="ml0">
+                                                                <i className="fa fa-angle-down hreflink {{orderBy=='PercentComplete'&&reverse?'siteColor':''}}"
+                                                                    ng-click="Sortby('PercentComplete', true)"></i>
+                                                            </span>
+                                                        </span>
+
+                                                    </div>
+                                                </div>
+                                                <div style={{ width: "15%" }}>
+                                                    <div style={{ width: "65px" }} className="search colm-relative">
+
+                                                        <input type="search" id="searchPriority" placeholder="Priority"
+                                                            className="full_width searchbox_height"
+                                                            ng-model="category.searchPriority" />
+                                                        <span className="searchclear" ng-show="category.searchPriority.length>0"
+                                                            ng-click="clearSearchBox('category','searchPriority')">X</span>
+                                                        <span className="sortingfilter">
+                                                            <span className="ml0">
+                                                                <i className="fa fa-angle-up hreflink {{orderBy=='Priority_x0020_Rank'&&!reverse?'siteColor':''}}"
+                                                                    ng-click="Sortby('Priority_x0020_Rank', false)"></i>
+                                                            </span><span className="ml0">
+                                                                <i className="fa fa-angle-down hreflink {{orderBy=='Priority_x0020_Rank'&&reverse?'siteColor':''}}"
+                                                                    ng-click="Sortby('Priority_x0020_Rank', true)"></i>
+                                                            </span>
+                                                        </span>
+
+
+                                                    </div>
+                                                </div>
+                                                <div style={{ width: "4%" }}>
+                                                    <div style={{ width: "81px" }} className="search">
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <div className="container-new">
+                                                <li className="itemRow for-lis tdrows"
+                                                    ng-repeat="item in filtered = (AllFilteredAvailableComoponent|orderBy:orderBy:reverse | filter:{Title:category.searchTaskName,PercentComplete:category.searchPercentCompletecreatecomponentclear,Priority_x0020_Rank:category.searchPriority})">
                                                     <div style={{ width: "1%" }}></div>
-                                                    <div style={{ width: "3%" }}>
-                                                        <div style={{ width: "80%" }}></div>
+                                                    <div style={{ width: "3%" }} className="padLR">
+                                                        <img
+                                                            className="icon-sites-img ml-8"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+
                                                     </div>
-                                                    <div style={{ width: "60%" }}>
-                                                        <div style={{ width: "100%" }} className="search colm-relative">
-                                                            <input type="search" id="searchTaskName" placeholder="Task Title"
-                                                                className="full_width searchbox_height"
-                                                                ng-model="category.searchTaskName" />
-                                                            <span className="searchclear" ng-show="category.searchTaskName.length>0"
-                                                                ng-click="clearSearchBox('category','searchTaskName')">X</span>
-                                                            <span className="sortingfilter">
-                                                                <span className="ml0">
-                                                                    <i className="fa fa-angle-up hreflink {{orderBy=='Title'&&!reverse?'siteColor':''}}"
-                                                                        ng-click="Sortby('Title', false)"></i>
-                                                                </span><span className="ml0">
-                                                                    <i className="fa fa-angle-down hreflink {{orderBy=='Title'&&reverse?'siteColor':''}}"
-                                                                        ng-click="Sortby('Title', true)"></i>
-                                                                </span>
-                                                            </span>
-                                                        </div>
+
+                                                    <div style={{ width: "65%" }} className="padLR" ng-click="assignTitle(item.newTitle)">
+
                                                     </div>
-                                                    <div style={{ width: "15%" }}>
-                                                        <div style={{ width: "65px" }} className="search colm-relative">
+                                                    <div style={{ width: "15%" }} className="padLR" ng-click="assignTitle(item.newTitle)">
 
-                                                            <input type="search" id="searchPercentComplete" placeholder="%"
-                                                                className="full_width searchbox_height"
-                                                                ng-model="category.searchPercentCompletecreatecomponentclear" />
-                                                            <span className="searchclear"
-                                                                ng-show="category.searchPercentCompletecreatecomponentclear.length>0"
-                                                                ng-click="clearSearchBox('category','searchPercentCompletecreatecomponentclear')">X</span>
-                                                            <span className="sortingfilter">
-                                                                <span className="ml0">
-                                                                    <i className="fa fa-angle-up hreflink {{orderBy=='PercentComplete'&&!reverse?'siteColor':''}}"
-                                                                        ng-click="Sortby('PercentComplete', false)"></i>
-                                                                </span><span className="ml0">
-                                                                    <i className="fa fa-angle-down hreflink {{orderBy=='PercentComplete'&&reverse?'siteColor':''}}"
-                                                                        ng-click="Sortby('PercentComplete', true)"></i>
-                                                                </span>
-                                                            </span>
-
-                                                        </div>
                                                     </div>
-                                                    <div style={{ width: "15%" }}>
-                                                        <div style={{ width: "65px" }} className="search colm-relative">
+                                                    <div style={{ width: "15%" }} className="padLR" ng-click="assignTitle(item.newTitle)">
 
-                                                            <input type="search" id="searchPriority" placeholder="Priority"
-                                                                className="full_width searchbox_height"
-                                                                ng-model="category.searchPriority" />
-                                                            <span className="searchclear" ng-show="category.searchPriority.length>0"
-                                                                ng-click="clearSearchBox('category','searchPriority')">X</span>
-                                                            <span className="sortingfilter">
-                                                                <span className="ml0">
-                                                                    <i className="fa fa-angle-up hreflink {{orderBy=='Priority_x0020_Rank'&&!reverse?'siteColor':''}}"
-                                                                        ng-click="Sortby('Priority_x0020_Rank', false)"></i>
-                                                                </span><span className="ml0">
-                                                                    <i className="fa fa-angle-down hreflink {{orderBy=='Priority_x0020_Rank'&&reverse?'siteColor':''}}"
-                                                                        ng-click="Sortby('Priority_x0020_Rank', true)"></i>
-                                                                </span>
-                                                            </span>
-
-
-                                                        </div>
                                                     </div>
-                                                    <div style={{ width: "4%" }}>
-                                                        <div style={{ width: "81px" }} className="search">
-                                                        </div>
+                                                    <div className="icontype display_hide" style={{ width: "4%" }}>
+
+                                                    </div>
+                                                    <div className="icontype display_hide" style={{ width: "2%" }}
+                                                        ng-show="item.WebpartItemId!=undefined && isOwner==true">
+                                                        <a ng-show="item.siteType =='Master Tasks'"
+                                                            title="{{item.newTitle}} Description" className="hreflink"
+                                                            target="_blank"
+                                                            href="https://www.hochhuth-consulting.de/SitePages/PortfolioDescriptionForm.aspx?taskId={{item.WebpartItemId}}">
+                                                            <img className="wid22"
+                                                                src="https://www.hochhuth-consulting.de/SiteCollectionImages/ICONS/32/help_Icon.png" />
+                                                        </a>
                                                     </div>
                                                 </li>
-                                                <div className="container-new">
-                                                    <li className="itemRow for-lis tdrows"
-                                                        ng-repeat="item in filtered = (AllFilteredAvailableComoponent|orderBy:orderBy:reverse | filter:{Title:category.searchTaskName,PercentComplete:category.searchPercentCompletecreatecomponentclear,Priority_x0020_Rank:category.searchPriority})">
-                                                        <div style={{ width: "1%" }}></div>
-                                                        <div style={{ width: "3%" }} className="padLR">
-                                                            <img
-                                                                className="icon-sites-img ml-8"
-                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png" />
+                                            </div>
+                                        </ul>
 
-                                                        </div>
-
-                                                        <div style={{ width: "65%" }} className="padLR" ng-click="assignTitle(item.newTitle)">
-
-                                                        </div>
-                                                        <div style={{ width: "15%" }} className="padLR" ng-click="assignTitle(item.newTitle)">
-
-                                                        </div>
-                                                        <div style={{ width: "15%" }} className="padLR" ng-click="assignTitle(item.newTitle)">
-
-                                                        </div>
-                                                        <div className="icontype display_hide" style={{ width: "4%" }}>
-
-                                                        </div>
-                                                        <div className="icontype display_hide" style={{ width: "2%" }}
-                                                            ng-show="item.WebpartItemId!=undefined && isOwner==true">
-                                                            <a ng-show="item.siteType =='Master Tasks'"
-                                                                title="{{item.newTitle}} Description" className="hreflink"
-                                                                target="_blank"
-                                                                href="https://www.hochhuth-consulting.de/SitePages/PortfolioDescriptionForm.aspx?taskId={{item.WebpartItemId}}">
-                                                                <img className="wid22"
-                                                                    src="https://www.hochhuth-consulting.de/SiteCollectionImages/ICONS/32/help_Icon.png" />
-                                                            </a>
-                                                        </div>
-                                                    </li>
-                                                </div>
-                                            </ul>
-
-                                        </div>
                                     </div>
-                                }
-
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={() => this.CreateFolder('CreatePopup')}
-                                    ng-disabled="ComponentTitle==undefined ">
-                                    Create & Open Popup
-                                </button>
-                                <button type="button" className="btn btn-primary" onClick={() => this.CreateFolder('Create')}
-                                    ng-disabled="ComponentTitle==undefined ">
-                                    Create
-                                </button>
-
-                            </div>
+                                </div>
+                            }
 
                         </div>
+                        <footer className='text-end  mt-2'>
+                            <button type="button" className="btn btn-primary me-1" onClick={() => this.CreateFolder('CreatePopup')}
+                                ng-disabled="ComponentTitle==undefined ">
+                                Create & Open Popup
+                            </button>
+                            <button type="button" className="btn btn-primary" onClick={() => this.CreateFolder('Create')}
+                                ng-disabled="ComponentTitle==undefined ">
+                                Create
+                            </button>
+
+                        </footer>
+
+
                     </div>
-                }
+                } 
 
 
                 {this.state.OpenModal == 'SubComponent' && this.state.SelectedItem != undefined &&

@@ -3469,7 +3469,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                             </span>
                                                                                                                                                                         )
                                                                                                                                                                     })}</div>
-                                                                                                                                                            </td>
+                                                                                                                                                            </td> 
                                                                                                                                                             <td style={{ width: "17%" }}>
                                                                                                                                                                 <div>
                                                                                                                                                                     <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
@@ -3525,7 +3525,7 @@ function ComponentTable(SelectedProp: any) {
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            <Panel type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+            <Panel  headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
         </div >
