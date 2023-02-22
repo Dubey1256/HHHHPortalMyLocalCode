@@ -1,11 +1,22 @@
 import * as React from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaHome, FaRegTimesCircle } from 'react-icons/fa';
+import "bootstrap/dist/css/bootstrap.min.css";import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import {
+    useTable,
+    useSortBy,
+    useFilters,
+    useExpanded,
+    usePagination,
+    HeaderGroup,
+} from 'react-table';
+import { Filter, DefaultColumnFilter, SelectColumnFilter } from './filters';
+import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import { Modal } from 'office-ui-fabric-react';
 import AddProject from './AddProject'
 import EditProjectPopup from './EditProjectPopup';
+import TableDataTSX from './TableDataTSX';
 var siteConfig: any = []
 var AllTaskUsers: any = []
 var Idd: number;
@@ -16,7 +27,8 @@ export default function ProjectOverview() {
     const [AssignedTaskUser, SetAssignedTaskUser] = React.useState({ Title: '' });
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [searchedNameData, setSearchedDataName] = React.useState([]);
-    const [AllTasks, setAllTasks] = React.useState([]);
+    const [data, setData] = React.useState([]);
+    const [AllTasks, setAllTasks]:any = React.useState([]);
     const [inputStatus, setInputStatus] = React.useState(false);
     const [EditmodalIsOpen, setEditmodalIsOpen] = React.useState(false);
     const [AddmodalIsOpen, setAddmodalIsOpen] = React.useState(false);
@@ -52,6 +64,100 @@ export default function ProjectOverview() {
         // console.log("all task user =====", taskUser)
         setSearchedDataName(taskUser)
     }
+    const columns = React.useMemo(
+        () => [
+            {
+                internalHeader: 'Title',
+                accessor: 'Title',
+                showSortIcon:true,
+                Cell: ({ row }: any) => (
+                    <span>
+                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.Id}`} data-interception="off" target="_blank">{row.values.Title}</a>
+                    </span>
+                )
+            },
+            {
+                internalHeader: 'Percent Complete',
+                accessor: 'PercentComplete',
+                showSortIcon:true,
+            },
+            {
+                internalHeader: 'Priority',
+                accessor: 'Priority_x0020_Rank',
+                showSortIcon:true,
+            },
+            {
+                internalHeader: 'Team Members',
+                accessor: 'TeamMembers',
+                showSortIcon:true,
+                Cell: ({ row }: any) => (
+                    <span>
+                       <ShowTaskTeamMembers props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers>
+                    </span>
+                )
+            },
+            {
+                internalHeader: 'Due Date',
+                showSortIcon:true,
+                accessor: 'DisplayDueDate',
+            },
+            {   internalHeader:'',
+                id: 'Id', // 'id' is required
+                isSorted:false,
+                showSortIcon:false,
+                Cell: ({ row }: any) => (
+                    <span>
+                      <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"  onClick={(e) => EditComponentPopup(row?.original)}></img>
+                    </span>
+                ),
+            },
+        ],
+        [data]
+    );
+
+
+
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        page,
+        prepareRow,
+        visibleColumns,
+        canPreviousPage,
+        canNextPage,
+        pageOptions,
+        pageCount,
+        gotoPage,
+        nextPage,
+        previousPage,
+        setPageSize,
+        state: { pageIndex, pageSize },
+    }: any = useTable(
+        {
+            columns,
+            data,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 }
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const generateSortingIndicator = (column: any) => {
+        return column.isSorted ? (column.isSortedDesc ? <FaSortDown style={{marginTop:'-6px'}} /> : <FaSortUp style={{marginTop:'-6px'}} />) : (column.showSortIcon?<FaSort style={{marginTop:'-6px'}}/> :'');
+    };
+
+    const onChangeInSelect = (event: any) => {
+        setPageSize(Number(event.target.value));
+    };
+
+    const onChangeInInput = (event: any) => {
+        const page = event.target.value ? Number(event.target.value) - 1 : 0;
+        gotoPage(page);
+    };
+
     const EditComponentPopup = (item: any) => {
         item['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
         item['listName'] = 'Master Tasks';
@@ -75,24 +181,23 @@ export default function ProjectOverview() {
         //     }
             Alltask.map((items: any) => {
                 items.AssignedUser = []
+                items.TeamMembersSearch='';
                 if (items.AssignedTo != undefined) {
                     items.AssignedTo.map((taskUser: any) => {
-                        var newuserdata: any = {};
                         AllTaskUsers.map((user: any) => {
                             if (user.AssingedToUserId == taskUser.Id) {
-                                newuserdata['useimageurl'] = user.Item_x0020_Cover.Url
-                                newuserdata['Suffix'] = user.Suffix
-                                newuserdata['Title'] = user.Title
-                                newuserdata['UserId'] = user.AssingedToUserId
-                                items['Usertitlename'] = user.Title
+                             if(user?.Title!=undefined){
+                                items.TeamMembersSearch= items.TeamMembersSearch+' '+user?.Title
+                             }
                             }
                         })
-                        items.AssignedUser.push(newuserdata);
                     })
                 }
+                items.DisplayDueDate=items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
             })
         // })
-        setAllTasks(Alltask)
+        setAllTasks(Alltask);
+        setData(Alltask);
     }
     //    Save data in master task list
     const [title, settitle] = React.useState('')
@@ -196,7 +301,7 @@ export default function ProjectOverview() {
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
                           <AddProject CallBack={CallBack} />
                         </div>
-                        <table className="table table-hover my-3 py-3" id="EmpTable" style={{ width: "100%" }}>
+                        {/* <table className="table table-hover my-3 py-3" id="EmpTable" style={{ width: "100%" }}>
                             <thead>
                                 <tr>
                                     <th style={{ width: "40%" }}>
@@ -263,7 +368,106 @@ export default function ProjectOverview() {
                                     )
                                 })}
                             </tbody>
-                        </table>
+                        </table> */}
+
+                       <div>
+                <Table bordered hover {...getTableProps()}>
+                    <thead>
+                        {headerGroups.map((headerGroup: any) => (
+                            <tr  {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map((column: any) => (
+                                    <th  {...column.getHeaderProps()}>
+                                        <div {...column.getSortByToggleProps()}>
+                                            {column.render('Header')}
+                                            {generateSortingIndicator(column)}
+                                        </div>
+                                        <Filter column={column}  />
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+
+                    <tbody {...getTableBodyProps()}>
+                        {page.map((row: any) => {
+                            prepareRow(row)
+                            return (
+                                <tr {...row.getRowProps()}  >
+                                    {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
+                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                    })}
+                                </tr>
+                            )
+
+                        })}
+                    </tbody>
+                </Table>
+                <nav>
+                    <Pagination>
+                        <PaginationItem>
+                            <PaginationLink onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+                                <span aria-hidden={true}>
+                                    {/* <i
+                                    aria-hidden={true}
+                                    className="tim-icons icon-double-left"
+                                /> */}
+                                    <FaAngleDoubleLeft aria-hidden={true} />
+                                </span>
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink onClick={() => previousPage()} disabled={!canPreviousPage}>
+                                <span aria-hidden={true}>
+                                    <FaAngleLeft aria-hidden={true} />
+                                </span>
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink>
+                                {pageIndex + 1}
+
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink onClick={() => nextPage()} disabled={!canNextPage}>
+                                <span aria-hidden={true}>
+                                    <FaAngleRight
+                                        aria-hidden={true}
+
+                                    />
+                                </span>
+                            </PaginationLink>
+                        </PaginationItem>
+
+                        <PaginationItem>
+                            <PaginationLink onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+                                <span aria-hidden={true}>
+                                    {/* <i
+                                    aria-hidden={true}
+                                    className="tim-icons icon-double-right"
+                                /> */}
+                                    <FaAngleDoubleRight aria-hidden={true} />
+                                </span>
+                            </PaginationLink>
+                            {' '}
+                        </PaginationItem>
+                        <Col md={2}>
+                            <Input
+                                type='select'
+                                value={pageSize}
+                                onChange={onChangeInSelect}
+                            >
+
+                                {[10, 20, 30, 40, 50].map((pageSize) => (
+                                    <option key={pageSize} value={pageSize}>
+                                        Show {pageSize}
+                                    </option>
+                                ))}
+                            </Input>
+                        </Col>
+                    </Pagination>
+                </nav>
+            </div>
                     </div>
                 </div>
             </div>
