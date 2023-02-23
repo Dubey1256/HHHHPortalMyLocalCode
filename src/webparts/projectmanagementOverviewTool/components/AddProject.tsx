@@ -137,14 +137,11 @@ const AddProject = (props: any) => {
 
                         <div className='row pe-0'>
                            
-                                <div className="col-sm-12 input-group">
+                                <div className="col-sm-12 input-group full-width">
                                     <label className="form-label full-width">Component Portfolio</label>
                                     {smartComponentData?.length > 0 ? null :
                                         <>
-                                            <input type="text" readOnly
-                                                className="form-control"
-                                                id="{{PortfoliosID}}" autoComplete="off"
-                                            />
+                                          
                                         </>
                                     }
                                     {smartComponentData ? smartComponentData?.map((com: any,index:any) => {
@@ -158,16 +155,19 @@ const AddProject = (props: any) => {
                                                 </div>
                                             </>
                                         )
-                                    }) : null}
+                                    }) :   <input type="text" readOnly
+                                    className="form-control full-width"
+                                    id="{{PortfoliosID}}" autoComplete="off"
+                                />}
 
-                                    <span className="input-group-text">
+                                    <span className="input-group-text full-width">
                                         <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                             onClick={(e) => EditPortfolio(save, 'Component')} />
                                     </span>
                                 </div>
                         
                             
-                                <div className="col-sm-12 input-group">
+                                <div className="col-sm-12 full-width input-group">
                                     <label className="form-label full-width">
                                         Service Portfolio
                                     </label>

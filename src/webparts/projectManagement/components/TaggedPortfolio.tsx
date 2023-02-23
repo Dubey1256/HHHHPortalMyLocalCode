@@ -12,6 +12,7 @@ import CreateTaskFromProject from './CreateTaskFromProject';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import PortfolioTagging from '../../projectmanagementOverviewTool/components/PortfolioTagging';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+
 let linkedComponentData: any = [];
 let smartComponentData: any = [];
 let portfolioType = '';
@@ -40,7 +41,6 @@ const TaggedPortfolio = (props: any) => {
   var QueryId: any = ''
   React.useEffect(() => {
     getQueryVariable((e: any) => e);
-    TaskUser();
     GetMasterData();
     GetMetaData();
 
@@ -77,18 +77,9 @@ const TaggedPortfolio = (props: any) => {
     return (false);
 
   }
-  const TaskUser = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-    let taskUser = [];
-    taskUser = await web.lists
-      .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
-      .items
-      .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
-      .expand("AssingedToUser,Approver")
-      .get();
-    AllUser = taskUser;
-  }
+
   const GetMasterData = async () => {
+    AllUser= await globalCommon.loadTaskUsers();
     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
     let taskUsers: any = {};
     var AllUsers: any = []
@@ -153,9 +144,7 @@ const TaggedPortfolio = (props: any) => {
   const CallBack = React.useCallback(() => {
     setisOpenEditPopup(false)
   }, [])
-  const potfolioTagCall = React.useCallback(() => {
-    GetMasterData();
-  }, [])
+
   const GetMetaData = async () => {
     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
     let smartmeta = [];
@@ -172,134 +161,7 @@ const TaggedPortfolio = (props: any) => {
     siteConfig = smartmeta;
     LoadAllSiteTasks();
   }
-  const getSharewebId = (item: any) => {
-    var Shareweb_x0020_ID = undefined;
-    if (item != undefined && item.SharewebTaskType != undefined && item.SharewebTaskType.Title === undefined) {
-      Shareweb_x0020_ID = 'T' + item.Id;
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No === undefined && item.SharewebTaskLevel2No === undefined) {
-      Shareweb_x0020_ID = 'T' + item.Id;
-      if (item.SharewebTaskType.Title === 'MileStone')
-        Shareweb_x0020_ID = 'M' + item.Id;
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Activities' || item.SharewebTaskType.Title === 'Project') && item.SharewebTaskLevel1No != undefined) {
-      if (item.Component != undefined) {
-        if (item.Component.results != undefined && item.Component.results.length > 0) {
-          Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No;
-        }
-      }
-      if (item.Services != undefined) {
-        if (item.Services.results != undefined && item.Services.results.length > 0) {
-          Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No;
-        }
-      }
-      if (item.Events != undefined) {
-        if (item.Events.results != undefined && item.Events.results.length > 0) {
-          Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No;
-        }
-      }
-      if (item.Component != undefined && item.Events != undefined && item.Services != undefined)
-        if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
-          Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-        }
-      if (item.Component === undefined && item.Events === undefined && item.Services === undefined) {
-        Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
-      }
-      if (item.SharewebTaskType.Title === 'Project')
-        Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
 
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Workstream' || item.SharewebTaskType.Title === 'Step') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
-      if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-        if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
-          Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-        }
-      }
-      if (item.Component != undefined) {
-        if (item.Component.results != undefined && item.Component.results.length > 0) {
-          Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-        }
-      }
-      if (item.Services != undefined) {
-        if (item.Services.results != undefined && item.Services.results.length > 0) {
-          Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-        }
-      }
-      if (item.Events != undefined) {
-        if (item.Events.results != undefined && item.Events.results.length > 0) {
-          Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-        }
-      }
-      if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
-        Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
-      }
-      if (item.SharewebTaskType.Title === 'Step')
-        Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No;
-
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No != undefined) {
-      if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-        if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
-          Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-        }
-      }
-      if (item.Component != undefined) {
-        if (item.Component.results != undefined && item.Component.results.length > 0) {
-          Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-        }
-      }
-      if (item.Services != undefined) {
-        if (item.Services.results != undefined && item.Services.results.length > 0) {
-          Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-        }
-      }
-      if (item.Events != undefined) {
-        if (item.Events.results != undefined && item.Events.results.length > 0) {
-          Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-        }
-      }
-      if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
-        Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No + '-T' + item.Id;
-      }
-      if (item.SharewebTaskType.Title === 'MileStone') {
-        Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-S' + item.SharewebTaskLevel2No + '-M' + item.Id;
-      }
-    }
-    else if (item.SharewebTaskType != undefined && (item.SharewebTaskType.Title === 'Task' || item.SharewebTaskType.Title === 'MileStone') && item.SharewebTaskLevel1No != undefined && item.SharewebTaskLevel2No === undefined) {
-      if (item.Component != undefined && item.Services != undefined && item.Events != undefined) {
-        if (!item.Events.results != undefined && !item.Services.results != undefined && !item.Component.results != undefined) {
-          Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
-        }
-      }
-      if (item.Component != undefined) {
-        if (item.Component.results != undefined && item.Component.results.length > 0) {
-          Shareweb_x0020_ID = 'CA' + item.SharewebTaskLevel1No + '-T' + item.Id;
-        }
-      }
-      if (item.Services != undefined) {
-        if (item.Services.results != undefined && item.Services.results.length > 0) {
-          Shareweb_x0020_ID = 'SA' + item.SharewebTaskLevel1No + '-T' + item.Id;
-        }
-      }
-      if (item.Events != undefined) {
-        if (item.Events.results != undefined && item.Events.results.length > 0) {
-          Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-T' + item.Id;
-        }
-      }
-      if (item.Component === undefined && item.Services === undefined && item.Events === undefined) {
-        Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-T' + item.Id;
-      }
-      if (item.SharewebTaskType.Title === 'MileStone') {
-        Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No + '-M' + item.Id;
-      }
-
-    } else {
-      if (item?.Id != undefined) {
-        Shareweb_x0020_ID = 'T' + item?.Id
-      }
-    }
-    return Shareweb_x0020_ID;
-  }
   const EditPopup = React.useCallback((item: any) => {
     setisOpenEditPopup(true)
     setpassdata(item)
@@ -377,7 +239,7 @@ const TaggedPortfolio = (props: any) => {
             })
           }
           items.componentString = items.Component != undefined && items.Component != undefined && items.Component.length > 0 ? getComponentasString(items.Component) : '';
-          items.Shareweb_x0020_ID = getSharewebId(items);
+          items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
           if (items.Team_x0020_Members != undefined) {
             items.Team_x0020_Members.map((taskUser: any) => {
               var newuserdata: any = {};
@@ -413,34 +275,15 @@ const TaggedPortfolio = (props: any) => {
 
 
   React.useEffect(() => {
-    if (props?.item != undefined) {
-      setItem(props?.item)
+    if (Masterdata[0]?.Id != undefined) {
+      setItem(Masterdata[0])
 
-      linkedComponentData = props?.item?.smartService;
-      smartComponentData = props?.item?.smartComponent;
+      linkedComponentData = Masterdata[0]?.smartService;
+      smartComponentData = Masterdata[0].smartComponent;
     }
 
-  }, []);
+  }, [Masterdata]);
   const EditPortfolio = (item: any, type: any) => {
-    //   if(type=='Component'){
-    //     if (item.Component != undefined) {
-    //         item.smartComponent=[];
-    //         if (item.smartComponent != undefined) {
-    //             item?.Component?.map((com:any)=>{
-    //                 item.smartComponent.push({ 'Title': com?.Title, 'Id': com?.Id });
-    //             })
-    //         }
-    //     }
-    // }else if(type=='Service'){
-    //     if (item.Services != undefined) {
-    //         item.smartService=[];
-    //         if (item.smartService != undefined) {
-    //             item?.Services?.map((com:any)=>{
-    //                 item.smartService.push({ 'Title': com?.Title, 'Id': com?.Id });
-    //             })
-    //         }
-    //     }
-    // }
     portfolioType = type
     setIsPortfolio(true);
     setShareWebComponent(item);
@@ -462,7 +305,7 @@ const TaggedPortfolio = (props: any) => {
 
   };
   const TagPotfolioToProject = async () => {
-    if (props?.item?.Id != undefined) {
+    if (Masterdata[0]?.Id != undefined) {
 
 
       let selectedComponent: any[] = [];
@@ -478,11 +321,11 @@ const TaggedPortfolio = (props: any) => {
         })
       }
       let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-      await web.lists.getById('ec34b38f-0669-480a-910c-f84e92e58adf').items.getById(props?.item?.Id).update({
+      await web.lists.getById('ec34b38f-0669-480a-910c-f84e92e58adf').items.getById(Masterdata[0]?.Id).update({
         ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
         ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
       }).then((res: any) => {
-        props?.call();
+        GetMasterData();
         console.log(res);
       })
     }
@@ -508,8 +351,8 @@ const TaggedPortfolio = (props: any) => {
         <div className="dashboard-colm">
           <aside className="sidebar">
             <button type="button" ng-click="ShowFullMonth==true?ShowFullMonth=false:ShowFullMonth=true" className="collapse-toggle"></button>
-            <section className="sidebar__section sidebar__section--menu">
-              <nav className="nav">
+            <section className="sidebar__section sidebar__section--menu" >
+              <nav className="nav__item">
                 <ul className="nav__list">
                   <li id="DefaultViewSelectId" className="nav__item">
                     <a ng-click="ChangeView('DefaultView','DefaultViewSelectId')" className="nav__link">
@@ -518,17 +361,18 @@ const TaggedPortfolio = (props: any) => {
                     </a>
                   </li>
                   <li className="nav__item p-2 pt-0">
-                    <div className="">
+                    <div className="" >
                       {
-                        props?.taggedComponents?.length > 0 ?
-                          <table className="table">
+                        Masterdata[0]?.smartComponent?.length > 0 ?
+                         <div className="border">
+                           <table className="table">
                             <tbody>
                               { 
-                                props?.taggedComponents?.map((component: any) => {
+                                Masterdata[0]?.smartComponent?.map((component: any) => {
                                   return (
                                     <tr>
                                       <td>
-                                        <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${component?.Id}`}>{component?.Title}</a></span>
+                                        <span><a className='text-white' data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${component?.Id}`}>{component?.Title}</a></span>
                                       </td>
                                     </tr>
                                   )
@@ -536,13 +380,14 @@ const TaggedPortfolio = (props: any) => {
                               }
                             </tbody>
                           </table>
+                         </div>
                           :
                           <div className="border rounded-2 p-2 pt-0 text-center">
                             No Tagged Component
                           </div>
                       }
                       <div className="text-end mt-2 bt-2">
-                        <span style={{ cursor: 'pointer' }} onClick={(e) => EditPortfolio(props?.item, 'Component')}>Tag Components</span>
+                        <span style={{ cursor: 'pointer' }} onClick={(e) => EditPortfolio(Masterdata[0], 'Component')}>Tag Components</span>
                       </div>
                     </div>
                   </li>
@@ -561,15 +406,16 @@ const TaggedPortfolio = (props: any) => {
                   <li id="DefaultViewSelectId" className="nav__item p-2 pt-0">
                     <div className="">
                       {
-                        props?.taggedServices?.length > 0 ?
-                          <table className="table">
+                        Masterdata[0]?.smartService?.length > 0 ?
+                        <div className="border">
+                            <table className="table">
                             <tbody>
                               {
-                                props?.taggedServices?.map((service: any) => {
+                                Masterdata[0]?.smartService?.map((service: any) => {
                                   return (
                                     <tr>
                                       <td>
-                                        <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${service?.Id}`}>{service?.Title}</a></span>
+                                        <span><a className='text-white' data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${service?.Id}`}>{service?.Title}</a></span>
                                       </td>
                                     </tr>
                                   )
@@ -578,13 +424,14 @@ const TaggedPortfolio = (props: any) => {
 
                             </tbody>
                           </table>
+                        </div>
                           :
                           <div className="border rounded-2 p-2 pt-0 text-center">
                             No Tagged Service
                           </div>
                       }
                       <div className="text-end mt-2 bt-2">
-                        <span style={{ cursor: 'pointer' }} onClick={(e) => EditPortfolio(props?.item, 'Service')}>Tag Services</span>
+                        <span style={{ cursor: 'pointer' }} onClick={(e) => EditPortfolio(Masterdata[0], 'Service')}>Tag Services</span>
                       </div>
                     </div>
                   </li>
@@ -592,7 +439,7 @@ const TaggedPortfolio = (props: any) => {
               </nav>
             </section>
           </aside>
-          <div className="dashboard-content">
+          <div className="dashboard-content ps-2 full-width">
             <article className='row'>
               <div className='col-md-12'>
                 <section>
@@ -607,7 +454,7 @@ const TaggedPortfolio = (props: any) => {
                       <div>
                         <div className='d-flex'>
                           {projectId && <CreateTaskFromProject projectItem={Masterdata[0]} pageContext={props.pageContext} projectId={projectId} callBack={tagAndCreateCallBack} />}
-                          {projectId && <TagTaskToProjectPopup projectId={projectId} callBack={tagAndCreateCallBack} projectTitle={projectTitle} />}
+                          {projectId && <TagTaskToProjectPopup className='ms-2' projectId={projectId} callBack={tagAndCreateCallBack} projectTitle={projectTitle} />}
                         </div>
                       </div>
                     </div>
