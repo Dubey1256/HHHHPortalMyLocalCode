@@ -1882,7 +1882,7 @@ function EditProjectPopup(item: any) {
                                                 </div>
                                                 <div className="col-sm-6">
 
-                                                    <div className="input-group full-width">
+                                                <div className="input-group full-width">
                                                         <label className="form-label full-width">
                                                             Service Portfolio
                                                         </label>

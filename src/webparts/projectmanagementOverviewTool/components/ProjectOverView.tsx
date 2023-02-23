@@ -38,6 +38,7 @@ export default function ProjectOverview() {
         GetMasterData();
     }, [])
     const Call = React.useCallback((item1) => {
+        GetMasterData();
         setIsComponent(false);
         showProgressHide();
     }, []);
