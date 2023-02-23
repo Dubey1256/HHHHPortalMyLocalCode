@@ -396,7 +396,7 @@ const Picker = (item: any) => {
                                         <>
                                             <li>
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <p onClick={() => selectPickerData(item)}  className='mb-0 hreflink' >
+                                                    <p onClick={() => selectPickerData(item)} className='mb-0 hreflink' >
                                                         <a>
                                                             <img className="flag_icon"
                                                                 style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
@@ -408,13 +408,15 @@ const Picker = (item: any) => {
                                                     {item.childs?.map(function (child1: any) {
                                                         return (
                                                             <>
-                                                                {child1.Item_x005F_x0020_Cover != null ?
+                                                                {child1.Title != null ?
                                                                     <li>
-                                                                        <p  onClick={() => selectPickerData(child1)}  className='mb-0 hreflink'>
+                                                                        <p onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
                                                                             <a>
-                                                                                <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
+                                                                                {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
                                                                                     style={{ height: "12px", width: "18px;" }}
-                                                                                    src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title}
+                                                                                    src={child1.Item_x005F_x0020_Cover.Url} /> :
+                                                                                    null}
+                                                                                {child1.Title}
                                                                                 <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
                                                                                     <div className="popover__content">
@@ -423,6 +425,32 @@ const Picker = (item: any) => {
                                                                                 </div>
                                                                             </a>
                                                                         </p>
+
+                                                                        <ul className="sub-menu clr mar0">
+                                                                            {
+                                                                                child1.childs?.map((subChilds:any) => {
+                                                                                    return (
+                                                                                        <li>
+                                                                                            <p onClick={() => selectPickerData(subChilds)} className='mb-0 hreflink'>
+                                                                                                <a>
+                                                                                                    {subChilds.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                                        style={{ height: "12px", width: "18px;" }}
+                                                                                                        src={subChilds.Item_x005F_x0020_Cover.Url} /> :
+                                                                                                        null}
+                                                                                                    {subChilds.Title}
+                                                                                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                        <div className="popover__content">
+                                                                                                            <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            </p>
+                                                                                        </li>
+                                                                                    )
+                                                                                })
+                                                                            }
+                                                                        </ul>
                                                                     </li> : null
                                                                 }
                                                             </>
