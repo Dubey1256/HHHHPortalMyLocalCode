@@ -155,20 +155,24 @@ const Picker = (item: any) => {
         setPopupSmartTaxanomy(false)
     }
     const deleteSelectedCat = (val: any) => {
-        select.map((valuee: any, index) => {
-            if (val.Id == valuee.Id) {
-                select.splice(index, 1)
-            }
+        if (usedFor == "Task-Popup") {
+            setSelectedCategory([])
+        } else {
+            select.map((valuee: any, index) => {
+                if (val.Id == valuee.Id) {
+                    select.splice(index, 1)
+                }
 
-        })
-        NewArray.map((valuee: any, index: any) => {
-            if (val.Id == valuee.Id) {
-                NewArray.splice(index, 1)
-            }
+            })
+            NewArray.map((valuee: any, index: any) => {
+                if (val.Id == valuee.Id) {
+                    NewArray.splice(index, 1)
+                }
 
-        })
+            })
 
-        setSelect(select => ([...select]));
+            setSelect(select => ([...select]));
+        }
     }
     // Autosuggestion
 
@@ -393,11 +397,14 @@ const Picker = (item: any) => {
                                             <li>
 
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <a className="hreflink" onClick={() => selectPickerData(item)} >
-                                                        <img className="flag_icon"
-                                                            style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
-                                                        {item.Title}
-                                                    </a>
+                                                    <span onClick={() => selectPickerData(item)} >
+                                                        <a className="hreflink">
+                                                            <img className="flag_icon"
+                                                                style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
+                                                            {item.Title}
+                                                        </a>
+                                                    </span>
+
                                                 }
                                                 <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
                                                     {item.childs?.map(function (child1: any) {
@@ -405,17 +412,19 @@ const Picker = (item: any) => {
                                                             <>
                                                                 {child1.Item_x005F_x0020_Cover != null ?
                                                                     <li>
-                                                                        <a className="hreflink" onClick={() => selectPickerData(child1)}>
-                                                                            <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
-                                                                                style={{ height: "12px", width: "18px;" }}
-                                                                                src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title}
-                                                                            <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                <div className="popover__content">
-                                                                                    <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
+                                                                        <span  onClick={() => selectPickerData(child1)}>
+                                                                            <a className="hreflink">
+                                                                                <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
+                                                                                    style={{ height: "12px", width: "18px;" }}
+                                                                                    src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title}
+                                                                                <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                    <div className="popover__content">
+                                                                                        <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        </a>
+                                                                            </a>
+                                                                        </span>
                                                                     </li> : null
                                                                 }
                                                             </>
