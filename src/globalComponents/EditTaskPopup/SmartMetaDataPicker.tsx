@@ -395,7 +395,6 @@ const Picker = (item: any) => {
                                     return (
                                         <>
                                             <li>
-
                                                 {item.Item_x005F_x0020_Cover != null &&
                                                     <p onClick={() => selectPickerData(item)}  className='mb-0 hreflink' >
                                                         <a>
@@ -404,7 +403,6 @@ const Picker = (item: any) => {
                                                             {item.Title}
                                                         </a>
                                                     </p>
-
                                                 }
                                                 <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
                                                     {item.childs?.map(function (child1: any) {
@@ -412,7 +410,7 @@ const Picker = (item: any) => {
                                                             <>
                                                                 {child1.Item_x005F_x0020_Cover != null ?
                                                                     <li>
-                                                                        <p  onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
+                                                                        <p  onClick={() => selectPickerData(child1)}  className='mb-0 hreflink'>
                                                                             <a>
                                                                                 <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
                                                                                     style={{ height: "12px", width: "18px;" }}
