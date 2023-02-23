@@ -20,7 +20,7 @@ import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 var AllTaskUsers: any = []
 const TableDataTSX = (props: any) => {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
-    const [data, setAllTasks] = React.useState([]);
+    const [data, setData] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const Call = React.useCallback((item1) => {
         setIsComponent(false);
@@ -34,42 +34,46 @@ const TableDataTSX = (props: any) => {
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     React.useEffect(() => {
-        setAllTasks(props?.data)
+        setData(props?.data)
     }, [props?.data])
     const columns = React.useMemo(
-        () => [
-            {
-                Header: 'Title',
-                accessor: 'Title',
-                Cell: ({ row }: any) => (
-                    <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.Id}`} data-interception="off" target="_blank">{row.values.Title}</a>
-                    </span>
-                )
-            },
-            {
-                Header: 'Percent Complete',
-                accessor: 'PercentComplete',
-            },
-            {
-                Header: 'Priority',
-                accessor: 'Priority',
-            },
-            {
-                Header: 'Due Date',
-                accessor: 'DisplayDueDate',
-            },
-            {
-                id: 'Id', // 'id' is required
-                isSorted:false,
-                Cell: ({ row }: any) => (
-                    <span>
-                      <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"  onClick={(e) => EditComponentPopup(row?.original)}></img>
-                    </span>
-                ),
-            },
-        ],
-        [data]
+         () =>
+         props?.columns,
+         [props?.columns]
+         // [
+        //     {
+        //         Header: 'Title',
+        //         accessor: 'Title',
+        //         Cell: ({ row }: any) => (
+        //             <span>
+        //                 <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.Id}`} data-interception="off" target="_blank">{row.values.Title}</a>
+        //             </span>
+        //         )
+        //     },
+        //     {
+        //         Header: 'Percent Complete',
+        //         accessor: 'PercentComplete',
+        //     },
+        //     {
+        //         Header: 'Priority',
+        //         accessor: 'Priority',
+        //     },
+        //     {
+        //         Header: 'Due Date',
+        //         accessor: 'DisplayDueDate',
+        //     },
+        //     {
+        //         id: 'Id', // 'id' is required
+        //         isSorted:false,
+        //         Cell: ({ row }: any) => (
+        //             <span>
+        //               <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"  onClick={(e) => EditComponentPopup(row?.original)}></img>
+        //             </span>
+        //         ),
+        //     },
+        // ]
+        
+       
     );
 
 
@@ -103,12 +107,15 @@ const TableDataTSX = (props: any) => {
         usePagination
     );
     const generateSortingIndicator = (column: any) => {
-        return column.isSorted ? (column.isSortedDesc ? <FaSortDown /> : <FaSortUp />) : <FaSort />;
+        return column.isSorted ? (column.isSortedDesc ? <FaSortDown  /> : <FaSortUp  />) : (column.showSortIcon?<FaSort/> :'');
     };
 
     const onChangeInSelect = (event: any) => {
         setPageSize(Number(event.target.value));
     };
+    const callback=()=>{
+        
+    }
 
     const onChangeInInput = (event: any) => {
         const page = event.target.value ? Number(event.target.value) - 1 : 0;
@@ -119,17 +126,17 @@ const TableDataTSX = (props: any) => {
     return (
         <>
             <div>
-                <Table bordered hover {...getTableProps()}>
+            <Table className="SortingTable" bordered hover {...getTableProps()}>
                     <thead>
                         {headerGroups.map((headerGroup: any) => (
-                            <tr {...headerGroup.getHeaderGroupProps()}>
+                            <tr  {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map((column: any) => (
-                                    <th {...column.getHeaderProps()}>
-                                        <div {...column.getSortByToggleProps()}>
+                                    <th  {...column.getHeaderProps()}>
+                                        <span class="Table-SortingIcon" style={{marginTop:'-6px'}} {...column.getSortByToggleProps()} >
                                             {column.render('Header')}
                                             {generateSortingIndicator(column)}
-                                        </div>
-                                        <Filter column={column} />
+                                        </span>
+                                        <Filter column={column}  />
                                     </th>
                                 ))}
                             </tr>
@@ -216,7 +223,6 @@ const TableDataTSX = (props: any) => {
                     </Pagination>
                 </nav>
             </div>
-            {IsComponent && <EditProjectPopup props={SharewebComponent} Call={Call} > </EditProjectPopup>}
         </>
     )
 }

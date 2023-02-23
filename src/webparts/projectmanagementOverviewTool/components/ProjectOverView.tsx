@@ -146,7 +146,7 @@ export default function ProjectOverview() {
         usePagination
     );
     const generateSortingIndicator = (column: any) => {
-        return column.isSorted ? (column.isSortedDesc ? <FaSortDown style={{marginTop:'-6px'}} /> : <FaSortUp style={{marginTop:'-6px'}} />) : (column.showSortIcon?<FaSort style={{marginTop:'-6px'}}/> :'');
+        return column.isSorted ? (column.isSortedDesc ? <FaSortDown  /> : <FaSortUp  />) : (column.showSortIcon?<FaSort/> :'');
     };
 
     const onChangeInSelect = (event: any) => {
@@ -173,13 +173,14 @@ export default function ProjectOverview() {
         // var AllUsers: any = []
         Alltask = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
             .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title").expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).filter("Item_x0020_Type eq 'Project'").getAll();           
-             Alltask.PercentComplete = (taskUsers.PercentComplete * 100).toFixed(0);
+          
         // if(taskUsers.ItemType=="Project"){
         // taskUsers.map((item: any) => {
         //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
         //         Alltask.push(item)
         //     }
             Alltask.map((items: any) => {
+                items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                 items.AssignedUser = []
                 items.TeamMembersSearch='';
                 if (items.AssignedTo != undefined) {
@@ -201,93 +202,12 @@ export default function ProjectOverview() {
     }
     //    Save data in master task list
     const [title, settitle] = React.useState('')
-    const addFunction = async () => {
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-        await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items.add({
-            Title: `${title}`,
-            Item_x0020_Type: "Project",
-        }).then((res: any) => {
-            setAddmodalIsOpenToFalse();
-            GetMasterData();
-            console.log(res);
-        })
-    }
+  
     //Just Check 
     // AssignedUser: '',
-    const [UpdateData, setUpdateData] = React.useState({
-        Title: '',
-        DueDate: '',
-        Body: '',
-        PercentComplete: '',
-        Priority: ''
-    })
-    const updateDetails = async () => {
-        try {
-            let AssignedUsersArray = [];
-            // AssignedUsersArray.push(UpdateData.AssignedUser)
-            // let AssingedUser = {
-            //     "results": AssignedUsersArray
-            // }
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-            if (Idd != undefined) {
-                await web.lists.getByTitle("Master%20Tasks").items.getById(Idd).update({
-                    Title: `${UpdateData.Title}`,
-                    // AssignedUser: AssingedUser,
-                    DueDate: `${UpdateData.DueDate}`,
-                    Body: `${UpdateData.Body}`,
-                    PercentComplete: `${UpdateData.PercentComplete}`,
-                    Priority: `${UpdateData.Priority}`
-                }).then(i => {
-                    GetMasterData()
-                    setEditmodalIsOpenToFalse();
-                    console.log("Update Success");
-                })
-            }
-        } catch (error) {
-            console.log("Error:", error.message);
-        }
-    }
-    // Delete Project
-    const deleteUserDtl = async () => {
-        try {
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-            await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items.getById(Idd).delete();
-            GetMasterData();
-        } catch (error) {
-            console.log("Error:", error.message);
-        }
-    }
-    const setEditmodalIsOpenToTrue = (Id: any) => {
-        setEditmodalIsOpen(true)
-        Idd = Id;
-    }
-    const setEditmodalIsOpenToFalse = () => {
-        setEditmodalIsOpen(false)
-    }
-    const setAddmodalIsOpenToTrue = () => {
-        setAddmodalIsOpen(true)
-    }
-    const setAddmodalIsOpenToFalse = () => {
-        setAddmodalIsOpen(false)
-    }
-    const searchedName = async (e: any) => {
-        setListIsVisible(true);
-        let Key: any = e.target.value.toLowerCase();
-        const data: any = {
-            nodes: AllTaskUser.filter((items: any) =>
-                items.Title?.toLowerCase().includes(Key)
-            ),
-        };
-        setSearchedDataName(data.nodes);
-        if (Key.length == 0) {
-            setSearchedDataName(AllTaskUser);
-            setListIsVisible(false);
-        }
-    }
-    const cancelButtonFunction = () => {
-        SetAssignedTaskUser({ ...AssignedTaskUser, Title: "" })
-        setInputStatus(false);
-    }
+   
+  
+  
     const CallBack = React.useCallback(() => {
      GetMasterData()
     }, [])
@@ -301,86 +221,17 @@ export default function ProjectOverview() {
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
                           <AddProject CallBack={CallBack} />
                         </div>
-                        {/* <table className="table table-hover my-3 py-3" id="EmpTable" style={{ width: "100%" }}>
-                            <thead>
-                                <tr>
-                                    <th style={{ width: "40%" }}>
-                                        <div className="smart-relative">
-                                            <input type="search" placeholder="Title" className="full_width form-control searchbox_height" />
-                                        </div>
-                                    </th>
-                                    <th style={{ width: "15%" }}>
-                                        <div className="smart-relative">
-                                            <input type="search" placeholder="% Complete" className="full_width form-control searchbox_height" />
-                                        </div>
-                                    </th>
-                                    <th style={{ width: "15%" }}>
-                                        <div className="smart-relative">
-                                            <input id="searchClientCategory" type="search" placeholder="Priority"
-                                                title="Client Category" className="full_width searchbox_height form-control" />
-                                        </div>
-                                    </th>
-                                    <th style={{ width: "15%" }}>
-                                        <div className="smart-relative">
-                                            <input id="searchClientCategory" type="search" placeholder="Team"
-                                                title="Client Category" className="full_width form-control searchbox_height" />
-                                        </div>
-                                    </th>
-                                    <th style={{ width: "13%" }}>
-                                        <div className="smart-relative">
-                                            <input id="searchClientCategory" type="search" placeholder="Due Date"
-                                                title="Client Category" className="full_width form-control searchbox_height"
-                                            />
-                                        </div>
-                                    </th>
-                                    <th style={{ width: "2%" }}>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <div id="SpfxProgressbar" style={{ display: "none" }}>
-                                    <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-                                </div>
-                                {AllTasks.length > 0 && AllTasks && AllTasks.map(function (item, index) {
-                                    return (
-                                        <>
-                                            <tr >
-                                                <td>
-                                                    <span><a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${item.Id}`}  data-interception="off" target="_blank">{item.Title}</a></span>
-                                                </td>
-                                                <td><span className="ml-2">{item.PercentComplete}</span></td>
-                                                <td>{item.Priority}</td>
-                                                <td>
-                                                    {item.AssignedUser != undefined &&
-                                                        item.AssignedUser.map((Userda: any) => {
-                                                            return (
-                                                                <span className="headign">
-                                                                    <img className='circularImage rounded-circle ' src={Userda.useimageurl} title={Userda.Title} />
-                                                                </span>
-                                                            )
-                                                        })
-                                                    }
-                                                </td>
-                                                <td><span className="ml-2">{item.DueDate != null ? Moment(item.DueDate).format('DD/MM/YYYY') : ""}</span></td>
-                                                <td><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"  onClick={(e) => EditComponentPopup(item)}></img></td>
-                                            </tr>
-                                        </>
-                                    )
-                                })}
-                            </tbody>
-                        </table> */}
-
                        <div>
-                <Table bordered hover {...getTableProps()}>
+                <Table className="SortingTable" bordered hover {...getTableProps()}>
                     <thead>
                         {headerGroups.map((headerGroup: any) => (
                             <tr  {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map((column: any) => (
                                     <th  {...column.getHeaderProps()}>
-                                        <div {...column.getSortByToggleProps()}>
+                                        <span class="Table-SortingIcon" style={{marginTop:'-6px'}} {...column.getSortByToggleProps()} >
                                             {column.render('Header')}
                                             {generateSortingIndicator(column)}
-                                        </div>
+                                        </span>
                                         <Filter column={column}  />
                                     </th>
                                 ))}
@@ -405,17 +256,6 @@ export default function ProjectOverview() {
                 <nav>
                     <Pagination>
                         <PaginationItem>
-                            <PaginationLink onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-                                <span aria-hidden={true}>
-                                    {/* <i
-                                    aria-hidden={true}
-                                    className="tim-icons icon-double-left"
-                                /> */}
-                                    <FaAngleDoubleLeft aria-hidden={true} />
-                                </span>
-                            </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
                             <PaginationLink onClick={() => previousPage()} disabled={!canPreviousPage}>
                                 <span aria-hidden={true}>
                                     <FaAngleLeft aria-hidden={true} />
@@ -437,19 +277,6 @@ export default function ProjectOverview() {
                                     />
                                 </span>
                             </PaginationLink>
-                        </PaginationItem>
-
-                        <PaginationItem>
-                            <PaginationLink onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-                                <span aria-hidden={true}>
-                                    {/* <i
-                                    aria-hidden={true}
-                                    className="tim-icons icon-double-right"
-                                /> */}
-                                    <FaAngleDoubleRight aria-hidden={true} />
-                                </span>
-                            </PaginationLink>
-                            {' '}
                         </PaginationItem>
                         <Col md={2}>
                             <Input
