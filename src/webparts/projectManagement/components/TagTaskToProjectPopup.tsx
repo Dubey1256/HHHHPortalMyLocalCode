@@ -289,7 +289,7 @@ const TagTaskToProjectPopup = (props: any) => {
 
     return (
         <>
-            <Button type="button" variant="secondary" className='pull-right me-2' onClick={() => OpenTaskPopupData()}>Tag Tasks</Button>
+            <Button type="button" variant="secondary" className='pull-right ms-2' onClick={() => OpenTaskPopupData()}>Tag Tasks</Button>
 
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
