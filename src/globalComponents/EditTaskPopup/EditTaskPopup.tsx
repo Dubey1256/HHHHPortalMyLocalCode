@@ -79,6 +79,7 @@ const EditTaskPopup = (Items: any) => {
     const [PriorityStatus, setPriorityStatus] = React.useState();
     const [PhoneStatus, setPhoneStatus] = React.useState(false);
     const [EmailStatus, setEmailStatus] = React.useState(false);
+    const [DesignStatus, setDesignStatus] = React.useState(false);
     const [OnlyCompletedStatus, setOnlyCompletedStatus] = React.useState(false);
     const [ImmediateStatus, setImmediateStatus] = React.useState(false);
     const [ApprovalStatus, setApprovalStatus] = React.useState(false);
@@ -117,6 +118,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
 
     const Call = React.useCallback((PopupItemData: any, type: any) => {
+        setIsServices(false)
         setIsComponent(false);
         setIsComponentPicker(false);
         if (type == "SmartComponent") {
@@ -129,7 +131,6 @@ const EditTaskPopup = (Items: any) => {
         if (type == "Category") {
             if (PopupItemData?.categories != "" && PopupItemData?.categories != undefined) {
                 Items.Items.Categories = PopupItemData.categories;
-
                 let category: any = tempCategoryData ? tempCategoryData + ";" + PopupItemData.categories[0]?.Title : PopupItemData.categories[0]?.Title;
                 setCategoriesData(category);
                 tempShareWebTypeData.push(PopupItemData.categories[0]);
@@ -139,6 +140,7 @@ const EditTaskPopup = (Items: any) => {
                 let ImmediateCheck = category.search("Immediate");
                 let ApprovalCheck = category.search("Approval");
                 let OnlyCompletedCheck = category.search("Only Completed");
+                let DesignCheck = category.search("Design")
                 if (phoneCheck >= 0) {
                     setPhoneStatus(true)
                 } else {
@@ -159,11 +161,15 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     setApprovalStatus(false)
                 }
-
                 if (OnlyCompletedCheck >= 0) {
                     setOnlyCompletedStatus(true);
                 } else {
                     setOnlyCompletedStatus(false);
+                }
+                if (DesignCheck >= 0) {
+                    setDesignStatus(true);
+                } else {
+                    setDesignStatus(false);
                 }
             }
         }
@@ -624,6 +630,7 @@ const EditTaskPopup = (Items: any) => {
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
+                    let DesignCheck =item.Categories.search("Design")
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true)
                     } else {
@@ -649,6 +656,12 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         setOnlyCompletedStatus(false);
                     }
+                    if (DesignCheck >= 0) {
+                        setDesignStatus(true);
+                    } else {
+                        setDesignStatus(false);
+                    }
+
                 }
                 if (item.SharewebCategories != undefined && item.SharewebCategories?.length > 0) {
                     let tempArray: any = [];
@@ -686,6 +699,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 setEditData(item)
                 setPriorityStatus(item.Priority)
+                console.log("Task All Details ==================", item)
             })
         } catch (error) {
             console.log("Error :", error.message);
@@ -778,7 +792,9 @@ const EditTaskPopup = (Items: any) => {
         if (StatusInput == 90) {
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
-            } else {
+            } else if(DesignStatus) {
+                setWorkingMember(172);
+            }else{
                 setWorkingMember(42);
             }
             EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
@@ -1538,7 +1554,6 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1" >
-                {console.log("all sites details ======", SiteTypes)}
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
@@ -2079,7 +2094,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="col-12" title="Relevant Portfolio Items">
                                                     <div className="input-group">
                                                         <label className="form-label full-width "> Linked Component Task </label>
-                                                        <input type="text"
+                                                        <input type="text"  readOnly
                                                             className="form-control "
                                                         />
                                                         <span className="input-group-text">
@@ -2110,7 +2125,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     )
                                                                 })}
                                                             </div> :
-                                                                <input type="text" readOnly
+                                                                <input type="text"
                                                                     className="form-control"
                                                                 />
                                                         }
@@ -2297,7 +2312,6 @@ const EditTaskPopup = (Items: any) => {
                                         'col-sm-3 padL-0 DashboardTaskPopup-Editor above' :
                                         'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}>
                                         <div className="image-upload">
-                                            {console.log("all image details ======", TaskImages)}
                                             <ImageUploading
                                                 multiple
                                                 value={TaskImages}
@@ -2863,7 +2877,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 )
                                                                             })}
                                                                         </div> :
-                                                                            <input type="text" readOnly
+                                                                            <input type="text"
                                                                                 className="form-control"
                                                                             />
                                                                     }
@@ -2879,7 +2893,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <label className="form-label full-width "> Linked Component Task </label>
                                                                     <input type="text"
                                                                         className="form-control "
-                                                                        id="{{RelevantPortfolioName==='Linked Service'?'txtRelevantServiceShareWebComponent':'txtRelevantShareWebComponent'}}"
+                                                                         readOnly
                                                                         autoComplete="off" />
                                                                     <span className="input-group-text">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
