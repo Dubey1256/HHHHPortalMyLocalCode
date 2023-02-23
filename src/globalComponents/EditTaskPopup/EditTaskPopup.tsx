@@ -984,7 +984,7 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     let tempObject:any =
                     {
-                        "Title": '',
+                        "Title": '<p> </p>',
                         "Completed": false,
                         "isAddComment": false,
                         "isShowComment": false,
