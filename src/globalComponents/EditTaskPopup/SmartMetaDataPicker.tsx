@@ -397,13 +397,13 @@ const Picker = (item: any) => {
                                             <li>
 
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <span onClick={() => selectPickerData(item)} >
-                                                        <a className="hreflink">
+                                                    <p onClick={() => selectPickerData(item)}  className='mb-0 hreflink' >
+                                                        <a>
                                                             <img className="flag_icon"
                                                                 style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
                                                             {item.Title}
                                                         </a>
-                                                    </span>
+                                                    </p>
 
                                                 }
                                                 <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
@@ -412,8 +412,8 @@ const Picker = (item: any) => {
                                                             <>
                                                                 {child1.Item_x005F_x0020_Cover != null ?
                                                                     <li>
-                                                                        <span  onClick={() => selectPickerData(child1)}>
-                                                                            <a className="hreflink">
+                                                                        <p  onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
+                                                                            <a>
                                                                                 <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
                                                                                     style={{ height: "12px", width: "18px;" }}
                                                                                     src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title}
@@ -424,7 +424,7 @@ const Picker = (item: any) => {
                                                                                     </div>
                                                                                 </div>
                                                                             </a>
-                                                                        </span>
+                                                                        </p>
                                                                     </li> : null
                                                                 }
                                                             </>
