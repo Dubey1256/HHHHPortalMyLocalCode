@@ -9,14 +9,13 @@ import {
     usePagination,
     HeaderGroup,
 } from 'react-table';
-import { Filter, DefaultColumnFilter, SelectColumnFilter } from './filters';
+import { Filter, DefaultColumnFilter } from './filters';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import { Modal } from 'office-ui-fabric-react';
 import AddProject from './AddProject'
 import EditProjectPopup from './EditProjectPopup';
-import TableDataTSX from './TableDataTSX';
 var siteConfig: any = []
 var AllTaskUsers: any = []
 var Idd: number;
