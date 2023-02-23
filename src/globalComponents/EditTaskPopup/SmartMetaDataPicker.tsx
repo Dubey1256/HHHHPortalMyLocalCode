@@ -372,7 +372,6 @@ const Picker = (item: any) => {
                                         )
                                     })}
                                 </div>}
-
                             </div>
                             {/* <div className="col-sm-12 ActivityBox">
                                     <span>
@@ -389,7 +388,6 @@ const Picker = (item: any) => {
                             </div> */}
                         </div>
                         <div className='col-sm-12 categScroll'>
-
                             <ul className="categories-menu p-0">
                                 {AllCategories.map(function (item: any) {
                                     return (
@@ -417,18 +415,19 @@ const Picker = (item: any) => {
                                                                                     src={child1.Item_x005F_x0020_Cover.Url} /> :
                                                                                     null}
                                                                                 {child1.Title}
-                                                                                <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
                                                                                     <div className="popover__content">
-                                                                                        <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
+                                                                                        <span>{child1.Description1}</span>
                                                                                     </div>
-                                                                                </div>
+                                                                                </div> : null}
+
                                                                             </a>
                                                                         </p>
 
                                                                         <ul className="sub-menu clr mar0">
                                                                             {
-                                                                                child1.childs?.map((subChilds:any) => {
+                                                                                child1.childs?.map((subChilds: any) => {
                                                                                     return (
                                                                                         <li>
                                                                                             <p onClick={() => selectPickerData(subChilds)} className='mb-0 hreflink'>
@@ -438,12 +437,13 @@ const Picker = (item: any) => {
                                                                                                         src={subChilds.Item_x005F_x0020_Cover.Url} /> :
                                                                                                         null}
                                                                                                     {subChilds.Title}
-                                                                                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                    {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
                                                                                                         <div className="popover__content">
                                                                                                             <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
                                                                                                         </div>
-                                                                                                    </div>
+                                                                                                    </div> : null}
+
                                                                                                 </a>
                                                                                             </p>
                                                                                         </li>
