@@ -1842,7 +1842,8 @@ export default function ComponentTable({ props }: any) {
                                             <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                                         </a>
                         <a>
-                            <Tooltip />
+                            <Tooltip ComponentId='1748'/>
+                            
                         </a>
                     </span>
                 </div>
