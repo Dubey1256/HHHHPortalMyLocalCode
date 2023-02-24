@@ -13,7 +13,7 @@ import * as moment from "moment-timezone";
 
 const controlStyles = {
     root: {
-        margin: '10px 5px 20px 0px',
+        // margin: '10px 5px 20px 0px',
         maxWidth: '300px'
     }
 };
@@ -216,7 +216,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 qStrings.Top = 100;
                 _resListItems = await this.getListItems(curListId, qStrings);
                 if(_resListItems.length) {
-                    resListItems = _resListItems.map(resListItem => ({
+                    resListItems = _resListItems.map((resListItem:any )=> ({
                         TaskId: `T${resListItem.Id}`,
                         TaskName: resListItem.Title,
                         PortfolioType: (resListItem.Component && resListItem.Component.length>0 ? "Component" :
@@ -514,10 +514,10 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
 
     render(): JSX.Element {        
         
-        const elemPivotNav = (<div style={{ display: 'flex', padding: '5px' }}>
-            <div className={styles.centerDiv}>
+        const elemPivotNav = (<div className="p-0">
+           
                 <PivotNavItems Items={this.state.navItems} SelectedKey={this.state.selNavItem.tabName} OnMenuClick={this.onNavItemMenuClick} />
-            </div>
+          
         </div>);
 
         //const elemFilter = (<SectionFilter SearchText={this.state.searchText} FilterByComponents={false} FilterByService={false} OnSearchTextChange={this.onSearchTextChange} OnComponentsCheck={this.onComponentsChecked} OnServiceCheck={this.onServiceChecked} />);
@@ -527,22 +527,19 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         const elemClearFilter = this.state.showResetFilters && <Icon iconName="ClearFilter" role="button" onClick={this._onResetFiltersClicked} styles={iconStyles} />
         
         const elemFilter = (
-            <div>
-                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                    <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label>
-                </div>
-                <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">
-                    <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
-                </div>
-                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                    <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" styles={controlStyles} />
-                </div>
-                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                    <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
-                </div>
-                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                    {elemClearFilter}
-                </div>
+            <div className="tbl-headings">
+
+<span className="leftsec">
+<span> <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label></span> <span className="ms-1"> <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} /></span>
+</span>
+<span className="toolbox mx-auto">
+ <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" className="me-2" styles={controlStyles} />
+<Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
+{elemClearFilter}
+</span>
+
+
+              
             </div>
         );
 
@@ -559,20 +556,24 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             </DialogFooter>
         </Dialog>)
         
-        return (<div className="ms-Grid">
-            <div className="ms-Grid-row">
+        return (<div>
+            <div className="col">
                 <SectionTitle Title="Last Modified Views" />
             </div>
-            <div className="ms-Grid-row">
+            <div className="col">
                 { elemPivotNav }
             </div>
-            <div className="ms-Grid-row">
+            <div className="Alltable border border-top-0 full-width p-2 px-0 pt-0 mt-2">
+            <div className="col">
                 { elemFilter }
             </div>
-            <div className={css("ms-Grid-row", styles.content)}>
+            <div className="col">
                 { elemListLMI }
+            </div>
             </div>
             { elemDeleteRecord }            
         </div>);
+     
+       
     }
 }
