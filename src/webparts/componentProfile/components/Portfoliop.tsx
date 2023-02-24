@@ -536,10 +536,48 @@ function Portfolio({ ID }: any) {
                                             <dl>
                                                 <dt className='bg-fxdark'>Team Members</dt>
                                                 <dd className='bg-light d-flex'>
-                                                {data.map(item =>{
-                                                return(<ShowTaskTeamMembers props={item} ></ShowTaskTeamMembers>)
-                                                })}
-                                                </dd>
+                                            {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
+                                        <>
+                                                <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
+                                                <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
+                                                </a>
+                                            
+                                                </>
+                                        ):""}
+                                        <div className='px-1'>|</div>
+                                                {AllTeamMember != null && AllTeamMember.length > 0 &&
+                    <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
+                    }
+                    {AllTeamMember != null && AllTeamMember.length > 1 &&
+                    <div className="position-relative user_Member_img_suffix2 multimember" onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
+                    {showBlock &&
+                        <span className="tooltiptext" >
+                        <div>                        
+                            { AllTeamMember.slice(1).map( (rcData:any,i:any)=> {
+                                
+                                return  <div className="team_Members_Item" style={{padding: '2px'}}>
+                                <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                    <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
+                                <div>{rcData.Title}</div>
+                                </div>
+                                                        
+                            })
+                            }
+                        
+                        </div>
+                        </span>
+                        }
+                    </div>                        
+                    }   
+                                                {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
+                                                <>
+                                                        <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
+                                                        <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
+                                                    </a>
+                                                </>
+                                                ):""} */}
+
+                                    </dd>
                                             </dl>
                                             <dl>
                                                 <dt className='bg-fxdark'>Item Rank</dt>
