@@ -33,9 +33,9 @@ const TaggedPortfolio = (props: any) => {
   const [projectId, setProjectId] = React.useState(null)
   const [sidebarStatus, setSidebarStatus] = React.useState(
     {
-      dashboard:false,
-      compoonents:false,
-      services:false
+      dashboard: true,
+      compoonents: true,
+      services: true
     }
   )
   var QueryId: any = ''
@@ -79,7 +79,7 @@ const TaggedPortfolio = (props: any) => {
   }
 
   const GetMasterData = async () => {
-    AllUser= await globalCommon.loadTaskUsers();
+    AllUser = await globalCommon.loadTaskUsers();
     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
     let taskUsers: any = {};
     var AllUsers: any = []
@@ -330,6 +330,17 @@ const TaggedPortfolio = (props: any) => {
       })
     }
   }
+  const toggleSideBar = () => {
+    setSidebarStatus({ ...sidebarStatus, dashboard: !sidebarStatus.dashboard });
+    if (sidebarStatus.dashboard == false) {
+      $(".sidebar").attr("collapsed", "");
+      //  $("").prop('collapsed', true);
+    } else {
+      $(".sidebar").removeAttr("collapsed");
+      //  $(".sidebar").removeProp('collapsed');
+    }
+
+  }
   return (
     <>
 
@@ -350,7 +361,7 @@ const TaggedPortfolio = (props: any) => {
       <div className='Dashboardsecrtion'>
         <div className="dashboard-colm">
           <aside className="sidebar">
-            <button type="button" ng-click="ShowFullMonth==true?ShowFullMonth=false:ShowFullMonth=true" className="collapse-toggle"></button>
+            <button type="button" onClick={() => { toggleSideBar() }} className="collapse-toggle"></button>
             <section className="sidebar__section sidebar__section--menu" >
               <nav className="nav__item">
                 <ul className="nav__list">
@@ -361,26 +372,37 @@ const TaggedPortfolio = (props: any) => {
                     </a>
                   </li>
                   <li className="nav__item p-2 pt-0">
-                    <div className="" >
+                    <div className="nav__text" >
                       {
                         Masterdata[0]?.smartComponent?.length > 0 ?
-                         <div className="border">
-                           <table className="table">
-                            <tbody>
-                              { 
-                                Masterdata[0]?.smartComponent?.map((component: any) => {
-                                  return (
-                                    <tr>
-                                      <td>
-                                        <span><a className='text-white' data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${component?.Id}`}>{component?.Title}</a></span>
-                                      </td>
-                                    </tr>
-                                  )
-                                })
-                              }
-                            </tbody>
-                          </table>
-                         </div>
+                          <ul className='nav__subList scrollbarCustom'>
+                            {
+                              Masterdata[0]?.smartComponent?.map((component: any) => {
+                                return (
+                                  <li className='nav__item'>
+                                    <span><a className='text-white' data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${component?.Id}`}>{component?.Title}</a></span>
+                                  </li>
+                                )
+                              })
+                            }
+                          </ul>
+                          // <div className="border">
+                          //   <table className="table">
+                          //     <tbody>
+                          //       {
+                          //         Masterdata[0]?.smartComponent?.map((component: any) => {
+                          //           return (
+                          //             <tr>
+                          //               <td>
+                          //                 <span><a className='text-white' data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${component?.Id}`}>{component?.Title}</a></span>
+                          //               </td>
+                          //             </tr>
+                          //           )
+                          //         })
+                          //       }
+                          //     </tbody>
+                          //   </table>
+                          // </div>
                           :
                           <div className="border rounded-2 p-2 pt-0 text-center">
                             No Tagged Component
@@ -404,27 +426,39 @@ const TaggedPortfolio = (props: any) => {
                     </a>
                   </li>
                   <li id="DefaultViewSelectId" className="nav__item p-2 pt-0">
-                    <div className="">
+
+                    <div className="nav__text">
                       {
                         Masterdata[0]?.smartService?.length > 0 ?
-                        <div className="border">
-                            <table className="table">
-                            <tbody>
-                              {
-                                Masterdata[0]?.smartService?.map((service: any) => {
-                                  return (
-                                    <tr>
-                                      <td>
-                                        <span><a className='text-white' data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${service?.Id}`}>{service?.Title}</a></span>
-                                      </td>
-                                    </tr>
-                                  )
-                                })
-                              }
+                        <ul className='nav__subList scrollbarCustom'>
+                            {
+                               Masterdata[0]?.smartService?.map((service: any) => {
+                                return (
+                                  <li className='nav__item'>
+                                      <span><a className='text-white' data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${service?.Id}`}>{service?.Title}</a></span>
+                                  </li>
+                                )
+                              })
+                            }
+                          </ul>
+                          // <div className="border">
+                          //   <table className="table">
+                          //     <tbody>
+                          //       {
+                          //         Masterdata[0]?.smartService?.map((service: any) => {
+                          //           return (
+                          //             <tr>
+                          //               <td>
+                          //               <span><a className='text-white' data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages//Portfolio-Profile.aspx?taskId=${service?.Id}`}>{service?.Title}</a></span>
+                          //               </td>
+                          //             </tr>
+                          //           )
+                          //         })
+                          //       }
 
-                            </tbody>
-                          </table>
-                        </div>
+                          //     </tbody>
+                          //   </table>
+                          // </div>
                           :
                           <div className="border rounded-2 p-2 pt-0 text-center">
                             No Tagged Service

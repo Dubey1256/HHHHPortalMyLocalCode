@@ -88,7 +88,7 @@ export default function ProjectOverview() {
             },
             {
                 internalHeader: 'Team Members',
-                accessor: 'TeamMembers',
+                accessor: 'TeamMembersSearch',
                 showSortIcon:true,
                 Cell: ({ row }: any) => (
                     <span>
@@ -217,9 +217,11 @@ export default function ProjectOverview() {
             <div className="col-sm-12 pad0 smart">
                 <div className="section-event">
                     <div className="wrapper">
-                        <div className='header-section d-flex justify-content-between'>
+                        <div className='header-section justify-content-between'>
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
-                          <AddProject CallBack={CallBack} />
+                        <div className="text-end">
+                        <AddProject CallBack={CallBack} />
+                        </div>
                         </div>
                        <div>
                 <Table className="SortingTable" bordered hover {...getTableProps()}>
