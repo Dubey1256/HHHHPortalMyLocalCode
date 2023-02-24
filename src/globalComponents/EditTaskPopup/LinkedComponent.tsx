@@ -1,25 +1,25 @@
 import * as React from "react";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
-import { Version } from '@microsoft/sp-core-library';
+
 import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import * as moment from "moment";
-import { sortBy } from "@microsoft/sp-lodash-subset";
-const LinkedComponent = (item: any) => {
+var LinkedServicesBackupArray: any = [];
+const LinkedServices = (item: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const [data, setComponentsData] = React.useState([]);
-    const [CheckBoxdata, setcheckbox] = React.useState([]);
+    const [data, setData] = React.useState([]);
+    const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [table, setTable] = React.useState(data);
-    const [selectedComponent, selctedCompo] = React.useState('');
+    const [selectedComponent, setSelectedComponent] = React.useState('');
     React.useEffect(() => {
         if (item.smartComponent != undefined && item.smartComponent.length > 0)
-            selctedCompo(item.smartComponent[0]);
+            setSelectedComponent(item.smartComponent[0]);
         GetComponents();
     },
         []);
-    function Example(callBack: any, type:any) {
+    function Example(callBack: any, type: any) {
         item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
@@ -28,18 +28,17 @@ const LinkedComponent = (item: any) => {
     }
     const setModalIsOpenToOK = () => {
         if (item.props.linkedComponent != undefined && item.props.linkedComponent.length == 0)
-            item.props.linkedComponent = CheckBoxdata;
+            item.props.linkedComponent = CheckBoxData;
         else {
             item.props.linkedComponent = [];
-            item.props.linkedComponent = CheckBoxdata;
+            item.props.linkedComponent = CheckBoxData;
         }
         Example(item, "LinkedComponent");
         setModalIsOpen(false);
     }
-
     const handleOpen = (item: any) => {
         item.show = item.show = item.show == true ? false : true;
-        setComponentsData(data => ([...data]));
+        setData(data => ([...data]));
     };
     var Response: [] = [];
     const GetTaskUsers = async () => {
@@ -50,19 +49,17 @@ const LinkedComponent = (item: any) => {
             .items
             .get();
         Response = taskUsers;
-        //console.log(this.taskUsers);
     }
     const GetComponents = async () => {
-        var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
-        var SubComponentsData: any[] = [];
-        var FeatureData: any[] = [];
+        var RootComponentsData: any = [];
+        var ComponentsData: any = [];
+        var SubComponentsData: any = [];
+        var FeatureData: any = [];
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let componentDetails = [];
         componentDetails = await web.lists
-            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
             .getByTitle('Master Tasks')
             .items
-            //.getById(this.state.itemID)
             .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
             .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
             .top(4999)
@@ -111,12 +108,11 @@ const LinkedComponent = (item: any) => {
                 }
 
                 if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                        result.ClientCategory.push(catego);
+                    $.each(result.Team_x0020_Members, function (index: any, categoryData: any) {
+                        result.ClientCategory.push(categoryData);
                     })
                 }
                 if (result.Item_x0020_Type == 'Root Component') {
-                    result['Child'] = [];
                     RootComponentsData.push(result);
                 }
                 if (result.Item_x0020_Type == 'Component') {
@@ -124,7 +120,7 @@ const LinkedComponent = (item: any) => {
                     ComponentsData.push(result);
                 }
 
-                if (result.Item_x0020_Type == 'SubServices') {
+                if (result.Item_x0020_Type == 'SubComponent') {
                     result['Child'] = [];
                     SubComponentsData.push(result);
                 }
@@ -132,13 +128,14 @@ const LinkedComponent = (item: any) => {
                     result['Child'] = [];
                     FeatureData.push(result);
                 }
+
             }
         });
-        $.each(SubComponentsData, function (index: any, subcomp: any) {
+        $.each(SubComponentsData, function (subcomp: any) {
             if (subcomp.Title != undefined) {
-                $.each(FeatureData, function (index: any, featurecomp: any) {
+                $.each(FeatureData, function (featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        subcomp['Child'].push(featurecomp);;
+                        subcomp['Child'].push(featurecomp);
                     }
                 })
             }
@@ -146,54 +143,90 @@ const LinkedComponent = (item: any) => {
         $.each(ComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
                 $.each(SubComponentsData, function (index: any, featurecomp: any) {
-                    if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        subcomp['Child'].push(featurecomp);;
+                    if (featurecomp != undefined) {
+                        if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                            subcomp['Child'].push(featurecomp);
+                        }
                     }
                 })
             }
         })
         //maidataBackup.push(ComponentsData)
         // setmaidataBackup(ComponentsData)
-        setComponentsData(ComponentsData);
-        setModalIsOpen(true)
+        setData(ComponentsData);
+        setModalIsOpen(true);
+        LinkedServicesBackupArray = ComponentsData;
     }
     const onRenderCustomHeader = (
-        ) => {
-            return (
-                <>
-                    <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+    ) => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
                         {`Select Services`}
-                    </div>
-                    <Tooltip />
-                </>
-            );
-        };
+                    </span>
+                </div>
+                <Tooltip ComponentId="1667" />
+            </div>
+        );
+    };
     const sortBy = () => {
-
         const copy = data
-
         copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
-
         setTable(copy)
-
     }
     const sortByDng = () => {
-
         const copy = data
-
         copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
-
         setTable(copy)
+    }
 
+    const ColumnSearchForLinkedServices = (e: any, columnName: any) => {
+        let searchKey = e.target.value.toLoserCase();
+        let tempArray: any = [];
+        if (columnName == "Title") {
+            data?.map((dataItem: any) => {
+                if (dataItem.Title.toLowerCase() == searchKey) {
+                    if (dataItem.Child?.length > 0 && dataItem.Child != null) {
+                        dataItem.Child?.map((childItem: any) => {
+                            if (childItem.Title.toLoserCase() == searchKey) {
+                                tempArray.push(dataItem);
+                            }
+                        })
+                    } else {
+                        tempArray.push(dataItem);
+                    }
+                }
+            })
+            setData(tempArray);
+        }
+        if (columnName == "Client-Category") { }
+        if (columnName == "Team-Member") { }
+        if (columnName == "Status") { }
+        if (columnName == "Item-Rank") { }
+        if (columnName == "Due-Date") { }
+        if(searchKey.length == 0){
+            setData(LinkedServicesBackupArray);
+        }
+    }
+
+    const CustomFooter = () => {
+        return (
+            <div className="me-4 p-2 pe-3 text-end">
+                <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
+                <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
+            </div>
+        )
     }
     return (
         <Panel
-            headerText={`Select Services`}
-            type={PanelType.large}
+            type={PanelType.custom}
+            customWidth="1100px"
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
             isBlocking={false}
+            onRenderFooter={CustomFooter}
         >
             <div className="serviepannelgreena">
                 <div className="modal-body p-0 mt-2">
@@ -229,70 +262,75 @@ const LinkedComponent = (item: any) => {
                                                 </th>
                                                 <th style={{ width: "22%" }}>
                                                     <div style={{ width: "21%" }} className="smart-relative">
-                                                        <input type="search" placeholder="Title" className="full_width searchbox_height" />
-                                                                <span className="sorticon">
-                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                </span>
-
+                                                        <input type="search" placeholder="Title" onChange={(e) => ColumnSearchForLinkedServices(e, "Title")} className="full_width searchbox_height" />
+                                                        <span className="sorticon">
+                                                            <span className="up" onClick={sortBy}>
+                                                                < FaAngleUp />
+                                                            </span>
+                                                            <span className="down" onClick={sortByDng}>
+                                                                < FaAngleDown />
+                                                            </span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "18%" }}>
                                                     <div style={{ width: "17%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Client-Category")}
                                                         />
                                                         <span className="sorticon">
-                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span>
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "20%" }}>
                                                     <div style={{ width: "19%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Team-Member")}
                                                         />
                                                         <span className="sorticon">
-                                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                        </span>
-
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Status")}
                                                         />
                                                         <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span>
-
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Item Rank"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Item-Rank")}
                                                         />
                                                         <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span>
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Due"
                                                             title="Client Category" className="full_width searchbox_height"
+                                                            onChange={(e) => ColumnSearchForLinkedServices(e, "Due-Date")}
                                                         />
                                                         <span className="sorticon">
-                                                                        <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                        <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                                    </span>
-
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                        </span>
                                                     </div>
                                                 </th>
                                             </tr>
@@ -302,7 +340,6 @@ const LinkedComponent = (item: any) => {
                                                 <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
                                             </div>
                                             {data && data.map(function (item, index) {
-
                                                 return (
                                                     <>
                                                         <tr >
@@ -324,7 +361,7 @@ const LinkedComponent = (item: any) => {
 
                                                                         </td>
                                                                         <td style={{ width: "2%" }}>
-                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { item.checked = !item.checked; setcheckbox([item.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : item]) }} ></input>
+                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { item.checked = !item.checked; setCheckBoxData([item.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
 
                                                                         </td>
 
@@ -432,7 +469,7 @@ const LinkedComponent = (item: any) => {
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setcheckbox([childitem.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : childitem]) }} ></input>
+                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setCheckBoxData([childitem.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childitem]) }} ></input>
                                                                                             </td>
                                                                                             <td style={{ width: "4%" }}> <div>
 
@@ -525,7 +562,7 @@ const LinkedComponent = (item: any) => {
 
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxdata.length > 0 && CheckBoxdata[0]["Id"] ? CheckBoxdata[0]["Id"] : CheckBoxdata) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setcheckbox([childinew.Title == (CheckBoxdata.length > 0 ? CheckBoxdata[0]["Title"] : CheckBoxdata) ? [] : childinew]) }}  ></input></td>
+                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setCheckBoxData([childinew.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childinew]) }}  ></input></td>
                                                                                                             <td style={{ width: "4%" }}> <div>
                                                                                                                 <span>
 
@@ -615,11 +652,7 @@ const LinkedComponent = (item: any) => {
                         </div>
                     </div>
                 </div>
-                <footer className="float-end mt-2">
-                    <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
-                    <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
-                </footer>
             </div >
         </Panel >
     )
-}; export default LinkedComponent;
+}; export default LinkedServices;

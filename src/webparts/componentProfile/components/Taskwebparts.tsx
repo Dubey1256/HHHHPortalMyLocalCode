@@ -22,6 +22,7 @@ import PortfolioStructureCreationCard from '../../../globalComponents/tableContr
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
@@ -1203,14 +1204,75 @@ export default function ComponentTable({ props }: any) {
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
     }, []);
+let isOpenPopup =false;
+    const CloseCall = React.useCallback((item) => {
 
-    const CloseCall = React.useCallback(() => {
+        if (!isOpenPopup && item.CreatedItem != undefined) {
+            item.CreatedItem.forEach((obj: any) => {
+                obj.data.childs = [];
+                obj.data.flag = true;
+                obj.data.TitleNew = obj.data.Title;
+                // obj.data.Team_x0020_Members=item.TeamMembersIds;
+                // obj.AssignedTo =item.AssignedIds;
+                obj.data.siteType = "Master Tasks";
+                obj.data['Shareweb_x0020_ID'] = obj.data.PortfolioStructureID;
+                if (item.props != undefined && item.props.SelectedItem != undefined && item.props.SelectedItem.childs != undefined) {
+                    item.props.SelectedItem.childs = item.props.SelectedItem.childs == undefined ? [] : item.props.SelectedItem.childs;
+                    item.props.SelectedItem.childs.unshift(obj.data);
+                }
+
+            })
+            if (ComponentsData != undefined && ComponentsData.length > 0) {
+                ComponentsData.forEach((comp: any, index: any) => {
+                    if (comp.Id != undefined && item.props.SelectedItem != undefined && comp.Id === item.props.SelectedItem.Id){
+                        comp.childsLength =item.props.SelectedItem.childs.length;
+                        comp.show = comp.show ==undefined ?false : comp.show
+                        comp.childs = item.props.SelectedItem.childs;
+                    }
+                    if (comp.childs != undefined && comp.childs.length > 0) { 
+                        comp.childs.forEach((subcomp: any, index: any) => {
+                            if (subcomp.Id != undefined && item.props.SelectedItem != undefined && subcomp.Id === item.props.SelectedItem.Id){
+                                subcomp.childsLength =item.props.SelectedItem.childs.length;
+                                subcomp.show = subcomp.show ==undefined ?false : subcomp.show
+                                subcomp.childs = item.props.SelectedItem.childs;
+                            }
+                        })
+                    }
+
+                })
+                // }
+            }
+            setData((data) => [...ComponentsData]);
+        }
+        if (!isOpenPopup && item.data != undefined) {
+            item.data.childs = [];
+            item.data.flag = true;
+            item.data.TitleNew = item.data.Title;
+            item.data.siteType = "Master Tasks"
+            item.data.childsLength = 0;
+            item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
+            ComponentsData.unshift(item.data);
+            setData((data) => [...ComponentsData]);
+        }
         setAddModalOpen(false)
     }, []);
 
     const CreateOpenCall = React.useCallback((item) => {
+        isOpenPopup = true;
+        item.data.childs = [];
+        item.data.flag = true;
+        item.data.siteType = "Master Tasks"
+        item.data.TitleNew = item.data.Title;
+        item.data.childsLength = 0;
+        item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
+        if (checkedList != undefined && checkedList.length > 0)
+            checkedList[0].childs.unshift(item.data);
+        else ComponentsData.unshift(item.data);
+
+        setSharewebComponent(item.data)
         setIsComponent(true);
-        setSharewebComponent(item);
+        setData((data) => [...ComponentsData]);
+        // setSharewebComponent(item);
     }, []);
 
     var myarray: any = [];
@@ -2723,7 +2785,7 @@ export default function ComponentTable({ props }: any) {
                                                     )}
                                                 </>
                                             )
-                                        }
+                                        } 
                                     })}
                                 </tbody>
                             </table>
@@ -2736,9 +2798,9 @@ export default function ComponentTable({ props }: any) {
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
             
-            <Modal show={addModalOpen} isOpen={addModalOpen} isBlocking={false}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall}   PortfolioType ={IsUpdated} Close={CloseCall} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props}/> 
-            </Modal>
+            <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+            </Panel>
             
         </div>
     );

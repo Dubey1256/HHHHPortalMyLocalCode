@@ -24,6 +24,7 @@ import * as globalCommon from '../../../globalComponents/globalCommon';
 import { typography } from '@mui/system';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { PortfolioStructureCreationCard } from '../../../globalComponents/tableControls/PortfolioStructureCreation';
+import CreateActivity from './CreateActivity';
 
 
 
@@ -47,8 +48,12 @@ function ComponentTable(SelectedProp: any) {
     const [ComponentsData, setComponentsData] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
     const [TotalTask, setTotalTask] = React.useState([])
+    const [ActivityDisable, setActivityDisable] = React.useState(true);
+    const [MeetingItems, setMeetingItems] = React.useState<any>([])
+    const [ActivityPopup, setActivityPopup] = React.useState(false);
     const [TaggedAllTask, setTaggedAllTask] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
+    const [MeetingPopup, setMeetingPopup] = React.useState(false);
     const [table, setTable] = React.useState(data);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -110,6 +115,14 @@ function ComponentTable(SelectedProp: any) {
             }
         });
         return isExists;
+    }
+    const closeTaskStatusUpdatePoup2 = () => {
+        setActivityPopup(false)
+
+
+    }
+    const openActivity = () => {
+        setActivityPopup(true)
     }
     const ShowSelectedfiltersItems = () => {
         var ArrayItem: any = []
@@ -542,7 +555,12 @@ function ComponentTable(SelectedProp: any) {
         //  SharewebCommonFactoryService.hideProgressBar();
     }
 
-
+    const CreateMeetingPopups = (item:any) => {
+        setMeetingPopup(true);
+        MeetingItems['NoteCall'] = item;
+        closeTaskStatusUpdatePoup2();
+     
+    }
     const Updateitem1 = () => {
         var component: any[] = []
         var subcomponent: any[] = []
@@ -2398,6 +2416,7 @@ function ComponentTable(SelectedProp: any) {
     const Call = React.useCallback((item1) => {
         setIsComponent(false);
         setIsTask(false);
+        setMeetingPopup(false);
     }, []);
 
     const TimeEntryCallBack = React.useCallback((item1) => {
@@ -2417,7 +2436,19 @@ function ComponentTable(SelectedProp: any) {
         setSharewebTask(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    const onChangeHandler = (itrm: any) => {
+    const onChangeHandler = (itrm: any, e: any) => {
+        const { checked } = e.target;
+        if (checked == true) {
+            setActivityDisable(false)
+            itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+            itrm['listName'] = 'Master Tasks';
+            setMeetingItems(itrm);
+        }
+        if (checked == false) {
+            setActivityDisable(true)
+            $('#ClientCategoryPopup').hide();
+        }
+
         const list = [...checkedList];
         var flag = true;
         list.forEach((obj: any, index: any) => {
@@ -2462,13 +2493,82 @@ function ComponentTable(SelectedProp: any) {
         }
         setData(data => ([...data]));
     }
-    const CloseCall = React.useCallback(() => {
+    let isOpenPopup = false;
+    const CloseCall = React.useCallback((item) => {
+
+        if (!isOpenPopup && item.CreatedItem != undefined) {
+            item.CreatedItem.forEach((obj: any) => {
+                obj.data.childs = [];
+                obj.data.flag = true;
+                obj.data.TitleNew = obj.data.Title;
+                // obj.data.Team_x0020_Members=item.TeamMembersIds;
+                // obj.AssignedTo =item.AssignedIds;
+                obj.data.siteType = "Master Tasks"
+                obj.data['SiteIcon'] = GetIconImageUrl(obj.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+                obj.data['Shareweb_x0020_ID'] = obj.data.PortfolioStructureID;
+                if (item.props != undefined && item.props.SelectedItem != undefined && item.props.SelectedItem.childs != undefined) {
+                    item.props.SelectedItem.childs = item.props.SelectedItem.childs == undefined ? [] : item.props.SelectedItem.childs;
+                    item.props.SelectedItem.childs.unshift(obj.data);
+                }
+
+            })
+            if (ComponentsData != undefined && ComponentsData.length > 0) {
+                ComponentsData.forEach((comp: any, index: any) => {
+                    if (comp.Id != undefined && item.props.SelectedItem != undefined && comp.Id === item.props.SelectedItem.Id){
+                        comp.childsLength =item.props.SelectedItem.childs.length;
+                        comp.show = comp.show ==undefined ?false : comp.show
+                        comp.childs = item.props.SelectedItem.childs;
+                    }
+                    if (comp.childs != undefined && comp.childs.length > 0) { 
+                        comp.childs.forEach((subcomp: any, index: any) => {
+                            if (subcomp.Id != undefined && item.props.SelectedItem != undefined && subcomp.Id === item.props.SelectedItem.Id){
+                                subcomp.childsLength =item.props.SelectedItem.childs.length;
+                                subcomp.show = subcomp.show ==undefined ?false : subcomp.show
+                                subcomp.childs = item.props.SelectedItem.childs;
+                            }
+                        })
+                    }
+
+                })
+                // }
+            }
+            setData((data) => [...ComponentsData]);
+        }
+        if (!isOpenPopup && item.data != undefined) {
+            item.data.childs = [];
+            item.data.flag = true;
+            item.data.TitleNew = item.data.Title;
+            item.data.siteType = "Master Tasks"
+            item.data.childsLength = 0;
+            item.data['SiteIcon'] = GetIconImageUrl(item.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+            item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
+
+            // if (checkedList != undefined && checkedList.length > 0)
+            //     checkedList[0].childs.unshift(item.data);
+            // else 
+            ComponentsData.unshift(item.data);
+            setData((data) => [...ComponentsData]);
+        }
         setAddModalOpen(false)
     }, []);
 
     const CreateOpenCall = React.useCallback((item) => {
+        isOpenPopup = true;
+        item.data.childs = [];
+        item.data.flag = true;
+        item.data.siteType = "Master Tasks"
+        item.data.TitleNew = item.data.Title;
+        item.data.childsLength = 0;
+        item.data['SiteIcon'] = GetIconImageUrl(item.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+        item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
+        if (checkedList != undefined && checkedList.length > 0)
+            checkedList[0].childs.unshift(item.data);
+        else ComponentsData.unshift(item.data);
+
+        setSharewebComponent(item.data)
         setIsComponent(true);
-        setSharewebComponent(item);
+        setData((data) => [...ComponentsData]);
+        // setSharewebComponent(item);
     }, []);
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
@@ -2847,10 +2947,17 @@ function ComponentTable(SelectedProp: any) {
                                         </span> */}
                                     </span>
                                     <span className="toolbox mx-auto">
-                                        <button type="button" className="btn btn-primary"
-                                            ng-disabled="(isOwner!=true) || ( SelectedTasks.length > 0 || compareComponents[0].Item_x0020_Type =='Feature') "
-                                            onClick={addModal} title=" Add Structure">
+                                        <button type="button" disabled={checkedList.length >= 2} className="btn btn-primary" onClick={addModal} title=" Add Structure">
                                             Add Structure
+                                        </button>
+
+                                        <button type="button"
+                                            className="btn btn-primary"
+                                            onClick={() => openActivity()}
+                                            disabled={ActivityDisable}>
+
+                                            <MdAdd />
+                                            Add Activity-Task
                                         </button>
 
                                         <button type="button"
@@ -2859,16 +2966,11 @@ function ComponentTable(SelectedProp: any) {
                                             disabled={true}>
 
                                             <MdAdd />
-                                            Add Activity-Task
+                                           Restructure
                                         </button>
 
 
-                                        <button type="button"
-                                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                                            ng-click="openRestructure()"
-                                            disabled={true}>
-                                            Restructure
-                                        </button>
+                                       
 
                                         <a className="brush" onClick={clearSearch}>
                                             <FaPaintBrush />
@@ -3020,7 +3122,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                         <div className="accordian-header" >
                                                                                             {/* checked={item.checked === true ? true : false} */}
                                                                                             <span className='pe-2'><input type="checkbox"
-                                                                                                onChange={(e) => onChangeHandler(item)} /></span>
+                                                                                                onChange={(e) => onChangeHandler(item, e)} /></span>
                                                                                         </div>
 
                                                                                     </td>
@@ -3143,7 +3245,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 <div className="accordian-header" >
                                                                                                                     {/* checked={item.checked === true ? true : false} */}
                                                                                                                     <span className='pe-2'><input type="checkbox"
-                                                                                                                        onChange={(e) => onChangeHandler(childitem)} /></span>
+                                                                                                                        onChange={(e) => onChangeHandler(childitem,e)} /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -3265,7 +3367,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         <div className="accordian-header" >
                                                                                                                                             {/* checked={item.checked === true ? true : false} */}
                                                                                                                                             <span className='pe-2'><input type="checkbox"
-                                                                                                                                                onChange={(e) => onChangeHandler(childinew)} /></span>
+                                                                                                                                                onChange={(e) => onChangeHandler(childinew,e)} /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
@@ -3525,9 +3627,76 @@ function ComponentTable(SelectedProp: any) {
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            <Panel type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+            {MeetingPopup && <CreateActivity props={MeetingItems} Call={Call}  LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+            <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
+
+            <Modal
+
+                isOpen={ActivityPopup}
+                onDismiss={closeTaskStatusUpdatePoup2}
+                isBlocking={false}
+            >
+
+                <div className="modal-dialog" style={{ width: "700px" }}>
+                    <div className="modal-content">
+
+                        <div className="modal-header  mt-1 px-3">
+                            <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
+                            <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        {/* <h3 className="modal-title">
+                   
+                    <span className="pull-right" style={{ marginRight: "30px" }}>
+                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png"
+                            ng-click="openSmartTaxonomy('Client Category', Item.SharewebCategories,'');" />
+                    </span>
+                </h3> */}
+
+
+                        <div className="modal-body bg-f5f5 clearfix">
+                            <div className="">
+                                <div id="portfolio" className="section-event pt-0">
+                                    <ul className="quick-actions">
+
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                <span className="icon-sites">
+                                                    <img className="icon-sites"
+                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                </span>
+                                                Implmentation
+                                            </div>
+                                        </li>
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={() => CreateMeetingPopups('Development')}>
+                                                <span className="icon-sites">
+                                                    <img className="icon-sites"
+                                                        src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                </span>
+                                                Development
+                                            </div>
+                                        </li>
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                <span className="icon-sites">
+                                                </span>
+                                                Activity
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </Modal >
         </div >
     );
 }

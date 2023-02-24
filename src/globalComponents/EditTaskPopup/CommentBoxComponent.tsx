@@ -5,7 +5,6 @@ import AddCommentComponent from './AddCommentComponent';
 import Example from "./SubCommentComponent";
 import FroalaCommentBox from '../FlorarComponents/FroalaCommentBoxComponent'
 
-
 const CommentBoxComponent = (commentData: any) => {
     const [commentArray, setCommentArray] = useState([])
     const CallBack = commentData.callBack;
