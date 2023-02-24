@@ -41,6 +41,7 @@ export interface ITaskprofileState {
   SharewebTimeComponent: any;
   isopenversionHistory:boolean;
   smarttimefunction: boolean;
+  ApprovalStatus:boolean;
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
@@ -75,7 +76,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       showPopup: 'none',
       maincollection: [],
       SharewebTimeComponent: [],
-      smarttimefunction: false
+      smarttimefunction: false,
+      ApprovalStatus:false,
     }
 
     this.GetResult();
@@ -228,6 +230,17 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     taskDetails["SharewebCategories"].map((item:any,index:any)=>{
       category=category+item.Title+";"
+      let ApprovalCheck = category.search("Approval");
+      if (ApprovalCheck >= 0) {
+        this.setState({
+          ApprovalStatus: true
+        })
+    } else {
+      this.setState({
+        ApprovalStatus: false
+      })
+    }
+      
     });
     
     if(taskDetails["AssignedTo"]!=undefined){
@@ -992,7 +1005,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         </section>
         <section>
           <div className='row'>
-            <div className="col-9 ps-0 bg-white">
+            <div className="col-9 bg-white">
               <div className="team_member row">
                 <div className='col-md-4 p-0'>
                   <dl>
@@ -1261,7 +1274,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             return <TaskFeedbackCard feedback={fbData} index={i + 1}
                               onPost={() => { this.onPost() }}
                               fullfeedback={this.state.Result["FeedBack"]}
-                              CurrentUser={this.currentUser}>
+                              CurrentUser={this.currentUser}
+                              ApprovalStatus = {this.state.ApprovalStatus}
+                              >
                             </TaskFeedbackCard>
                           })}
                         </div>

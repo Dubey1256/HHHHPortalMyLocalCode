@@ -15,7 +15,7 @@ import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import LinkedComponent from './LinkedComponent';
-import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
@@ -35,9 +35,15 @@ var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any;
 var SiteTypeBackupArray: any = [];
-var ImageBackupArray: any = [];
+var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 const EditTaskPopup = (Items: any) => {
+    var siteUrls:any;
+    if(Items != undefined &&  Items.Items.siteUrl != undefined && Items.Items.siteUrl.length<20){
+        siteUrls=`https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
+    }else{
+        siteUrls= Items.Items.siteUrl
+    }
     const [images, setImages] = React.useState([]);
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -53,13 +59,11 @@ const EditTaskPopup = (Items: any) => {
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const maxNumber = 69;
-    const [ImageSection, setImageSection] = React.useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
-    const [FeedBackDescription, setFeedBackDescription] = React.useState([]);
     const [EditData, setEditData] = React.useState<any>({});
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
@@ -71,7 +75,6 @@ const EditTaskPopup = (Items: any) => {
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
     const [composition, setComposition] = React.useState(false);
-    const [FolderData, SetFolderData] = React.useState([]);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [taskStatus, setTaskStatus] = React.useState('');
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
@@ -79,9 +82,12 @@ const EditTaskPopup = (Items: any) => {
     const [PriorityStatus, setPriorityStatus] = React.useState();
     const [PhoneStatus, setPhoneStatus] = React.useState(false);
     const [EmailStatus, setEmailStatus] = React.useState(false);
+    const [DesignStatus, setDesignStatus] = React.useState(false);
     const [OnlyCompletedStatus, setOnlyCompletedStatus] = React.useState(false);
     const [ImmediateStatus, setImmediateStatus] = React.useState(false);
     const [ApprovalStatus, setApprovalStatus] = React.useState(false);
+    const [SmartLightStatus, setSmartLightStatus] = React.useState(false);
+    const [SmartLightPercentStatus, setSmartLightPercentStatus] = React.useState(false);
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = React.useState(false);
     const [currentUserData, setCurrentUserData] = React.useState([]);
     const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
@@ -109,14 +115,17 @@ const EditTaskPopup = (Items: any) => {
 
     React.useEffect(() => {
         loadTaskUsers();
+        getCurrentUserDetails();
         GetEditData();
         getCurrentUserDetails();
         getSmartMetaData();
         loadAllCategoryData();
+        // getInformationForSmartLight();
         // Descriptions();
     }, [])
 
     const Call = React.useCallback((PopupItemData: any, type: any) => {
+        setIsServices(false)
         setIsComponent(false);
         setIsComponentPicker(false);
         if (type == "SmartComponent") {
@@ -129,7 +138,6 @@ const EditTaskPopup = (Items: any) => {
         if (type == "Category") {
             if (PopupItemData?.categories != "" && PopupItemData?.categories != undefined) {
                 Items.Items.Categories = PopupItemData.categories;
-
                 let category: any = tempCategoryData ? tempCategoryData + ";" + PopupItemData.categories[0]?.Title : PopupItemData.categories[0]?.Title;
                 setCategoriesData(category);
                 tempShareWebTypeData.push(PopupItemData.categories[0]);
@@ -139,6 +147,7 @@ const EditTaskPopup = (Items: any) => {
                 let ImmediateCheck = category.search("Immediate");
                 let ApprovalCheck = category.search("Approval");
                 let OnlyCompletedCheck = category.search("Only Completed");
+                let DesignCheck = category.search("Design")
                 if (phoneCheck >= 0) {
                     setPhoneStatus(true)
                 } else {
@@ -159,11 +168,15 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     setApprovalStatus(false)
                 }
-
                 if (OnlyCompletedCheck >= 0) {
                     setOnlyCompletedStatus(true);
                 } else {
                     setOnlyCompletedStatus(false);
+                }
+                if (DesignCheck >= 0) {
+                    setDesignStatus(true);
+                } else {
+                    setDesignStatus(false);
                 }
             }
         }
@@ -376,7 +389,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const getSmartMetaData = async () => {
-        let web = new Web(Items.Items.siteUrl);
+        let web = new Web(siteUrls);
         let MetaData: any = [];
         let siteConfig: any = [];
         let tempArray: any = [];
@@ -458,6 +471,7 @@ const EditTaskPopup = (Items: any) => {
                         let temp: any = [];
                         temp.push(userData)
                         setCurrentUserData(temp);
+                        currentUserBackupArray.push(userData);
                     }
                 })
             }
@@ -527,7 +541,7 @@ const EditTaskPopup = (Items: any) => {
 
     const GetEditData = async () => {
         try {
-            let web = new Web(Items.Items.siteUrl);
+            let web = new Web(siteUrls);
             let smartMeta;
             if (Items.Items.listId != undefined) {
                 smartMeta = await web.lists
@@ -535,7 +549,7 @@ const EditTaskPopup = (Items: any) => {
                     .items
                     .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
-                    .filter(`Id eq ${Items.Items.ID}`)
+                    .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
@@ -566,7 +580,9 @@ const EditTaskPopup = (Items: any) => {
                             }
                         })
                     }
-
+                    if(statusValue >= 80){
+                        setSmartLightPercentStatus(true);
+                    }
                 }
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
@@ -599,6 +615,16 @@ const EditTaskPopup = (Items: any) => {
                         })
                     })
                 }
+                if (ApproverData?.length > 0) {
+                    ApproverData?.map((Approver:any) => {
+                        currentUserBackupArray?.map((current: any) => {
+                            if (Approver.Id == current.AssingedToUserId) {
+                                setSmartLightStatus(true);
+                            }
+                        })
+                    })
+
+                }
                 if (item.component_x0020_link != null) {
                     item.Relevant_Url = item.component_x0020_link.Url
                 }
@@ -624,6 +650,7 @@ const EditTaskPopup = (Items: any) => {
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
+                    let DesignCheck = item.Categories.search("Design")
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true)
                     } else {
@@ -649,6 +676,12 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         setOnlyCompletedStatus(false);
                     }
+                    if (DesignCheck >= 0) {
+                        setDesignStatus(true);
+                    } else {
+                        setDesignStatus(false);
+                    }
+
                 }
                 if (item.SharewebCategories != undefined && item.SharewebCategories?.length > 0) {
                     let tempArray: any = [];
@@ -686,11 +719,24 @@ const EditTaskPopup = (Items: any) => {
                 }
                 setEditData(item)
                 setPriorityStatus(item.Priority)
+                console.log("Task All Details ==================", item)
             })
         } catch (error) {
             console.log("Error :", error.message);
         }
     }
+
+    // const getInformationForSmartLight = () => {
+    //     if (EditData.TaskApprovers?.length > 0 && EditData.TaskApprovers != undefined) {
+    //         EditData.TaskApprovers?.map((Approver: any) => {
+    //             currentUserBackupArray?.map((current: any) => {
+    //                 if (Approver.Id == current.Id) {
+    //                     setSmartLightStatus(true);
+    //                 }
+    //             })
+    //         })
+    //     }
+    // }
 
     //    *********** This is for status section Functions **************
     const StatusAutoSuggestion = (e: any) => {
@@ -778,6 +824,8 @@ const EditTaskPopup = (Items: any) => {
         if (StatusInput == 90) {
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
+            } else if (DesignStatus) {
+                setWorkingMember(172);
             } else {
                 setWorkingMember(42);
             }
@@ -802,6 +850,9 @@ const EditTaskPopup = (Items: any) => {
         }
         if (StatusInput != 2) {
             setInputFieldDisable(false)
+        }
+        if(StatusInput >= 80){
+            setSmartLightPercentStatus(true);
         }
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
     }
@@ -956,7 +1007,7 @@ const EditTaskPopup = (Items: any) => {
         }
         // images?.map((imgDtl: any) => {
         //     if (imgDtl.dataURL != undefined) {
-        //         var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
+        //         var imgUrl = siteUrls + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
         //     }
         //     // else {
         //     //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
@@ -982,9 +1033,9 @@ const EditTaskPopup = (Items: any) => {
                 if (feedbackArray[0] != undefined) {
                     tempArray.push(feedbackArray[0])
                 } else {
-                    let tempObject:any =
+                    let tempObject: any =
                     {
-                        "Title": '',
+                        "Title": '<p> </p>',
                         "Completed": false,
                         "isAddComment": false,
                         "isShowComment": false,
@@ -1143,7 +1194,7 @@ const EditTaskPopup = (Items: any) => {
             setEditData({ ...EditData, IsTodaysTask: true })
         }
     }
-    
+
     //    ************* this is team configuration call Back function **************
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
         if (teamConfigData?.AssignedTo?.length > 0) {
@@ -1205,10 +1256,10 @@ const EditTaskPopup = (Items: any) => {
     const deleteItemFunction = async (itemId: any) => {
         try {
             if (Items.Items.listId != undefined) {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(itemId).delete();
             } else {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).delete();
             }
             Items.Call();
@@ -1364,7 +1415,7 @@ const EditTaskPopup = (Items: any) => {
         let lastindexArray = imageList[imageList.length - 1];
         let fileName: any = '';
         let tempArray: any = [];
-        let SiteUrl = Items.Items.siteUrl;
+        let SiteUrl = siteUrls;
         imageList?.map(async (imgItem: any, index: number) => {
             if (imgItem.data_url != undefined && imgItem.file != undefined) {
                 let date = new Date()
@@ -1414,7 +1465,7 @@ const EditTaskPopup = (Items: any) => {
         }
         if (Items.Items.listId != undefined) {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getById(listId).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
@@ -1422,7 +1473,7 @@ const EditTaskPopup = (Items: any) => {
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(listName).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
@@ -1443,14 +1494,14 @@ const EditTaskPopup = (Items: any) => {
 
         if (Items.Items.listId != undefined) {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).delete();
                 console.log("Attachment deleted");
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).delete();
                 console.log("Attachment deleted");
@@ -1468,16 +1519,16 @@ const EditTaskPopup = (Items: any) => {
         for (var i = 0; i < byteArray.byteLength; i++) {
             fileData += String.fromCharCode(byteArray[i]);
         }
-        if (Items.Items.siteUrl != undefined) {
+        if (siteUrls != undefined) {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(ImageName).setContent(data);
                 console.log("Attachment Updated");
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(ImageName).setContent(data);
                 console.log("Attachment Updated");
@@ -1538,7 +1589,6 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1" >
-                {console.log("all sites details ======", SiteTypes)}
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
                     <span>
@@ -2079,7 +2129,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="col-12" title="Relevant Portfolio Items">
                                                     <div className="input-group">
                                                         <label className="form-label full-width "> Linked Component Task </label>
-                                                        <input type="text"
+                                                        <input type="text" readOnly
                                                             className="form-control "
                                                         />
                                                         <span className="input-group-text">
@@ -2110,7 +2160,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     )
                                                                 })}
                                                             </div> :
-                                                                <input type="text" readOnly
+                                                                <input type="text"
                                                                     className="form-control"
                                                                 />
                                                         }
@@ -2259,7 +2309,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={Items.Items.siteUrl} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                            <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                         </div>
                                         <div className="pull-right">
                                         </div>
@@ -2297,7 +2347,6 @@ const EditTaskPopup = (Items: any) => {
                                         'col-sm-3 padL-0 DashboardTaskPopup-Editor above' :
                                         'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}>
                                         <div className="image-upload">
-                                            {console.log("all image details ======", TaskImages)}
                                             <ImageUploading
                                                 multiple
                                                 value={TaskImages}
@@ -2396,8 +2445,25 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Title != null ? <>
-                                            <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} ItemId={EditData.Id} SiteUrl={EditData.component_x0020_link} />
+                                            <CommentBoxComponent
+                                                data={EditData.FeedBackArray}
+                                                callBack={CommentSectionCallBack}
+                                                allUsers={taskUsers}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                                SmartLightPercentStatus={SmartLightPercentStatus}
+                                            />
+                                            <Example
+                                                textItems={EditData.FeedBackArray}
+                                                callBack={SubCommentSectionCallBack}
+                                                allUsers={taskUsers}
+                                                ItemId={EditData.Id}
+                                                SiteUrl={EditData.component_x0020_link}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                                SmartLightPercentStatus={SmartLightPercentStatus}
+
+                                            />
                                         </>
                                             : null}
                                     </div>
@@ -2863,7 +2929,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 )
                                                                             })}
                                                                         </div> :
-                                                                            <input type="text" readOnly
+                                                                            <input type="text"
                                                                                 className="form-control"
                                                                             />
                                                                     }
@@ -2879,7 +2945,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <label className="form-label full-width "> Linked Component Task </label>
                                                                     <input type="text"
                                                                         className="form-control "
-                                                                        id="{{RelevantPortfolioName==='Linked Service'?'txtRelevantServiceShareWebComponent':'txtRelevantShareWebComponent'}}"
+                                                                        readOnly
                                                                         autoComplete="off" />
                                                                     <span className="input-group-text">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -3028,7 +3094,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={Items.Items.siteUrl} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                                        <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                                     </div>
                                                     <div className="pull-right">
                                                     </div>
@@ -3093,8 +3159,21 @@ const EditTaskPopup = (Items: any) => {
                                 }}>
                                     <div>
                                         {EditData.Title != null ? <>
-                                            <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} ItemId={EditData.Id} SiteUrl={EditData.component_x0020_link} />
+                                            <CommentBoxComponent
+                                                data={EditData.FeedBackArray}
+                                                callBack={CommentSectionCallBack}
+                                                allUsers={taskUsers}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                            />
+                                            <Example textItems={EditData.FeedBackArray}
+                                                callBack={SubCommentSectionCallBack}
+                                                allUsers={taskUsers}
+                                                ItemId={EditData.Id}
+                                                SiteUrl={EditData.component_x0020_link}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                            />
                                         </>
                                             : null}
                                     </div>
