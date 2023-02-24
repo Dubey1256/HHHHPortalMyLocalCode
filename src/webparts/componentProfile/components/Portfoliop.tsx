@@ -536,8 +536,9 @@ function Portfolio({ ID }: any) {
                                             <dl>
                                                 <dt className='bg-fxdark'>Team Members</dt>
                                                 <dd className='bg-light d-flex'>
-                                                {data.map(item =><ShowTaskTeamMembers props={item} ></ShowTaskTeamMembers>
-                                               )}
+                                                {data.map(item =>{
+                                                return(<ShowTaskTeamMembers props={item} ></ShowTaskTeamMembers>)
+                                                })}
                                                 </dd>
                                             </dl>
                                             <dl>
