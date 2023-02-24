@@ -22,7 +22,7 @@ import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { typography } from '@mui/system';
-import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+//import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { PortfolioStructureCreationCard } from '../../../globalComponents/tableControls/PortfolioStructureCreation';
 import CreateActivity from './CreateActivity';
 import CreateWS from './CreateWS';
@@ -3170,11 +3170,10 @@ return (
                                                                                         })}</div>
                                                                                 </td>
                                                                                 <td style={{ width: "17%" }}>
-                                                                                    <div>
+                                                                                   {/*  <div>
                                                                                         <ShowTaskTeamMembers props={item} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
-                                                                                    </div>
-                                                                                    </td>
+                                                                                    </div> */}</td>
                                                                                 <td style={{ width: "6%" }}>{item.PercentComplete}</td>
                                                                                 <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                 <td style={{ width: "10%" }}>{item.DueDate}</td>
@@ -3298,7 +3297,7 @@ return (
                                                                                                                 })}</div>
                                                                                                         </td>
                                                                                                         <td style={{ width: "17%" }}>
-                                                                                                            <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
+                                                                                                            {/* <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers>*/}
                                                                                                             </td> 
                                                                                                         <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                         <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
@@ -3424,10 +3423,10 @@ return (
                                                                                                                                         })}</div>
                                                                                                                                 </td>
                                                                                                                                 <td style={{ width: "17%" }}>
-                                                                                                                                    <div>
+                                                                                                                                    {/* <div>
                                                                                                                                         <ShowTaskTeamMembers props={childinew} TaskUsers={AllUsers}></ShowTaskTeamMembers>
 
-                                                                                                                                    </div>
+                                                                                                                                    </div> */}
                                                                                                                                     </td>
                                                                                                                                 <td style={{ width: "6%" }}>{childinew.PercentComplete}</td>
                                                                                                                                 <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
@@ -3547,9 +3546,9 @@ return (
                                                                                                                                                                 })}</div>
                                                                                                                                                         </td>
                                                                                                                                                         <td style={{ width: "17%" }}>
-                                                                                                                                                            <div>
+                                                                                                                                                            {/* <div>
                                                                                                                                                                 <ShowTaskTeamMembers props={subchilditem} TaskUsers={AllUsers}></ShowTaskTeamMembers>
-                                                                                                                                                            </div>
+                                                                                                                                                            </div> */}
                                                                                                                                                             </td>
                                                                                                                                                         <td style={{ width: "6%" }}>{subchilditem.PercentComplete}</td>
                                                                                                                                                         <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>

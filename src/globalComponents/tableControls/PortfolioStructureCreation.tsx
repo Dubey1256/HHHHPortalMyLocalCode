@@ -5,14 +5,14 @@ import TeamConfigurationCard from '../TeamConfiguration/TeamConfiguration';
 import { arraysEqual, Panel, PanelType } from 'office-ui-fabric-react';
 import { GlobalConstants } from '../LocalCommon';
 import * as globalCommon from '../globalCommon';
-
+import ListGroup from 'react-bootstrap/ListGroup';
 export interface IStructureCreationProps {
     CreatOpen: (item: any) => void;
     Close: (item: any) => void;
     SelectedItem: any;
     PortfolioType: any;
 }
-
+ 
 export interface IStructureCreationState {
     isModalOpen: boolean;
     AllFilteredAvailableComoponent: any;
@@ -26,6 +26,11 @@ export interface IStructureCreationState {
     OpenModal: string;
     ChildItemTitle: any;
     AllComponents: any;
+    tempr: any;
+    value: any;
+    filterArray: any;
+    search: false;
+
 }
 
 const dragItem: any = {}
@@ -45,6 +50,10 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             OpenModal: '',
             ChildItemTitle: [],
             AllComponents: [],
+            tempr: [],
+            value: '',
+            filterArray: [],
+            search: false,
         }
         this.LoadSPComponents();
         this.Load();
@@ -54,11 +63,17 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         let SPDetails: any = [];
         let filtertitle = this.state.PortfolioType.split(' ')[0];
         this.Portfolio_x0020_Type = filtertitle;
-        var select: any = 'Title,Id,PortfolioType$&filter=PortfolioType eq ' + filtertitle + ''
+        var select: any = "Title,Id,PortfolioType&$filter=Portfolio_x0020_Type eq '" + filtertitle + "'"
         SPDetails = await globalCommon.getData(GlobalConstants.SP_SITE_URL, GlobalConstants.MASTER_TASKS_LISTID, select);
         console.log(SPDetails);
+        var tets :any =[];
+        SPDetails.forEach((obj:any) =>{
+            tets.push(obj.Title);
+        } )
         this.setState({
-            AllComponents: SPDetails
+            tempr:tets,
+            AllComponents: SPDetails,
+           
         }, () => console.log(this.state.AllComponents))
     }
     private setItemType() {
@@ -96,6 +111,30 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     }
 
     handleInputChange = (e: any) => {
+
+        const keyword = e.target.value;
+       // setValue(event.target.value);
+
+        if (this.state.value.length == 0) {
+            this.setState({ search: false });
+        }
+       
+        this.setState({ value: e.target.value });
+        // if (keyword !== '') {
+        //     const results = this.state.AllComponents.filter((user: any) => {
+        //         return user.Title.toLowerCase().startsWith(keyword.toLowerCase());
+        //         // Use the toLowerCase() method to make it case-insensitive
+        //     });
+        //     this.setState({
+        //         filterArray: results
+        //     })
+        // } else {
+        //     this.setState({
+        //         filterArray: this.state.AllComponents
+        //     })
+        //     // If the text field is empty, show all users
+        // }
+
         this.setState({ textTitle: e.target.value });
     }
 
@@ -543,6 +582,28 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         this.setState({ ChildItemTitle });
         console.log(this.state.ChildItemTitle);
     }
+    private onSearch = (searchTerm: any) => {
+        this.setState({
+            value: searchTerm,
+            search: false,
+            textTitle: searchTerm
+        })
+        
+
+        // $.each(this.state.AllComponents, function (index: any, d: any) {
+
+        //     if (searchTerm == d?.Title)
+        //         this.Status.filterArray.push(d.Title);
+
+        //     this.setState({
+        //         searh: false
+        //     })
+        // })
+        // this.setState({ textTitle: searchTerm });
+        // console.log(DGroups);
+        //  setdGroups(DGroups);
+        console.log("search ", searchTerm);
+    };
 
     public render(): React.ReactElement<IStructureCreationProps> {
         return (
@@ -562,12 +623,65 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 <label className="col-sm-6  padL-0"><strong>Title</strong> </label>
                                 <input className="form-control full_width" type="text" value={this.state.textTitle} onChange={(e) => this.handleInputChange(e)}
                                     placeholder="Enter Component Title..." ng-required="true" />
-                                {/* <span className="searchclear" ng-show="ComponentTitle.length>0" style={{ top: "39px" }}
-                                    ng-click="clearControl()">X</span> */}
+                                {/* <div className="user-list">
+                                    {this.state.filterArray && this.state.filterArray.length > 0 ? (
+                                        this.state.filterArray.map((item:any) => (
+                                            <li key={item.id} className="user">
+                                                <span className="user-id">{item.Title}</span>
+                                              
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <h1>No results found!</h1>
+                                    )}
+                                </div> */}
+                                <div className="dropdown">
+                                    {this.state !=undefined && this.state.tempr?.filter((item: any) => {
+                                        // item?.toLowerCase().includes(item);
+
+
+                                        const searchTerm = this?.state?.value?.toLowerCase();
+                                        const fullName = item?.toLowerCase();
+
+                                        return (
+                                            searchTerm &&
+                                            fullName?.startsWith(searchTerm) &&
+                                            fullName !== searchTerm
+                                        );
+
+                                    })
+                                        .slice(0, 10)
+                                        .map((item: any) => (
+                                            <div
+                                                onClick={() => this.onSearch(item)}
+                                                className="dropdown-row"
+                                                key={item}
+                                            >
+                                                {item}
+                                            </div>
+                                        ))}
+                                </div>
+                                <div className='grp'>
+
+                                    {this?.state?.search && <div >
+
+                                        {this?.state?.filterArray?.map((op: any, i: any) => {
+                                            return (
+                                                <ListGroup>
+                                                    <ListGroup.Item>{op}</ListGroup.Item>
+                                                    </ListGroup>
+                                            // <tr>
+                                            //     <td><span>{op}</span></td>
+                                            // </tr>
+                                            )
+                                        })}
+
+
+                                    </div>}
+                                </div>
                             </div>
-                            {this.state.AllFilteredAvailableComoponent.length > 0 &&
-                                <div className="divPanelBody fortablee col-sm-12 pad0 filtericonposfix"
-                                    ng-show="AllFilteredAvailableComoponent.length>0">
+                            {/* {this.state.AllFilteredAvailableComoponent.length > 0 &&
+                                <div className="divPanelBody fortablee col-sm-12 pad0 filtericonposfix">
                                     <div className="container pad0 section-event pt-0 mb-10">
                                         <ul className="table">
                                             <li className="for-lis">
@@ -580,7 +694,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                         <input type="search" id="searchTaskName" placeholder="Task Title"
                                                             className="full_width searchbox_height"
                                                             ng-model="category.searchTaskName" />
-                                                        <span className="searchclear" ng-show="category.searchTaskName.length>0"
+                                                        <span className="searchclear"
                                                             ng-click="clearSearchBox('category','searchTaskName')">X</span>
                                                         <span className="sortingfilter">
                                                             <span className="ml0">
@@ -620,7 +734,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                         <input type="search" id="searchPriority" placeholder="Priority"
                                                             className="full_width searchbox_height"
                                                             ng-model="category.searchPriority" />
-                                                        <span className="searchclear" ng-show="category.searchPriority.length>0"
+                                                        <span className="searchclear"
                                                             ng-click="clearSearchBox('category','searchPriority')">X</span>
                                                         <span className="sortingfilter">
                                                             <span className="ml0">
@@ -679,7 +793,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
                                     </div>
                                 </div>
-                            }
+                            } */}
 
                         </div>
                         <footer className='text-end  mt-2'>
@@ -762,15 +876,6 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                 <input className="form-control full_width mb-10" type="text" value={this.state.ChildItemTitle[index].Title} onChange={(e) => this.handleChildItemInput(e, index)}
                                                                     placeholder="Enter Child Item Title" ng-required="true" />
                                                             </div>
-                                                            {/* {index != 0 &&
-                                    <div className="col-sm-1 padL-0">
-                                        <a ng-show="ChildItemTitle.length>1 && $index!=0 " style={{ cursor: "pointer" }}
-                                            title="Delete" data-toggle="modal"
-                                            onClick={() => this.RemoveFeedbackColumn(index, '')}>
-                                            <img className="" src="/_layouts/images/delete.gif" />
-                                        </a>
-                                    </div>
-                                } */}
 
                                                         </div>
                                                         <div className="row mt-3">
@@ -782,15 +887,6 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                         <textarea className='full-width' rows={4}
                                                                             value={this.state.ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On} onChange={(e) => this.handleChildItemSD(e, index)}></textarea>
                                                                     </div>
-                                                                    {/* <div className="col-sm-1 padL-0">
-                                            <a ng-show="$index==0" style={{ cursor: "pointer" }} title="Delete"
-                                                data-toggle="modal"
-                                                onClick={() => this.RemoveFeedbackColumn(index, 'Description')}>
-                                                <img className="" src="/_layouts/images/delete.gif" />
-                                            </a>
-                                        </div> */}
-                                                                    {/* <div className="clearfix">
-                                        </div> */}
                                                                 </div>
                                                             }
 
@@ -819,12 +915,12 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 </a>
 
                                 {this.state.ChildItemTitle.length == 1 &&
-                                    <button type="button" className="btn btn-primary me-1" ng-click="createChildItems('CreatePopup');">
+                                    <button type="button" className="btn btn-primary me-1" onClick={() => this.createChildItems('CreatePopup')}>
                                         Create & Open Popup
                                     </button>
                                 }
 
-                                <button type="button" className="btn btn-primary" onClick={() => this.createChildItems('Create')} ng-click="createChildItems('Create');" >
+                                <button type="button" className="btn btn-primary" onClick={() => this.createChildItems('Create')} >
                                     Create
                                 </button>
 
