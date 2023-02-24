@@ -10,13 +10,21 @@ const CommentBoxComponent = (commentData: any) => {
     const CallBack = commentData.callBack;
     const [postBtnStatus, setPostBtnStatus] = useState(false);
     const [currentIndex, setCurrentIndex] = useState('');
+    const [isDisabled, setIsDisabled] = useState(false);
     var Array: any = [];
+    let ApprovalStatus: any = commentData.ApprovalStatus;
+    let SmartLightPercentStatus: any = commentData.SmartLightPercentStatus;
+    let SmartLightStatus: any = commentData.SmartLightStatus;
     useEffect(() => {
         let data: any = [];
         if (commentData.data != undefined) {
             let temp = commentData.data;
-            data.push(temp[0])
-            Array.push(temp[0])
+            temp.map((tempItem:any, index:0)=>{
+                if(index == 0){
+                    data.push(tempItem);
+                    Array.push(tempItem);
+                }
+            })
         } else {
             const object = {
                 Completed: "",
@@ -25,12 +33,16 @@ const CommentBoxComponent = (commentData: any) => {
                 SeeAbove: '',
                 Phone: '',
                 LowImportance: '',
-                HighImportance: ''
+                HighImportance: '',
+                isShowLight: ''
             };
             data.push(object);
             Array.push(object)
         }
         setCommentArray(data);
+        if (SmartLightPercentStatus && SmartLightStatus) {
+            setIsDisabled(true);
+        }
     }, [])
 
     function handleChangeComment(e: any) {
@@ -42,9 +54,6 @@ const CommentBoxComponent = (commentData: any) => {
             copy[id] = obj;
             setCommentArray(copy);
             Array = copy;
-        }
-        if(e.target.matches("Editor")){
-            let data = e.target.value;
         }
         setTimeout(() => {
             CallBack(Array);
@@ -59,6 +68,18 @@ const CommentBoxComponent = (commentData: any) => {
         }, 1000);
 
     }, [])
+
+    const SmartLightUpdate = (index: any, value: any) => {
+        const copy = [...commentArray];
+        const obj = { ...commentArray[index], isShowLight:value};
+        copy[index] = obj;
+        setCommentArray(copy);
+        Array = copy;
+        setTimeout(() => {
+            CallBack(Array);
+        }, 1000);
+    }
+
     const postBtnHandle = (index: any) => {
         setCurrentIndex(index)
         if (postBtnStatus) {
@@ -85,7 +106,6 @@ const CommentBoxComponent = (commentData: any) => {
             CallBack(Array);
         }, 1000);
     }, [])
-
     return (
         <div>
             {
@@ -97,45 +117,62 @@ const CommentBoxComponent = (commentData: any) => {
                                 className="col"
                                 onChange={handleChangeComment}
                             >
-                                <div className="Task-panel d-flex  justify-content-end ">
-                                    <span className="mx-1">
-                                        <input className="form-check-input mx-1" type="checkbox"
-                                            checked={obj.Phone}
-                                            value={obj.Phone}
-                                            name='Phone'
-                                        />
-                                        <label>Phone</label>
-                                    </span>
-                                    <span> | </span>
-                                    <span className="mx-1">
-                                        <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mx-1"
-                                        />
-                                        <label>
-                                            Low Importance
-                                        </label>
-                                    </span>
-                                    <span> | </span>
-                                    <span className="mx-1">
-                                        <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
-                                            value={obj.HighImportance} className="form-check-input mx-1"
-                                        />
-                                        <label>
-                                            High Importance
-                                        </label>
-                                    </span>
-                                    <span> | </span>
-                                    <span className="mx-1">
-                                        <input type="checkbox" id="" className="form-check-input mx-1"
-                                            name='Completed' checked={obj.Completed} value={obj.Completed} />
-                                        <label>
-                                            Mark As Completed
-                                        </label>
-                                    </span>
-                                    <span> | </span>
-                                    <span className="mx-1">
-                                        <span className="hreflink" style={{ color: "#000066" }} onClick={() => postBtnHandle(i)}>Add Comment </span>
-                                    </span>
+                                <div className="Task-panel d-flex  justify-content-between">
+                                    <div className={isDisabled ? "my-1" : "my-1"}>
+                                        {ApprovalStatus ?
+                                            <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
+                                                <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
+                                                    className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                >
+                                                </span>
+                                                <span title="Maybe" onClick={() => SmartLightUpdate(i, "Maybe")} className={obj.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                </span>
+                                                <span title="Approved" onClick={() => SmartLightUpdate(i, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
+                                                </span>
+                                            </span>
+                                            : null
+                                        }
+                                    </div>
+                                    <div>
+                                        <span className="mx-1">
+                                            <input className="form-check-input mx-1 rounded-0 commentSectionLabel " type="checkbox"
+                                                checked={obj.Phone}
+                                                value={obj.Phone}
+                                                name='Phone'
+                                            />
+                                            <label className="commentSectionLabel">Phone</label>
+                                        </span>
+                                        <span> | </span>
+                                        <span className="mx-1">
+                                            <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mx-1 rounded-0 commentSectionLabel "
+                                            />
+                                            <label className="commentSectionLabel">
+                                                Low Importance
+                                            </label>
+                                        </span>
+                                        <span> | </span>
+                                        <span className="mx-1">
+                                            <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
+                                                value={obj.HighImportance} className="form-check-input mx-1 rounded-0 commentSectionLabel "
+                                            />
+                                            <label className="commentSectionLabel">
+                                                High Importance
+                                            </label>
+                                        </span>
+                                        <span> | </span>
+                                        <span className="mx-1">
+                                            <input type="checkbox" id="" className="form-check-input mx-1 rounded-0 commentSectionLabel "
+                                                name='Completed' checked={obj.Completed} value={obj.Completed} />
+                                            <label className="commentSectionLabel">
+                                                Mark As Completed
+                                            </label>
+                                        </span>
+                                        <span> | </span>
+                                        <span className="mx-1">
+                                            <span className="hreflink commentSectionLabel" style={{ color: "#000066" }} onClick={() => postBtnHandle(i)}>Add Comment </span>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="d-flex">
                                     <span className="border p-1 me-1">{i + 1}</span>
@@ -149,7 +186,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         callBack={HtmlEditorCallBack}
                                     >
                                     </FroalaCommentBox>
-                                    
+
                                 </div>
                             </div>
                             <div>
@@ -170,6 +207,9 @@ const CommentBoxComponent = (commentData: any) => {
                                         commentId={obj.Id}
                                         callBack={subTextCallBack}
                                         allUsers={commentData.allUsers}
+                                        ApprovalStatus={ApprovalStatus}
+                                        SmartLightStatus={SmartLightStatus}
+                                        SmartLightPercentStatus={SmartLightPercentStatus}
                                     />
                                 </div>
                             </div>

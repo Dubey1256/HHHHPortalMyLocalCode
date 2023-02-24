@@ -15,7 +15,7 @@ import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import LinkedComponent from './LinkedComponent';
-import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
@@ -35,10 +35,9 @@ var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any;
 var SiteTypeBackupArray: any = [];
-var ImageBackupArray: any = [];
+var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 const EditTaskPopup = (Items: any) => {
-    const [images, setImages] = React.useState([]);
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -53,13 +52,11 @@ const EditTaskPopup = (Items: any) => {
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const maxNumber = 69;
-    const [ImageSection, setImageSection] = React.useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
-    const [FeedBackDescription, setFeedBackDescription] = React.useState([]);
     const [EditData, setEditData] = React.useState<any>({});
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
@@ -71,7 +68,6 @@ const EditTaskPopup = (Items: any) => {
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
     const [composition, setComposition] = React.useState(false);
-    const [FolderData, SetFolderData] = React.useState([]);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [taskStatus, setTaskStatus] = React.useState('');
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
@@ -83,6 +79,8 @@ const EditTaskPopup = (Items: any) => {
     const [OnlyCompletedStatus, setOnlyCompletedStatus] = React.useState(false);
     const [ImmediateStatus, setImmediateStatus] = React.useState(false);
     const [ApprovalStatus, setApprovalStatus] = React.useState(false);
+    const [SmartLightStatus, setSmartLightStatus] = React.useState(false);
+    const [SmartLightPercentStatus, setSmartLightPercentStatus] = React.useState(false);
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = React.useState(false);
     const [currentUserData, setCurrentUserData] = React.useState([]);
     const [UploadBtnStatus, setUploadBtnStatus] = React.useState(false);
@@ -110,10 +108,12 @@ const EditTaskPopup = (Items: any) => {
 
     React.useEffect(() => {
         loadTaskUsers();
+        getCurrentUserDetails();
         GetEditData();
         getCurrentUserDetails();
         getSmartMetaData();
         loadAllCategoryData();
+        // getInformationForSmartLight();
         // Descriptions();
     }, [])
 
@@ -464,6 +464,7 @@ const EditTaskPopup = (Items: any) => {
                         let temp: any = [];
                         temp.push(userData)
                         setCurrentUserData(temp);
+                        currentUserBackupArray.push(userData);
                     }
                 })
             }
@@ -572,7 +573,9 @@ const EditTaskPopup = (Items: any) => {
                             }
                         })
                     }
-
+                    if(statusValue >= 80){
+                        setSmartLightPercentStatus(true);
+                    }
                 }
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
@@ -605,6 +608,16 @@ const EditTaskPopup = (Items: any) => {
                         })
                     })
                 }
+                if (ApproverData?.length > 0) {
+                    ApproverData?.map((Approver:any) => {
+                        currentUserBackupArray?.map((current: any) => {
+                            if (Approver.Id == current.AssingedToUserId) {
+                                setSmartLightStatus(true);
+                            }
+                        })
+                    })
+
+                }
                 if (item.component_x0020_link != null) {
                     item.Relevant_Url = item.component_x0020_link.Url
                 }
@@ -630,7 +643,7 @@ const EditTaskPopup = (Items: any) => {
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
-                    let DesignCheck =item.Categories.search("Design")
+                    let DesignCheck = item.Categories.search("Design")
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true)
                     } else {
@@ -705,6 +718,18 @@ const EditTaskPopup = (Items: any) => {
             console.log("Error :", error.message);
         }
     }
+
+    // const getInformationForSmartLight = () => {
+    //     if (EditData.TaskApprovers?.length > 0 && EditData.TaskApprovers != undefined) {
+    //         EditData.TaskApprovers?.map((Approver: any) => {
+    //             currentUserBackupArray?.map((current: any) => {
+    //                 if (Approver.Id == current.Id) {
+    //                     setSmartLightStatus(true);
+    //                 }
+    //             })
+    //         })
+    //     }
+    // }
 
     //    *********** This is for status section Functions **************
     const StatusAutoSuggestion = (e: any) => {
@@ -792,9 +817,9 @@ const EditTaskPopup = (Items: any) => {
         if (StatusInput == 90) {
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
-            } else if(DesignStatus) {
+            } else if (DesignStatus) {
                 setWorkingMember(172);
-            }else{
+            } else {
                 setWorkingMember(42);
             }
             EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
@@ -818,6 +843,9 @@ const EditTaskPopup = (Items: any) => {
         }
         if (StatusInput != 2) {
             setInputFieldDisable(false)
+        }
+        if(StatusInput >= 80){
+            setSmartLightPercentStatus(true);
         }
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
     }
@@ -998,7 +1026,7 @@ const EditTaskPopup = (Items: any) => {
                 if (feedbackArray[0] != undefined) {
                     tempArray.push(feedbackArray[0])
                 } else {
-                    let tempObject:any =
+                    let tempObject: any =
                     {
                         "Title": '<p> </p>',
                         "Completed": false,
@@ -1159,7 +1187,7 @@ const EditTaskPopup = (Items: any) => {
             setEditData({ ...EditData, IsTodaysTask: true })
         }
     }
-    
+
     //    ************* this is team configuration call Back function **************
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
         if (teamConfigData?.AssignedTo?.length > 0) {
@@ -2094,7 +2122,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="col-12" title="Relevant Portfolio Items">
                                                     <div className="input-group">
                                                         <label className="form-label full-width "> Linked Component Task </label>
-                                                        <input type="text"  readOnly
+                                                        <input type="text" readOnly
                                                             className="form-control "
                                                         />
                                                         <span className="input-group-text">
@@ -2410,8 +2438,25 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Title != null ? <>
-                                            <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} ItemId={EditData.Id} SiteUrl={EditData.component_x0020_link} />
+                                            <CommentBoxComponent
+                                                data={EditData.FeedBackArray}
+                                                callBack={CommentSectionCallBack}
+                                                allUsers={taskUsers}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                                SmartLightPercentStatus={SmartLightPercentStatus}
+                                            />
+                                            <Example
+                                                textItems={EditData.FeedBackArray}
+                                                callBack={SubCommentSectionCallBack}
+                                                allUsers={taskUsers}
+                                                ItemId={EditData.Id}
+                                                SiteUrl={EditData.component_x0020_link}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                                SmartLightPercentStatus={SmartLightPercentStatus}
+
+                                            />
                                         </>
                                             : null}
                                     </div>
@@ -2893,7 +2938,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <label className="form-label full-width "> Linked Component Task </label>
                                                                     <input type="text"
                                                                         className="form-control "
-                                                                         readOnly
+                                                                        readOnly
                                                                         autoComplete="off" />
                                                                     <span className="input-group-text">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -3107,8 +3152,21 @@ const EditTaskPopup = (Items: any) => {
                                 }}>
                                     <div>
                                         {EditData.Title != null ? <>
-                                            <CommentBoxComponent data={EditData.FeedBackArray} callBack={CommentSectionCallBack} allUsers={taskUsers} />
-                                            <Example textItems={EditData.FeedBackArray} callBack={SubCommentSectionCallBack} allUsers={taskUsers} ItemId={EditData.Id} SiteUrl={EditData.component_x0020_link} />
+                                            <CommentBoxComponent
+                                                data={EditData.FeedBackArray}
+                                                callBack={CommentSectionCallBack}
+                                                allUsers={taskUsers}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                            />
+                                            <Example textItems={EditData.FeedBackArray}
+                                                callBack={SubCommentSectionCallBack}
+                                                allUsers={taskUsers}
+                                                ItemId={EditData.Id}
+                                                SiteUrl={EditData.component_x0020_link}
+                                                ApprovalStatus={ApprovalStatus}
+                                                SmartLightStatus={SmartLightStatus}
+                                            />
                                         </>
                                             : null}
                                     </div>
