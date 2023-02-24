@@ -160,7 +160,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                 onChange={handleChange}
                             >
                                 <div className="Task-panel d-flex justify-content-between ">
-                                    <div className={isDisabled ? "my-1" : "my-1"}>{ApprovalStatus ?
+                                    <div className={isDisabled ? "my-1" : "my-1 Disabled-Link"}>{ApprovalStatus ?
                                         <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
                                             <span title="Rejected" onClick={() => SmartLightUpdateSubComment(i, "Reject")}
                                                 className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}

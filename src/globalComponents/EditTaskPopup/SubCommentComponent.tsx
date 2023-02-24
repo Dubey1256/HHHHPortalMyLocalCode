@@ -139,7 +139,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                 onChange={handleChangeChild}
                             >
                                 <div className="Task-panel d-flex  justify-content-between ">
-                                    <div className={isDisabled ? "my-1" : "my-1"}>{ApprovalStatus ?
+                                    <div className={isDisabled ? "my-1" : "my-1 Disabled-Link"}>{ApprovalStatus ?
                                           <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
                                           <span title="Rejected" onClick={() => SmartLightUpdateSubChildComment(index, "Reject")}
                                               className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}

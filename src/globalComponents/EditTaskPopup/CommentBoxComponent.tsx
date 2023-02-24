@@ -118,7 +118,7 @@ const CommentBoxComponent = (commentData: any) => {
                                 onChange={handleChangeComment}
                             >
                                 <div className="Task-panel d-flex  justify-content-between">
-                                    <div className={isDisabled ? "my-1" : "my-1"}>
+                                    <div className={isDisabled ? "my-1" : "my-1 Disabled-Link"}>
                                         {ApprovalStatus ?
                                             <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
                                                 <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
