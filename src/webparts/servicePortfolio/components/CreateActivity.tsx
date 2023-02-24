@@ -228,9 +228,9 @@ const CreateActivity = (props: any) => {
             item.SharewebID = SharewebID
         }
     }
-    const closeTaskStatusUpdatePoup = () => {
+    const closeTaskStatusUpdatePoup = (res:any) => {
         setTaskStatuspopup(false)
-        props.Call();
+        props.Call(res);
 
     }
     const HtmlEditorCallBack = () => {
@@ -296,14 +296,15 @@ const CreateActivity = (props: any) => {
                             SharewebCategoriesId: { "results": CategoryID },
                             SharewebTaskTypeId: 1,
                             Shareweb_x0020_ID: value.SharewebID,
-                            SharewebTaskLevel1No: value.LatestTaskNumber, AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+                            SharewebTaskLevel1No: value.LatestTaskNumber,
+                            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
                         }).then((res: any) => {
                             console.log(res);
-                            closeTaskStatusUpdatePoup();
-                            props.LoadAllSiteTasks();
+                            closeTaskStatusUpdatePoup(res);
+                           
 
                         })
                     }
@@ -374,12 +375,15 @@ const CreateActivity = (props: any) => {
     }
     const Priority=(e:any)=>{
         if(e.target.value == '1' || e.target.value == '2' || e.target.value == '3'){
+            setselectPriority(e.target.value)
             setPriorityy(true)
         }
         if(e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7'){
+            setselectPriority(e.target.value)
             setPriorityy(true)
         }
         if(e.target.value == '8' || e.target.value == '9' || e.target.value == '10'){
+            setselectPriority(e.target.value)
             setPriorityy(true)
         }
 

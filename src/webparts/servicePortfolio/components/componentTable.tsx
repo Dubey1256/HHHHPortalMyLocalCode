@@ -25,6 +25,7 @@ import { typography } from '@mui/system';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { PortfolioStructureCreationCard } from '../../../globalComponents/tableControls/PortfolioStructureCreation';
 import CreateActivity from './CreateActivity';
+import CreateWS from './CreateWS'
 
 
 
@@ -55,6 +56,7 @@ function ComponentTable(SelectedProp: any) {
     const [FeatureData, setFeatureData] = React.useState([])
     const [MeetingPopup, setMeetingPopup] = React.useState(false);
     const [table, setTable] = React.useState(data);
+    const [WSPopup, setWSPopup] = React.useState(false);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
@@ -126,7 +128,17 @@ function ComponentTable(SelectedProp: any) {
 
     }
     const openActivity = () => {
-        setActivityPopup(true)
+        if (MeetingItems.SharewebTaskType != undefined) {
+            if (MeetingItems.SharewebTaskType.Title == 'Activities' || MeetingItems.SharewebTaskType.Title == 'WorkStream') {
+                setWSPopup(true)
+            }
+        }
+
+        if (MeetingItems.SharewebTaskType == undefined) {
+            setActivityPopup(true)
+        }
+
+
     }
     const ShowSelectedfiltersItems = () => {
         var ArrayItem: any = []
@@ -2418,10 +2430,26 @@ function ComponentTable(SelectedProp: any) {
         setTitle(e.target.value)
 
     };
-    const Call = React.useCallback((item1) => {
-        setIsComponent(false);
-        setIsTask(false);
-        setMeetingPopup(false);
+    const Call = React.useCallback((childItem: any) => {
+        if (childItem != undefined) {
+            if (ComponentsData != undefined) {
+                ComponentsData.forEach((val: any) => {
+                    if (val.childs != undefined) {
+                        if (val.Title == 'Others')
+                        val.childs.push(childItem.data)
+                    }
+
+
+                
+                })
+            }
+
+        }
+setIsComponent(false);
+setIsTask(false);
+setMeetingPopup(false);
+setWSPopup(false);
+setData((ComponentsData) => [...ComponentsData]);
     }, []);
 
     const TimeEntryCallBack = React.useCallback((item1) => {
@@ -2444,16 +2472,26 @@ function ComponentTable(SelectedProp: any) {
     const onChangeHandler = (itrm: any, e: any) => {
         const { checked } = e.target;
         if (checked == true) {
-            setActivityDisable(false)
-            itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-            itrm['listName'] = 'Master Tasks';
-            setMeetingItems(itrm);
+            if (itrm.SharewebTaskType == undefined) {
+                setActivityDisable(false)
+                itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                itrm['listName'] = 'Master Tasks';
+                setMeetingItems(itrm);
+            }
+            if (itrm.SharewebTaskType != undefined) {
+                if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+                    setActivityDisable(false)
+                    itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                    itrm['listName'] = 'Master Tasks';
+                    setMeetingItems(itrm);
+                }
+            }
         }
         if (checked == false) {
             setActivityDisable(true)
             $('#ClientCategoryPopup').hide();
         }
-
+    
         const list = [...checkedList];
         var flag = true;
         list.forEach((obj: any, index: any) => {
@@ -3066,7 +3104,7 @@ function ComponentTable(SelectedProp: any) {
                                         </button>
 
                                         <button type="button"
-                                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
+                                            className="btn btn-primary"
                                             onClick={buttonRestructuring}
                                             >
 
@@ -3734,13 +3772,14 @@ function ComponentTable(SelectedProp: any) {
                         </div></section>
                 </div></section>
 
-            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
-            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            {MeetingPopup && <CreateActivity props={MeetingItems} Call={Call}  LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
-            <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
-            </Panel>
+                {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
+        {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
+        {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
+        {MeetingPopup && <CreateActivity props={MeetingItems} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+        {WSPopup && <CreateWS props={MeetingItems} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateWS>}
+        <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+            <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+        </Panel>
 
             <Modal
 
