@@ -155,20 +155,24 @@ const Picker = (item: any) => {
         setPopupSmartTaxanomy(false)
     }
     const deleteSelectedCat = (val: any) => {
-        select.map((valuee: any, index) => {
-            if (val.Id == valuee.Id) {
-                select.splice(index, 1)
-            }
+        if (usedFor == "Task-Popup") {
+            setSelectedCategory([])
+        } else {
+            select.map((valuee: any, index) => {
+                if (val.Id == valuee.Id) {
+                    select.splice(index, 1)
+                }
 
-        })
-        NewArray.map((valuee: any, index: any) => {
-            if (val.Id == valuee.Id) {
-                NewArray.splice(index, 1)
-            }
+            })
+            NewArray.map((valuee: any, index: any) => {
+                if (val.Id == valuee.Id) {
+                    NewArray.splice(index, 1)
+                }
 
-        })
+            })
 
-        setSelect(select => ([...select]));
+            setSelect(select => ([...select]));
+        }
     }
     // Autosuggestion
 
@@ -368,7 +372,6 @@ const Picker = (item: any) => {
                                         )
                                     })}
                                 </div>}
-
                             </div>
                             {/* <div className="col-sm-12 ActivityBox">
                                     <span>
@@ -385,37 +388,69 @@ const Picker = (item: any) => {
                             </div> */}
                         </div>
                         <div className='col-sm-12 categScroll'>
-
                             <ul className="categories-menu p-0">
                                 {AllCategories.map(function (item: any) {
                                     return (
                                         <>
                                             <li>
-
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <a className="hreflink" onClick={() => selectPickerData(item)} >
-                                                        <img className="flag_icon"
-                                                            style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
-                                                        {item.Title}
-                                                    </a>
+                                                    <p onClick={() => selectPickerData(item)} className='mb-0 hreflink' >
+                                                        <a>
+                                                            <img className="flag_icon"
+                                                                style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
+                                                            {item.Title}
+                                                        </a>
+                                                    </p>
                                                 }
                                                 <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
                                                     {item.childs?.map(function (child1: any) {
                                                         return (
                                                             <>
-                                                                {child1.Item_x005F_x0020_Cover != null ?
+                                                                {child1.Title != null ?
                                                                     <li>
-                                                                        <a className="hreflink" onClick={() => selectPickerData(child1)}>
-                                                                            <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
-                                                                                style={{ height: "12px", width: "18px;" }}
-                                                                                src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title}
-                                                                            <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                <div className="popover__content">
-                                                                                    <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </a>
+                                                                        <p onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
+                                                                            <a>
+                                                                                {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                    style={{ height: "12px", width: "18px;" }}
+                                                                                    src={child1.Item_x005F_x0020_Cover.Url} /> :
+                                                                                    null}
+                                                                                {child1.Title}
+                                                                                {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                    <div className="popover__content">
+                                                                                        <span>{child1.Description1}</span>
+                                                                                    </div>
+                                                                                </div> : null}
+
+                                                                            </a>
+                                                                        </p>
+
+                                                                        <ul className="sub-menu clr mar0">
+                                                                            {
+                                                                                child1.childs?.map((subChilds: any) => {
+                                                                                    return (
+                                                                                        <li>
+                                                                                            <p onClick={() => selectPickerData(subChilds)} className='mb-0 hreflink'>
+                                                                                                <a>
+                                                                                                    {subChilds.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                                        style={{ height: "12px", width: "18px;" }}
+                                                                                                        src={subChilds.Item_x005F_x0020_Cover.Url} /> :
+                                                                                                        null}
+                                                                                                    {subChilds.Title}
+                                                                                                    {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                        <div className="popover__content">
+                                                                                                            <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
+                                                                                                        </div>
+                                                                                                    </div> : null}
+
+                                                                                                </a>
+                                                                                            </p>
+                                                                                        </li>
+                                                                                    )
+                                                                                })
+                                                                            }
+                                                                        </ul>
                                                                     </li> : null
                                                                 }
                                                             </>

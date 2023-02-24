@@ -2495,7 +2495,6 @@ function ComponentTable(SelectedProp: any) {
     }
     let isOpenPopup = false;
     const CloseCall = React.useCallback((item) => {
-
         if (!isOpenPopup && item.CreatedItem != undefined) {
             item.CreatedItem.forEach((obj: any) => {
                 obj.data.childs = [];

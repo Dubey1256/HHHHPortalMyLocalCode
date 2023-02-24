@@ -700,7 +700,7 @@ const PortfolioTagging = (item: any) => {
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <input type="checkbox" name="Active" defaultChecked={childitem.checked} checked={childitem.checked} onClick={() => { childitem.checked = !childitem.checked; selectPortfolio(item) }} ></input>
+                                                                                                <input type="checkbox" name="Active" defaultChecked={childitem.checked} checked={childitem.checked} onClick={() => { childitem.checked = !childitem.checked; selectPortfolio(childitem) }} ></input>
                                                                                             </td>
                                                                                             <td style={{ width: "4%" }}> <div>
 
@@ -793,7 +793,7 @@ const PortfolioTagging = (item: any) => {
 
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" defaultChecked={childinew.checked}  checked={childinew.checked} onClick={() => { childinew.checked = !childinew.checked; selectPortfolio(item) }}  ></input></td>
+                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" defaultChecked={childinew.checked}  checked={childinew.checked} onClick={() => { childinew.checked = !childinew.checked; selectPortfolio(childinew) }}  ></input></td>
                                                                                                             <td style={{ width: "4%" }}> <div>
                                                                                                                 <span>
 
