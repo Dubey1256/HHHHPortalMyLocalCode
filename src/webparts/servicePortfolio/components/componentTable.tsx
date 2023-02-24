@@ -84,6 +84,10 @@ function ComponentTable(SelectedProp: any) {
     const [AllCountItems, setAllCountItems] = React.useState({
         AllComponentItems: [], AllSubComponentItems: [], AllFeaturesItems: [], AfterSearchComponentItems: [], AfterSearchSubComponentItems: [], AfterSearchFeaturesItems: [],
     });
+    const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
+    const [NewArrayBackup, setNewArrayBackup] = React.useState([]);
+    const [ResturuningOpen, setResturuningOpen] = React.useState(false);
+    const [RestructureChecked, setRestructureChecked] = React.useState([]);
 
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1981,6 +1985,7 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
             result.TeamLeaderUser = result.TeamLeaderUser === undefined ? [] : result.TeamLeaderUser;
+            result.Restructuring = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" :"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
             result.AllTeamName = '';
             result.TitleNew = result.Title;
             getWebpartId(result);
@@ -2569,6 +2574,107 @@ function ComponentTable(SelectedProp: any) {
         setData((data) => [...ComponentsData]);
         // setSharewebComponent(item);
     }, []);
+    const buttonRestructuring = () => {
+        var ArrayTest: any = [];
+        if (checkedList != undefined && checkedList.length === 1) {
+            if (checkedList[0].Item_x0020_Type === 'Component')
+                alert('You are not allowed to Restructure this item.')
+            if (checkedList[0].Item_x0020_Type === 'SubComponent') {
+                maidataBackup.forEach((obj) => {
+                    obj.isRestructureActive = true;
+                    if (obj.childs != undefined && obj.childs.length > 0) {
+                        obj.childs.forEach((sub: any) => {
+                            if (sub.Id === checkedList[0].Id) {
+                                ArrayTest.push(obj)
+                                ArrayTest.push(sub)
+                                // ArrayTest.push(sub)
+                            }
+
+                        })
+                    }
+
+
+                })
+            }
+            if (checkedList[0].Item_x0020_Type === 'Feature') {
+                maidataBackup.forEach((obj) => {
+                    obj.isRestructureActive = true;
+                    if (obj.childs != undefined && obj.childs.length > 0) {
+                        obj.childs.forEach((sub: any) => {
+                            sub.isRestructureActive = true;
+                            if (sub.childs != undefined && sub.childs.length > 0) {
+                                sub.childs.forEach((newsub: any) => {
+                                    if (newsub.Id === checkedList[0].Id) {
+                                        ArrayTest.push(obj)
+                                        ArrayTest.push(sub)
+                                        ArrayTest.push(newsub)
+                                    }
+
+
+                                })
+                            }
+
+                        })
+                    }
+
+                })
+            }
+            setOldArrayBackup(ArrayTest)
+            setData((data) => [...maidataBackup]);
+
+        }
+        // setAddModalOpen(true)
+    }
+    const RestruringCloseCall = () => {
+        setResturuningOpen(false)
+    };
+    const OpenModal = (item: any) => {
+        var TestArray: any = [];
+        setResturuningOpen(true);
+        maidataBackup.forEach((obj) => {
+            if (obj.Id === item.Id)
+                TestArray.push(obj)
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                obj.childs.forEach((sub: any) => {
+                    sub.isRestructureActive = true;
+                    if (sub.childs != undefined && sub.childs.length > 0) {
+                        sub.childs.forEach((newsub: any) => {
+                            if (newsub.Id === item.Id)
+                                TestArray.push(newsub)
+
+                        })
+                    }
+
+                })
+            }
+
+        })
+        let Items: any = []; Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
+        setRestructureChecked(Items);
+        setNewArrayBackup(NewArrayBackup => ([...TestArray]));
+
+    }
+    const setRestructure = (item: any, title: any) => {
+        let array: any = [];
+        item.Item_x0020_Type = title;
+        if (item != undefined && title === 'SubComponent') {
+            item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+
+
+
+        }
+        if (item != undefined && title === 'Feature') {
+            item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
+
+
+        }
+        array.push(item)
+        setRestructureChecked((RestructureChecked: any) => [...array]);
+        // setRestructureChecked(item);
+    }
+    const UpdateRestructure = () => {
+       // setResturuningOpen(true)
+    }
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
 
@@ -2961,8 +3067,8 @@ function ComponentTable(SelectedProp: any) {
 
                                         <button type="button"
                                             className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                                            ng-click="openActivity()"
-                                            disabled={true}>
+                                            onClick={buttonRestructuring}
+                                            >
 
                                             <MdAdd />
                                            Restructure
@@ -3015,8 +3121,8 @@ function ComponentTable(SelectedProp: any) {
                                                                 </span>
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "21%" }}>
-                                                            <div style={{ width: "20%" }} className="smart-relative">
+                                                        <th style={{ width: "20%" }}>
+                                                            <div style={{ width: "19%" }} className="smart-relative">
                                                                 <input type="search" placeholder="Title" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Title')} />
 
                                                                 <span className="sorticon">
@@ -3027,8 +3133,8 @@ function ComponentTable(SelectedProp: any) {
 
                                                             </div>
                                                         </th>
-                                                        <th style={{ width: "18%" }}>
-                                                            <div style={{ width: "17%" }} className="smart-relative">
+                                                        <th style={{ width: "17%" }}>
+                                                            <div style={{ width: "16%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Client Category"
                                                                     title="Client Category" className="full_width searchbox_height"
                                                                 // onChange={event => handleChange(event, 'Client Category')} 
@@ -3089,6 +3195,7 @@ function ComponentTable(SelectedProp: any) {
                                                         </th>
                                                         <th style={{ width: "3%" }}></th>
                                                         <th style={{ width: "2%" }}></th>
+                                                        <th style={{ width: "2%" }}></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -3100,7 +3207,7 @@ function ComponentTable(SelectedProp: any) {
                                                             return (
                                                                 <>
                                                                     <tr >
-                                                                        <td className="p-0" colSpan={11}>
+                                                                        <td className="p-0" colSpan={12}>
                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                 <tr className="bold for-c0l">
 
@@ -3158,7 +3265,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                         </div>
                                                                                     </td>
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
-                                                                                    <td style={{ width: "21%" }}>
+                                                                                    <td style={{ width: "20%" }}>
                                                                                         {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                                         >
@@ -3186,7 +3293,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                             </div>
                                                                                         }
                                                                                     </td>
-                                                                                    <td style={{ width: "18%" }}>
+                                                                                    <td style={{ width: "17%" }}>
                                                                                         <div>
                                                                                             {item.ClientCategory != undefined && item.ClientCategory.length > 0 && item.ClientCategory.map(function (client: { Title: string; }) {
                                                                                                 return (
@@ -3205,8 +3312,8 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "6%" }}>{item.PercentComplete}</td>
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
-                                                                                    {/* <td style={{ width: "3%" }}></td> */}
                                                                                     <td style={{ width: "3%" }}></td>
+                                                                                    <td style={{ width: "2%" }}>{item.siteType === "Master Tasks" && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}</td>
                                                                                     <td style={{ width: "2%" }}>{item.siteType === "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
                                                                                         {item.siteType != "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
@@ -3224,7 +3331,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                         <>
                                                                                             <tr >
-                                                                                                <td className="p-0" colSpan={11}>
+                                                                                                <td className="p-0" colSpan={12}>
                                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                                         <tr className="for-c02">
                                                                                                             <td style={{ width: "2%" }}>
@@ -3280,7 +3387,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             </div>
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "21%" }}>
+                                                                                                            <td style={{ width: "20%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                                 ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
@@ -3313,7 +3420,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     </div>
                                                                                                                 }
                                                                                                             </td>
-                                                                                                            <td style={{ width: "18%" }}>
+                                                                                                            <td style={{ width: "17%" }}>
                                                                                                                 <div>
                                                                                                                     {childitem.ClientCategory != undefined && childitem.ClientCategory.length > 0 && childitem.ClientCategory.map(function (client: { Title: string; }) {
                                                                                                                         return (
@@ -3329,7 +3436,9 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
+                                                                                                            
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                            <td style={{ width: "2%" }}>{childitem.siteType === "Master Tasks" && childitem.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={childitem.Restructuring} onClick={(e) => OpenModal(childitem)} /></a>}</td>
                                                                                                             <td style={{ width: "2%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
                                                                                                                 {childitem.siteType == "Master Tasks" &&
                                                                                                                     <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
@@ -3346,7 +3455,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             return (
                                                                                                                 <>
                                                                                                                     <tr >
-                                                                                                                        <td className="p-0" colSpan={11}>
+                                                                                                                        <td className="p-0" colSpan={12}>
                                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
                                                                                                                                     <td style={{ width: "2%" }}>
@@ -3401,7 +3510,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     </div>
                                                                                                                                     </td>
 
-                                                                                                                                    <td style={{ width: "21%" }}>
+                                                                                                                                    <td style={{ width: "20%" }}>
 
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
@@ -3438,7 +3547,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                             </div>
                                                                                                                                         }
                                                                                                                                     </td>
-                                                                                                                                    <td style={{ width: "18%" }}>
+                                                                                                                                    <td style={{ width: "17%" }}>
                                                                                                                                         <div>
                                                                                                                                             {childinew.ClientCategory != undefined && childinew.ClientCategory.length > 0 && childinew.ClientCategory.map(function (client: { Title: string; }) {
                                                                                                                                                 return (
@@ -3459,6 +3568,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
                                                                                                                                     <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}
                                                                                                                                     </td>
+                                                                                                                                    <td style={{ width: "2%" }}>{childinew.siteType === "Master Tasks" && childinew.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={childinew.Restructuring} onClick={(e) => OpenModal(childinew)} /></a>}</td>
                                                                                                                                     <td style={{ width: "2%" }}> {childinew.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">   <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} /></a>}</td>
                                                                                                                                 </tr>
@@ -3474,7 +3584,7 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                         <>
                                                                                                                                             <tr >
-                                                                                                                                                <td className="p-0" colSpan={11}>
+                                                                                                                                                <td className="p-0" colSpan={12}>
                                                                                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                                         <tr className="for-c02">
                                                                                                                                                             <td style={{ width: "2%" }}>
@@ -3528,7 +3638,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             </div>
                                                                                                                                                             </td>
 
-                                                                                                                                                            <td style={{ width: "21%" }}>
+                                                                                                                                                            <td style={{ width: "20%" }}>
                                                                                                                                                                 {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                                                                                 ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
@@ -3560,7 +3670,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                                     </div>
                                                                                                                                                                 }
                                                                                                                                                             </td>
-                                                                                                                                                            <td style={{ width: "18%" }}>
+                                                                                                                                                            <td style={{ width: "17%" }}>
                                                                                                                                                                 <div>
                                                                                                                                                                     {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: { Title: string; }) {
                                                                                                                                                                         return (
@@ -3579,6 +3689,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                                             <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
                                                                                                                                                             <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                                            <td style={{ width: "2%" }}></td>
                                                                                                                                                             <td style={{ width: "2%" }}> {subchilditem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} ></img>}</td>
                                                                                                                                                         </tr>
                                                                                                                                                     </table>
@@ -3696,6 +3807,58 @@ function ComponentTable(SelectedProp: any) {
 
 
             </Modal >
+            <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
+                <div>
+                    {ResturuningOpen ?
+                        <div>
+                            <div>
+                                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 ml20" src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                ><span>{NewArrayBackup[0].Title}</span>
+                                </a>  please click Submit to continue.</span> : ''}
+                            </div>
+                            <div>
+                                <span>  Old: </span>
+                                {OldArrayBackup.map(function (obj: any, index) {
+                                    return (
+                                        <span> <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                        ><span>{obj.Title}  </span>
+                                        </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
+                                    )
+                                })}
+
+                            </div>
+                            <div>
+                                <span>  New:   </span> {NewArrayBackup.map(function (newobj: any, indexnew) {
+                                    return (
+                                        <>
+                                            <span> <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                            ><span>{newobj.Title}  </span>
+                                            </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
+                                    )
+                                })}
+                                <span> <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                ><span>{RestructureChecked[0].Title}  </span>
+                                </a></span>
+                            </div>
+                            {console.log("restructure functio test in div===================================")}
+                            <div>
+                                <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} />{'SubComponent'} </span>
+                                <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} />{'Feature'}</span>
+                            </div>
+                        </div>
+                        : ''}</div>
+                <footer className="mt-2">
+                    <div>
+                        <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>
+                        <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
+                    </div>
+
+                </footer>
+            </Panel>
         </div >
     );
 }
