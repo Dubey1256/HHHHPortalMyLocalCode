@@ -45,7 +45,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         if (Array?.length == 0) {
             setBtnStatus(false)
         }
-        if (SmartLightPercentStatus && SmartLightStatus) {
+        if (SmartLightStatus) {
             setIsDisabled(true);
         }
     }, [])
