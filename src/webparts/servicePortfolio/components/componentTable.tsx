@@ -129,12 +129,12 @@ function ComponentTable(SelectedProp: any) {
     }
     const openActivity = () => {
         if (MeetingItems.SharewebTaskType != undefined) {
-            if (MeetingItems.SharewebTaskType.Title == 'Activities' || MeetingItems.SharewebTaskType.Title == 'WorkStream') {
+            if (MeetingItems.SharewebTaskType.Title == 'Activities') {
                 setWSPopup(true)
             }
         }
 
-        if (MeetingItems.SharewebTaskType == undefined) {
+        if (MeetingItems.SharewebTaskType == undefined ||  MeetingItems.SharewebTaskType.Title == 'Workstream') {
             setActivityPopup(true)
         }
 
@@ -2431,25 +2431,33 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
+        setIsComponent(false);
+  setIsTask(false);
+  setMeetingPopup(false);                      
+  setWSPopup(false);
+        childItem.data['flag']=true;
+        childItem.data['TitleNew']=childItem.data.Title;
+       
         if (childItem != undefined) {
-            if (ComponentsData != undefined) {
-                ComponentsData.forEach((val: any) => {
+            if (array != undefined) {
+                array.forEach((val: any) => {
+                    val.flag=true;
+                    val.show=false;
                     if (val.childs != undefined) {
                         if (val.Title == 'Others')
-                            val.childs.push(childItem.data)
+                        val.childs.unshift(childItem.data)
                     }
 
 
 
                 })
+                setData(array => ([...array]))
             }
 
         }
-        setIsComponent(false);
-        setIsTask(false);
-        setMeetingPopup(false);
-        setWSPopup(false);
-        setData((ComponentsData) => [...ComponentsData]);
+            
+
+
     }, []);
 
     const TimeEntryCallBack = React.useCallback((item1) => {
@@ -3517,17 +3525,17 @@ function ComponentTable(SelectedProp: any) {
                                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                                         <tr className="for-c02">
                                                                                                             <td style={{ width: "2%" }}>
-                                                                                                                <div className="accordian-header" onClick={() => handleOpen(childitem)}>
-                                                                                                                    {childitem.childs.length > 0 &&
-                                                                                                                        <a className='hreflink'
-                                                                                                                            title="Tap to expand the childs">
-                                                                                                                            <div className="sign">{childitem.childs.length > 0 && childitem.show ? <img src={childitem.downArrowIcon} />
-                                                                                                                                : <img src={childitem.RightArrowIcon} />}
-                                                                                                                            </div>
-                                                                                                                        </a>
-                                                                                                                    }
+                                                                                                            <div className="accordian-header" onClick={() => handleOpen(childitem)}>
+                                                                                                                {(childitem.childs != undefined && childitem.childs?.length > 0)  &&
+                                                                                                                    <a className='hreflink'
+                                                                                                                        title="Tap to expand the childs">
+                                                                                                                        <div className="sign">{(childitem.childs != undefined && childitem.childs?.length > 0) && childitem.show ? <img src={childitem.downArrowIcon} />
+                                                                                                                            : <img src={childitem.RightArrowIcon} />}
+                                                                                                                        </div>
+                                                                                                                    </a>
+                                                                                                                }
 
-                                                                                                                </div>
+                                                                                                            </div>
                                                                                                             </td>
                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                 <div className="accordian-header" >
@@ -3570,38 +3578,38 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             </td>
 
                                                                                                             <td style={{ width: "20%" }}>
-                                                                                                                {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
-                                                                                                                </a>}
-                                                                                                                {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
-                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
-                                                                                                                </a>}
-                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type == 'Feature' &&
-                                                                                                                    <span className='ms-1'>  ({childitem.childs.length})</span>
-                                                                                                                }
-                                                                                                                {childitem.childs.length > 0 && childitem.Item_x0020_Type != 'Feature' &&
-                                                                                                                    <span className='ms-1'>  ({childitem.childsLength})</span>
-                                                                                                                }
+                                                                                                            {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                            ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
+                                                                                                            </a>}
+                                                                                                            {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                            ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
+                                                                                                            </a>}
+                                                                                                            {(childitem.childs != undefined && childitem.childs.length > 0) && childitem.Item_x0020_Type == 'Feature' &&
+                                                                                                                <span className='ms-1'>  ({childitem.childs.length})</span>
+                                                                                                            }
+                                                                                                            {(childitem.childs != undefined && childitem.childs.length > 0) && childitem.Item_x0020_Type != 'Feature' &&
+                                                                                                                <span className='ms-1'>  ({childitem.childsLength})</span>
+                                                                                                            }
 
-                                                                                                                {childitem.Short_x0020_Description_x0020_On != null &&
+                                                                                                            {childitem.Short_x0020_Description_x0020_On != null &&
 
-                                                                                                                    <div className='popover__wrapper ms-1'>
-                                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                        {/* <span className="tooltipte">
+                                                                                                                <div className='popover__wrapper ms-1'>
+                                                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                    {/* <span className="tooltipte">
                                                                                                                         <span className="tooltiptext">
                                                                                                                             <div className="tooltip_Desc">
                                                                                                                                 <span> {childitem.Short_x0020_Description_x0020_On}</span>
                                                                                                                             </div>
                                                                                                                         </span>
                                                                                                                     </span> */}
-                                                                                                                        <div className="popover__content">
-                                                                                                                            {childitem.Short_x0020_Description_x0020_On}
-                                                                                                                        </div>
+                                                                                                                    <div className="popover__content">
+                                                                                                                        {childitem.Short_x0020_Description_x0020_On}
                                                                                                                     </div>
-                                                                                                                }
-                                                                                                            </td>
+                                                                                                                </div>
+                                                                                                            }
+                                                                                                        </td>
                                                                                                             <td style={{ width: "17%" }}>
                                                                                                                 <div>
                                                                                                                     {childitem.ClientCategory != undefined && childitem.ClientCategory.length > 0 && childitem.ClientCategory.map(function (client: { Title: string; }) {
@@ -3641,17 +3649,19 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
                                                                                                                                     <td style={{ width: "2%" }}>
-                                                                                                                                        {childinew.childs.length > 0 &&
-                                                                                                                                            <div className="accordian-header" onClick={() => handleOpen(childinew)}>
-                                                                                                                                                <a className='hreflink' onClick={(e) => EditData(e, item)}
-                                                                                                                                                    title="Tap to expand the childs">
-                                                                                                                                                    <div className="sign">{childinew.childs.length > 0 && childinew.show ? <img src={childinew.downArrowIcon} />
-                                                                                                                                                        : <img src={childinew.RightArrowIcon} />}
-                                                                                                                                                    </div>
-                                                                                                                                                </a>
+                                                                                                                                    <td style={{ width: "2%" }}>
+                                                                                                                                    {childinew.childs.length > 0 &&
+                                                                                                                                        <div className="accordian-header" onClick={() => handleOpen(childinew)}>
+                                                                                                                                            <a className='hreflink' onClick={(e) => EditData(e, item)}
+                                                                                                                                                title="Tap to expand the childs">
+                                                                                                                                                <div className="sign">{childinew.childs.length > 0 && childinew.show ? <img src={childinew.downArrowIcon} />
+                                                                                                                                                    : <img src={childinew.RightArrowIcon} />}
+                                                                                                                                                </div>
+                                                                                                                                            </a>
 
-                                                                                                                                            </div>
-                                                                                                                                        }
+                                                                                                                                        </div>
+                                                                                                                                    }
+                                                                                                                                </td>
                                                                                                                                     </td>
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                         <div className="accordian-header" >
@@ -3694,41 +3704,41 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                     <td style={{ width: "20%" }}>
 
-                                                                                                                                        {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                    {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
-                                                                                                                                        </a>}
-                                                                                                                                        {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
-                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
-                                                                                                                                        </a>}
-                                                                                                                                        {/* {childinew.childs.length > 0 &&
+                                                                                                                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                                    ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
+                                                                                                                                    </a>}
+                                                                                                                                    {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                    ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
+                                                                                                                                    </a>}
+                                                                                                                                    {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
                                                                                                                                         } */}
-                                                                                                                                        {childinew.childs.length > 0 && childinew.Item_x0020_Type == 'Feature' &&
-                                                                                                                                            <span className='ms-1'>  ({childinew.childs.length})</span>
-                                                                                                                                        }
-                                                                                                                                        {childinew.childs.length > 0 && childinew.Item_x0020_Type != 'Feature' &&
-                                                                                                                                            <span className='ms-1'>  ({childinew.childsLength})</span>
-                                                                                                                                        }
+                                                                                                                                    {childinew.childs.length > 0 && childinew.Item_x0020_Type == 'Feature' &&
+                                                                                                                                        <span className='ms-1'>  ({childinew.childs.length})</span>
+                                                                                                                                    }
+                                                                                                                                    {childinew.childs.length > 0 && childinew.Item_x0020_Type != 'Feature' &&
+                                                                                                                                        <span className='ms-1'>  ({childinew.childsLength})</span>
+                                                                                                                                    }
 
-                                                                                                                                        {childinew.Short_x0020_Description_x0020_On != null &&
-                                                                                                                                            <div className='popover__wrapper ms-1'>
-                                                                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                                                {/* <span className="tooltipte">
+                                                                                                                                    {childinew.Short_x0020_Description_x0020_On != null &&
+                                                                                                                                        <div className='popover__wrapper ms-1'>
+                                                                                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                            {/* <span className="tooltipte">
                                                                                                                                                     <span className="tooltiptext">
                                                                                                                                                         <div className="tooltip_Desc">
                                                                                                                                                             <span> {childinew.Short_x0020_Description_x0020_On}</span>
                                                                                                                                                         </div>
                                                                                                                                                     </span>
                                                                                                                                                 </span> */}
-                                                                                                                                                <div className="popover__content">
-                                                                                                                                                    {childinew.Short_x0020_Description_x0020_On}
-                                                                                                                                                </div>
+                                                                                                                                            <div className="popover__content">
+                                                                                                                                                {childinew.Short_x0020_Description_x0020_On}
                                                                                                                                             </div>
-                                                                                                                                        }
-                                                                                                                                    </td>
+                                                                                                                                        </div>
+                                                                                                                                    }
+                                                                                                                                </td>
                                                                                                                                     <td style={{ width: "17%" }}>
                                                                                                                                         <div>
                                                                                                                                             {childinew.ClientCategory != undefined && childinew.ClientCategory.length > 0 && childinew.ClientCategory.map(function (client: { Title: string; }) {
@@ -3771,7 +3781,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                         <tr className="for-c02">
                                                                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                                                                 <div className="accordian-header" onClick={() => handleOpen(subchilditem)}>
-                                                                                                                                                                    {subchilditem.childs.length > 0 &&
+                                                                                                                                                                    {(subchilditem.childs != undefined && subchilditem.childs.length > 0) &&
                                                                                                                                                                         <a className='hreflink'
                                                                                                                                                                             title="Tap to expand the childs">
                                                                                                                                                                             {/* <div className="sign">{subchilditem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
@@ -3821,37 +3831,37 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             </td>
 
                                                                                                                                                             <td style={{ width: "20%" }}>
-                                                                                                                                                                {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                                                ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
-                                                                                                                                                                </a>}
-                                                                                                                                                                {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
-                                                                                                                                                                ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
-                                                                                                                                                                </a>}
-                                                                                                                                                                {subchilditem.childs.length > 0 &&
-                                                                                                                                                                    <span className='ms-1'>({subchilditem.childs.length})</span>
-                                                                                                                                                                }
+                                                                                                                                                            {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
+                                                                                                                                                            </a>}
+                                                                                                                                                            {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
+                                                                                                                                                            </a>}
+                                                                                                                                                            {(subchilditem.childs != undefined && subchilditem.childs.length > 0) &&
+                                                                                                                                                                <span className='ms-1'>({subchilditem.childs.length})</span>
+                                                                                                                                                            }
 
-                                                                                                                                                                {subchilditem.Short_x0020_Description_x0020_On != null &&
-                                                                                                                                                                    // <span data-bs-toggle="tooltip" data-bs-placement="auto" title={subchilditem.Short_x0020_Description_x0020_On}><img
-                                                                                                                                                                    //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                                                                    // </span>
-                                                                                                                                                                    <div className='popover__wrapper ms-1'>
-                                                                                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                                                                                                                                        {/* <span className="tooltipte">
+                                                                                                                                                            {subchilditem.Short_x0020_Description_x0020_On != null &&
+                                                                                                                                                                // <span data-bs-toggle="tooltip" data-bs-placement="auto" title={subchilditem.Short_x0020_Description_x0020_On}><img
+                                                                                                                                                                //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                                                // </span>
+                                                                                                                                                                <div className='popover__wrapper ms-1'>
+                                                                                                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                                                                    {/* <span className="tooltipte">
                                                                                                                                                                     <span className="tooltiptext">
                                                                                                                                                                         <div className="tooltip_Desc">
                                                                                                                                                                             <span> {subchilditem.Short_x0020_Description_x0020_On}</span>
                                                                                                                                                                         </div>
                                                                                                                                                                     </span>
                                                                                                                                                                 </span> */}
-                                                                                                                                                                        <div className="popover__content">
-                                                                                                                                                                            {subchilditem.Short_x0020_Description_x0020_On}
-                                                                                                                                                                        </div>
+                                                                                                                                                                    <div className="popover__content">
+                                                                                                                                                                        {subchilditem.Short_x0020_Description_x0020_On}
                                                                                                                                                                     </div>
-                                                                                                                                                                }
-                                                                                                                                                            </td>
+                                                                                                                                                                </div>
+                                                                                                                                                            }
+                                                                                                                                                        </td>
                                                                                                                                                             <td style={{ width: "17%" }}>
                                                                                                                                                                 <div>
                                                                                                                                                                     {subchilditem.ClientCategory != undefined && subchilditem.ClientCategory.length > 0 && subchilditem.ClientCategory.map(function (client: { Title: string; }) {
@@ -3925,71 +3935,124 @@ function ComponentTable(SelectedProp: any) {
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
 
-            <Modal
+        <Modal
 
-                isOpen={ActivityPopup}
-                onDismiss={closeTaskStatusUpdatePoup2}
-                isBlocking={false}
-            >
+isOpen={ActivityPopup}
+onDismiss={closeTaskStatusUpdatePoup2}
+isBlocking={false}
+>
 
-                <div className="modal-dialog" style={{ width: "700px" }}>
-                    <div className="modal-content">
+<div className="modal-dialog" style={{ width: "700px" }}>
+    <div className="modal-content">
 
-                        <div className="modal-header  mt-1 px-3">
-                            <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
-                            <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        {/* <h3 className="modal-title">
-                   
-                    <span className="pull-right" style={{ marginRight: "30px" }}>
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png"
-                            ng-click="openSmartTaxonomy('Client Category', Item.SharewebCategories,'');" />
-                    </span>
-                </h3> */}
+        <div className="modal-header  mt-1 px-3">
+            <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
+            <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        {/* <h3 className="modal-title">
+       
+        <span className="pull-right" style={{ marginRight: "30px" }}>
+            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png"
+                ng-click="openSmartTaxonomy('Client Category', Item.SharewebCategories,'');" />
+        </span>
+    </h3> */}
 
 
-                        <div className="modal-body bg-f5f5 clearfix">
-                            <div className="">
-                                <div id="portfolio" className="section-event pt-0">
-                                    <ul className="quick-actions">
+        <div className="modal-body bg-f5f5 clearfix">
+            <div className="">
+                <div id="portfolio" className="section-event pt-0">
+                {
+                       MeetingItems?.SharewebTaskType?.Title != 'Workstream' &&
+                    <ul className="quick-actions">
 
-                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                            <div onClick={(e) => CreateMeetingPopups('Implementation')}>
-                                                <span className="icon-sites">
-                                                    <img className="icon-sites"
-                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                            <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                <span className="icon-sites">
+                                    <img className="icon-sites"
+                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
 
-                                                </span>
-                                                Implmentation
-                                            </div>
-                                        </li>
-                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                            <div onClick={() => CreateMeetingPopups('Development')}>
-                                                <span className="icon-sites">
-                                                    <img className="icon-sites"
-                                                        src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
-
-                                                </span>
-                                                Development
-                                            </div>
-                                        </li>
-                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                            <div onClick={() => CreateMeetingPopups('Activities')}>
-                                                <span className="icon-sites">
-                                                </span>
-                                                Activity
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
+                                </span>
+                                Implmentation
                             </div>
+                        </li>
+                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                            <div onClick={() => CreateMeetingPopups('Development')}>
+                                <span className="icon-sites">
+                                    <img className="icon-sites"
+                                        src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
 
-                        </div>
-                    </div>
+                                </span>
+                                Development
+                            </div>
+                        </li>
+                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                            <div onClick={() => CreateMeetingPopups('Activities')}>
+                                <span className="icon-sites">
+                                </span>
+                                Activity
+                            </div>
+                        </li>
+                    </ul>
+}
+                    {
+                       MeetingItems?.SharewebTaskType?.Title == 'Workstream' &&
+                       <ul className="quick-actions">
+
+                       <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                           <div onClick={(e) => CreateMeetingPopups('Task')}>
+                               <span className="icon-sites">
+                                   <img className="icon-sites"
+                                       src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" />
+
+                               </span>
+                               Bug
+                           </div>
+                       </li>
+                       <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                           <div onClick={() => CreateMeetingPopups('Task')}>
+                               <span className="icon-sites">
+                                   <img className="icon-sites"
+                                       src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" />
+
+                               </span>
+                               Feedback
+                           </div>
+                       </li>
+                       <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                           <div onClick={() => CreateMeetingPopups('Task')}>
+                               <span className="icon-sites">
+                                <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"/>
+                               </span>
+                               Improvement
+                           </div>
+                       </li>
+                       <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                           <div onClick={() => CreateMeetingPopups('Task')}>
+                               <span className="icon-sites">
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png"/>
+                               </span>
+                               Design
+                           </div>
+                       </li>
+                       <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                           <div onClick={() => CreateMeetingPopups('Task')}>
+                               <span className="icon-sites">
+                               </span>
+                               Task
+                           </div>
+                       </li>
+                   </ul>
+
+                    }
                 </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 
-            </Modal >
+</Modal >
             <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
                 <div>
                     {ResturuningOpen ?
