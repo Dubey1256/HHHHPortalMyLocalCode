@@ -23,6 +23,7 @@ import EditInstituton from '../../EditPopupFiles/EditComponent';
 import ComponentTable from './Taskwebparts';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import SmartInformation from '../../taskprofile/components/SmartInformation';
+import Sitecomposition from '../../../globalComponents/SiteComposition';
 
 
 
@@ -69,12 +70,7 @@ function Portfolio({ ID }: any) {
         item.shows = item.shows = item.shows == true ? false : true;
         setdatas(datas => ([...datas]));
     };
-    const handleOpen3 = (item: any) => {
-        setIsActive(current => !current);
-        setIsActive(true);
-        item.showk = item.showk = item.showk == true ? false : true;
-        setdatak(datak => ([...datak]));
-    };
+   
     const handleOpen4 = (item: any) => {
         setIsActive(current => !current);
         setIsActive(true);
@@ -251,14 +247,13 @@ function Portfolio({ ID }: any) {
             handleOpen(item);
             handleOpen1(item);
             handleOpen2(item);
-            handleOpen3(item);
+            
             handleOpen4(item);
         })
     }
-    var myarray: any = [];
-    var myarray1: any = [];
+    
     var myarray2: any = [];
-    var myarray3: any = [];
+    
     var FolderID: any = '';
     data.map(item => {
         if (item.Portfolio_x0020_Type != undefined) {
@@ -298,50 +293,7 @@ function Portfolio({ ID }: any) {
             // console.log(AssigntoMembers);
 
         }
-        if (item.Sitestagging != null) {
-            myarray.push(JSON.parse(item.Sitestagging));
-        }
-        if (myarray.length != 0) {
-            myarray[0].map((items: any) => {
-                if (items.SiteImages != undefined && items.SiteImages != '') {
-                    items.SiteImages = items.SiteImages.replace('https://www.hochhuth-consulting.de', 'https://hhhhteams.sharepoint.com/sites/HHHH')
-                    myarray1.push(items)
-                }
-                // console.log(myarray1);
-                // if (items.ClienTimeDescription != undefined) {
-                //     items.ClienTimeDescription = parseFloat(item.ClienTimeDescription);
-                //     myarray1.push(items)
-                // }
-            })
-        }
-        if (item.ClientCategory.results.length != 0) {
-            item.ClientCategory.results.map((terms: any) => {
-                //     if(myarray2.length!=0 && myarray2[0].title==terms.title){
-                //                ""
-                //     }else{
-                //    myarray2.push(terms);
-                // }
-                myarray2.push(terms);
-            })
-        }
-
-
-        myarray3 = myarray2.reduce(function (previous: any, current: any) {
-            var alredyExists = previous.filter(function (item: any) {
-                return item.Id === current.Id
-            }).length > 0
-            if (!alredyExists) {
-                previous.push(current)
-            }
-            return previous
-        }, [])
-
-
-        myarray3.sort((a: any, b: any) => a.Id - b.Id);
-        //    const letters = new Set([myarray2]);
-        console.log(myarray3)
-        console.log(myarray1)
-        // myarray.push();
+     
     })
     //    Get Folder data
     const [lgShow, setLgShow] = React.useState(false);
@@ -891,146 +843,28 @@ function Portfolio({ ID }: any) {
                                     </section>
                                 </div>
                                 <div className='col-md-4 p-0'>
-                                    {data.map((item: any) => {
-                                        return (
-                                            <>
-                                                {item.Portfolio_x0020_Type == "Component" &&
-                                                    <dl>
-                                                        <dt className='bg-fxdark'>Service Portfolio</dt>
-                                                        <dd className='bg-light'><a style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></dd>
-                                                    </dl>
-                                                }
-                                                {item.Portfolio_x0020_Type == "Service" &&
-                                                    <dl>
-                                                        <dt className='bg-fxdark'>Component Portfolio</dt>
-                                                        <dd className='bg-light'><a style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}>{item.ComponentPortfolio.Title}</a></dd>
-                                                    </dl>
-                                                }
-                                            </>
-                                        )
+                                {data.map((item: any) => {
+                                       return (
+                                        <>
+                                            {item.Portfolio_x0020_Type == "Component" &&
+                                                <dl>
+                                                    <dt className='bg-fxdark'>Service Portfolio</dt>
+                                                    <dd className='bg-light'><div className="block"><a className='service' style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}>{item.ServicePortfolio.Title}</a></div></dd>
+                                                </dl>
+                                            }
+                                            {item.Portfolio_x0020_Type == "Service" &&
+                                                <dl>
+                                                    <dt className='bg-fxdark'>Component Portfolio</dt>
+                                                    <dd className='bg-light'><div className="block"><a className='service' style={{ border: "0px" }} target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}>{item.ComponentPortfolio.Title}</a></div></dd>
+                                                </dl>
+                                            }
+                                        </>
+                                    )
                                     })}
-                                    {myarray1.length != 0 &&
-                                        <dl className='Sitecomposition'>
-                                            <div className="dropdown">
-                                                {data.map(item =>
-                                                    <a className="sitebutton  bg-fxdark  p-0" title="Tap to expand the childs" onClick={() => handleOpen3(item)} >
-                                                        <span className="sign">{item.showk ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Site Composition
-                                                    </a>
-                                                )}
-                                                {data.map(item =>
-                                                    <>
-                                                        {item.showk &&
-                                                            <div className='spxdropdown-menu'>
-                                                                <ul>
-                                                                    {myarray1.map((items: any) =>
-                                                                        <li className="dropdown-item">
-                                                                            {items.Title != 'Gender'&&
-                                                                            <>
-                                                                            <span>
-                                                                                <img style={{ width: "22px" }} title={items.Title} src={items.SiteImages} data-themekey="#" />
-                                                                            </span>
-                                                                            <span >
-                                                                                {/* {{item.ClienTimeDescription.substring(0,2)}}% */}
-                                                                                {/* {data.map(item =><i>{item.ClienTimeDescription.substring(0,2)}%</i>)} */}
-                                                                                {(items.ClienTimeDescription != undefined) &&
-                                                                                    <span className="ng-binding">
-                                                                                        {/* {item.ClienTimeDescription}% */}
-                                                                                        {/* <>
-                                                                                        {parseInt(items.ClienTimeDescription).toFixed(2)}%
-                                                                                    </> */}
-                                                                                        {items.ClienTimeDescription.length === undefined &&
-                                                                                            <>
-                                                                                                {(items.ClienTimeDescription).toFixed(2)}%
-                                                                                            </>
-                                                                                        }
-                                                                                        {(items.ClienTimeDescription.length <= 2 || items.ClienTimeDescription.length > 2) &&
-                                                                                            <>
-                                                                                                {parseInt(items.ClienTimeDescription).toFixed(2)}%
-                                                                                            </>}
-
-                                                                                    </span>
-                                                                                }
-                                                                            </span>
-                                                                            {items.Title == 'EPS' &&
-                                                                                <span>
-                                                                                    {myarray3.length != 0 ? myarray3.map((client: any) => {
-                                                                                        return (
-                                                                                            <div className="Members-Item">
-                                                                                                <div className="user-Member-img"   >
-                                                                                                    {(client.Id > 340 && client.Id < 420) &&
-                                                                                                        <span>
-                                                                                                            {client.Title}
-                                                                                                        </span>
-                                                                                                    }
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )
-                                                                                    }) : ""}
-                                                                                </span>
-                                                                            }
-                                                                            {items.Title == 'Education' &&
-                                                                                <span>
-                                                                                    {myarray3.length != 0 ? myarray3.map((client: any) => {
-                                                                                        return (
-                                                                                            <div className="Members-Item">
-                                                                                                <div className="user-Member-img">
-                                                                                                    {(client.Id > 609 && client.Id < 631) &&
-                                                                                                        <span>
-                                                                                                            {client.Title}
-                                                                                                        </span>
-                                                                                                    }
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )
-                                                                                    }) : ""}
-                                                                                </span>
-                                                                            }
-                                                                            {items.Title == 'EI' &&
-                                                                                <span  >
-                                                                                    {myarray3.length != 0 ? myarray3.map((client: any) => {
-                                                                                        return (
-                                                                                            <div className="Members-Item">
-                                                                                                <div className="user-Member-img"
-                                                                                                >
-                                                                                                    {(client.Id > 419 && client.Id < 435) &&
-                                                                                                        <span>
-                                                                                                            {client.Title}
-                                                                                                        </span>
-                                                                                                    }
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )
-                                                                                    }) : ""}
-                                                                                </span>
-                                                                            }
-                                                                            {items.Title == 'Migration' &&
-                                                                                <span  >
-                                                                                    {myarray3.length != 0 ? myarray3.map((client: any) => {
-                                                                                        return (
-                                                                                            <div className="Members-Item">
-                                                                                                <div className="user-Member-img"
-                                                                                                >
-                                                                                                    {(client.Id > 630 && client.Id < 640) &&
-                                                                                                        <span>
-                                                                                                            {client.Title}
-                                                                                                        </span>
-                                                                                                    }
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )
-                                                                                    }) : ""}
-                                                                                </span>
-                                                                            }
-                                                                            </>}
-                                                                        </li>
-                                                                    )}
-                                                                </ul>
-                                                            </div>
-                                                        }</>
-                                                )}
-                                            </div>
-                                        </dl>
-                                    }
+                                     {data.map((item: any) => {
+                                        return (
+                                   < Sitecomposition props={item}/>
+                                        )})}
                                 </div>
                             </div>
 
@@ -1076,8 +910,8 @@ function Portfolio({ ID }: any) {
                                         <div className='card-body'>
                                             <div className="border-bottom pb-2">
                                                     <div>
-                                                        <img  data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
-                                                        <a  target="_blank" href={item?.EncodedAbsUrl}>
+                                                        <img  data-themekey="#"  src="/_layouts/15/images/folder.gif?rev=23" />
+                                                        <a  target="_blank" data-interception="off" href={item?.EncodedAbsUrl}>
                                                             {item?.FileLeafRef}
                                                         </a>
                                                     </div>
