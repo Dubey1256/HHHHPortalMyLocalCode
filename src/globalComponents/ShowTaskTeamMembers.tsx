@@ -18,7 +18,7 @@ function ShowTaskTeamMembers(item: any) {
         //  setTeamMember((TeamMember: any) => (...TeamMember: any));
     }
     const getTaskUsersNew = async () => {
-        TaskUsers = (item.TaskUsers?.length===0) ?  await globalCommon.loadTaskUsers() : item.TaskUsers;
+        TaskUsers = item.TaskUsers;
         console.log(Response);
         Item.AllTeamMembers = []
         Item.TeamLeaderUserTitle = ''
