@@ -11,7 +11,7 @@ const SmartTimeTotalFunction=(item:any)=>{
     var TaskTimeSheetCategories: any = [];
     const [AllUser, setAllUser] = React.useState([])
     const [isTimeEntry,setisTimeEntry]=React.useState(false);
-    const [hoverTimeshow,sethoverTimeshow]=React.useState(false)
+
     const [smartTimeTotal,setsmartTimeTotal] = React.useState(0);
     const [additionalTime, setAdditionalTime] = React.useState([]);
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
@@ -51,17 +51,11 @@ const SmartTimeTotalFunction=(item:any)=>{
         console.log(taskUsers);
 
     }
-   
-    const EditData = async (items: any) => {
-     
-
-        TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
+   const EditData = async (items: any) => {
+     TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(AllMetadata, 'TimesheetCategories');
         TaskTimeSheetCategoriesGrouping = TaskTimeSheetCategoriesGrouping.concat(TaskTimeSheetCategories);
-     
-
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
-
-            categoryTitle.Childs = [];
+      $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
+         categoryTitle.Childs = [];
             categoryTitle.Expanded = true;
             categoryTitle.flag = true;
         
@@ -78,8 +72,6 @@ const SmartTimeTotalFunction=(item:any)=>{
             categoryTitle.TimesheetTitle = [];
 
         });
-        
-
         getStructurefTimesheetCategories();
                if(items.siteType == "Offshore Tasks"){
                 var siteType="OffshoreTasks"
@@ -123,16 +115,9 @@ const SmartTimeTotalFunction=(item:any)=>{
                         AllTimeSpentDetails = AllTimeSpentDetails.concat(data.d.results);
 
                     }
-
-                    if (allurls.length === count) {
-                        
-                 
-                        let totletimeparentcount = 0;
-                  
-                        
-                       
-
-                        $.each(AllTimeSpentDetails, async function (index: any, item: any) {
+                     if (allurls.length === count) {
+               let totletimeparentcount = 0;
+                $.each(AllTimeSpentDetails, async function (index: any, item: any) {
                             item.IsVisible = false;
                             item.Item_x005F_x0020_Cover = undefined;
                             item.Parent = {};
@@ -195,13 +180,10 @@ const SmartTimeTotalFunction=(item:any)=>{
                         getStructureData();
 
                     }
-
-                }
+                 }
             })
         })
-      
-
-    };
+      };
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];
         $.each(metadataItems, function (index: any, taxItem: any) {
@@ -226,8 +208,7 @@ const SmartTimeTotalFunction=(item:any)=>{
             })
         })
     }
-
-    var isItemExists = function (arr: any, Id: any) {
+       var isItemExists = function (arr: any, Id: any) {
         var isExists = false;
         $.each(arr, function (index: any, items: any) {
             if (items.ID === Id) {
@@ -239,9 +220,7 @@ const SmartTimeTotalFunction=(item:any)=>{
     }
     const getStructureData = function () {
         TaskCate= AllTimeSpentDetails
-      
-       
-        $.each(AllTimeSpentDetails, function (index: any, items: any) {
+      $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.TimesheetTitle.Id === undefined) {
                 items.Expanded = true;
                 items.isAvailableToDelete = false;
@@ -270,7 +249,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                 })
             }
         })
-        // total time code 
+        // Smart total time code   get code
         var TotalTime =0.0;
        
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { 
@@ -338,7 +317,7 @@ const SmartTimeTotalFunction=(item:any)=>{
             <a className='hoverimg' onClick={OpenTimeEntry}><img className='ms-1' src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}/>
             </a>
             
-          <div className='hoverpopup'>
+          <div className='hoverpopup' style={{overflow:"scroll", height:"300px"}}>
            <div className='hoverpopuptitle'>{item.props.Title}</div>
            <div className='hoverpopupbody'>
            <table className='table mb-0'>
@@ -350,7 +329,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                                     <td style={{width:"20%"}}>
                                        <img  style={{width:"30px"}} src={items.AuthorImage}></img>
                                     </td>
-                                    <td style={{width:"80%"}}  colSpan={2}>{items.hoverTime}</td>
+                                    <td style={{width:"80%"}}  colSpan={2}><span className='px-2'>Total- Time</span>{items.hoverTime}</td>
                                 </tr>
                   
                 {items?.AdditionalTime?.length>0&& items?.AdditionalTime?.map((details:any)=>{
@@ -372,10 +351,6 @@ const SmartTimeTotalFunction=(item:any)=>{
               </span>
             {isTimeEntry ? <TimeEntry data={item.props} isopen={isTimeEntry} CallBackTimesheet={() => {CallBackTimesheet() }} /> : ''}
             </>
-              
-    )
-   
-      
-
-}
+       )
+   }
 export default SmartTimeTotalFunction;
