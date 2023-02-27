@@ -6,14 +6,23 @@ import FroalaImageUploadComponent from '../../../globalComponents/FlorarComponen
 import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
+import DatePicker from "react-datepicker";
 //import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
+var TaskTypeItems: any = [];
+var SharewebTasknewTypeId: any = ''
+var SharewebTasknewType: any = ''
+var SelectedTasks: any = []
+var Task: any = []
 var TeamMemberIds: any = [];
+var newIndex:any=''
 const CreateActivity = (props: any) => {
     var AllItems = props.props
+    SelectedTasks.push(AllItems)
     console.log(props)
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
+    const [date, setDate] = React.useState(undefined);
     const [siteTypess, setSiteType] = React.useState([]);
     const [Categories, setCategories] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -89,6 +98,25 @@ const CreateActivity = (props: any) => {
             value.IscreateTask = true
         }
         getActivitiesDetails(value)
+        // if(AllItems.NoteCall == 'Task'){
+        //     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        //     let componentDetails = [];
+        //     componentDetails = await web.lists
+        //         .getById(AllItems.listId)
+        //         .items
+        //         .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
+        //         .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
+        //         .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
+        //         .orderBy("Created", false)
+        //         .top(4999)
+        //         .get()
+        //     console.log(componentDetails)
+        //     if (componentDetails.length == 0) {
+        //         WorstreamLatestId = 1;
+        //     } else {
+        //         WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+        //     }
+        // }
         if (save[item] !== value.Title) {
             saveItem[item] = value.Title;
             setSave(saveItem);
@@ -191,42 +219,63 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
     const getActivitiesDetails = async (item: any) => {
         console.log(item)
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let componentDetails = [];
-        componentDetails = await web.lists
-            .getById(item.listId)
+        if(AllItems.NoteCall == 'Task'){
+            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        TaskTypeItems = await web.lists
+            .getById('21b55c7b-5748-483a-905a-62ef663972dc')
             .items
-            .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,StartDate,DueDate,Status,Body,PercentComplete,Attachments,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
-            .expand("SharewebTaskType,ParentTask,AssignedTo,AttachmentFiles,Author,Editor")
-            .filter("SharewebTaskType/Title eq 'Activities'")
-            .orderBy("SharewebTaskLevel1No", false)
+            .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
             .top(4999)
             .get()
-        console.log(componentDetails)
-        if (componentDetails.length == 0) {
-            LatestTaskNumber = 1;
-            item.LatestTaskNumber = LatestTaskNumber
-        } else {
-            LatestTaskNumber = componentDetails[0].SharewebTaskLevel1No;
-            LatestTaskNumber += 1;
-            item.LatestTaskNumber = LatestTaskNumber
-        }
-        if (AllItems != undefined) {
-            if (AllItems.Portfolio_x0020_Type != undefined) {
-                if (AllItems.Portfolio_x0020_Type == 'Component') {
-                    SharewebID = 'CA' + LatestTaskNumber;
-                }
-                if (AllItems.Portfolio_x0020_Type == 'Service') {
-                    SharewebID = 'SA' + LatestTaskNumber;
-                }
-                if (AllItems.Portfolio_x0020_Type == 'Events') {
-                    SharewebID = 'EA' + LatestTaskNumber;
-                }
-            } else {
-                SharewebID = 'A' + LatestTaskNumber;
+        console.log(TaskTypeItems)
+        TaskTypeItems?.forEach((item: any,index:any) => {
+            if (item.Title == AllItems.NoteCall) {
+                SharewebTasknewTypeId = item.Id;
+                SharewebTasknewType = item.Title;
+                newIndex = index
             }
-            item.SharewebID = SharewebID
+        })
+
         }
+        else{
+            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+            let componentDetails = [];
+            componentDetails = await web.lists
+                .getById(item.listId)
+                .items
+                .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,StartDate,DueDate,Status,Body,PercentComplete,Attachments,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("SharewebTaskType,ParentTask,AssignedTo,AttachmentFiles,Author,Editor")
+                .filter("SharewebTaskType/Title eq 'Activities'")
+                .orderBy("SharewebTaskLevel1No", false)
+                .top(4999)
+                .get()
+            console.log(componentDetails)
+            if (componentDetails.length == 0) {
+                LatestTaskNumber = 1;
+                item.LatestTaskNumber = LatestTaskNumber
+            } else {
+                LatestTaskNumber = componentDetails[0].SharewebTaskLevel1No;
+                LatestTaskNumber += 1;
+                item.LatestTaskNumber = LatestTaskNumber
+            }
+            if (AllItems != undefined) {
+                if (AllItems.Portfolio_x0020_Type != undefined) {
+                    if (AllItems.Portfolio_x0020_Type == 'Component') {
+                        SharewebID = 'CA' + LatestTaskNumber;
+                    }
+                    if (AllItems.Portfolio_x0020_Type == 'Service') {
+                        SharewebID = 'SA' + LatestTaskNumber;
+                    }
+                    if (AllItems.Portfolio_x0020_Type == 'Events') {
+                        SharewebID = 'EA' + LatestTaskNumber;
+                    }
+                } else {
+                    SharewebID = 'A' + LatestTaskNumber;
+                }
+                item.SharewebID = SharewebID
+            }
+        }
+       
     }
     const closeTaskStatusUpdatePoup = (res:any) => {
         setTaskStatuspopup(false)
@@ -237,6 +286,8 @@ const CreateActivity = (props: any) => {
         console.log('Working')
     }
     const saveNoteCall = () => {
+        var TaskprofileId: any = ''
+        var WorstreamLatestId: any = ''
         var Component: any = []
         smartComponentData.forEach((com: any) => {
             if (com != undefined) {
@@ -293,6 +344,7 @@ const CreateActivity = (props: any) => {
                             Title: save.Title != undefined && save.Title != '' ? save.Title : AllItems.Title,
                             ComponentId: { "results": Component },
                             Categories: categoriesItem ? categoriesItem : null,
+                            DueDate: date != undefined ? new Date(date).toDateString() : date,
                             SharewebCategoriesId: { "results": CategoryID },
                             SharewebTaskTypeId: 1,
                             Shareweb_x0020_ID: value.SharewebID,
@@ -302,11 +354,106 @@ const CreateActivity = (props: any) => {
                             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
                         }).then((res: any) => {
+                            res.data['SiteIcon']= value.Item_x005F_x0020_Cover.Url
                             console.log(res);
                             closeTaskStatusUpdatePoup(res);
                            
 
                         })
+                    }
+                    if (AllItems.NoteCall == 'Task') {
+                        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                        let componentDetails: any = [];
+                        componentDetails = await web.lists
+                            .getById(value.listId)
+                            .items
+                            .select("Id,Title")
+                            .orderBy("Id", false)
+                            .top(1)
+                            .get()
+                        console.log(componentDetails)
+                        var LatestId = componentDetails[0].Id + 1;
+                        LatestId += newIndex;
+                        if (Task == undefined || Task == '')
+                            Task = SelectedTasks[0];
+                        if (TaskprofileId == '' || SelectedTasks.length > 0) {
+                            TaskprofileId = SelectedTasks[0].Id;
+                        }
+                        if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
+                            var SharewebID = '';
+                            if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component') {
+                                SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                            }
+                            if (Task.Services != undefined && Task.Portfolio_x0020_Type == 'Service') {
+                                SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                            }
+                            if (Task.Events != undefined && Task.Portfolio_x0020_Type == 'Events') {
+                                SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                            }
+                            // var Component: any = []
+                            // smartComponentData.forEach((com: any) => {
+                            //     if (com != undefined) {
+                            //         Component.push(com.Id)
+                            //     }
+                
+                            // })
+                            // var categoriesItem = '';
+                            // CategoriesData.map((category) => {
+                            //     if (category.Title != undefined) {
+                            //         categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
+                            //     }
+                            // })
+                            // var CategoryID: any = []
+                            // CategoriesData.map((category) => {
+                            //     if (category.Id != undefined) {
+                            //         CategoryID.push(category.Id)
+                            //     }
+                            // })
+                            // if (isDropItemRes == true) {
+                            //     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+                            //         TaskAssignedTo.map((taskInfo) => {
+                            //             AssignedToIds.push(taskInfo.Id);
+                            //         })
+                            //     }
+                            // }
+                            // if (isDropItem == true) {
+                            //     if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+                            //         TaskTeamMembers.map((taskInfo) => {
+                            //             TeamMemberIds.push(taskInfo.Id);
+                            //         })
+                            //     }
+                            // }
+                            // if (isDropItem == true) {
+                            //     if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+                            //         TaskResponsibleTeam.map((taskInfo) => {
+                            //             ResponsibleTeamIds.push(taskInfo.Id);
+                            //         })
+                            //     }
+                            // }
+                            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+                            await web.lists.getById(value.listId).items.add({
+                                Title: save.Title != undefined && save.Title != '' ? save.Title : AllItems.Title,
+                                ComponentId: { "results": Component },
+                                Categories: categoriesItem ? categoriesItem : null,
+                                Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+                                DueDate: date != undefined ? new Date(date).toDateString() : date,
+                                SharewebCategoriesId: { "results": CategoryID },
+                                ParentTaskId: AllItems.Id,
+                                SharewebTaskTypeId: SharewebTasknewTypeId,
+                                Body:AllItems.Description,
+                                Shareweb_x0020_ID: SharewebID,
+                                Priority: AllItems.Priority,
+                               // SharewebTaskLevel2No: WorstreamLatestId,
+                                SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+                                AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+                                Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+                                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+                
+                            }).then((res: any) => {
+                                console.log(res);
+                                closeTaskStatusUpdatePoup(res);
+                            })
+                        }
                     }
 
                 }
@@ -373,6 +520,11 @@ const CreateActivity = (props: any) => {
         setselectPriority("1")
     }
     }
+    const handleDatedue = (date: any) => {
+        AllItems.DueDate = date;
+        setDate(date);
+        
+    };
     const Priority=(e:any)=>{
         if(e.target.value == '1' || e.target.value == '2' || e.target.value == '3'){
             setselectPriority(e.target.value)
@@ -440,8 +592,14 @@ const CreateActivity = (props: any) => {
                                 </div>
                                 <div className="col-sm-2 mb-10 padL-0">
                                     <label>Due Date</label>
-                                    <input type="text" id="dueDatePicker" placeholder="DD/MM/YYYY"
-                                        className="form-control" value={AllItems.DueDate} />
+                                    <DatePicker className="form-control"
+                                                            selected={date}
+                                                            value={AllItems.DueDate}
+                                                            onChange={handleDatedue}
+                                                            dateFormat="dd/MM/yyyy"
+                                                           
+
+                                                        />
                                 </div>
                                 <div className='row mt-2'>
 
@@ -467,18 +625,26 @@ const CreateActivity = (props: any) => {
                             {AllItems.Portfolio_x0020_Type == 'Component'
                                 &&
                                 <div className="col-sm-12 padL-0 PadR0">
-                                    <div ng-show="smartComponent.length==0" className="col-sm-11 mb-10 padL-0">
+                                    <div ng-show="smartComponent.length==0" className="col-sm-12 mb-10 padL-0 input-group">
                                         <label ng-show="!IsShowComSerBoth" className="full_width">Component</label>
-                                        <input type="text" className="ui-autocomplete-input" id="txtSharewebComponentcrt"
+                                        <input type="text" className="ui-autocomplete-input form-control" id="txtSharewebComponentcrt"
                                         /><span role="status" aria-live="polite"
                                             className="ui-helper-hidden-accessible"></span>
+                                            <span className="input-group-text">
+
+                                            <a className="hreflink" title="Edit Component" data-toggle="modal"
+                                                    onClick={(e) => EditComponent(AllItems)}>
+
+                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
+                                                </a>
+                                            </span>
                                     </div>
                                     <div className="col-sm-12 padL-0 PadR0">
                                         <div className="col-sm-12  top-assign  mb-10 padL-0 PadR0">
-                                            {smartComponentData.map((cat: any) => {
+                                            {smartComponentData?.map((cat: any) => {
                                                 return (
                                                     <>
-                                                        <div className=" col-sm-11 block" ng-mouseover="HoverIn(item);"
+                                                        <div className=" col-sm-12 block" ng-mouseover="HoverIn(item);"
                                                             ng-mouseleave="ComponentTitle.STRING='';" title="{{ComponentTitle.STRING}}">
 
                                                             <a className="hreflink" target="_blank"
@@ -491,13 +657,13 @@ const CreateActivity = (props: any) => {
                                                 )
                                             })}
 
-                                            <span ng-show="smartComponent.length!=0" className="col-sm-1">
+                                            {/* <span ng-show="smartComponent.length!=0" className="col-sm-1">
                                                 <a className="hreflink" title="Edit Component" data-toggle="modal"
                                                     onClick={(e) => EditComponent(AllItems)}>
 
                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
                                                 </a>
-                                            </span>
+                                            </span> */}
                                         </div>
                                     </div>
                                 </div>}
@@ -531,17 +697,35 @@ const CreateActivity = (props: any) => {
 
                             <div className="row mt-2">
                                 <div className="col-sm-12">
-                                    <div className="col-sm-11 padding-0">
-                                        <label>Categories</label>
-                                        <input type="text" className="ui-autocomplete-input" id="txtCategories" />
-                                    </div>
-                                    <div className="col-sm-1 no-padding">
+                                    <div className="col-sm-12 padding-0 input-group">
+                                        <label className="full_width">Categories</label>
+                                        <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" />
+                                    
+                                    <span className="input-group-text">
+
+                                    <a className="hreflink" title="Edit Categories">
 
                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
                                             onClick={() => EditComponentPicker(AllItems)} />
+                                    </a>
+                                    </span>
                                     </div>
                                 </div>
                             </div>
+                            {/* <div ng-show="smartComponent.length==0" className="col-sm-12 mb-10 padL-0 input-group">
+                                        <label ng-show="!IsShowComSerBoth" className="full_width">Component</label>
+                                        <input type="text" className="ui-autocomplete-input" id="txtSharewebComponentcrt"
+                                        /><span role="status" aria-live="polite"
+                                            className="ui-helper-hidden-accessible"></span>
+                                            <span className="input-group-text">
+
+                                            <a className="hreflink" title="Edit Component" data-toggle="modal"
+                                                    onClick={(e) => EditComponent(AllItems)}>
+
+                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
+                                                </a>
+                                            </span>
+                                    </div> */}
                             <div className="row">
                                 <div className="col-sm-12 mt-2">
                                     {CheckCategory.map((item: any) => {
@@ -587,6 +771,18 @@ const CreateActivity = (props: any) => {
 
 
                 <div className="modal-footer">
+                {
+                        siteTypess?.map((site: any) => {
+                            if (site.IscreateTask == true) {
+                                return (
+                                    <span className='ms-2'>
+                                        <img className="client-icons"
+                                            src={site?.Item_x005F_x0020_Cover?.Url} />
+                                    </span>
+                                )
+                            }
+                        })
+                    }
                     <button type="button" className="btn btn-primary" onClick={() => saveNoteCall()}>
                         Submit
                     </button>

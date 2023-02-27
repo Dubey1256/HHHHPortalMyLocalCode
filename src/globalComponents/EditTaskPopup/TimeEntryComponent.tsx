@@ -995,7 +995,7 @@ function TimeEntryPopup(item: any) {
 
                                 });
                                 var Datee = new Date(changeDates)
-                                var TimeInH: any = changeTime / 60
+                                var TimeInH: any = TimeInMinutes / 60
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
                                 item.AdditionalTime = []
