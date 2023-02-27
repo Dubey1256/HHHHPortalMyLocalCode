@@ -995,7 +995,7 @@ function TimeEntryPopup(item: any) {
 
                                 });
                                 var Datee = new Date(changeDates)
-                                var TimeInH: any = changeTime / 60
+                                var TimeInH: any = TimeInMinutes / 60
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
                                 item.AdditionalTime = []
@@ -1825,15 +1825,16 @@ function TimeEntryPopup(item: any) {
 
                                                             {item.Childs != undefined && item.Childs.length > 0 && (
                                                                 <>
+                                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
+                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                        </div>
                                                                     {item.Childs.map(function (childitem: any) {
 
                                                                         return (
 
                                                                             <>
                                                                                 <tr >
-                                                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
-                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-                        </div>
+                                                                                
                                                                                     <td className="p-0" colSpan={9}>
                                                                                         <table className="table m-0" style={{ width: "100%" }}>
                                                                                             <tr className="for-c02">

@@ -40,7 +40,7 @@ const CommentBoxComponent = (commentData: any) => {
             Array.push(object)
         }
         setCommentArray(data);
-        if (SmartLightPercentStatus && SmartLightStatus) {
+        if (SmartLightStatus) {
             setIsDisabled(true);
         }
     }, [])
