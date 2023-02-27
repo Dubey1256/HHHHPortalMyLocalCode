@@ -450,6 +450,7 @@ const CreateActivity = (props: any) => {
                                 Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
                 
                             }).then((res: any) => {
+                                res.data['SiteIcon']= value.Item_x005F_x0020_Cover.Url
                                 console.log(res);
                                 closeTaskStatusUpdatePoup(res);
                             })

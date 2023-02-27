@@ -30,6 +30,7 @@ export interface IStructureCreationState {
     value: any;
     filterArray: any;
     search: false;
+    Isflag:any;
 
 }
 
@@ -54,6 +55,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             value: '',
             filterArray: [],
             search: false,
+            Isflag:false,
         }
         this.LoadSPComponents();
         this.Load();
@@ -187,6 +189,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     private TeamMembersIds: any = [];
     private ChildItemTitle: any = [];
     private Portfolio_x0020_Type = 'Component';
+    private CreateOpenType = '';
+    private IconUrl = '';
 
     CreateFolder = async (Type: any) => {
         let folderURL = '';
@@ -329,15 +333,18 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             } else {
                 this.MasterItemsType = 'SubComponent';
                 this.ChildItemTitle = [];
+                this.IconUrl =this.state.SelectedItem.Portfolio_x0020_Type ==='Component'?'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png':'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png';
                 this.CountFor = 0;
                 if (this.state.SelectedItem.Item_x0020_Type == 'SubComponent') {
                     this.MasterItemsType = 'Feature';
+                    this.IconUrl =this.state.SelectedItem.Portfolio_x0020_Type ==='Component'?'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png':'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png';
                 }
 
                 this.ChildItemTitle.push({
                     Title: '',
                     MasterItemsType: this.MasterItemsType,
                     AdminStatus: 'Not Started',
+                    IconUrl :this.IconUrl,
                     Child: [{ Short_x0020_Description_x0020_On: '' }],
                     Id: 0,
                     TeamMemberUsers: [],
@@ -353,9 +360,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             }
         }
     }
-
-
-    createChildItems = async (Type: any) => {
+    
+     
+     private  createChildItems = async (Type: any) => {
         let isloadEssentialDeatils = false
         //$('#CreateChildpoup1').hide();
         //SharewebCommonFactoryService.showProgressBar();
@@ -496,6 +503,14 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                     i.data['siteType'] = 'Master Tasks';
                     self.Count++;
                     self.CreatedItem.push(i);
+                    let Type:any ='';
+                   if (self.state.Isflag) {
+                    self.setState({ 
+                        Isflag: false,
+                    })
+                        self.CreateOpenType = 'CreatePopup';
+                     }
+                    
                     /*
                      if (self.Count ==self.TotalCount) {
                          if (Type == 'Create') {
@@ -524,7 +539,12 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
 
     }
-
+    createChildItemsnew = async (Type: any) => {
+        this.setState({ 
+            Isflag: true,
+        })
+        this.createChildItems('CreatePopup');
+    }
     DDComponentCallBack = (dt: any) => {
         this.setState({
             TeamConfig: dt
@@ -840,8 +860,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                         <div className='d-flex justify-content-between align-items-center mb-0'>
                                                             <label className='mb-1'>  <img className="icon-sites-img"
                                                                 src={item.MasterItemsType == 'SubComponent' ?
-                                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png" :
-                                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"} /> <span className='ms-1'><strong>Title</strong> </span> </label>
+                                                                    item.IconUrl :
+                                                                    item.IconUrl} /> <span className='ms-1'><strong>Title</strong> </span> </label>
 
                                                             {this.state.SelectedItem.Item_x0020_Type == 'Component' &&
                                                                 <>
@@ -915,7 +935,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 </a>
 
                                 {this.state.ChildItemTitle.length == 1 &&
-                                    <button type="button" className="btn btn-primary me-1" onClick={() => this.createChildItems('CreatePopup')}>
+                                    <button type="button" className="btn btn-primary me-1" onClick={() => this.createChildItemsnew('CreatePopup')}>
                                         Create & Open Popup
                                     </button>
                                 }

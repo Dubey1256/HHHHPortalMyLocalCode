@@ -571,11 +571,11 @@ function ComponentTable(SelectedProp: any) {
         //  SharewebCommonFactoryService.hideProgressBar();
     }
 
-    const CreateMeetingPopups = (item:any) => {
+    const CreateMeetingPopups = (item: any) => {
         setMeetingPopup(true);
         MeetingItems['NoteCall'] = item;
         closeTaskStatusUpdatePoup2();
-     
+
     }
     const Updateitem1 = () => {
         var component: any[] = []
@@ -1421,7 +1421,7 @@ function ComponentTable(SelectedProp: any) {
             .get();
         Response = taskUsers;
         TaskUsers = Response;
-        setTaskUser(Response => ([...Response]));
+        setTaskUser(Response);
         // setTaskUser(Response);
         console.log(Response);
 
@@ -1997,7 +1997,7 @@ function ComponentTable(SelectedProp: any) {
                 })
             }
             result.TeamLeaderUser = result.TeamLeaderUser === undefined ? [] : result.TeamLeaderUser;
-            result.Restructuring = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" :"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
+            result.Restructuring = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
             result.AllTeamName = '';
             result.TitleNew = result.Title;
             getWebpartId(result);
@@ -2431,6 +2431,10 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
+        setIsComponent(false);
+  setIsTask(false);
+  setMeetingPopup(false);                      
+  setWSPopup(false);
         childItem.data['flag']=true;
         childItem.data['TitleNew']=childItem.data.Title;
        
@@ -2445,18 +2449,14 @@ function ComponentTable(SelectedProp: any) {
                     }
 
 
-                
+
                 })
                 setData(array => ([...array]))
             }
 
         }
             
-setIsComponent(false);
-;
-setIsTask(false);
-setMeetingPopup(false);                      
-setWSPopup(false);
+
 
     }, []);
 
@@ -2499,7 +2499,7 @@ setWSPopup(false);
             setActivityDisable(true)
             $('#ClientCategoryPopup').hide();
         }
-    
+
         const list = [...checkedList];
         var flag = true;
         list.forEach((obj: any, index: any) => {
@@ -2563,18 +2563,32 @@ setWSPopup(false);
 
             })
             if (ComponentsData != undefined && ComponentsData.length > 0) {
+
+                ComponentsData.forEach((compnew: any, index: any) => {
+                    if (compnew.childs != undefined && compnew.childs.length > 0) {
+                        item.props.SelectedItem.downArrowIcon = compnew.downArrowIcon;
+                        item.props.SelectedItem.RightArrowIcon = compnew.RightArrowIcon;
+                        return false;
+                    }
+                })
                 ComponentsData.forEach((comp: any, index: any) => {
-                    if (comp.Id != undefined && item.props.SelectedItem != undefined && comp.Id === item.props.SelectedItem.Id){
-                        comp.childsLength =item.props.SelectedItem.childs.length;
-                        comp.show = comp.show ==undefined ?false : comp.show
+                    // comp.downArrowIcon =comp.downArrowIcon;
+                    if (comp.Id != undefined && item.props.SelectedItem != undefined && comp.Id === item.props.SelectedItem.Id) {
+                        comp.childsLength = item.props.SelectedItem.childs.length;
+                        comp.show = comp.show == undefined ? false : comp.show
+                        comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
+                        comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
+
                         comp.childs = item.props.SelectedItem.childs;
                     }
-                    if (comp.childs != undefined && comp.childs.length > 0) { 
+                    if (comp.childs != undefined && comp.childs.length > 0) {
                         comp.childs.forEach((subcomp: any, index: any) => {
-                            if (subcomp.Id != undefined && item.props.SelectedItem != undefined && subcomp.Id === item.props.SelectedItem.Id){
-                                subcomp.childsLength =item.props.SelectedItem.childs.length;
-                                subcomp.show = subcomp.show ==undefined ?false : subcomp.show
+                            if (subcomp.Id != undefined && item.props.SelectedItem != undefined && subcomp.Id === item.props.SelectedItem.Id) {
+                                subcomp.childsLength = item.props.SelectedItem.childs.length;
+                                subcomp.show = subcomp.show == undefined ? false : subcomp.show
                                 subcomp.childs = item.props.SelectedItem.childs;
+                                comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
+                                comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
                             }
                         })
                     }
@@ -2583,6 +2597,10 @@ setWSPopup(false);
                 // }
             }
             setData((data) => [...ComponentsData]);
+            if (item.CreateOpenType != undefined && item.CreateOpenType === 'CreatePopup') {
+                setSharewebComponent(item.CreatedItem[0].data)
+                setIsComponent(true);
+            }
         }
         if (!isOpenPopup && item.data != undefined) {
             item.data.childs = [];
@@ -2665,6 +2683,52 @@ setWSPopup(false);
 
                 })
             }
+            else if (checkedList[0].Item_x0020_Type === 'Task') {
+                maidataBackup.forEach((obj) => {
+                    obj.isRestructureActive = true;
+                    if (obj.Id === checkedList[0].Id) {
+                        ArrayTest.push(obj)
+                    }
+                    if (obj.childs != undefined && obj.childs.length > 0) {
+                        obj.childs.forEach((sub: any) => {
+                            if (sub.Item_x0020_Type === 'SubComponent')
+                                sub.isRestructureActive = true;
+                            if (sub.Id === checkedList[0].Id) {
+                                ArrayTest.push(obj)
+                                ArrayTest.push(sub)
+                                // ArrayTest.push(sub)
+                            }
+                            if (sub.childs != undefined && sub.childs.length > 0) {
+                                sub.childs.forEach((subchild: any) => {
+                                    if (subchild.Item_x0020_Type === 'SubComponent')
+                                        subchild.isRestructureActive = true;
+                                    if (subchild.Id === checkedList[0].Id) {
+                                        ArrayTest.push(obj)
+                                        ArrayTest.push(sub)
+                                        ArrayTest.push(subchild)
+                                        // ArrayTest.push(sub)
+                                    }
+                                    if (subchild.childs != undefined && subchild.childs.length > 0) {
+                                        subchild.childs.forEach((listsubchild: any) => {
+                                            if (listsubchild.Id === checkedList[0].Id) {
+                                                ArrayTest.push(obj)
+                                                ArrayTest.push(sub)
+                                                ArrayTest.push(subchild)
+                                                ArrayTest.push(listsubchild)
+                                            }
+
+                                        })
+                                    }
+
+                                })
+                            }
+
+                        })
+                    }
+
+
+                })
+            }
             setOldArrayBackup(ArrayTest)
             setData((data) => [...maidataBackup]);
 
@@ -2683,10 +2747,17 @@ setWSPopup(false);
             if (obj.childs != undefined && obj.childs.length > 0) {
                 obj.childs.forEach((sub: any) => {
                     sub.isRestructureActive = true;
+                    if (sub.Id === item.Id) {
+                        TestArray.push(obj)
+                        TestArray.push(sub)
+                    }
                     if (sub.childs != undefined && sub.childs.length > 0) {
                         sub.childs.forEach((newsub: any) => {
-                            if (newsub.Id === item.Id)
+                            if (newsub.Id === item.Id) {
+                                TestArray.push(obj)
+                                TestArray.push(sub)
                                 TestArray.push(newsub)
+                            }
 
                         })
                     }
@@ -2700,26 +2771,95 @@ setWSPopup(false);
         setNewArrayBackup(NewArrayBackup => ([...TestArray]));
 
     }
+    let ChengedItemTitle: any = '';
     const setRestructure = (item: any, title: any) => {
         let array: any = [];
         item.Item_x0020_Type = title;
         if (item != undefined && title === 'SubComponent') {
             item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
 
-
+            ChengedItemTitle = 'Component';
 
         }
         if (item != undefined && title === 'Feature') {
             item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-
+            ChengedItemTitle = 'SubComponent';
 
         }
         array.push(item)
         setRestructureChecked((RestructureChecked: any) => [...array]);
         // setRestructureChecked(item);
     }
-    const UpdateRestructure = () => {
-       // setResturuningOpen(true)
+    let changetoTaxType: any = ''
+    const UpdateRestructure = async function () {
+        if (RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type =='Feature') {
+            changetoTaxType = 'SubComponent';
+        }
+        if (RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type =='SubComponent') {
+            changetoTaxType = 'Component';
+        }
+        getPortfolioItemID();
+        var UploadImage: any = [];
+
+        var item: any = {};
+
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        // await web.lists
+        //     .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+        //     .items.getById(RestructureChecked[0].Id)
+        //     .update({
+        //         ParentId: $scope.parentRestructuring.Id,
+        //         PortfolioLevel: (PortfolioLevelNum),
+        //         PortfolioStructureID: ChildPortfolioStructureID
+
+
+        //     })
+        //     .then((res: any) => {
+        //         console.log(res);
+
+        //         setModalIsOpenToFalse();
+        //     });
+        // setResturuningOpen(true)
+    }
+    var PortfolioLevelNum: any = 0;
+    const getPortfolioItemID = async function () {
+        // var defer = $q.defer();
+        var filter = ""
+        if (RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Id != undefined) {
+            filter = "Id eq '" + RestructureChecked[0].Parent.Id + "' and Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'" //" and Parent/Id eq " + RestructureChecked[0].Id;
+        }
+        if (ChengedItemTitle === 'SubComponent')
+            filter = "Id eq '" + NewArrayBackup[0].Parent.Id + "' and Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'"// " and Parent/Id eq " + NewArrayBackup[0].Id;
+
+       // var query = "Id,PortfolioLevel,PortfolioStructureID,Created,Item_x0020_Type,Title,Portfolio_x0020_Type,Parent/Id,Parent/Title&$expand=Parent&$filter=(Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'" + filter + ")&$orderBy=PortfolioLevel desc&$top=4999";
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let results = await web.lists
+            .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+            .items
+            .select("Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Parent/Id")
+            .expand("Parent")
+            .filter(filter)
+            .orderBy("PortfolioLevel", false)
+            .top(1)
+            .get()
+        if (results.length > 0) {
+            PortfolioLevelNum = results[0].PortfolioLevel + 1;
+        } else {
+            PortfolioLevelNum = 1;
+        }
+        // SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + GlobalConstants.MASTER_TASKS_LISTID + "')/items?$select=" + query).then(function (success) {
+        //     $scope.PortfolioLevel = undefined
+        //     if (success.d.results.length > 0) {
+        //         $scope.PortfolioLevel = success.d.results[0].PortfolioLevel + 1;
+        //     }
+        //     else {
+        //         $scope.PortfolioLevel = 1;
+        //     }
+        //     defer.resolve(true);
+        // }, function (error) {
+        //     console.log(error);
+        // });
+        // return defer.promise;
     }
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
@@ -3098,9 +3238,13 @@ setWSPopup(false);
                                         </span> */}
                                     </span>
                                     <span className="toolbox mx-auto">
-                                        <button type="button" disabled={checkedList.length >= 2} className="btn btn-primary" onClick={addModal} title=" Add Structure">
-                                            Add Structure
-                                        </button>
+                                        {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Feature' ?
+                                            <button type="button" disabled={true} className="btn btn-primary" onClick={addModal} title=" Add Structure">
+                                                Add Structure
+                                            </button>
+                                            : <button type="button" disabled={checkedList.length >= 2} className="btn btn-primary" onClick={addModal} title=" Add Structure">
+                                                Add Structure
+                                            </button>}
 
                                         <button type="button"
                                             className="btn btn-primary"
@@ -3114,14 +3258,14 @@ setWSPopup(false);
                                         <button type="button"
                                             className="btn btn-primary"
                                             onClick={buttonRestructuring}
-                                            >
+                                        >
 
                                             <MdAdd />
-                                           Restructure
+                                            Restructure
                                         </button>
 
 
-                                       
+
 
                                         <a className="brush" onClick={clearSearch}>
                                             <FaPaintBrush />
@@ -3397,7 +3541,7 @@ setWSPopup(false);
                                                                                                                 <div className="accordian-header" >
                                                                                                                     {/* checked={item.checked === true ? true : false} */}
                                                                                                                     <span className='pe-2'><input type="checkbox"
-                                                                                                                        onChange={(e) => onChangeHandler(childitem,e)} /></span>
+                                                                                                                        onChange={(e) => onChangeHandler(childitem, e)} /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -3482,7 +3626,7 @@ setWSPopup(false);
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
-                                                                                                            
+
                                                                                                             <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                             <td style={{ width: "2%" }}>{childitem.siteType === "Master Tasks" && childitem.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={childitem.Restructuring} onClick={(e) => OpenModal(childitem)} /></a>}</td>
                                                                                                             <td style={{ width: "2%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
@@ -3523,7 +3667,7 @@ setWSPopup(false);
                                                                                                                                         <div className="accordian-header" >
                                                                                                                                             {/* checked={item.checked === true ? true : false} */}
                                                                                                                                             <span className='pe-2'><input type="checkbox"
-                                                                                                                                                onChange={(e) => onChangeHandler(childinew,e)} /></span>
+                                                                                                                                                onChange={(e) => onChangeHandler(childinew, e)} /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
@@ -3782,14 +3926,14 @@ setWSPopup(false);
                         </div></section>
                 </div></section>
 
-                {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
-        {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
-        {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-        {MeetingPopup && <CreateActivity props={MeetingItems} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
-        {WSPopup && <CreateWS props={MeetingItems} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateWS>}
-        <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-            <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
-        </Panel>
+            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
+            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
+            {MeetingPopup && <CreateActivity props={MeetingItems} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateWS>}
+            <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+            </Panel>
 
         <Modal
 
@@ -3912,9 +4056,9 @@ isBlocking={false}
             <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
                 <div>
                     {ResturuningOpen ?
-                        <div>
+                        <div className='bg-ee p-2 restructurebox'>
                             <div>
-                                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 ml20" src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 " src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
                                 ><span>{NewArrayBackup[0].Title}</span>
                                 </a>  please click Submit to continue.</span> : ''}
@@ -3947,17 +4091,19 @@ isBlocking={false}
                                 </a></span>
                             </div>
                             {console.log("restructure functio test in div===================================")}
-                            <div>
-                                <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} />{'SubComponent'} </span>
-                                <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} />{'Feature'}</span>
-                            </div>
+                            {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type != 'Feature' ?
+                                <div>
+                                    <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
+                                    <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
+                                </div>
+                                : ''}
                         </div>
                         : ''}</div>
-                <footer className="mt-2">
-                    <div>
+                <footer className="mt-2 text-end">
+                    
                         <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>
                         <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
-                    </div>
+                   
 
                 </footer>
             </Panel>

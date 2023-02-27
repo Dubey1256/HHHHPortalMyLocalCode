@@ -406,6 +406,7 @@ const CreateWS = (props: any) => {
                 Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
             }).then((res: any) => {
+                res.data['SiteIcon']= AllItems.SiteIcon
                 console.log(res);
                 closeTaskStatusUpdatePoup(res);
             })

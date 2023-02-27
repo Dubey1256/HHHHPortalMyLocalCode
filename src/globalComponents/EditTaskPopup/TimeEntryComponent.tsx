@@ -1825,15 +1825,16 @@ function TimeEntryPopup(item: any) {
 
                                                             {item.Childs != undefined && item.Childs.length > 0 && (
                                                                 <>
+                                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
+                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                        </div>
                                                                     {item.Childs.map(function (childitem: any) {
 
                                                                         return (
 
                                                                             <>
                                                                                 <tr >
-                                                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
-                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-                        </div>
+                                                                                
                                                                                     <td className="p-0" colSpan={9}>
                                                                                         <table className="table m-0" style={{ width: "100%" }}>
                                                                                             <tr className="for-c02">
