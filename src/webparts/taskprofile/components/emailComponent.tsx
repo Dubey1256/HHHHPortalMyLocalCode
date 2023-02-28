@@ -4,8 +4,9 @@
   import { IEmailProperties } from "@pnp/sp/sputilities";
   import { Web } from "sp-pnp-js";
   import "@pnp/sp/sputilities";
+  import { spfi } from "@pnp/sp";
   
-  import { spfi, SPFx as spSPFx } from "@pnp/sp";
+  // import { spfi, SPFx as spSPFx } from "@pnp/sp";
    const EmailComponenet=( props:any)=>{
     const[emailBody,setemailBody]=useState(null)
     console.log(props);
@@ -43,8 +44,6 @@
   
     const SendEmail=async(emailprops: any)=> {
       const sp = spfi();
-
-
       const emailProps: IEmailProperties = { To: ["user@site.com"],
        CC: emailprops.To,
         BCC: emailprops.To,

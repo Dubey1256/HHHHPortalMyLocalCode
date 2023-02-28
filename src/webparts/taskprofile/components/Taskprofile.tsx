@@ -318,7 +318,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Attachments: taskDetails["Attachments"],
       AttachmentFiles: taskDetails["AttachmentFiles"],
       SmartInformationId:taskDetails["SmartInformation"],
-      Approver:taskDetails.Approver[0],
+      Approver:taskDetails.Approver!=undefined?taskDetails.Approver[0]:"",
     };
 
     // console.log(tempTask);
