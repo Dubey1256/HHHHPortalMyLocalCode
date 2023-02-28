@@ -915,7 +915,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
 
 
-
+ 
 
 
   public render(): React.ReactElement<ITaskprofileProps> {
@@ -926,7 +926,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       hasTeamsContext,
       userDisplayName
     } = this.props;
+    // Set the page titile
+          document.title = `${this.state.Result["TaskId"]}-${this.state.Result['Title']}`
     return (
+      
       <div className={this.state.Result["Services"] !=undefined && this.state.Result["Services"].length >0  ? 'app component serviepannelgreena' : "app component"}>
 
 

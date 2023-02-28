@@ -259,7 +259,8 @@ function Portfolio({ ID }: any) {
         if (item.Portfolio_x0020_Type != undefined) {
             TypeSite = item.Portfolio_x0020_Type
         }
-
+// Set the page titile
+document.title = `${item.Portfolio_x0020_Type}-${item.Title}`
         if (item.Team_x0020_Members.results != undefined) {
             AllTaskuser.map(users => {
 
