@@ -7,8 +7,9 @@ export interface ISectionTitleProps {
 
 const SectionTitle = (props: ISectionTitleProps) => {
     return (
-        <div className={styles.secTitleContainer}>
-            <div className={styles.title}>{props.Title}</div>
+        <div className="heading d-flex ps-0 justify-content-between align-items-center " >
+            <span>{props.Title}</span>
+            <span className="text-end fs-6"><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/LastModifiedItems.aspx"> Old Last Modified Views</a> </span>
         </div>
     );
 };

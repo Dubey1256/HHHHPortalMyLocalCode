@@ -1,15 +1,14 @@
 import * as React from "react";
 import * as $ from 'jquery';
-//import '../../webparts/taskDashboard/components/foundation.scss';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ImPriceTags } from 'react-icons/im';
-//import '../../webparts/taskDashboard/components/TaskDashboard.scss';
+import Tooltip from '../Tooltip';
 
 
-var Newrray: any = []
-var Autocompleteitems: any = [];
-var Autocompleteitemsarr: any = [];
+var NewArray: any = []
+var AutoCompleteItems: any = [];
+var AutoCompleteItemsArray: any = [];
 const Picker = (item: any) => {
     const usedFor = item.usedFor;
 
@@ -31,7 +30,7 @@ const Picker = (item: any) => {
     }, [])
     const closePopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(false)
-        Newrray = []
+        NewArray = []
         setSelect([])
         item.closePopupCallBack();
 
@@ -45,7 +44,7 @@ const Picker = (item: any) => {
             var title: any = {}
             // title.Title = select;
             item.props.smartCategories.push(title);
-            item.props.categories = Newrray;
+            item.props.categories = NewArray;
             Example(item, 'Category');
         }
 
@@ -101,7 +100,6 @@ const Picker = (item: any) => {
                 uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
                     return array.indexOf(val) == id;
                 });
-
             }
         });
         return uniqueNames;
@@ -122,9 +120,9 @@ const Picker = (item: any) => {
         if (usedFor == "Task-Popup") {
             setSelectedCategory([item])
         } else {
-            Newrray.push(item)
-            //setSelect(Newrray)
-            showSelectedData(Newrray);
+            NewArray.push(item)
+            //setSelect(NewArray)
+            showSelectedData(NewArray);
         }
         setValue('');
         setSearchedData([]);
@@ -143,13 +141,13 @@ const Picker = (item: any) => {
             const uniqueNames = categoriesItem.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
-            console.log(uniqueNames)
+
             setSelect(uniqueNames)
         }
 
     }
     function Example(callBack: any, type: any) {
-        Newrray = []
+        NewArray = []
         setSelect([])
         item.Call(callBack.props, type);
     }
@@ -157,20 +155,24 @@ const Picker = (item: any) => {
         setPopupSmartTaxanomy(false)
     }
     const deleteSelectedCat = (val: any) => {
-        select.map((valuee: any, index) => {
-            if (val.Id == valuee.Id) {
-                select.splice(index, 1)
-            }
+        if (usedFor == "Task-Popup") {
+            setSelectedCategory([])
+        } else {
+            select.map((valuee: any, index) => {
+                if (val.Id == valuee.Id) {
+                    select.splice(index, 1)
+                }
 
-        })
-        Newrray.map((valuee: any, index: any) => {
-            if (val.Id == valuee.Id) {
-                Newrray.splice(index, 1)
-            }
+            })
+            NewArray.map((valuee: any, index: any) => {
+                if (val.Id == valuee.Id) {
+                    NewArray.splice(index, 1)
+                }
 
-        })
+            })
 
-        setSelect(select => ([...select]));
+            setSelect(select => ([...select]));
+        }
     }
     // Autosuggestion
 
@@ -179,7 +181,7 @@ const Picker = (item: any) => {
         let searchedKey: any = event.target.value;
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
-            Autocompleteitemsarr.map((itemData: any) => {
+            AutoCompleteItemsArray.map((itemData: any) => {
                 if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
                     tempArray.push(itemData);
                 }
@@ -190,28 +192,22 @@ const Picker = (item: any) => {
         }
 
     };
-    const filterArrayFunction = (searchTerm: React.SetStateAction<string>) => {
-        setValue(searchTerm);
-        // our api to fetch the search result
-        console.log("search ", searchTerm);
-    };
-
     if (AllCategories.length > 0) {
         AllCategories.map((item: any) => {
             if (item.newTitle != undefined) {
                 item['Newlabel'] = item.newTitle;
-                Autocompleteitems.push(item)
+                AutoCompleteItems.push(item)
                 if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
                     item.childs.map((childitem: any) => {
                         if (childitem.newTitle != undefined) {
                             childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-                            Autocompleteitems.push(childitem)
+                            AutoCompleteItems.push(childitem)
                         }
                         if (childitem.childs.length > 0) {
                             childitem.childs.map((subchilditem: any) => {
                                 if (subchilditem.newTitle != undefined) {
                                     subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-                                    Autocompleteitems.push(subchilditem)
+                                    AutoCompleteItems.push(subchilditem)
                                 }
                             })
                         }
@@ -221,7 +217,7 @@ const Picker = (item: any) => {
         })
     }
 
-    Autocompleteitemsarr = Autocompleteitems.reduce(function (previous: any, current: any) {
+    AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
         var alredyExists = previous.filter(function (item: any) {
             return item.Title === current.Title
         }).length > 0
@@ -231,19 +227,43 @@ const Picker = (item: any) => {
         return previous
     }, [])
 
+    const customFooter = () => {
+        return (
+            <footer>
+                <button type="button" className="btn btn-primary float-end me-5" onClick={saveCategories}>
+                    OK
+                </button>
+            </footer>
+        )
+    }
+
+    const customHeader = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        Select Category
+                    </span>
+                </div>
+                <Tooltip ComponentId="1626" />
+            </div>
+        )
+    }
+
 
     return (
         <>
             <Panel
-                headerText={`Select Categories`}
+                onRenderHeader={customHeader}
                 isOpen={PopupSmartTaxanomy}
                 type={PanelType.custom}
                 customWidth="850px"
                 onDismiss={closePopupSmartTaxanomy}
                 isBlocking={false}
+                onRenderFooter={customFooter}
             >
                 <div id="SmartTaxonomyPopup">
-                    <div className="modal-body clearfix">
+                    <div className="modal-body">
                         {/* <table className="ms-dialogHeaderDescription">
                             <tbody>
                                 <tr id="addNewTermDescription" className="">
@@ -297,7 +317,7 @@ const Picker = (item: any) => {
                                 <div>
                                     <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
                                     {searchedData?.length > 0 ? (
-                                        <div className="searchtable-smart-category">
+                                        <div className="SearchTableCategoryComponent">
                                             <ul className="list-group">
                                                 {searchedData.map((item: any) => {
                                                     return (
@@ -310,7 +330,7 @@ const Picker = (item: any) => {
                                             </ul>
                                         </div>) : null}
                                     {/* <ul className="list-group"> 
-                                        {Autocompleteitemsarr.filter((item: any) => {
+                                        {AutoCompleteItemsArray.filter((item: any) => {
                                             const searchTerm = value.toLowerCase();
                                             var fullName = item.Title != null ? item.Newlabel.toLowerCase() : "";
                                             return (
@@ -352,7 +372,6 @@ const Picker = (item: any) => {
                                         )
                                     })}
                                 </div>}
-
                             </div>
                             {/* <div className="col-sm-12 ActivityBox">
                                     <span>
@@ -374,32 +393,64 @@ const Picker = (item: any) => {
                                     return (
                                         <>
                                             <li>
-
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <a className="hreflink" onClick={() => selectPickerData(item)} >
-                                                        <img className="flag_icon"
-                                                            style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
-                                                        {item.Title}
-                                                    </a>
+                                                    <p onClick={() => selectPickerData(item)} className='mb-0 hreflink' >
+                                                        <a>
+                                                            <img className="flag_icon"
+                                                                style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
+                                                            {item.Title}
+                                                        </a>
+                                                    </p>
                                                 }
                                                 <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
                                                     {item.childs?.map(function (child1: any) {
                                                         return (
                                                             <>
-                                                                {child1.Item_x005F_x0020_Cover != null ?
+                                                                {child1.Title != null ?
                                                                     <li>
-                                                                        <a className="hreflink" onClick={() => selectPickerData(child1)}>
-                                                                            <img ng-if="child1.Item_x005F_x0020_Cover!=undefined" className="flag_icon"
-                                                                                style={{ height: "12px", width: "18px;" }}
-                                                                                src={child1.Item_x005F_x0020_Cover.Url} /> {child1.Title}
-                                                                            <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                        <p onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
+                                                                            <a>
+                                                                                {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                    style={{ height: "12px", width: "18px;" }}
+                                                                                    src={child1.Item_x005F_x0020_Cover.Url} /> :
+                                                                                    null}
+                                                                                {child1.Title}
+                                                                                {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                    <div className="popover__content">
+                                                                                        <span>{child1.Description1}</span>
+                                                                                    </div>
+                                                                                </div> : null}
 
-                                                                                <div className="popover__content">
-                                                                                    <span ng-bind-html="child1.Description1 | trustedHTML">{child1.Description1}</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </a>
+                                                                            </a>
+                                                                        </p>
+
+                                                                        <ul className="sub-menu clr mar0">
+                                                                            {
+                                                                                child1.childs?.map((subChilds: any) => {
+                                                                                    return (
+                                                                                        <li>
+                                                                                            <p onClick={() => selectPickerData(subChilds)} className='mb-0 hreflink'>
+                                                                                                <a>
+                                                                                                    {subChilds.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                                        style={{ height: "12px", width: "18px;" }}
+                                                                                                        src={subChilds.Item_x005F_x0020_Cover.Url} /> :
+                                                                                                        null}
+                                                                                                    {subChilds.Title}
+                                                                                                    {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                        <div className="popover__content">
+                                                                                                            <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
+                                                                                                        </div>
+                                                                                                    </div> : null}
+
+                                                                                                </a>
+                                                                                            </p>
+                                                                                        </li>
+                                                                                    )
+                                                                                })
+                                                                            }
+                                                                        </ul>
                                                                     </li> : null
                                                                 }
                                                             </>
@@ -411,15 +462,8 @@ const Picker = (item: any) => {
                                     )
                                 })}
                             </ul>
-
                         </div>
-
                     </div>
-                    <footer className="float-end">
-                        <button type="button" className="btn btn-primary" onClick={saveCategories}>
-                            OK
-                        </button>
-                    </footer>
                 </div>
             </Panel>
         </>

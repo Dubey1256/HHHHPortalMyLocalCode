@@ -22,6 +22,7 @@ import Smartinfo from './NextSmart';
 import EditInstituton from '../../EditPopupFiles/EditComponent';
 import ComponentTable from './Taskwebparts';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+import SmartInformation from '../../taskprofile/components/SmartInformation';
 
 
 
@@ -31,6 +32,7 @@ var AssigntoMembers: any = [];
 var AllQuestion: any[] = [];
 var AllHelp: any[] = [];
 var AllTeamMember: any = [];
+var Folderdatas: any = [];
 var AssignTeamMember: any = [];
 function Portfolio({ ID }: any) {
     const [data, setTaskData] = React.useState([]);
@@ -130,28 +132,28 @@ function Portfolio({ ID }: any) {
                 success: function (data) {
                     response = response.concat(data.d.results);
                     response.map((item: any) => {
-                        // if (item.FolderID != undefined) {
-                        //     folderId = item.FolderID;
-                        //     var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
-                        //     $.ajax({
-                        //         url: urln,
-                        //         method: "GET",
-                        //         headers: {
-                        //             "Accept": "application/json; odata=verbose"
-                        //         },
-                        //         success: function (data) {
-                        //             responsen = responsen.concat(data.d.results);
-                        //             if (data.d.__next) {
-                        //                 urln = data.d.__next;
-                        //             } else SetFolderData(responsen);
-                        //             // console.log(responsen);
-                        //         },
-                        //         error: function (error) {
-                        //             console.log(error);
-                        //             // error handler code goes here
-                        //         }
-                        //     });
-                        // }
+                        if (item.FolderID != undefined) {
+                            folderId = item.FolderID;
+                            var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+                            $.ajax({
+                                url: urln,
+                                method: "GET",
+                                headers: {
+                                    "Accept": "application/json; odata=verbose"
+                                },
+                                success: function (data) {
+                                    responsen = responsen.concat(data.d.results);
+                                    if (data.d.__next) {
+                                        urln = data.d.__next;
+                                    } else SetFolderData(responsen);
+                                    // console.log(responsen);
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                    // error handler code goes here
+                                }
+                            });
+                        }
                         if (item.Portfolio_x0020_Type != undefined) {
                             var filter = '';
                             if (item.Portfolio_x0020_Type == 'Component') {
@@ -216,7 +218,18 @@ function Portfolio({ ID }: any) {
 
 
 
+    // Make Folder data unique
+    
 
+    Folderdatas = FolderData.reduce(function (previous: any, current: any) {
+        var alredyExists = previous.filter(function (item: any) {
+            return item.Id === current.Id
+        }).length > 0
+        if (!alredyExists) {
+            previous.push(current)
+        }
+        return previous
+    }, [])
     // Get All User
 
     const getTaskUser = async () => {
@@ -1024,18 +1037,25 @@ function Portfolio({ ID }: any) {
                         </div>
                         <div className='col-md-3'>
                             <aside>
-                                {/* <div className='mb-3 card'>
+                            {data.map(item =>{
+                                return(
+                                <>
+                               { item.Item_x002d_Image != null &&
+                                <div>
+                                     < img alt={item.Item_x002d_Image.Url} style={{width:"280px",height: "145px"}} src={item.Item_x002d_Image.Url}/>
+                                </div>
+                            }
+                                </>
+                            )})}
+                                <div className='mb-3 card'>
+                                {data.map(item =>{
+                                return(
+                                <SmartInformation  Id={item.Id}siteurl={"https://hhhhteams.sharepoint.com/sites/HHHH/SP"}listName={"HHHH"}spPageContext={"/sites/HHHH/SP"}/>
+                                )})}
+                                </div>
+                                    {/* <div className='mb-3 card' ng-if="isOwner==true">
                                         <div className='card-header'>
-                                            <div className='card-actions float-end'>  <Tooltip /></div>
-                                            <div className="mb-0 card-title h5">Smart Information</div>
-                                        </div>
-                                        <div className='card-body'>
-                                            <div className="border-bottom pb-2"><a title="+ Add SmartInformation" ng-click="editSmartInfoItem(item,'add')"><Smartinfo/>+ Add SmartInformation</a></div>
-                                        </div>
-                                    </div>
-                                    <div className='mb-3 card' ng-if="isOwner==true">
-                                        <div className='card-header'>
-                                            <div className='card-actions float-end'>  <Tooltip /></div>
+                                            <div className='card-actions float-end'>  <Tooltip ComponentId='324'/></div>
                                             <div className="mb-0 card-title h5">Add & Connect Tool</div>
                                         </div>
                                         <div className='card-body'>
@@ -1043,29 +1063,29 @@ function Portfolio({ ID }: any) {
                                                 Click here to add more content
                                             </a></div>
                                         </div>
-                                    </div>
-                                    {FolderData!=undefined&&
+                                    </div> */}
+                                    {Folderdatas!=undefined&&
                                     <>
-                                    {FolderData.map(item =>{
+                                    {Folderdatas.map((item:any) =>{
                                         return(
                                     <div className='mb-3 card'>
                                         <div className='card-header'>
-                                            <div className='card-actions float-end'>  <Tooltip /></div>
+                                            <div className='card-actions float-end'>  <Tooltip ComponentId='1748'/></div>
                                             <div className="mb-0 card-title h5">Main Folder</div>
                                         </div>
                                         <div className='card-body'>
                                             <div className="border-bottom pb-2">
                                                     <div>
                                                         <img  data-themekey="#" src="/_layouts/15/images/folder.gif?rev=23" />
-                                                        <a className="hreflink ng-binding" target="_blank" href={item.EncodedAbsUrl}>
-                                                            {item.FileLeafRef}
+                                                        <a  target="_blank" href={item?.EncodedAbsUrl}>
+                                                            {item?.FileLeafRef}
                                                         </a>
                                                     </div>
                                             </div>
                                         </div>
                                     </div>
                                 )})} </>
-                                }  */}
+                                } 
                                 <div className='mb-3 card'>
                                     <>
                                         {data.map(item =>

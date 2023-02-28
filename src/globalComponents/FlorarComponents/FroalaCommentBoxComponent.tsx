@@ -166,7 +166,7 @@ export default class App extends React.Component<ITeamConfigurationProps> {
         return (
             <div className="col froala-comment-box" id="uploadCommentFroalaEditor">
                 <Froala
-                    model={this.props.EditorValue}
+                    model={`${this.props.EditorValue}`}
                     onModelChange={this.onModelChange}
                     tag="textarea"
                     config={froalaEditorConfig}
@@ -180,7 +180,7 @@ export default class App extends React.Component<ITeamConfigurationProps> {
     private onModelChange = (model: any) => {
         let edData = model;
         $('.hiddendiv').html(edData);
-        $(".hiddendiv :last-child").remove();
+        $(".hiddendiv p:last-child").remove();
         let newData = $('.hiddendiv').html();
         this.props.callBack(newData)
     };
