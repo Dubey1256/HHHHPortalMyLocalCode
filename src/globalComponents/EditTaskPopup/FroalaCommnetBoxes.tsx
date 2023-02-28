@@ -50,7 +50,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
         } else {
             setBtnStatus(false)
         }
-        if (SmartLightPercentStatus && SmartLightStatus) {
+        if (SmartLightStatus) {
             setIsDisabled(true);
         }
     }, [])
