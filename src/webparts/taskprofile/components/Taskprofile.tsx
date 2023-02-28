@@ -1000,7 +1000,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
             </a>
             {/* {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined&&this.currentUser[0].Title==this.state.Result["Approver"].Title &&<span><button>Approve</button><span><button>Reject</button></span></span>} */}
-            {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet  Approver={this.state.Result["Approver"]} currentUser={this.currentUser}/>}
+            {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet  Approver={this.state.Result["Approver"]} currentUser={this.currentUser} items={this.state.Result}/>}
             </span>
             {this.state.Result?.sitePage=="SP"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
             {this.state.Result?.sitePage=="SH"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
