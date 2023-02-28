@@ -49,6 +49,7 @@ function ComponentTable(SelectedProp: any) {
     const [ComponentsData, setComponentsData] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
     const [TotalTask, setTotalTask] = React.useState([])
+    const [childsData, setchildsData] = React.useState<any>([])
     const [ActivityDisable, setActivityDisable] = React.useState(true);
     const [MeetingItems, setMeetingItems] = React.useState<any>([])
     const [ActivityPopup, setActivityPopup] = React.useState(false);
@@ -133,10 +134,23 @@ function ComponentTable(SelectedProp: any) {
                 setWSPopup(true)
             }
         }
-
-        if (MeetingItems.SharewebTaskType == undefined ||  MeetingItems.SharewebTaskType.Title == 'Workstream') {
+        if (childsData.SharewebTaskType != undefined) {
+            if (childsData.SharewebTaskType.Title == 'Activities') {
+                setWSPopup(true)
+                setMeetingItems(childsData)
+            }
+        }
+        if(MeetingItems != undefined &&  MeetingItems.SharewebTaskType?.Title == 'Workstream'){
             setActivityPopup(true)
         }
+        if(childsData != undefined && childsData.SharewebTaskType?.Title == 'Workstream'){
+            setActivityPopup(true)
+        }
+        if(MeetingItems.SharewebTaskType == undefined && childsData.SharewebTaskType == undefined ){
+            setActivityPopup(true)
+        }
+       
+        
 
 
     }
@@ -2431,25 +2445,35 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
-        setIsComponent(false);
-  setIsTask(false);
-  setMeetingPopup(false);                      
-  setWSPopup(false);
-        childItem.data['flag']=true;
-        childItem.data['TitleNew']=childItem.data.Title;
-       
+        setIsComponent(false);;
+    setIsTask(false);
+   setMeetingPopup(false);                      
+   setWSPopup(false);
+        var  MainId:any=''
         if (childItem != undefined) {
+            childItem.data['flag']=true;
+            childItem.data['TitleNew']=childItem.data.Title;
+            childItem.data['SharewebTaskType']  = {Title:'Activities'}
+            if(childItem.data.ServicesId!=undefined && childItem.data.ServicesId.length>0){
+                MainId  = childItem.data.ServicesId[0]
+            }
+            if(childItem.data.ComponentId!=undefined && childItem.data.ComponentId.length>0){
+                MainId  =  childItem.data.ComponentId[0]
+            }
             if (array != undefined) {
                 array.forEach((val: any) => {
                     val.flag=true;
                     val.show=false;
-                    if (val.childs != undefined) {
-                        if (val.Title == 'Others')
-                        val.childs.unshift(childItem.data)
+                    if (val.Id == MainId) {
+                        val.childs.push(childItem.data)
                     }
-
-
-
+                
+                    //  if (val.Id != childItem.data.ParentTaskId) {
+                    //     if(val.Title=='Others'){
+                    //         val.childs.push(childItem.data)
+                    //     }
+                    
+                    // }
                 })
                 setData(array => ([...array]))
             }
@@ -2477,7 +2501,9 @@ function ComponentTable(SelectedProp: any) {
         setSharewebTask(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    const onChangeHandler = (itrm: any, e: any) => {
+    const onChangeHandler = (itrm: any,child:any, e: any) => {
+        var  Array:any=[]
+        
         const { checked } = e.target;
         if (checked == true) {
             if (itrm.SharewebTaskType == undefined) {
@@ -2485,13 +2511,16 @@ function ComponentTable(SelectedProp: any) {
                 itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                 itrm['listName'] = 'Master Tasks';
                 setMeetingItems(itrm);
+               
             }
-            if (itrm.SharewebTaskType != undefined) {
-                if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+            if (child.SharewebTaskType != undefined) {
+                if (child.SharewebTaskType.Title == 'Activities' || child.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
                     itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                     itrm['listName'] = 'Master Tasks';
-                    setMeetingItems(itrm);
+                    Array.push(itrm)
+                    child['PortfolioId']=itrm.Id;
+                    setchildsData(child)
                 }
             }
         }
@@ -2499,7 +2528,7 @@ function ComponentTable(SelectedProp: any) {
             setActivityDisable(true)
             $('#ClientCategoryPopup').hide();
         }
-
+    
         const list = [...checkedList];
         var flag = true;
         list.forEach((obj: any, index: any) => {
@@ -3492,7 +3521,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                         <div className="accordian-header" >
                                                                                             {/* checked={item.checked === true ? true : false} */}
                                                                                             <span className='pe-2'><input type="checkbox"
-                                                                                                onChange={(e) => onChangeHandler(item, e)} /></span>
+                                                                                                onChange={(e) => onChangeHandler(item,'Parent', e)} /></span>
                                                                                         </div>
 
                                                                                     </td>
@@ -3615,7 +3644,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 <div className="accordian-header" >
                                                                                                                     {/* checked={item.checked === true ? true : false} */}
                                                                                                                     <span className='pe-2'><input type="checkbox"
-                                                                                                                        onChange={(e) => onChangeHandler(childitem, e)} /></span>
+                                                                                                                        onChange={(e) => onChangeHandler(item,childitem, e)} /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -3741,7 +3770,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         <div className="accordian-header" >
                                                                                                                                             {/* checked={item.checked === true ? true : false} */}
                                                                                                                                             <span className='pe-2'><input type="checkbox"
-                                                                                                                                                onChange={(e) => onChangeHandler(childinew, e)} /></span>
+                                                                                                                                                 onChange={(e) => onChangeHandler(item,childinew, e)} /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
