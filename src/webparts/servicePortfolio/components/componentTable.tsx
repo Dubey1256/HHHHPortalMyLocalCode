@@ -2554,7 +2554,13 @@ function ComponentTable(SelectedProp: any) {
                 // obj.data.Team_x0020_Members=item.TeamMembersIds;
                 // obj.AssignedTo =item.AssignedIds;
                 obj.data.siteType = "Master Tasks"
-                obj.data['SiteIcon'] = GetIconImageUrl(obj.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+                if (obj.data.Item_x0020_Type != undefined && obj.data.Item_x0020_Type === 'Component')
+                    obj.data.SiteIcon = obj.data.Portfolio_x0020_Type != undefined && obj.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
+
+                if (obj.data.Item_x0020_Type != undefined && obj.data.Item_x0020_Type === 'SubComponent')
+                    obj.data.SiteIcon = obj.data.Portfolio_x0020_Type != undefined && obj.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+                if (obj.data.Item_x0020_Type != undefined && obj.data.Item_x0020_Type === 'Feature')
+                    obj.data.SiteIcon = obj.data.Portfolio_x0020_Type != undefined && obj.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
                 obj.data['Shareweb_x0020_ID'] = obj.data.PortfolioStructureID;
                 if (item.props != undefined && item.props.SelectedItem != undefined && item.props.SelectedItem.childs != undefined) {
                     item.props.SelectedItem.childs = item.props.SelectedItem.childs == undefined ? [] : item.props.SelectedItem.childs;
@@ -2608,7 +2614,15 @@ function ComponentTable(SelectedProp: any) {
             item.data.TitleNew = item.data.Title;
             item.data.siteType = "Master Tasks"
             item.data.childsLength = 0;
-            item.data['SiteIcon'] = GetIconImageUrl(item.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+            if (item.data.Item_x0020_Type != undefined && item.data.Item_x0020_Type === 'Component')
+            item.data.SiteIcon = item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
+
+        if (item.data.Item_x0020_Type != undefined && item.data.Item_x0020_Type === 'SubComponent')
+            item.data.SiteIcon = item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+        if (item.data.Item_x0020_Type != undefined && item.data.Item_x0020_Type === 'Feature')
+            item.data.SiteIcon = item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
+       
+           // item.data['SiteIcon'] = GetIconImageUrl(item.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
             item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
 
             // if (checkedList != undefined && checkedList.length > 0)
@@ -2627,7 +2641,13 @@ function ComponentTable(SelectedProp: any) {
         item.data.siteType = "Master Tasks"
         item.data.TitleNew = item.data.Title;
         item.data.childsLength = 0;
-        item.data['SiteIcon'] = GetIconImageUrl(item.data.siteType, 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/', undefined);
+        if (item.data.Item_x0020_Type != undefined && item.data.Item_x0020_Type === 'Component')
+            item.data.SiteIcon = item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
+
+        if (item.data.Item_x0020_Type != undefined && item.data.Item_x0020_Type === 'SubComponent')
+            item.data.SiteIcon = item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+        if (item.data.Item_x0020_Type != undefined && item.data.Item_x0020_Type === 'Feature')
+            item.data.SiteIcon = item.data.Portfolio_x0020_Type != undefined && item.data.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
         item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
         if (checkedList != undefined && checkedList.length > 0)
             checkedList[0].childs.unshift(item.data);
@@ -2649,8 +2669,8 @@ function ComponentTable(SelectedProp: any) {
                     if (obj.childs != undefined && obj.childs.length > 0) {
                         obj.childs.forEach((sub: any) => {
                             if (sub.Id === checkedList[0].Id) {
-                                ArrayTest.push(obj)
-                                ArrayTest.push(sub)
+                                ArrayTest.push(...[obj])
+                                ArrayTest.push(...[sub])
                                 // ArrayTest.push(sub)
                             }
 
@@ -2666,12 +2686,16 @@ function ComponentTable(SelectedProp: any) {
                     if (obj.childs != undefined && obj.childs.length > 0) {
                         obj.childs.forEach((sub: any) => {
                             sub.isRestructureActive = true;
+                            if (sub.Id === checkedList[0].Id) {
+                                ArrayTest.push(...[obj]);
+                                ArrayTest.push(...[sub]);
+                            }
                             if (sub.childs != undefined && sub.childs.length > 0) {
                                 sub.childs.forEach((newsub: any) => {
                                     if (newsub.Id === checkedList[0].Id) {
-                                        ArrayTest.push(obj)
-                                        ArrayTest.push(sub)
-                                        ArrayTest.push(newsub)
+                                        ArrayTest.push(...[obj]);
+                                        ArrayTest.push(...[sub]);
+                                        ArrayTest.push(...[newsub]);
                                     }
 
 
@@ -2687,15 +2711,15 @@ function ComponentTable(SelectedProp: any) {
                 maidataBackup.forEach((obj) => {
                     obj.isRestructureActive = true;
                     if (obj.Id === checkedList[0].Id) {
-                        ArrayTest.push(obj)
+                        ArrayTest.push(...[obj])
                     }
                     if (obj.childs != undefined && obj.childs.length > 0) {
                         obj.childs.forEach((sub: any) => {
                             if (sub.Item_x0020_Type === 'SubComponent')
                                 sub.isRestructureActive = true;
                             if (sub.Id === checkedList[0].Id) {
-                                ArrayTest.push(obj)
-                                ArrayTest.push(sub)
+                                ArrayTest.push(...[obj])
+                                ArrayTest.push(...[sub])
                                 // ArrayTest.push(sub)
                             }
                             if (sub.childs != undefined && sub.childs.length > 0) {
@@ -2703,18 +2727,18 @@ function ComponentTable(SelectedProp: any) {
                                     if (subchild.Item_x0020_Type === 'SubComponent')
                                         subchild.isRestructureActive = true;
                                     if (subchild.Id === checkedList[0].Id) {
-                                        ArrayTest.push(obj)
-                                        ArrayTest.push(sub)
-                                        ArrayTest.push(subchild)
+                                        ArrayTest.push(...[obj])
+                                        ArrayTest.push(...[sub])
+                                        ArrayTest.push(...[subchild])
                                         // ArrayTest.push(sub)
                                     }
                                     if (subchild.childs != undefined && subchild.childs.length > 0) {
                                         subchild.childs.forEach((listsubchild: any) => {
                                             if (listsubchild.Id === checkedList[0].Id) {
-                                                ArrayTest.push(obj)
-                                                ArrayTest.push(sub)
-                                                ArrayTest.push(subchild)
-                                                ArrayTest.push(listsubchild)
+                                                ArrayTest.push(...[obj])
+                                                ArrayTest.push(...[sub])
+                                                ArrayTest.push(...[subchild])
+                                                ArrayTest.push(...[listsubchild])
                                             }
 
                                         })
@@ -2748,15 +2772,16 @@ function ComponentTable(SelectedProp: any) {
                 obj.childs.forEach((sub: any) => {
                     sub.isRestructureActive = true;
                     if (sub.Id === item.Id) {
-                        TestArray.push(obj)
-                        TestArray.push(sub)
+                        //TestArray.push(obj)
+                        TestArray.push(...[obj]);
+                        TestArray.push(...[sub])
                     }
                     if (sub.childs != undefined && sub.childs.length > 0) {
                         sub.childs.forEach((newsub: any) => {
                             if (newsub.Id === item.Id) {
-                                TestArray.push(obj)
-                                TestArray.push(sub)
-                                TestArray.push(newsub)
+                                TestArray.push(...[obj])
+                                TestArray.push(...[sub])
+                                TestArray.push(...[newsub])
                             }
 
                         })
@@ -2788,79 +2813,128 @@ function ComponentTable(SelectedProp: any) {
         }
         array.push(item)
         setRestructureChecked((RestructureChecked: any) => [...array]);
+        maidataBackup.forEach((obj) => {
+            if (obj.Id === item.Id) {
+                PortfolioLevelNum = item.childs.length + 1;
+            }
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                obj.childs.forEach((sub: any) => {
+                    if (sub.Id === item.Id) {
+                        PortfolioLevelNum = sub.childs.length + 1;
+                    }
+                    if (sub.childs != undefined && sub.childs.length > 0) {
+                        sub.childs.forEach((newsub: any) => {
+                            if (newsub.Id === item.Id) {
+                                PortfolioLevelNum = newsub.childs.length + 1;
+                            }
+
+                        })
+                    }
+
+                })
+            }
+
+        })
         // setRestructureChecked(item);
     }
     let changetoTaxType: any = ''
+
     const UpdateRestructure = async function () {
-        if (RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type =='Feature') {
-            changetoTaxType = 'SubComponent';
+        let PortfolioStructureIDs: any = ''
+        var Item: any = ''
+        if (ChengedItemTitle === '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Feature') {
+            ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
         }
-        if (RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type =='SubComponent') {
-            changetoTaxType = 'Component';
+      else  if (ChengedItemTitle === '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'SubComponent') {
+            ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
         }
-        getPortfolioItemID();
+        else if (ChengedItemTitle !== '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Feature') {
+            ChengedItemTitle = 'SubComponent';
+        }
+        else if (ChengedItemTitle !== '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'SubComponent') {
+            ChengedItemTitle = 'Component';
+        }
+        if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
+            NewArrayBackup.forEach((newobj: any) => {
+                if (ChengedItemTitle == newobj.Item_x0020_Type)
+                    Item = newobj;
+            })
+
+        }
+        if (Item !== undefined && Item.PortfolioStructureID != undefined && ChengedItemTitle != undefined) {
+            PortfolioStructureIDs = Item.PortfolioStructureID + '-' + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
+            if (Item != undefined)
+                PortfolioStructureIDs = Item.PortfolioStructureID + '-' + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
+        }
+        maidataBackup.forEach((obj) => {
+            if (obj.Id === RestructureChecked[0].Id) {
+                PortfolioLevelNum = item.childs.length + 1;
+            }
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                obj.childs.forEach((sub: any) => {
+                    if (sub.Id === RestructureChecked[0].Id) {
+                        PortfolioLevelNum = sub.childs.length + 1;
+                    }
+                    if (sub.childs != undefined && sub.childs.length > 0) {
+                        sub.childs.forEach((newsub: any) => {
+                            if (newsub.Id === RestructureChecked[0].Id) {
+                                PortfolioLevelNum = newsub.childs.length + 1;
+                            }
+
+                        })
+                    }
+
+                })
+            }
+
+        })
         var UploadImage: any = [];
 
         var item: any = {};
 
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        // await web.lists
-        //     .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
-        //     .items.getById(RestructureChecked[0].Id)
-        //     .update({
-        //         ParentId: $scope.parentRestructuring.Id,
-        //         PortfolioLevel: (PortfolioLevelNum),
-        //         PortfolioStructureID: ChildPortfolioStructureID
+        await web.lists
+            .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+            .items.getById(RestructureChecked[0].Id)
+            .update({
+                ParentId: Item.Id,
+                PortfolioLevel: (PortfolioLevelNum),
+                PortfolioStructureID: PortfolioStructureIDs
 
 
-        //     })
-        //     .then((res: any) => {
-        //         console.log(res);
-
-        //         setModalIsOpenToFalse();
-        //     });
+            })
+            .then((res: any) => {
+                console.log(res);
+                RestruringCloseCall()
+                //setModalIsOpenToFalse();
+            });
         // setResturuningOpen(true)
     }
     var PortfolioLevelNum: any = 0;
-    const getPortfolioItemID = async function () {
-        // var defer = $q.defer();
-        var filter = ""
-        if (RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Id != undefined) {
-            filter = "Id eq '" + RestructureChecked[0].Parent.Id + "' and Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'" //" and Parent/Id eq " + RestructureChecked[0].Id;
-        }
-        if (ChengedItemTitle === 'SubComponent')
-            filter = "Id eq '" + NewArrayBackup[0].Parent.Id + "' and Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'"// " and Parent/Id eq " + NewArrayBackup[0].Id;
-
-       // var query = "Id,PortfolioLevel,PortfolioStructureID,Created,Item_x0020_Type,Title,Portfolio_x0020_Type,Parent/Id,Parent/Title&$expand=Parent&$filter=(Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'" + filter + ")&$orderBy=PortfolioLevel desc&$top=4999";
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let results = await web.lists
-            .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
-            .items
-            .select("Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Parent/Id")
-            .expand("Parent")
-            .filter(filter)
-            .orderBy("PortfolioLevel", false)
-            .top(1)
-            .get()
-        if (results.length > 0) {
-            PortfolioLevelNum = results[0].PortfolioLevel + 1;
-        } else {
-            PortfolioLevelNum = 1;
-        }
-        // SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + GlobalConstants.MASTER_TASKS_LISTID + "')/items?$select=" + query).then(function (success) {
-        //     $scope.PortfolioLevel = undefined
-        //     if (success.d.results.length > 0) {
-        //         $scope.PortfolioLevel = success.d.results[0].PortfolioLevel + 1;
-        //     }
-        //     else {
-        //         $scope.PortfolioLevel = 1;
-        //     }
-        //     defer.resolve(true);
-        // }, function (error) {
-        //     console.log(error);
-        // });
-        // return defer.promise;
-    }
+    // const getPortfolioItemID = async function () {
+    //     // var defer = $q.defer();
+    //     var filter = ""
+    //     if (RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Id != undefined) {
+    //         filter = "Id eq '" + RestructureChecked[0].Parent.Id + "' and Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'" //" and Parent/Id eq " + RestructureChecked[0].Id;
+    //     }
+    //     if (ChengedItemTitle === 'SubComponent')
+    //         filter = "Id eq '" + NewArrayBackup[0].Parent.Id + "' and Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'"// " and Parent/Id eq " + NewArrayBackup[0].Id;
+    //  let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    //     let results = await web.lists
+    //         .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+    //         .items
+    //         .select("Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Parent/Id")
+    //         .expand("Parent")
+    //         .filter(filter)
+    //         .orderBy("PortfolioLevel", false)
+    //         .top(1)
+    //         .get()
+    //     if (results.length > 0) {
+    //         PortfolioLevelNum = results[0].PortfolioLevel + 1;
+    //     } else {
+    //         PortfolioLevelNum = 1;
+    //     }
+    // }
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
 
@@ -4052,8 +4126,8 @@ isBlocking={false}
 </div>
 
 
-</Modal >
-            <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
+            </Modal >
+            <Panel headerText={` Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
                 <div>
                     {ResturuningOpen ?
                         <div className='bg-ee p-2 restructurebox'>
@@ -4091,19 +4165,19 @@ isBlocking={false}
                                 </a></span>
                             </div>
                             {console.log("restructure functio test in div===================================")}
-                            {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type != 'Feature' ?
-                                <div>
-                                    <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
-                                    <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
-                                </div>
-                                : ''}
+                            {/* {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type != 'Feature' ? */}
+                            <div>
+                                <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
+                                <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
+                            </div>
+                            {/* : ''} */}
                         </div>
                         : ''}</div>
                 <footer className="mt-2 text-end">
-                    
-                        <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>
-                        <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
-                   
+
+                    <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>
+                    <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
+
 
                 </footer>
             </Panel>
