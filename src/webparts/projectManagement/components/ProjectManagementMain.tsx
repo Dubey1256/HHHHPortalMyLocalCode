@@ -9,7 +9,6 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import axios, { AxiosResponse } from 'axios';
 import TagTaskToProjectPopup from './TagTaskToProjectPopup'
 import CreateTaskFromProject from './CreateTaskFromProject';
-import TaggedPortfolio from './TaggedPortfolio';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 
 
@@ -465,10 +464,8 @@ const ProjectManagementMain = (props: any) => {
     return (
         <>
             <div className='row'>
-                <div className='col-md-3'>
-                    <TaggedPortfolio item={Masterdata[0]} taggedComponents={Masterdata[0]?.smartComponent} taggedServices={Masterdata[0]?.smartService} call={potfolioTagCall} />
-                </div>
-                <div className='col-md-9'>
+                
+                <div className='col-md-12'>
                     <section>
                         <div>
 
