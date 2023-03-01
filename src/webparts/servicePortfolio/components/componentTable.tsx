@@ -2472,12 +2472,6 @@ function ComponentTable(SelectedProp: any) {
                         val.childs.push(childItem.data)
                     }
                 
-                    //  if (val.Id != childItem.data.ParentTaskId) {
-                    //     if(val.Title=='Others'){
-                    //         val.childs.push(childItem.data)
-                    //     }
-                    
-                    // }
                 })
                 setData(array => ([...array]))
             }

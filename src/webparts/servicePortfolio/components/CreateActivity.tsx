@@ -408,7 +408,7 @@ const CreateActivity = (props: any) => {
 
                         }).then((res: any) => {
                             res.data['SiteIcon']= value.Item_x005F_x0020_Cover.Url
-                            res.data['lisdtId']= value.listId
+                            res.data['listId']= value.listId
                             res.data.ParentTaskId=AllItems.Id
 
                             console.log(res);
