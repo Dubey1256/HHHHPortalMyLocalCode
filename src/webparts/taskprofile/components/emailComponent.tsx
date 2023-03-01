@@ -3,7 +3,7 @@
   import "@pnp/sp/sputilities";
   import { IEmailProperties } from "@pnp/sp/sputilities";
   import { Web } from "sp-pnp-js";   
-  import { spfi } from "@pnp/sp";
+  import { spfi, SPFx as spSPFx } from "@pnp/sp";
   // import { spfi, SPFx as spSPFx } from "@pnp/sp";
    const EmailComponenet=( props:any)=>{
     const[emailBody,setemailBody]=useState(null)
