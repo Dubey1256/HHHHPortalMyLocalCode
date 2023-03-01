@@ -19,6 +19,7 @@ import RelevantDocuments from './RelevantDocuments';
 import  SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import { Sync } from '@material-ui/icons';
+import EmailComponenet from './emailComponent';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
 // var smartTime: Number = 0                                   ;
@@ -317,7 +318,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       listId: listInfo.Id,
       Attachments: taskDetails["Attachments"],
       AttachmentFiles: taskDetails["AttachmentFiles"],
-      SmartInformationId:taskDetails["SmartInformation"]
+      SmartInformationId:taskDetails["SmartInformation"],
+      Approver:taskDetails.Approver!=undefined?taskDetails.Approver[0]:"",
     };
 
     // console.log(tempTask);
@@ -1006,6 +1008,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             <a className="hreflink ng-scope ps-2" onClick={() => this.OpenEditPopUp()}>
               <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
             </a>
+            {/* {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined&&this.currentUser[0].Title==this.state.Result["Approver"].Title &&<span><button>Approve</button><span><button>Reject</button></span></span>} */}
+            {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet  Approver={this.state.Result["Approver"]} currentUser={this.currentUser} items={this.state.Result}/>}
             </span>
             {this.state.Result.sitePage=="SP"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
             {this.state.Result.sitePage=="SH"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
