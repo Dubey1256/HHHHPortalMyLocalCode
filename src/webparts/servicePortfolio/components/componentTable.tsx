@@ -2450,35 +2450,34 @@ function ComponentTable(SelectedProp: any) {
     };
     const Call = React.useCallback((childItem: any) => {
         setIsComponent(false);;
-          setIsTask(false);
-         setMeetingPopup(false);
-         setWSPopup(false);
-        var  MainId:any=''
+        setIsTask(false);
+        setMeetingPopup(false);
+        setWSPopup(false);
+        var MainId: any = ''
         if (childItem != undefined) {
             childItem.data['flag'] = true;
             childItem.data['TitleNew'] = childItem.data.Title;
-     childItem.data['SharewebTaskType']  = {Title:'Activities'}
-            if(childItem.data.ServicesId!=undefined && childItem.data.ServicesId.length>0){
-                MainId  = childItem.data.ServicesId[0]
+            childItem.data['SharewebTaskType'] = { Title: 'Activities' }
+            if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
+                MainId = childItem.data.ServicesId[0]
             }
-            if(childItem.data.ComponentId!=undefined && childItem.data.ComponentId.length>0){
-                MainId  =  childItem.data.ComponentId[0]
+            if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+                MainId = childItem.data.ComponentId[0]
             }
             if (array != undefined) {
                 array.forEach((val: any) => {
-                    val.flag=true;
-                    val.show=false;
-                    if (val.childs != undefined) {
-                        if (val.Title == 'Others')
-                        val.childs.unshift(childItem.data)
+                    val.flag = true;
+                    val.show = false;
+                    if (val.Id == MainId) {
+                        val.childs.push(childItem.data)
                     }
-                
+
                 })
                 setData(array => ([...array]))
             }
 
         }
-            
+
 
 
     }, []);
@@ -2538,6 +2537,23 @@ function ComponentTable(SelectedProp: any) {
         })
         if (flag)
             list.push(itrm);
+        maidataBackup.forEach((obj, index) => {
+            obj.isRestructureActive = false;
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                obj.childs.forEach((sub: any, indexsub: any) => {
+                    sub.isRestructureActive = false;
+                    if (sub.childs != undefined && sub.childs.length > 0) {
+                        sub.childs.forEach((newsub: any, lastIndex: any) => {
+                            newsub.isRestructureActive = false;
+
+                        })
+                    }
+
+                })
+            }
+
+        })
+        setData(data => ([...maidataBackup]));
         setCheckedList(checkedList => ([...list]));
     };
     function AddItem() {
