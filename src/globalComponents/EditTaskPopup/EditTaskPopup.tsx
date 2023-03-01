@@ -2555,7 +2555,7 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="slider-image-section col-sm-6 p-2" style={{
                                     border: "2px solid #ccc"
                                 }}>
-                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false">
+                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false" data-bs-interval="false">
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
@@ -3114,7 +3114,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     }
 
-                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false">
+                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false" data-bs-interval="false">
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
