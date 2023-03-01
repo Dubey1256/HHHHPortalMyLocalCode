@@ -11,7 +11,7 @@ const SmartTimeTotalFunction=(item:any)=>{
     var TaskTimeSheetCategories: any = [];
     const [AllUser, setAllUser] = React.useState([])
     const [isTimeEntry,setisTimeEntry]=React.useState(false);
-
+  const[timeEntry,setTimeEntry]=React.useState(null);
     const [smartTimeTotal,setsmartTimeTotal] = React.useState(0);
     const [additionalTime, setAdditionalTime] = React.useState([]);
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
@@ -113,7 +113,13 @@ const SmartTimeTotalFunction=(item:any)=>{
                     if (data.d.results != undefined && data.d.results.length > 0) {
 
                         AllTimeSpentDetails = AllTimeSpentDetails.concat(data.d.results);
-
+                        // AllTimeSpentDetails.map((items:any)=>{
+                        //    if(items.AdditionalTimeEntry!=null){
+                        //     item.AdditionalTime = JSON.parse(item.AdditionalTimeEntry)
+                        //     setTimeEntry(items);
+                        //    } 
+                        // })
+                        
                     }
                      if (allurls.length === count) {
                let totletimeparentcount = 0;
@@ -253,6 +259,7 @@ const SmartTimeTotalFunction=(item:any)=>{
         var TotalTime =0.0;
        
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { 
+            type.AdditionalTime1=JSON.parse(type.AdditionalTimeEntry);
             if(type.AdditionalTime!=undefined&&type.AdditionalTime.length>0){
                        
                 $.each(type.AdditionalTime,function(index:any,time:any){
@@ -264,31 +271,47 @@ const SmartTimeTotalFunction=(item:any)=>{
                 setsmartTimeTotal(TotalTime);
             }
              return type.isShifted === true });
+
+             console.log(timeEntry);
        let newArray:any=[];
-      AllTimeSpentDetails.map((items:any)=>{
-        let parentfound=false;
-     if(newArray.length==0){
-        newArray.push(items);
-     }
-     else if(newArray.length>0){
-        newArray.map((child:any)=>{
-    if(child.AuthorId==items.AuthorId){
-        child.AdditionalTime.push(items.AdditionalTime[0])
-    parentfound=true;
-    }
-     })
-        if(parentfound==false){
-            newArray.push(items);  
-        }
-        }
-      })
+       let hoversmartArray :any=[];
+       AllTimeSpentDetails.map((items:any)=>{
+        items.AdditionalTime1.map((item:any)=>{
+            item.additionaltime2=[];
+            item.additionaltime2.push(item);
+            hoversmartArray.push(item)
+        })
+       
+        
+       })
+       console.log(hoversmartArray);
+      
+        hoversmartArray.map((items:any)=>{
+            let parentfound=false;
+          if(newArray.length==0){
+             newArray.push(items);
+          }
+          else if(newArray.length>0){
+             newArray.map((child:any)=>{
+         if(child.AuthorId==items.AuthorId){
+             child.additionaltime2.push(items.additionaltime2[0])
+         parentfound=true;
+         }
+          })
+             if(parentfound==false){
+                 newArray.push(items);  
+             }
+             }
+           })
+       
+           setTimeEntry(newArray)
       console.log(newArray);
 
       if(newArray.length>0){
         newArray.map((items:any)=>{
             var hoverTime=0;
-            if(items.AdditionalTime.length>0){
-                $.each(items.AdditionalTime,function(index:any,time:any){
+            if(items.additionaltime2.length>0){
+                $.each(items.additionaltime2,function(index:any,time:any){
                     hoverTime=hoverTime+parseFloat(time.TaskTime);
                   })
              }
@@ -309,6 +332,8 @@ const SmartTimeTotalFunction=(item:any)=>{
      }
     return(
         <>
+    
+        {console.log(timeEntry)}
        {console.log(AllAvailableTitle)} 
         {console.log(additionalTime)}
            {smartTimeTotal.toFixed(1)}
@@ -332,7 +357,7 @@ const SmartTimeTotalFunction=(item:any)=>{
                                     <td style={{width:"80%"}}  colSpan={2}><span className='px-2'>Total- Time</span>{items.hoverTime}</td>
                                 </tr>
                   
-                {items?.AdditionalTime?.length>0&& items?.AdditionalTime?.map((details:any)=>{
+                {items?.additionaltime2?.length>0&& items?.additionaltime2?.map((details:any)=>{
                    return(
                        <>       <tr>
                                     <td style={{width:"20%"}}>{details.TaskDate}</td>
