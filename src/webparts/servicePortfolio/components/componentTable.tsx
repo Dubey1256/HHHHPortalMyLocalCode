@@ -3777,7 +3777,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 <div className="accordian-header" >
                                                                                                                     {/* checked={item.checked === true ? true : false} */}
                                                                                                                     <span className='pe-2'><input type="checkbox"
-                                                                                                                        onChange={(e) => onChangeHandler(item, childitem, e)} /></span>
+                                                                                                                        onChange={(e) => onChangeHandler(childitem, item, e)} /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -3903,7 +3903,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         <div className="accordian-header" >
                                                                                                                                             {/* checked={item.checked === true ? true : false} */}
                                                                                                                                             <span className='pe-2'><input type="checkbox"
-                                                                                                                                                onChange={(e) => onChangeHandler(item, childinew, e)} /></span>
+                                                                                                                                                onChange={(e) => onChangeHandler(childinew, item, e)} /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
