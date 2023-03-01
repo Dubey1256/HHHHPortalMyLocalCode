@@ -204,7 +204,11 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     let doc = parser.parseFromString(str, 'text/html');
     return doc.body;
   }
-
+private changeTrafficLigth(item:any){
+  this.setState({
+    
+  })
+}
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
       <div>
@@ -213,13 +217,13 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
             <div>
               {this.props.ApprovalStatus ?
                 <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
-                  <span title="Rejected"
+                  <span title="Rejected" onClick={()=> this.changeTrafficLigth("Reject")}
                     className={this.state.fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                   >
                   </span>
-                  <span title="Maybe" className={this.state.fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                  <span onClick={()=> this.changeTrafficLigth("Maybe")} title="Maybe" className={this.state.fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                   </span>
-                  <span title="Approved" className={this.state.fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+                  <span title="Approved" onClick={()=> this.changeTrafficLigth("Approve")} className={this.state.fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                   </span>
                 </span>
