@@ -120,7 +120,7 @@ const CommentBoxComponent = (commentData: any) => {
                                 <div className="Task-panel d-flex  justify-content-between">
                                     <div className={isDisabled ? "my-1" : "my-1 Disabled-Link"}>
                                         {ApprovalStatus ?
-                                            <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
+                                            <span className="MR5 ng-scope">
                                                 <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
                                                     className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                                                 >
@@ -136,7 +136,7 @@ const CommentBoxComponent = (commentData: any) => {
                                     </div>
                                     <div>
                                         <span className="mx-1">
-                                            <input className="form-check-input mt-0 rounded-0 commentSectionLabel " type="checkbox"
+                                            <input className="form-check-input m-0 rounded-0 commentSectionLabel " type="checkbox"
                                                 checked={obj.Phone}
                                                 value={obj.Phone}
                                                 name='Phone'
@@ -145,7 +145,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
-                                            <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mt-0 rounded-0 commentSectionLabel "
+                                            <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
                                             />
                                             <label className="commentSectionLabel ms-1">
                                                 Low Importance
@@ -154,7 +154,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         <span> | </span>
                                         <span className="mx-1">
                                             <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
-                                                value={obj.HighImportance} className="form-check-input mt-0 rounded-0 commentSectionLabel "
+                                                value={obj.HighImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
                                             />
                                             <label className="commentSectionLabel ms-1">
                                                 High Importance
@@ -162,7 +162,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
-                                            <input type="checkbox" id="" className="form-check-input mt-0 rounded-0 commentSectionLabel "
+                                            <input type="checkbox" id="" className="form-check-input m-0 rounded-0 commentSectionLabel "
                                                 name='Completed' checked={obj.Completed} value={obj.Completed} />
                                             <label className="commentSectionLabel ms-1">
                                                 Mark As Completed

@@ -75,10 +75,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const obj = { ...subCommentsData[id], [name]: value };
             copy[id] = obj;
             setSubCommentsData(copy);
-            Array = [];
-            copy?.map((copyItem: any) => {
-                Array.push(copyItem)
-            })
+            Array = copy
+         
         }
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
@@ -87,10 +85,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const obj = { ...subCommentsData[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setSubCommentsData(copy);
-            Array = [];
-            copy?.map((copyItem: any) => {
-                Array.push(copyItem)
-            })
+            Array = copy;
+           
         }
         setTimeout(() => {
             callBack(Array, SubTextItemsArray.commentId);
@@ -159,7 +155,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
 
                                     <div>
                                         <span className="mx-1">
-                                            <input className="form-check-input mt-0 rounded-0 commentSectionLabel " type="checkbox"
+                                            <input className="form-check-input m-0 rounded-0 commentSectionLabel " type="checkbox"
                                                 checked={obj.Phone}
                                                 value={obj.Phone}
                                                 name='Phone'
@@ -168,20 +164,20 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1" >
-                                            <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mt-0 rounded-0 commentSectionLabel "
+                                            <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
                                             />
                                             <label className="commentSectionLabel ms-1">Low Importance</label>
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
                                             <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
-                                                value={obj.HighImportance} className="form-check-input mt-0 rounded-0 commentSectionLabel "
+                                                value={obj.HighImportance} className="form-check-input m-0 rounded-0 commentSectionLabel "
                                             />
                                             <label className="commentSectionLabel ms-1">High Importance </label>
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
-                                            <input type="checkbox" id="" className="form-check-input mt-0 rounded-0 commentSectionLabel "
+                                            <input type="checkbox" id="" className="form-check-input m-0 rounded-0 commentSectionLabel "
                                                 name='Completed' checked={obj.Completed} value={obj.Completed} />
                                             <label className="commentSectionLabel ms-1">Mark As Completed</label>
                                         </span>
