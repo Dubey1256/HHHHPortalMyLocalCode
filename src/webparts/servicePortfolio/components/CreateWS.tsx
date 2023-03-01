@@ -461,7 +461,6 @@ const CreateWS = (props: any) => {
                 Body:AllItems.Description,
                 DueDate: date != undefined ? new Date(date).toDateString() : date,
                 Shareweb_x0020_ID: SharewebID,
-                PortfolioStructureID: SharewebID,
                 Priority: AllItems.Priority,
                 SharewebTaskLevel2No: WorstreamLatestId,
                 SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,

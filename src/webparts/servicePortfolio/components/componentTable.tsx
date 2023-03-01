@@ -2472,13 +2472,7 @@ function ComponentTable(SelectedProp: any) {
                         if (val.Title == 'Others')
                         val.childs.unshift(childItem.data)
                     }
-
-                    //  if (val.Id != childItem.data.ParentTaskId) {
-                    //     if(val.Title=='Others'){
-                    //         val.childs.push(childItem.data)
-                    //     }
-
-                    // }
+                
                 })
                 setData(array => ([...array]))
             }
@@ -2518,14 +2512,14 @@ function ComponentTable(SelectedProp: any) {
                 setMeetingItems(itrm);
 
             }
-            if (child.SharewebTaskType != undefined) {
-                if (child.SharewebTaskType.Title == 'Activities' || child.SharewebTaskType.Title == "Workstream") {
+            if (itrm.SharewebTaskType != undefined) {
+                if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
                     itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                     itrm['listName'] = 'Master Tasks';
                     Array.push(itrm)
-                    child['PortfolioId'] = itrm.Id;
-                    setchildsData(child)
+                    itrm['PortfolioId'] = child.Id;
+                    setchildsData(itrm)
                 }
             }
         }
