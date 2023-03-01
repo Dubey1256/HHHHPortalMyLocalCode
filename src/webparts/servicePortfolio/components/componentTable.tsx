@@ -3888,7 +3888,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         <td style={{ width: "2%" }}>
                                                                                                                                             {childinew.childs.length > 0 &&
                                                                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childinew)}>
-                                                                                                                                                    <a className='hreflink' onClick={(e) => EditData(e, item)}
+                                                                                                                                                    <a className='hreflink'
                                                                                                                                                         title="Tap to expand the childs">
                                                                                                                                                         <div className="sign">{childinew.childs.length > 0 && childinew.show ? <img src={childinew.downArrowIcon} />
                                                                                                                                                             : <img src={childinew.RightArrowIcon} />}
