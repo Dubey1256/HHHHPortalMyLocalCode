@@ -27,6 +27,7 @@ const CreateWS = (props: any) => {
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [smartComponentData, setSmartComponentData] = React.useState([]);
+    const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [SharewebCategory, setSharewebCategory] = React.useState('');
@@ -40,11 +41,23 @@ const CreateWS = (props: any) => {
     const[IsPopupComponent,setIsPopupComponent]= React.useState(false)
     const [CategoriesData, setCategoriesData] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+
     const closeTaskStatusUpdatePoup = (res: any) => {
         setTaskStatuspopup(false)
         props.Call(res);
 
     }
+    // React.useEffect(()=>{
+    //     if (AllItems.Portfolio_x0020_Type != undefined) {
+    //         if(AllItems.Portfolio_x0020_Type == 'Component'){
+    //             smartComponentData.push(AllItems);
+    //         }
+    //         if(AllItems.Portfolio_x0020_Type == 'Service'){
+    //             linkedComponentData.push(AllItems);
+    //         }
+           
+    //     }
+    // },[])
     var ItemRankTitle: any = ''
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
     const DDComponentCallBack = (dt: any) => {
@@ -208,18 +221,42 @@ const CreateWS = (props: any) => {
         //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
         // }
         var Component: any = []
-        smartComponentData.forEach((com: any) => {
-            if (com != undefined) {
-                Component.push(com.Id)
-            }
+        var RelevantPortfolioIds:any=[]
+        
+        // smartComponentData.forEach((com: any) => {
+        //     if (com != undefined) {
+        //         Component.push(com.Id)
+        //     }
 
-        })
+        // })
+        if(AllItems.Portfolio_x0020_Type == 'Component'){
+            Component.push(AllItems.PortfolioId)
+        }
+        if(AllItems.Portfolio_x0020_Type == 'Service'){
+            RelevantPortfolioIds.push(AllItems.PortfolioId)
+        }
+        
         var categoriesItem = '';
         CategoriesData.map((category) => {
             if (category.Title != undefined) {
                 categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
             }
         })
+        smartComponentData.forEach((com: any) => {
+            if (com != undefined) {
+                Component.push(com.Id)
+            }
+
+        })
+        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            linkedComponentData?.map((com: any) => {
+                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                    $.each(linkedComponentData, function (index: any, smart: any) {
+                        RelevantPortfolioIds.push(smart.Id)
+                    })
+                }
+            })
+        }
         var CategoryID: any = []
         CategoriesData.map((category) => {
             if (category.Id != undefined) {
@@ -256,6 +293,7 @@ const CreateWS = (props: any) => {
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
             ParentTaskId: AllItems.Id,
+            ServicesId: { "results": RelevantPortfolioIds},
             Priority: AllItems.Priority,
             Body:AllItems.Description,
             DueDate: date != undefined ? new Date(date).toDateString() : date,
@@ -270,6 +308,7 @@ const CreateWS = (props: any) => {
             console.log(res);
             if(PopupType=='CreatePopup'){
                 closeTaskStatusUpdatePoup(res);
+                res.data['SiteIcon']= AllItems.Item_x005F_x0020_Cover.Url
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
             }
@@ -318,6 +357,7 @@ const CreateWS = (props: any) => {
     
         }
     const createChildAsTask = async (item: any, Type: any, index: any) => {
+        var RelevantPortfolioIds:any=[]
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let componentDetails: any = [];
         componentDetails = await web.lists
@@ -353,6 +393,27 @@ const CreateWS = (props: any) => {
                 }
 
             })
+            // smartComponentData.forEach((com: any) => {
+            //     if (com != undefined) {
+            //         Component.push(com.Id)
+            //     }
+    
+            // })
+            // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            //     linkedComponentData?.map((com: any) => {
+            //         if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+            //             $.each(linkedComponentData, function (index: any, smart: any) {
+            //                 RelevantPortfolioIds.push(smart.Id)
+            //             })
+            //         }
+            //     })
+            // }
+            if(AllItems.Portfolio_x0020_Type == 'Component'){
+                Component.push(AllItems.PortfolioId)
+            }
+            if(AllItems.Portfolio_x0020_Type == 'Service'){
+                RelevantPortfolioIds.push(AllItems.PortfolioId)
+            }
             var categoriesItem = '';
             CategoriesData.map((category) => {
                 if (category.Title != undefined) {
@@ -390,10 +451,11 @@ const CreateWS = (props: any) => {
             await web.lists.getById(AllItems.listId).items.add({
                 Title: AllItems.Title,
                 ComponentId: { "results": Component },
-                 Categories: categoriesItem ? categoriesItem : null,
-                 Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+             Categories: categoriesItem ? categoriesItem : null,
+             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
                 SharewebCategoriesId: { "results": CategoryID },
                 ParentTaskId: AllItems.Id,
+                ServicesId: { "results": RelevantPortfolioIds},
                 SharewebTaskTypeId: SharewebTasknewTypeId,
                 Body:AllItems.Description,
                 DueDate: date != undefined ? new Date(date).toDateString() : date,
@@ -406,7 +468,6 @@ const CreateWS = (props: any) => {
                 Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
             }).then((res: any) => {
-                res.data['SiteIcon']= AllItems.SiteIcon
                 console.log(res);
                 closeTaskStatusUpdatePoup(res);
             })
@@ -595,7 +656,7 @@ const CreateWS = (props: any) => {
                         <div className="col-sm-3">
                                 <div className="input-group">
                                     <label className='full-width'>Categories</label>
-                                    <input type="text" className="full-width" id="txtCategories" />
+                                    <input type="text" className="form-control" id="txtCategories" />
                                 
                                     <span className="input-group-text">
 

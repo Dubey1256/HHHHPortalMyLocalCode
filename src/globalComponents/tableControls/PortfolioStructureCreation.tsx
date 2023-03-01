@@ -12,7 +12,7 @@ export interface IStructureCreationProps {
     SelectedItem: any;
     PortfolioType: any;
 }
- 
+
 export interface IStructureCreationState {
     isModalOpen: boolean;
     AllFilteredAvailableComoponent: any;
@@ -30,7 +30,7 @@ export interface IStructureCreationState {
     value: any;
     filterArray: any;
     search: false;
-    Isflag:any;
+    Isflag: any;
 
 }
 
@@ -55,7 +55,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             value: '',
             filterArray: [],
             search: false,
-            Isflag:false,
+            Isflag: false,
         }
         this.LoadSPComponents();
         this.Load();
@@ -68,14 +68,14 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         var select: any = "Title,Id,PortfolioType&$filter=Portfolio_x0020_Type eq '" + filtertitle + "'"
         SPDetails = await globalCommon.getData(GlobalConstants.SP_SITE_URL, GlobalConstants.MASTER_TASKS_LISTID, select);
         console.log(SPDetails);
-        var tets :any =[];
-        SPDetails.forEach((obj:any) =>{
+        var tets: any = [];
+        SPDetails.forEach((obj: any) => {
             tets.push(obj.Title);
-        } )
+        })
         this.setState({
-            tempr:tets,
+            tempr: tets,
             AllComponents: SPDetails,
-           
+
         }, () => console.log(this.state.AllComponents))
     }
     private setItemType() {
@@ -115,12 +115,12 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     handleInputChange = (e: any) => {
 
         const keyword = e.target.value;
-       // setValue(event.target.value);
+        // setValue(event.target.value);
 
         if (this.state.value.length == 0) {
             this.setState({ search: false });
         }
-       
+
         this.setState({ value: e.target.value });
         // if (keyword !== '') {
         //     const results = this.state.AllComponents.filter((user: any) => {
@@ -251,21 +251,22 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         if (ItemType == undefined)
             this.GetportfolioIdCount = 0;
 
-        let ItemTypes = 'Component';
-        // if (ItemType == undefined) {
-        if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'Root Component') {
-            ItemTypes = 'Component';
-        } else if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'Component') {
-            ItemTypes = 'SubComponent';
-        }
-        else if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'SubComponent') {
-            ItemTypes = 'Feature';
-        }
-        else if (this.state.SelectedItem != null || this.state.SelectedItem == undefined) {
-            ItemTypes = 'Component';
-        }
-        //  }
+        let ItemTypes = (this.state.ChildItemTitle != undefined && this.state.ChildItemTitle.length > 0) ? this.state.ChildItemTitle[0].MasterItemsType : undefined;
+        if (ItemType == undefined) {
+            if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'Root Component') {
+                ItemTypes = 'Component';
+            } else if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'Component') {
+                ItemTypes = 'SubComponent';
+            }
+            else if (this.state.SelectedItem != null && this.state.SelectedItem != undefined && this.state.SelectedItem.Item_x0020_Type == 'SubComponent') {
+                ItemTypes = 'Feature';
+            }
+            else if (this.state.SelectedItem != null || this.state.SelectedItem == undefined) {
+                ItemTypes = 'Component';
+            }
+        } else ItemTypes = (this.state.ChildItemTitle != undefined && this.state.ChildItemTitle.length > 0) ? this.state.ChildItemTitle[0].MasterItemsType : 'Component';
         let filter = ''
+
         if (ItemTypes == 'Component') {
             filter = "Item_x0020_Type eq '" + ItemTypes + "'"
         }
@@ -333,18 +334,18 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             } else {
                 this.MasterItemsType = 'SubComponent';
                 this.ChildItemTitle = [];
-                this.IconUrl =this.state.SelectedItem.Portfolio_x0020_Type ==='Component'?'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png':'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png';
+                this.IconUrl = this.state.SelectedItem.Portfolio_x0020_Type === 'Component' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png';
                 this.CountFor = 0;
                 if (this.state.SelectedItem.Item_x0020_Type == 'SubComponent') {
                     this.MasterItemsType = 'Feature';
-                    this.IconUrl =this.state.SelectedItem.Portfolio_x0020_Type ==='Component'?'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png':'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png';
+                    this.IconUrl = this.state.SelectedItem.Portfolio_x0020_Type === 'Component' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png';
                 }
 
                 this.ChildItemTitle.push({
                     Title: '',
                     MasterItemsType: this.MasterItemsType,
                     AdminStatus: 'Not Started',
-                    IconUrl :this.IconUrl,
+                    IconUrl: this.IconUrl,
                     Child: [{ Short_x0020_Description_x0020_On: '' }],
                     Id: 0,
                     TeamMemberUsers: [],
@@ -360,9 +361,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             }
         }
     }
-    
-     
-     private  createChildItems = async (Type: any) => {
+
+
+    private createChildItems = async (Type: any) => {
         let isloadEssentialDeatils = false
         //$('#CreateChildpoup1').hide();
         //SharewebCommonFactoryService.showProgressBar();
@@ -503,14 +504,14 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                     i.data['siteType'] = 'Master Tasks';
                     self.Count++;
                     self.CreatedItem.push(i);
-                    let Type:any ='';
-                   if (self.state.Isflag) {
-                    self.setState({ 
-                        Isflag: false,
-                    })
+                    let Type: any = '';
+                    if (self.state.Isflag) {
+                        self.setState({
+                            Isflag: false,
+                        })
                         self.CreateOpenType = 'CreatePopup';
-                     }
-                    
+                    }
+
                     /*
                      if (self.Count ==self.TotalCount) {
                          if (Type == 'Create') {
@@ -540,7 +541,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     }
     createChildItemsnew = async (Type: any) => {
-        this.setState({ 
+        this.setState({
             Isflag: true,
         })
         this.createChildItems('CreatePopup');
@@ -608,7 +609,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             search: false,
             textTitle: searchTerm
         })
-        
+
 
         // $.each(this.state.AllComponents, function (index: any, d: any) {
 
@@ -656,7 +657,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                     )}
                                 </div> */}
                                 <div className="dropdown">
-                                    {this.state !=undefined && this.state.tempr?.filter((item: any) => {
+                                    {this.state != undefined && this.state.tempr?.filter((item: any) => {
                                         // item?.toLowerCase().includes(item);
 
 
@@ -689,10 +690,10 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                             return (
                                                 <ListGroup>
                                                     <ListGroup.Item>{op}</ListGroup.Item>
-                                                    </ListGroup>
-                                            // <tr>
-                                            //     <td><span>{op}</span></td>
-                                            // </tr>
+                                                </ListGroup>
+                                                // <tr>
+                                                //     <td><span>{op}</span></td>
+                                                // </tr>
                                             )
                                         })}
 
