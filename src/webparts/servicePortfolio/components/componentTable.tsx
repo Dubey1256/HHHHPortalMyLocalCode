@@ -2449,21 +2449,28 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
-        setIsComponent(false);
-        setIsTask(false);
-        setMeetingPopup(false);
-        setWSPopup(false);
-        childItem.data['flag'] = true;
-        childItem.data['TitleNew'] = childItem.data.Title;
-
+        setIsComponent(false);;
+          setIsTask(false);
+         setMeetingPopup(false);
+         setWSPopup(false);
+        var  MainId:any=''
         if (childItem != undefined) {
+            childItem.data['flag'] = true;
+            childItem.data['TitleNew'] = childItem.data.Title;
+     childItem.data['SharewebTaskType']  = {Title:'Activities'}
+            if(childItem.data.ServicesId!=undefined && childItem.data.ServicesId.length>0){
+                MainId  = childItem.data.ServicesId[0]
+            }
+            if(childItem.data.ComponentId!=undefined && childItem.data.ComponentId.length>0){
+                MainId  =  childItem.data.ComponentId[0]
+            }
             if (array != undefined) {
                 array.forEach((val: any) => {
-                    val.flag = true;
-                    val.show = false;
+                    val.flag=true;
+                    val.show=false;
                     if (val.childs != undefined) {
                         if (val.Title == 'Others')
-                            val.childs.unshift(childItem.data)
+                        val.childs.unshift(childItem.data)
                     }
 
                     //  if (val.Id != childItem.data.ParentTaskId) {
@@ -2477,7 +2484,7 @@ function ComponentTable(SelectedProp: any) {
             }
 
         }
-
+            
 
 
     }, []);
