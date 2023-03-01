@@ -309,6 +309,7 @@ const CreateWS = (props: any) => {
             if(PopupType=='CreatePopup'){
                 closeTaskStatusUpdatePoup(res);
                 res.data['SiteIcon']= AllItems.Item_x005F_x0020_Cover.Url
+                res.data['listId']= AllItems.listId
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
             }
@@ -460,6 +461,7 @@ const CreateWS = (props: any) => {
                 Body:AllItems.Description,
                 DueDate: date != undefined ? new Date(date).toDateString() : date,
                 Shareweb_x0020_ID: SharewebID,
+                PortfolioStructureID: SharewebID,
                 Priority: AllItems.Priority,
                 SharewebTaskLevel2No: WorstreamLatestId,
                 SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
@@ -469,6 +471,8 @@ const CreateWS = (props: any) => {
 
             }).then((res: any) => {
                 console.log(res);
+                res.data['SiteIcon']= AllItems.Item_x005F_x0020_Cover.Url
+                res.data['listId']= AllItems.listId
                 closeTaskStatusUpdatePoup(res);
             })
         }
