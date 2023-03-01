@@ -309,6 +309,7 @@ const CreateWS = (props: any) => {
             if(PopupType=='CreatePopup'){
                 closeTaskStatusUpdatePoup(res);
                 res.data['SiteIcon']= AllItems.Item_x005F_x0020_Cover.Url
+                res.data['listId']= AllItems.listId
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
             }
@@ -469,6 +470,8 @@ const CreateWS = (props: any) => {
 
             }).then((res: any) => {
                 console.log(res);
+                res.data['SiteIcon']= AllItems.Item_x005F_x0020_Cover.Url
+                res.data['listId']= AllItems.listId
                 closeTaskStatusUpdatePoup(res);
             })
         }

@@ -986,7 +986,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                     <label className='ms-1'>  Feature</label>
 
                                                                 </span>
-                                                            </div>
+                                                            </div> 
                                                         </>
                                                     }
                                                 </div>

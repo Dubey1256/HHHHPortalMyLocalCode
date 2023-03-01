@@ -143,17 +143,17 @@ function ComponentTable(SelectedProp: any) {
                 setMeetingItems(childsData)
             }
         }
-        if(MeetingItems != undefined && MeetingItems.SharewebTaskType?.Title == 'Workstream'){
+        if (MeetingItems != undefined && MeetingItems.SharewebTaskType?.Title == 'Workstream') {
             setActivityPopup(true)
         }
-        if(childsData != undefined && childsData.SharewebTaskType?.Title == 'Workstream'){
+        if (childsData != undefined && childsData.SharewebTaskType?.Title == 'Workstream') {
             setActivityPopup(true)
         }
-        if(MeetingItems.SharewebTaskType == undefined && childsData.SharewebTaskType == undefined ){
+        if (MeetingItems.SharewebTaskType == undefined && childsData.SharewebTaskType == undefined) {
             setActivityPopup(true)
         }
-       
-        
+
+
 
 
     }
@@ -2449,29 +2449,29 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
-        setIsComponent(false);
-  setIsTask(false);
-  setMeetingPopup(false);                      
-  setWSPopup(false);
-        childItem.data['flag']=true;
-        childItem.data['TitleNew']=childItem.data.Title;
-       
+        setIsComponent(false);;
+        setIsTask(false);
+        setMeetingPopup(false);
+        setWSPopup(false);
+        var MainId: any = ''
         if (childItem != undefined) {
+            childItem.data['flag'] = true;
+            childItem.data['TitleNew'] = childItem.data.Title;
+            childItem.data['SharewebTaskType'] = { Title: 'Activities' }
+            if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
+                MainId = childItem.data.ServicesId[0]
+            }
+            if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+                MainId = childItem.data.ComponentId[0]
+            }
             if (array != undefined) {
                 array.forEach((val: any) => {
-                    val.flag=true;
-                    val.show=false;
-                    if (val.childs != undefined) {
-                        if (val.Title == 'Others')
-                        val.childs.unshift(childItem.data)
+                    val.flag = true;
+                    val.show = false;
+                    if (val.Id == MainId) {
+                        val.childs.push(childItem.data)
                     }
-                
-                    //  if (val.Id != childItem.data.ParentTaskId) {
-                    //     if(val.Title=='Others'){
-                    //         val.childs.push(childItem.data)
-                    //     }
-                    
-                    // }
+
                 })
                 setData(array => ([...array]))
             }
@@ -2499,9 +2499,9 @@ function ComponentTable(SelectedProp: any) {
         setSharewebTask(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    const onChangeHandler = (itrm: any,child:any, e: any) => {
-        var  Array:any=[]
-        
+    const onChangeHandler = (itrm: any, child: any, e: any) => {
+        var Array: any = []
+
         const { checked } = e.target;
         if (checked == true) {
             if (itrm.SharewebTaskType == undefined) {
@@ -2509,16 +2509,16 @@ function ComponentTable(SelectedProp: any) {
                 itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                 itrm['listName'] = 'Master Tasks';
                 setMeetingItems(itrm);
-               
+
             }
-            if (child.SharewebTaskType != undefined) {
-                if (child.SharewebTaskType.Title == 'Activities' || child.SharewebTaskType.Title == "Workstream") {
+            if (itrm.SharewebTaskType != undefined) {
+                if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
                     itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                     itrm['listName'] = 'Master Tasks';
                     Array.push(itrm)
-                    child['PortfolioId']=itrm.Id;
-                    setchildsData(child)
+                    itrm['PortfolioId'] = child.Id;
+                    setchildsData(itrm)
                 }
             }
         }
@@ -2526,7 +2526,7 @@ function ComponentTable(SelectedProp: any) {
             setActivityDisable(true)
             $('#ClientCategoryPopup').hide();
         }
-    
+
         const list = [...checkedList];
         var flag = true;
         list.forEach((obj: any, index: any) => {
@@ -2537,6 +2537,23 @@ function ComponentTable(SelectedProp: any) {
         })
         if (flag)
             list.push(itrm);
+        maidataBackup.forEach((obj, index) => {
+            obj.isRestructureActive = false;
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                obj.childs.forEach((sub: any, indexsub: any) => {
+                    sub.isRestructureActive = false;
+                    if (sub.childs != undefined && sub.childs.length > 0) {
+                        sub.childs.forEach((newsub: any, lastIndex: any) => {
+                            newsub.isRestructureActive = false;
+
+                        })
+                    }
+
+                })
+            }
+
+        })
+        setData(data => ([...maidataBackup]));
         setCheckedList(checkedList => ([...list]));
     };
     function AddItem() {
@@ -2687,103 +2704,103 @@ function ComponentTable(SelectedProp: any) {
     }, []);
     const buttonRestructuring = () => {
         var ArrayTest: any = [];
-        if (checkedList != undefined && checkedList.length === 1) {
-            if (checkedList[0].Item_x0020_Type === 'Component')
-                alert('You are not allowed to Restructure this item.')
-            if (checkedList[0].Item_x0020_Type === 'SubComponent') {
-                maidataBackup.forEach((obj) => {
-                    obj.isRestructureActive = true;
-                    if (obj.childs != undefined && obj.childs.length > 0) {
-                        obj.childs.forEach((sub: any) => {
-                            if (sub.Id === checkedList[0].Id) {
-                                ArrayTest.push(...[obj])
-                                ArrayTest.push(...[sub])
-                                // ArrayTest.push(sub)
-                            }
+        //  if (checkedList != undefined && checkedList.length === 1) {
+        if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Component')
+            alert('You are not allowed to Restructure this item.')
+        if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'SubComponent') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj])
+                            ArrayTest.push(...[sub])
+                            // ArrayTest.push(sub)
+                        }
 
-                        })
-                    }
-
-
-                })
-            }
-            if (checkedList[0].Item_x0020_Type === 'Feature') {
-                maidataBackup.forEach((obj) => {
-                    obj.isRestructureActive = true;
-                    if (obj.childs != undefined && obj.childs.length > 0) {
-                        obj.childs.forEach((sub: any) => {
-                            sub.isRestructureActive = true;
-                            if (sub.Id === checkedList[0].Id) {
-                                ArrayTest.push(...[obj]);
-                                ArrayTest.push(...[sub]);
-                            }
-                            if (sub.childs != undefined && sub.childs.length > 0) {
-                                sub.childs.forEach((newsub: any) => {
-                                    if (newsub.Id === checkedList[0].Id) {
-                                        ArrayTest.push(...[obj]);
-                                        ArrayTest.push(...[sub]);
-                                        ArrayTest.push(...[newsub]);
-                                    }
+                    })
+                }
 
 
-                                })
-                            }
-
-                        })
-                    }
-
-                })
-            }
-            else if (checkedList[0].Item_x0020_Type === 'Task') {
-                maidataBackup.forEach((obj) => {
-                    obj.isRestructureActive = true;
-                    if (obj.Id === checkedList[0].Id) {
-                        ArrayTest.push(...[obj])
-                    }
-                    if (obj.childs != undefined && obj.childs.length > 0) {
-                        obj.childs.forEach((sub: any) => {
-                            if (sub.Item_x0020_Type === 'SubComponent')
-                                sub.isRestructureActive = true;
-                            if (sub.Id === checkedList[0].Id) {
-                                ArrayTest.push(...[obj])
-                                ArrayTest.push(...[sub])
-                                // ArrayTest.push(sub)
-                            }
-                            if (sub.childs != undefined && sub.childs.length > 0) {
-                                sub.childs.forEach((subchild: any) => {
-                                    if (subchild.Item_x0020_Type === 'SubComponent')
-                                        subchild.isRestructureActive = true;
-                                    if (subchild.Id === checkedList[0].Id) {
-                                        ArrayTest.push(...[obj])
-                                        ArrayTest.push(...[sub])
-                                        ArrayTest.push(...[subchild])
-                                        // ArrayTest.push(sub)
-                                    }
-                                    if (subchild.childs != undefined && subchild.childs.length > 0) {
-                                        subchild.childs.forEach((listsubchild: any) => {
-                                            if (listsubchild.Id === checkedList[0].Id) {
-                                                ArrayTest.push(...[obj])
-                                                ArrayTest.push(...[sub])
-                                                ArrayTest.push(...[subchild])
-                                                ArrayTest.push(...[listsubchild])
-                                            }
-
-                                        })
-                                    }
-
-                                })
-                            }
-
-                        })
-                    }
-
-
-                })
-            }
-            setOldArrayBackup(ArrayTest)
-            setData((data) => [...maidataBackup]);
-
+            })
         }
+        if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Feature') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        sub.isRestructureActive = true;
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj]);
+                            ArrayTest.push(...[sub]);
+                        }
+                        if (sub.childs != undefined && sub.childs.length > 0) {
+                            sub.childs.forEach((newsub: any) => {
+                                if (newsub.Id === checkedList[0].Id) {
+                                    ArrayTest.push(...[obj]);
+                                    ArrayTest.push(...[sub]);
+                                    ArrayTest.push(...[newsub]);
+                                }
+
+
+                            })
+                        }
+
+                    })
+                }
+
+            })
+        }
+        else if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Task') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.Id === checkedList[0].Id) {
+                    ArrayTest.push(...[obj])
+                }
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Item_x0020_Type === 'SubComponent')
+                            sub.isRestructureActive = true;
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj])
+                            ArrayTest.push(...[sub])
+                            // ArrayTest.push(sub)
+                        }
+                        if (sub.childs != undefined && sub.childs.length > 0) {
+                            sub.childs.forEach((subchild: any) => {
+                                if (subchild.Item_x0020_Type === 'SubComponent')
+                                    subchild.isRestructureActive = true;
+                                if (subchild.Id === checkedList[0].Id) {
+                                    ArrayTest.push(...[obj])
+                                    ArrayTest.push(...[sub])
+                                    ArrayTest.push(...[subchild])
+                                    // ArrayTest.push(sub)
+                                }
+                                if (subchild.childs != undefined && subchild.childs.length > 0) {
+                                    subchild.childs.forEach((listsubchild: any) => {
+                                        if (listsubchild.Id === checkedList[0].Id) {
+                                            ArrayTest.push(...[obj])
+                                            ArrayTest.push(...[sub])
+                                            ArrayTest.push(...[subchild])
+                                            ArrayTest.push(...[listsubchild])
+                                        }
+
+                                    })
+                                }
+
+                            })
+                        }
+
+                    })
+                }
+
+
+            })
+        }
+        setOldArrayBackup(ArrayTest)
+        setData((data) => [...maidataBackup]);
+
+        //  }
         // setAddModalOpen(true)
     }
     const RestruringCloseCall = () => {
@@ -2819,7 +2836,7 @@ function ComponentTable(SelectedProp: any) {
 
         })
         setChengedItemTitle(checkedList[0].Item_x0020_Type);
-        ChengedTitle =(checkedList[0].Item_x0020_Type ==='Feature' ?'SubComponent':(checkedList[0].Item_x0020_Type ==='SubComponent' ?'Component' :checkedList[0].Item_x0020_Type));
+        ChengedTitle = (checkedList[0].Item_x0020_Type === 'Feature' ? 'SubComponent' : (checkedList[0].Item_x0020_Type === 'SubComponent' ? 'Component' : checkedList[0].Item_x0020_Type));
         let Items: any = []; Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
         setRestructureChecked(Items);
         setNewArrayBackup(NewArrayBackup => ([...TestArray]));
@@ -3014,7 +3031,7 @@ function ComponentTable(SelectedProp: any) {
                             checkedList[0].RightArrowIcon = obj.RightArrowIcon;
                         }
                         if (obj.childs != undefined && obj.childs.length > 0) {
-                            obj.childs.forEach((sub: any, indexsub:any) => {
+                            obj.childs.forEach((sub: any, indexsub: any) => {
                                 sub.isRestructureActive = false;
                                 if (sub.Id === checkedList[0].Id) {
                                     obj.childs.splice(indexsub, 1)
@@ -3022,7 +3039,7 @@ function ComponentTable(SelectedProp: any) {
                                     checkedList[0].RightArrowIcon = obj.RightArrowIcon;
                                 }
                                 if (sub.childs != undefined && sub.childs.length > 0) {
-                                    sub.childs.forEach((newsub: any, lastIndex:any) => {
+                                    sub.childs.forEach((newsub: any, lastIndex: any) => {
                                         newsub.isRestructureActive = false;
                                         if (newsub.Id === checkedList[0].Id) {
                                             sub.childs.splice(lastIndex, 1)
@@ -3049,7 +3066,7 @@ function ComponentTable(SelectedProp: any) {
                         Item.childs.push(checkedList[0]);
                     } else {
                         Item.childs = [];
-                        Item.show =true;
+                        Item.show = true;
                         Item.downArrowIcon = checkedList[0].downArrowIcon
                         Item.RightArrowIcon = checkedList[0].RightArrowIcon;
                         // Item.show = Item.show == undefined ? false : Item.show
@@ -3057,7 +3074,7 @@ function ComponentTable(SelectedProp: any) {
                         // Item.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
                         Item.childs.push(checkedList[0]);
                     }
-                    setCheckedList(checkedList =>([...[]]));
+                    setCheckedList(checkedList => ([...[]]));
                     setData(data => ([...maidataBackup]));
                     RestruringCloseCall()
 
@@ -3647,7 +3664,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                         <div className="accordian-header" >
                                                                                             {/* checked={item.checked === true ? true : false} */}
                                                                                             <span className='pe-2'><input type="checkbox"
-                                                                                                onChange={(e) => onChangeHandler(item,'Parent', e)} /></span>
+                                                                                                onChange={(e) => onChangeHandler(item, 'Parent', e)} /></span>
                                                                                         </div>
 
                                                                                     </td>
@@ -3770,7 +3787,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                 <div className="accordian-header" >
                                                                                                                     {/* checked={item.checked === true ? true : false} */}
                                                                                                                     <span className='pe-2'><input type="checkbox"
-                                                                                                                        onChange={(e) => onChangeHandler(item,childitem, e)} /></span>
+                                                                                                                        onChange={(e) => onChangeHandler(childitem, item, e)} /></span>
                                                                                                                 </div>
 
                                                                                                             </td>
@@ -3881,7 +3898,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         <td style={{ width: "2%" }}>
                                                                                                                                             {childinew.childs.length > 0 &&
                                                                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childinew)}>
-                                                                                                                                                    <a className='hreflink' onClick={(e) => EditData(e, item)}
+                                                                                                                                                    <a className='hreflink'
                                                                                                                                                         title="Tap to expand the childs">
                                                                                                                                                         <div className="sign">{childinew.childs.length > 0 && childinew.show ? <img src={childinew.downArrowIcon} />
                                                                                                                                                             : <img src={childinew.RightArrowIcon} />}
@@ -3896,7 +3913,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         <div className="accordian-header" >
                                                                                                                                             {/* checked={item.checked === true ? true : false} */}
                                                                                                                                             <span className='pe-2'><input type="checkbox"
-                                                                                                                                                 onChange={(e) => onChangeHandler(item,childinew, e)} /></span>
+                                                                                                                                                onChange={(e) => onChangeHandler(childinew, item, e)} /></span>
                                                                                                                                         </div>
 
                                                                                                                                     </td>
@@ -4321,14 +4338,14 @@ function ComponentTable(SelectedProp: any) {
                             </div>
                             {console.log("restructure functio test in div===================================")}
                             {/* {RestructureChecked != undefined && RestructureChecked.length > 1 ? */}
-                                <div>
-                                    <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
-                                    <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
-                                </div>
-                                {/* : ''} */}
+                            <div>
+                                <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
+                                <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
+                            </div>
+                            {/* : ''} */}
                         </div>
                         : ''}
-                        </div>
+                </div>
                 <footer className="mt-2 text-end">
 
                     <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>
