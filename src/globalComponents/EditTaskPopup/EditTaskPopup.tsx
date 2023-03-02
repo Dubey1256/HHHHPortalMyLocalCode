@@ -2783,11 +2783,7 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="slider-image-section col-sm-6 p-2" style={{
                                     border: "2px solid #ccc"
                                 }}>
-<<<<<<< HEAD
                                     <div id="carouselExampleControls" className="carousel slide" data-bs-interval="false">
-=======
-                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false" data-bs-interval="false">
->>>>>>> 58abb4e3d86a90cc3553fa9e5cd1667465610d44
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
@@ -3367,11 +3363,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     }
 
-<<<<<<< HEAD
                                     <div id="carouselExampleControls" className="carousel slide" data-bs-interval="false">
-=======
-                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false" data-bs-interval="false">
->>>>>>> 58abb4e3d86a90cc3553fa9e5cd1667465610d44
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
