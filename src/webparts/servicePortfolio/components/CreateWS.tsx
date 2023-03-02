@@ -17,6 +17,7 @@ var Task: any = []
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
+//var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
     SelectedTasks=[]
     var AllItems = props.props
@@ -40,6 +41,8 @@ const CreateWS = (props: any) => {
     const [Categories, setCategories] = React.useState([]);
     const[IsPopupComponent,setIsPopupComponent]= React.useState(false)
     const [CategoriesData, setCategoriesData] = React.useState([]);
+    const [checkedWS, setcheckedWS] = React.useState(true);
+    const [checkedTask, setcheckedTask] = React.useState(true);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
 
     const closeTaskStatusUpdatePoup = (res: any) => {
@@ -47,17 +50,11 @@ const CreateWS = (props: any) => {
         props.Call(res);
 
     }
-    // React.useEffect(()=>{
-    //     if (AllItems.Portfolio_x0020_Type != undefined) {
-    //         if(AllItems.Portfolio_x0020_Type == 'Component'){
-    //             smartComponentData.push(AllItems);
-    //         }
-    //         if(AllItems.Portfolio_x0020_Type == 'Service'){
-    //             linkedComponentData.push(AllItems);
-    //         }
-           
-    //     }
-    // },[])
+    React.useEffect(()=>{
+       
+        selectType('Workstream');
+        
+    },[])
     var ItemRankTitle: any = ''
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
     const DDComponentCallBack = (dt: any) => {
@@ -300,6 +297,7 @@ const CreateWS = (props: any) => {
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
+            SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
@@ -308,7 +306,8 @@ const CreateWS = (props: any) => {
             console.log(res);
             if(PopupType=='CreatePopup'){
                 closeTaskStatusUpdatePoup(res);
-                res.data['SiteIcon']= AllItems.Item_x005F_x0020_Cover.Url
+                res.data['SiteIcon']= AllItems.SiteIcon
+                res.data['listId']= AllItems.listId
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
             }
@@ -469,6 +468,8 @@ const CreateWS = (props: any) => {
 
             }).then((res: any) => {
                 console.log(res);
+                res.data['SiteIcon']= AllItems.SiteIcon
+                res.data['listId']= AllItems.listId
                 closeTaskStatusUpdatePoup(res);
             })
         }
@@ -486,6 +487,10 @@ const CreateWS = (props: any) => {
 
     }
     const selectType = async (type: any) => {
+        if(type == 'Task'){
+          setcheckedWS(false)
+        }
+        
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         TaskTypeItems = await web.lists
             .getById('21b55c7b-5748-483a-905a-62ef663972dc')
@@ -521,12 +526,12 @@ const CreateWS = (props: any) => {
                     <div className='row mt-2'>
                         <span className="col-sm-2 padL-0 ">
                             <label>
-                                <input type="radio" value="Workstream" onClick={() => selectType('Workstream')} className="me-1" />Workstream
+                                <input type="radio" checked={checkedWS}  onClick={() => selectType('Workstream')} className="me-1" />Workstream
                             </label>
                         </span>
                         <span className="col-sm-2" >
                             <label>
-                                <input type="radio" value="Task" onClick={() => selectType('Task')} className="me-1" />Task
+                                <input type="radio"  onClick={() => selectType('Task')} className="me-1" />Task
                             </label>
                         </span>
 
@@ -535,7 +540,7 @@ const CreateWS = (props: any) => {
                         <div className="col-sm-8 pad0">
                         <label className="full-width"></label>
                             <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title" onChange={(e: any) => AllItems.Title = e.target.value}
+                                placeholder="Enter Child Item Title" defaultValue={AllItems.Title} onChange={(e: any) => AllItems.Title = e.target.value}
                             />
                         </div>
                         <div className="col-sm-4">

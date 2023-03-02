@@ -2,10 +2,10 @@
   import  { useState } from 'react';
   import "@pnp/sp/sputilities";
   import { IEmailProperties } from "@pnp/sp/sputilities";
-  import { Web } from "sp-pnp-js";
-  import "@pnp/sp/sputilities";
-  import { spfi } from "@pnp/sp";
-  
+  import { Web } from "sp-pnp-js";   
+  import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
+
+
   // import { spfi, SPFx as spSPFx } from "@pnp/sp";
    const EmailComponenet=( props:any)=>{
     const[emailBody,setemailBody]=useState(null)
@@ -43,14 +43,21 @@
     }
   
     const SendEmail=async(emailprops: any)=> {
-      const sp = spfi();
+      const sp = new SPFI();
       const emailProps: IEmailProperties = { To: ["user@site.com"],
        CC: emailprops.To,
         BCC: emailprops.To,
          Subject: emailprops.Subject, 
          Body: BindHtmlBody(),
           AdditionalHeaders: { "content-type": "text/html" } }; 
-          await sp.utility.sendEmail(emailProps); 
+          // await sp.utility.sendEmail(emailProps); 
+          try {
+            const result = await sp.utility.sendEmail(emailProps);
+            console.log('Email sent successfully.');
+          } catch (error) {
+            console.log(`Error sending email: ${error}`);
+          }
+        
           console.log("Email Sent!");
       // let sp=spfi();
       
@@ -79,11 +86,11 @@
     }
      return(
         <>
-       {props.Approver!=undefined && props.currentUser!=undefined&&props.Approver.Title==props.currentUser[0].Title
+       {props.Approver!=undefined &&props.items.Categories.includes("Approval")&& props.currentUser!=undefined&&props.Approver.Title==props.currentUser[0].Title
         &&<span><button  onClick={()=>sendEmail("Approve")}className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Reject")}>Reject</button></span></span>
        }
        {/* <span><button  onClick={()=>sendEmail("Approve")}className="btn btn-success">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Reject")}>Reject</button></span></span> */}
-        {/* <span><button  onClick={sendEmail}>Approve</button><span><button onClick={sendEmail}>Reject</button></span></span> */}
+     
     
         {props.items != null  &&props.Approver!=undefined&&
           <div id='htmlMailBody' style={{ display: 'none' }}>
