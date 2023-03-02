@@ -509,6 +509,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private SendEmail(emailprops: any) {
+    let sp= spfi().using(spSPFx(this.props.Context))
     sp.utility.sendEmail({
       //Body of Email  
       Body: this.BindHtmlBody(),
