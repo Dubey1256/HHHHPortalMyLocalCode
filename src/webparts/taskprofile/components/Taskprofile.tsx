@@ -318,7 +318,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Attachments: taskDetails["Attachments"],
       AttachmentFiles: taskDetails["AttachmentFiles"],
       SmartInformationId:taskDetails["SmartInformation"],
-      Approver:taskDetails.Approver[0],
+      Approver:taskDetails.Approver!=undefined?taskDetails.Approver[0]:"",
     };
 
     // console.log(tempTask);
@@ -926,6 +926,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       hasTeamsContext,
       userDisplayName
     } = this.props;
+    
+    if(this.state.Result["TaskId"] != undefined && this.state.Result['Title'] != undefined){
+    
+      document.title = `${this.state.Result["TaskId"]}-${this.state.Result['Title']}`
+  }else{
+    document.title = "Task Profile"
+  }
+
     return (
       <div className={this.state.Result["Services"] !=undefined && this.state.Result["Services"].length >0  ? 'app component serviepannelgreena' : "app component"}>
 
@@ -1411,5 +1419,4 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     );
   }
 }
-
 

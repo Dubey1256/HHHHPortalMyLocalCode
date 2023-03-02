@@ -26,6 +26,7 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from '../FlorarComponents/FlorarImageUploadComponent';
 
+
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -37,7 +38,7 @@ var tempCategoryData: any;
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
-var FeedBackBackupArray:any = [];
+var FeedBackBackupArray: any = [];
 const EditTaskPopup = (Items: any) => {
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -557,85 +558,10 @@ const EditTaskPopup = (Items: any) => {
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
+            let statusValue: any
             smartMeta?.map((item: any) => {
                 let saveImage = []
-                if (item.PercentComplete != undefined) {
-                    let statusValue = item.PercentComplete * 100;
-                    item.PercentComplete = statusValue;
-                    if (statusValue < 70 && statusValue > 20) {
-                        setTaskStatus("In Progress");
-                        setPercentCompleteStatus(`${statusValue}% In Progress`);
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
-                    } else {
-                        StatusArray?.map((item: any) => {
-                            if (statusValue == item.value) {
-                                setPercentCompleteStatus(item.status);
-                                setTaskStatus(item.taskStatusComment);
-                            }
-                        })
-                    }
-                    if (statusValue >= 80) {
-                        setSmartLightPercentStatus(true);
-                    }
-                }
-                if (item.Body != undefined) {
-                    item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
-                }
-                if (item.BasicImageInfo != null && item.Attachments) {
-                    saveImage.push(JSON.parse(item.BasicImageInfo))
-                }
-                if (item.Priority_x0020_Rank != undefined) {
-                    if (currentUsers != undefined) {
-                        currentUsers?.map((rank: any) => {
-                            if (rank.rank == item.Priority_x0020_Rank) {
-                                item.Priority_x0020_Rank = rank.rank;
-                            }
-                        })
-                    }
-
-                }
-                item.TaskId = globalCommon.getTaskId(item);
-                let AssignedUsers: any = [];
-                let ApproverData: any = [];
-                if (taskUsers != undefined) {
-                    taskUsers?.map((userData: any) => {
-                        item.AssignedTo?.map((AssignedUser: any) => {
-                            if (userData?.AssingedToUserId == AssignedUser.Id) {
-                                AssignedUsers.push(userData);
-                                userData.Approver?.map((AData: any) => {
-                                    ApproverData.push(AData);
-                                })
-                            }
-                        })
-                    })
-                }
-                if (ApproverData?.length > 0) {
-                    ApproverData?.map((Approver: any) => {
-                        currentUserBackupArray?.map((current: any) => {
-                            if (Approver.Id == current.AssingedToUserId) {
-                                setSmartLightStatus(true);
-                            }
-                        })
-                    })
-
-                }
-                if (item.component_x0020_link != null) {
-                    item.Relevant_Url = item.component_x0020_link.Url
-                }
-
-                setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
-                setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
-                setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
-
-
-                item.TaskAssignedUsers = AssignedUsers;
-                item.TaskApprovers = ApproverData;
-                if (item.Attachments) {
-                    let tempData = []
-                    tempData = saveImage[0];
-                    item.UploadedImage = saveImage ? saveImage[0] : '';
-                    onUploadImageFunction(tempData, tempData?.length);
-                }
+                let ApprovalStatus: any = false;
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
                     tempCategoryData = item.Categories;
@@ -662,8 +588,10 @@ const EditTaskPopup = (Items: any) => {
                     }
                     if (ApprovalCheck >= 0) {
                         setApprovalStatus(true)
+                        ApprovalStatus = true
                     } else {
                         setApprovalStatus(false)
+                        ApprovalStatus = false
                     }
                     if (OnlyCompletedCheck >= 0) {
                         setOnlyCompletedStatus(true);
@@ -677,6 +605,98 @@ const EditTaskPopup = (Items: any) => {
                     }
 
                 }
+                if (item.PercentComplete != undefined) {
+                    statusValue = item.PercentComplete * 100;
+                    item.PercentComplete = statusValue;
+                    if (statusValue < 70 && statusValue > 20) {
+                        setTaskStatus("In Progress");
+                        setPercentCompleteStatus(`${statusValue}% In Progress`);
+                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
+                    } else {
+                        StatusArray?.map((item: any) => {
+                            if (statusValue == item.value) {
+                                setPercentCompleteStatus(item.status);
+                                setTaskStatus(item.taskStatusComment);
+                            }
+                        })
+                    }
+                    if (statusValue >= 3) {
+                        setSmartLightPercentStatus(true);
+                    }
+                }
+                if (item.Body != undefined) {
+                    item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
+                }
+                if (item.BasicImageInfo != null && item.Attachments) {
+                    saveImage.push(JSON.parse(item.BasicImageInfo))
+                }
+                if (item.Priority_x0020_Rank != undefined) {
+                    if (currentUsers != undefined) {
+                        currentUsers?.map((rank: any) => {
+                            if (rank.rank == item.Priority_x0020_Rank) {
+                                item.Priority_x0020_Rank = rank.rank;
+                            }
+                        })
+                    }
+
+                }
+                item.TaskId = globalCommon.getTaskId(item);
+                let AssignedUsers: any = [];
+                let ApproverData: any = [];
+                if (item.Author != undefined && item.Author != null) {
+                    taskUsers.map((userData: any) => {
+                        if (item.Author.Id == userData?.AssingedToUserId) {
+                            userData.Approver?.map((AData: any) => {
+                                ApproverData.push(AData);
+                            })
+                        }
+                    })
+                    if (statusValue < 2 && ApprovalStatus) {
+                        if (ApproverData?.length > 0) {
+                            taskUsers.map((userData1: any) => {
+                                ApproverData?.map((itemData: any) => {
+                                    if (itemData.Id == userData1?.AssingedToUserId) {
+                                        AssignedUsers.push(userData1);
+                                    }
+                                })
+                            })
+                        }
+                    } else {
+                        taskUsers?.map((userData: any) => {
+                            item.AssignedTo?.map((AssignedUser: any) => {
+                                if (userData?.AssingedToUserId == AssignedUser.Id) {
+                                    AssignedUsers.push(userData);
+                                }
+                            })
+                        })
+                    }
+                }
+                if (ApproverData?.length > 0) {
+                    ApproverData?.map((Approver: any) => {
+                        currentUserBackupArray?.map((current: any) => {
+                            if (Approver.Id == current.AssingedToUserId) {
+                                setSmartLightStatus(true);
+                            }
+                        })
+                    })
+                }
+                if (item.component_x0020_link != null) {
+                    item.Relevant_Url = item.component_x0020_link.Url
+                }
+
+                setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
+                setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
+                setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
+
+                item.TaskAssignedUsers = AssignedUsers;
+                item.TaskApprovers = ApproverData;
+                if (item.Attachments) {
+                    let tempData = []
+                    tempData = saveImage[0];
+                    item.UploadedImage = saveImage ? saveImage[0] : '';
+                    onUploadImageFunction(tempData, tempData?.length);
+                }
+
                 if (item.SharewebCategories != undefined && item.SharewebCategories?.length > 0) {
                     let tempArray: any = [];
                     tempArray = item.SharewebCategories;
@@ -691,8 +711,6 @@ const EditTaskPopup = (Items: any) => {
                 if (item.RelevantPortfolio?.length > 0) {
                     setLinkedComponentData(item.RelevantPortfolio)
                 }
-
-
                 if (item.FeedBack != null) {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
@@ -712,6 +730,16 @@ const EditTaskPopup = (Items: any) => {
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
                     FeedBackBackupArray = JSON.stringify(tempArray);
+                }
+                if (item.Component?.length > 0) {
+                    item.ComponentTask = true
+                } else {
+                    item.ComponentTask = false
+                }
+                if (item.Services?.length > 0) {
+                    item.ServiceTask = true
+                } else {
+                    item.ServiceTask = false
                 }
                 setEditData(item)
                 setPriorityStatus(item.Priority)
@@ -846,7 +874,7 @@ const EditTaskPopup = (Items: any) => {
         if (StatusInput != 2) {
             setInputFieldDisable(false)
         }
-        if (StatusInput >= 80) {
+        if (StatusInput >= 3) {
             setSmartLightPercentStatus(true);
         }
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
@@ -1005,7 +1033,6 @@ const EditTaskPopup = (Items: any) => {
     var CategoryTypeID: any = [];
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImageArray: any = []
-
         if (TaskImages != undefined && TaskImages?.length > 0) {
             TaskImages?.map((imgItem: any) => {
                 if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
@@ -1211,44 +1238,45 @@ const EditTaskPopup = (Items: any) => {
             setEditData({ ...EditData, IsTodaysTask: true })
         }
     }
-
     //    ************* this is team configuration call Back function **************
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
-        if (teamConfigData?.AssignedTo?.length > 0) {
-            let tempArray: any = [];
-            teamConfigData.AssignedTo?.map((arrayData: any) => {
-                if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser)
-                } else {
-                    tempArray.push(arrayData);
-                }
-            })
-            setTaskAssignedTo(tempArray);
-            EditData.AssignedTo = tempArray;
-        }
-        if (teamConfigData?.TeamMemberUsers?.length > 0) {
-            let tempArray: any = [];
-            teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
-                if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser)
-                } else {
-                    tempArray.push(arrayData);
-                }
-            })
-            setTaskTeamMembers(tempArray);
-            EditData.Team_x0020_Members = tempArray;
-        }
-        if (teamConfigData?.ResponsibleTeam?.length > 0) {
-            let tempArray: any = [];
-            teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
-                if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser)
-                } else {
-                    tempArray.push(arrayData);
-                }
-            })
-            setTaskResponsibleTeam(tempArray);
-            EditData.Responsible_x0020_Team = tempArray;
+        if (SmartLightPercentStatus) {
+            if (teamConfigData?.AssignedTo?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.AssignedTo?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser)
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                })
+                setTaskAssignedTo(tempArray);
+                EditData.AssignedTo = tempArray;
+            }
+            if (teamConfigData?.TeamMemberUsers?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser)
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                })
+                setTaskTeamMembers(tempArray);
+                EditData.Team_x0020_Members = tempArray;
+            }
+            if (teamConfigData?.ResponsibleTeam?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser)
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                })
+                setTaskResponsibleTeam(tempArray);
+                EditData.Responsible_x0020_Team = tempArray;
+            }
         }
     }, [])
 
@@ -1320,7 +1348,7 @@ const EditTaskPopup = (Items: any) => {
                     "isAddComment": false,
                     "isShowComment": false,
                     "isPageType": '',
-                    "isShowLight":""
+                    "isShowLight": ""
                 }
                 tempArray.push(tempObject);
             }
@@ -1345,27 +1373,35 @@ const EditTaskPopup = (Items: any) => {
         if (TempFeedBackArray?.length > 0) {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Approve") {
-                    ApprovedStatusCount++ ;
+                    ApprovedStatusCount++;
                     let StatusInput: any = 3;
                     if (StatusInput == 3) {
                         setInputFieldDisable(false)
                         setStatusOnChangeSmartLight(3);
+                        // setTaskAssignedTo([]);
+                        // EditData.TaskAssignedUsers = [];
+                        // setTaskTeamMembers([]);
+                        // EditData.Team_x0020_Members = [];
                     }
                 }
-                if(item.Phone){
+                if (item.Phone) {
                     // CategoryChange("Phone", 199);
                 }
-                if(item.Subtext?.length > 0){
-                    item.Subtext.map((subItem:any)=>{
+                if (item.Subtext?.length > 0) {
+                    item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Approve") {
-                            ApprovedStatusCount++ ;
+                            ApprovedStatusCount++;
                             let StatusInput: any = 3;
                             if (StatusInput == 3) {
                                 setInputFieldDisable(false)
                                 setStatusOnChangeSmartLight(3);
+                                // setTaskAssignedTo([]);
+                                // EditData.TaskAssignedUsers = [];
+                                // setTaskTeamMembers([]);
+                                // EditData.Team_x0020_Members = [];
                             }
                         }
-                        if(item.Phone){
+                        if (item.Phone) {
                             // CategoryChange("Phone", 199);
                         }
                     })
@@ -1373,7 +1409,7 @@ const EditTaskPopup = (Items: any) => {
             })
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Reject" || item.isShowLight == "Maybe") {
-                    if(ApprovedStatusCount == 0){
+                    if (ApprovedStatusCount == 0) {
                         let StatusInput: any = 2;
                         if (StatusInput == 2) {
                             setInputFieldDisable(true)
@@ -1381,10 +1417,10 @@ const EditTaskPopup = (Items: any) => {
                         }
                     }
                 }
-                if(item.Subtext?.length > 0){
-                    item.Subtext.map((subItem:any)=>{
+                if (item.Subtext?.length > 0) {
+                    item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Reject" || subItem.isShowLight == "Maybe") {
-                            if(ApprovedStatusCount == 0){
+                            if (ApprovedStatusCount == 0) {
                                 let StatusInput: any = 2;
                                 if (StatusInput == 2) {
                                     setInputFieldDisable(true)
@@ -2064,7 +2100,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
                                                         <span className="form-check form-check-inline mb-0">
                                                             <input type="radio" id="Components"
-                                                                name="Portfolios" defaultChecked={true}
+                                                                name="Portfolios" defaultChecked={EditData.ComponentTask}
                                                                 title="Component"
                                                                 ng-model="PortfolioTypes"
                                                                 ng-click="getPortfoliosData()"
@@ -2075,6 +2111,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="radio" id="Services"
                                                                 name="Portfolios" value="Services"
                                                                 title="Services"
+                                                                defaultChecked={EditData.ServiceTask}
                                                                 className="form-check-input" />
                                                             <label className="form-check-label mb-0">Services</label>
                                                         </span>
@@ -2236,10 +2273,10 @@ const EditTaskPopup = (Items: any) => {
                                                                                 onClick={() => removeApproverFunction(Approver.Title, Approver.Id)} className="p-1"
                                                                             />
                                                                         </div>
-                                                                        <span className="float-end ">
+                                                                        {index == 0 ? <span className="float-end ">
                                                                             <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                                 onClick={() => alert("We are working on It. This feature will be live soon...")} />
-                                                                        </span>
+                                                                        </span> : null}
                                                                     </div>
                                                                 )
                                                             })}
@@ -2540,14 +2577,12 @@ const EditTaskPopup = (Items: any) => {
 
                                                                     <div className="card-footer d-flex justify-content-between p-1 px-2">
                                                                         <div>
-                                                                           
                                                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                                                             <span className="mx-1">
                                                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
                                                                             </span>
                                                                         </div>
                                                                         <div>
-                                                                            
                                                                             <span onClick={(e) => onImageUpdate(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
@@ -2720,7 +2755,7 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="slider-image-section col-sm-6 p-2" style={{
                                     border: "2px solid #ccc"
                                 }}>
-                                    <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false" data-bs-interval="false">
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
@@ -2872,7 +2907,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
                                                                     <span className="form-check form-check-inline mb-0">
                                                                         <input type="radio" id="Components"
-                                                                            name="Portfolios" defaultChecked={true}
+                                                                            name="Portfolios" defaultChecked={EditData.ComponentTask}
                                                                             title="Component"
                                                                             ng-model="PortfolioTypes"
                                                                             ng-click="getPortfoliosData()"
@@ -2883,6 +2918,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <input type="radio" id="Services"
                                                                             name="Portfolios" value="Services"
                                                                             title="Services"
+                                                                            defaultChecked={EditData.ServiceTask}
                                                                             className="form-check-input" />
                                                                         <label className="form-check-label mb-0">Services</label>
                                                                     </span>
@@ -3280,7 +3316,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     }
 
-                                    <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false" data-bs-interval="false">
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (

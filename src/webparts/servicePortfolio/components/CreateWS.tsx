@@ -17,6 +17,7 @@ var Task: any = []
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
+//var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
     SelectedTasks=[]
     var AllItems = props.props
@@ -27,6 +28,7 @@ const CreateWS = (props: any) => {
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [smartComponentData, setSmartComponentData] = React.useState([]);
+    const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [SharewebCategory, setSharewebCategory] = React.useState('');
@@ -39,12 +41,20 @@ const CreateWS = (props: any) => {
     const [Categories, setCategories] = React.useState([]);
     const[IsPopupComponent,setIsPopupComponent]= React.useState(false)
     const [CategoriesData, setCategoriesData] = React.useState([]);
+    const [checkedWS, setcheckedWS] = React.useState(true);
+    const [checkedTask, setcheckedTask] = React.useState(true);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+
     const closeTaskStatusUpdatePoup = (res: any) => {
         setTaskStatuspopup(false)
         props.Call(res);
 
     }
+    React.useEffect(()=>{
+       
+        selectType('Workstream');
+        
+    },[])
     var ItemRankTitle: any = ''
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
     const DDComponentCallBack = (dt: any) => {
@@ -208,18 +218,42 @@ const CreateWS = (props: any) => {
         //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
         // }
         var Component: any = []
-        smartComponentData.forEach((com: any) => {
-            if (com != undefined) {
-                Component.push(com.Id)
-            }
+        var RelevantPortfolioIds:any=[]
+        
+        // smartComponentData.forEach((com: any) => {
+        //     if (com != undefined) {
+        //         Component.push(com.Id)
+        //     }
 
-        })
+        // })
+        if(AllItems.Portfolio_x0020_Type == 'Component'){
+            Component.push(AllItems.PortfolioId)
+        }
+        if(AllItems.Portfolio_x0020_Type == 'Service'){
+            RelevantPortfolioIds.push(AllItems.PortfolioId)
+        }
+        
         var categoriesItem = '';
         CategoriesData.map((category) => {
             if (category.Title != undefined) {
                 categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
             }
         })
+        smartComponentData.forEach((com: any) => {
+            if (com != undefined) {
+                Component.push(com.Id)
+            }
+
+        })
+        if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            linkedComponentData?.map((com: any) => {
+                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                    $.each(linkedComponentData, function (index: any, smart: any) {
+                        RelevantPortfolioIds.push(smart.Id)
+                    })
+                }
+            })
+        }
         var CategoryID: any = []
         CategoriesData.map((category) => {
             if (category.Id != undefined) {
@@ -256,12 +290,14 @@ const CreateWS = (props: any) => {
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
             ParentTaskId: AllItems.Id,
+            ServicesId: { "results": RelevantPortfolioIds},
             Priority: AllItems.Priority,
             Body:AllItems.Description,
             DueDate: date != undefined ? new Date(date).toDateString() : date,
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
+            SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
@@ -270,6 +306,8 @@ const CreateWS = (props: any) => {
             console.log(res);
             if(PopupType=='CreatePopup'){
                 closeTaskStatusUpdatePoup(res);
+                res.data['SiteIcon']= AllItems.SiteIcon
+                res.data['listId']= AllItems.listId
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
             }
@@ -318,6 +356,7 @@ const CreateWS = (props: any) => {
     
         }
     const createChildAsTask = async (item: any, Type: any, index: any) => {
+        var RelevantPortfolioIds:any=[]
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let componentDetails: any = [];
         componentDetails = await web.lists
@@ -353,6 +392,27 @@ const CreateWS = (props: any) => {
                 }
 
             })
+            // smartComponentData.forEach((com: any) => {
+            //     if (com != undefined) {
+            //         Component.push(com.Id)
+            //     }
+    
+            // })
+            // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            //     linkedComponentData?.map((com: any) => {
+            //         if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+            //             $.each(linkedComponentData, function (index: any, smart: any) {
+            //                 RelevantPortfolioIds.push(smart.Id)
+            //             })
+            //         }
+            //     })
+            // }
+            if(AllItems.Portfolio_x0020_Type == 'Component'){
+                Component.push(AllItems.PortfolioId)
+            }
+            if(AllItems.Portfolio_x0020_Type == 'Service'){
+                RelevantPortfolioIds.push(AllItems.PortfolioId)
+            }
             var categoriesItem = '';
             CategoriesData.map((category) => {
                 if (category.Title != undefined) {
@@ -390,10 +450,11 @@ const CreateWS = (props: any) => {
             await web.lists.getById(AllItems.listId).items.add({
                 Title: AllItems.Title,
                 ComponentId: { "results": Component },
-                 Categories: categoriesItem ? categoriesItem : null,
-                 Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+             Categories: categoriesItem ? categoriesItem : null,
+             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
                 SharewebCategoriesId: { "results": CategoryID },
                 ParentTaskId: AllItems.Id,
+                ServicesId: { "results": RelevantPortfolioIds},
                 SharewebTaskTypeId: SharewebTasknewTypeId,
                 Body:AllItems.Description,
                 DueDate: date != undefined ? new Date(date).toDateString() : date,
@@ -406,8 +467,9 @@ const CreateWS = (props: any) => {
                 Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
             }).then((res: any) => {
-                res.data['SiteIcon']= AllItems.SiteIcon
                 console.log(res);
+                res.data['SiteIcon']= AllItems.SiteIcon
+                res.data['listId']= AllItems.listId
                 closeTaskStatusUpdatePoup(res);
             })
         }
@@ -425,6 +487,10 @@ const CreateWS = (props: any) => {
 
     }
     const selectType = async (type: any) => {
+        if(type == 'Task'){
+          setcheckedWS(false)
+        }
+        
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         TaskTypeItems = await web.lists
             .getById('21b55c7b-5748-483a-905a-62ef663972dc')
@@ -460,12 +526,12 @@ const CreateWS = (props: any) => {
                     <div className='row mt-2'>
                         <span className="col-sm-2 padL-0 ">
                             <label>
-                                <input type="radio" value="Workstream" onClick={() => selectType('Workstream')} className="me-1" />Workstream
+                                <input type="radio" checked={checkedWS}  onClick={() => selectType('Workstream')} className="me-1" />Workstream
                             </label>
                         </span>
                         <span className="col-sm-2" >
                             <label>
-                                <input type="radio" value="Task" onClick={() => selectType('Task')} className="me-1" />Task
+                                <input type="radio"  onClick={() => selectType('Task')} className="me-1" />Task
                             </label>
                         </span>
 
@@ -474,7 +540,7 @@ const CreateWS = (props: any) => {
                         <div className="col-sm-8 pad0">
                         <label className="full-width"></label>
                             <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title" onChange={(e: any) => AllItems.Title = e.target.value}
+                                placeholder="Enter Child Item Title" defaultValue={AllItems.Title} onChange={(e: any) => AllItems.Title = e.target.value}
                             />
                         </div>
                         <div className="col-sm-4">
@@ -595,7 +661,7 @@ const CreateWS = (props: any) => {
                         <div className="col-sm-3">
                                 <div className="input-group">
                                     <label className='full-width'>Categories</label>
-                                    <input type="text" className="full-width" id="txtCategories" />
+                                    <input type="text" className="form-control" id="txtCategories" />
                                 
                                     <span className="input-group-text">
 
