@@ -3,7 +3,9 @@
   import "@pnp/sp/sputilities";
   import { IEmailProperties } from "@pnp/sp/sputilities";
   import { Web } from "sp-pnp-js";   
-  import { spfi, SPFx as spSPFx } from "@pnp/sp";
+  import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
+
+
   // import { spfi, SPFx as spSPFx } from "@pnp/sp";
    const EmailComponenet=( props:any)=>{
     const[emailBody,setemailBody]=useState(null)
@@ -41,7 +43,7 @@
     }
   
     const SendEmail=async(emailprops: any)=> {
-      const sp = spfi();
+      const sp = new SPFI();
       const emailProps: IEmailProperties = { To: ["user@site.com"],
        CC: emailprops.To,
         BCC: emailprops.To,
@@ -84,7 +86,7 @@
     }
      return(
         <>
-       {props.Approver!=undefined && props.currentUser!=undefined&&props.Approver.Title==props.currentUser[0].Title
+       {props.Approver!=undefined &&props.items.Categories.includes("Approval")&& props.currentUser!=undefined&&props.Approver.Title==props.currentUser[0].Title
         &&<span><button  onClick={()=>sendEmail("Approve")}className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Reject")}>Reject</button></span></span>
        }
        {/* <span><button  onClick={()=>sendEmail("Approve")}className="btn btn-success">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Reject")}>Reject</button></span></span> */}
