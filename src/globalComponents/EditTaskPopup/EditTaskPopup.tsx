@@ -39,6 +39,8 @@ var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = false;
+let ApprovalStatusGlobal: any = true;
+var ApproverBackupArray:any = [];
 const EditTaskPopup = (Items: any) => {
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -562,7 +564,7 @@ const EditTaskPopup = (Items: any) => {
             let statusValue: any
             smartMeta?.map((item: any) => {
                 let saveImage = []
-                let ApprovalStatus: any = false;
+                
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
                     tempCategoryData = item.Categories;
@@ -589,10 +591,10 @@ const EditTaskPopup = (Items: any) => {
                     }
                     if (ApprovalCheck >= 0) {
                         setApprovalStatus(true)
-                        ApprovalStatus = true
+                        ApprovalStatusGlobal = true
                     } else {
                         setApprovalStatus(false)
-                        ApprovalStatus = false
+                        ApprovalStatusGlobal = false
                     }
                     if (OnlyCompletedCheck >= 0) {
                         setOnlyCompletedStatus(true);
@@ -621,10 +623,10 @@ const EditTaskPopup = (Items: any) => {
                             }
                         })
                     }
-                    if (statusValue >= 3) {
-                        ChangeTaskUserStatus = true;
-                    } else {
+                    if (statusValue <= 3 && ApprovalStatusGlobal) {
                         ChangeTaskUserStatus = false;
+                    } else {
+                        ChangeTaskUserStatus = true;
                     }
                 }
                 if (item.Body != undefined) {
@@ -651,10 +653,11 @@ const EditTaskPopup = (Items: any) => {
                         if (item.Author.Id == userData?.AssingedToUserId) {
                             userData.Approver?.map((AData: any) => {
                                 ApproverData.push(AData);
+                                ApproverBackupArray.push(AData);
                             })
                         }
                     })
-                    if (statusValue < 2 && ApprovalStatus) {
+                    if (statusValue < 2 || ApprovalStatusGlobal) {
                         if (ApproverData?.length > 0) {
                             taskUsers.map((userData1: any) => {
                                 ApproverData?.map((itemData: any) => {
@@ -768,6 +771,12 @@ const EditTaskPopup = (Items: any) => {
     //    *********** This is for status section Functions **************
     const StatusAutoSuggestion = (e: any) => {
         let StatusInput = e.target.value;
+        if (StatusInput == 0) {
+            setTaskStatus('');
+            setPercentCompleteStatus('');
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
+        }
+        
         if (StatusInput < 70 && StatusInput > 20) {
             setTaskStatus("In Progress");
             setPercentCompleteStatus(`${StatusInput}% In Progress`);
@@ -781,11 +790,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
-        if (StatusInput == 0) {
-            setTaskStatus(null);
-            setPercentCompleteStatus('');
-            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: null })
-        }
+       
         if (StatusInput == 80) {
             // let tempArray: any = [];
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
@@ -877,11 +882,20 @@ const EditTaskPopup = (Items: any) => {
         if (StatusInput != 2) {
             setInputFieldDisable(false)
         }
-        if (StatusInput >= 3) {
-            ChangeTaskUserStatus = true;
-        } else {
+        if (StatusInput <= 3 && ApprovalStatusGlobal) {
             ChangeTaskUserStatus = false;
+        } else {
+            ChangeTaskUserStatus = true;
 
+        }
+        if(StatusInput == 1){
+            let tempArray:any = [];
+            if(ApproverBackupArray?.length > 0){
+                ApproverBackupArray.map((dataItem:any)=>{
+                    tempArray.push(dataItem);
+                })
+            }
+            setTaskAssignedTo(tempArray);
         }
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
     }
@@ -891,6 +905,15 @@ const EditTaskPopup = (Items: any) => {
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
         setPercentCompleteCheck(false);
+        if(StatusData.value == 1){
+            let tempArray:any = [];
+            if(ApproverBackupArray?.length > 0){
+                ApproverBackupArray.map((dataItem:any)=>{
+                    tempArray.push(dataItem);
+                })
+            }
+            setTaskAssignedTo(tempArray);
+        }
         if (StatusData.value == 2) {
             setInputFieldDisable(true)
         }
