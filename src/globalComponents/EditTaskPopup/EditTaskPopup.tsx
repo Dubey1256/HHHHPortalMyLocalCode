@@ -37,14 +37,8 @@ var tempCategoryData: any;
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
+var FeedBackBackupArray:any = [];
 const EditTaskPopup = (Items: any) => {
-    var siteUrls:any;
-    if(Items != undefined &&  Items.Items.siteUrl != undefined && Items.Items.siteUrl.length<20){
-        siteUrls=`https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
-    }else{
-        siteUrls= Items.Items.siteUrl
-    }
-    const [images, setImages] = React.useState([]);
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -389,7 +383,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const getSmartMetaData = async () => {
-        let web = new Web(siteUrls);
+        let web = new Web(Items.Items.siteUrl);
         let MetaData: any = [];
         let siteConfig: any = [];
         let tempArray: any = [];
@@ -541,7 +535,7 @@ const EditTaskPopup = (Items: any) => {
 
     const GetEditData = async () => {
         try {
-            let web = new Web(siteUrls);
+            let web = new Web(Items.Items.siteUrl);
             let smartMeta;
             if (Items.Items.listId != undefined) {
                 smartMeta = await web.lists
@@ -549,7 +543,7 @@ const EditTaskPopup = (Items: any) => {
                     .items
                     .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
-                    .filter(`Id eq ${Items.Items.Id}`)
+                    .filter(`Id eq ${Items.Items.ID}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
@@ -580,7 +574,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         })
                     }
-                    if(statusValue >= 80){
+                    if (statusValue >= 80) {
                         setSmartLightPercentStatus(true);
                     }
                 }
@@ -616,7 +610,7 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
                 if (ApproverData?.length > 0) {
-                    ApproverData?.map((Approver:any) => {
+                    ApproverData?.map((Approver: any) => {
                         currentUserBackupArray?.map((current: any) => {
                             if (Approver.Id == current.AssingedToUserId) {
                                 setSmartLightStatus(true);
@@ -706,6 +700,7 @@ const EditTaskPopup = (Items: any) => {
                     let CommentBoxText = feedbackArray[0].Title.replace(/(<([^>]+)>)/ig, '');
                     item.CommentBoxText = CommentBoxText;
                     item.FeedBackArray = feedbackArray;
+                    FeedBackBackupArray = JSON.stringify(feedbackArray);
                 } else {
                     let param: any = Moment(new Date().toLocaleString())
                     var FeedBackItem: any = {};
@@ -716,6 +711,7 @@ const EditTaskPopup = (Items: any) => {
                     updateFeedbackArray = [FeedBackItem]
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
+                    FeedBackBackupArray = JSON.stringify(tempArray);
                 }
                 setEditData(item)
                 setPriorityStatus(item.Priority)
@@ -740,7 +736,6 @@ const EditTaskPopup = (Items: any) => {
 
     //    *********** This is for status section Functions **************
     const StatusAutoSuggestion = (e: any) => {
-        console.log("Status Enter in input======", e.target.value);
         let StatusInput = e.target.value;
         if (StatusInput < 70 && StatusInput > 20) {
             setTaskStatus("In Progress");
@@ -851,7 +846,7 @@ const EditTaskPopup = (Items: any) => {
         if (StatusInput != 2) {
             setInputFieldDisable(false)
         }
-        if(StatusInput >= 80){
+        if (StatusInput >= 80) {
             setSmartLightPercentStatus(true);
         }
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
@@ -914,8 +909,31 @@ const EditTaskPopup = (Items: any) => {
         // }
         // }
 
-
-
+        if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
+            setWorkingMember(9);
+            StatusArray?.map((item: any) => {
+                if (StatusData.value == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+        }
+        if (StatusData.value == 90) {
+            if (EditData.siteType == 'Offshore Tasks') {
+                setWorkingMember(36);
+            } else if (DesignStatus) {
+                setWorkingMember(172);
+            } else {
+                setWorkingMember(42);
+            }
+            EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
+            StatusArray?.map((item: any) => {
+                if (StatusData.value == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+        }
     }
 
     const setWorkingMember = (statusId: any) => {
@@ -1007,7 +1025,7 @@ const EditTaskPopup = (Items: any) => {
         }
         // images?.map((imgDtl: any) => {
         //     if (imgDtl.dataURL != undefined) {
-        //         var imgUrl = siteUrls + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
+        //         var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
         //     }
         //     // else {
         //     //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
@@ -1085,13 +1103,12 @@ const EditTaskPopup = (Items: any) => {
         } else {
             updateFeedbackArray = JSON.parse(EditData.FeedBack);
         }
-
+        FeedBackBackupArray = [];
         if (ShareWebTypeData != undefined && ShareWebTypeData?.length > 0) {
             ShareWebTypeData.map((typeData: any) => {
                 CategoryTypeID.push(typeData.Id)
             })
         }
-
         if (smartComponentData != undefined && smartComponentData?.length > 0) {
             smartComponentData?.map((com: any) => {
                 if (smartComponentData != undefined && smartComponentData?.length >= 0) {
@@ -1256,10 +1273,10 @@ const EditTaskPopup = (Items: any) => {
     const deleteItemFunction = async (itemId: any) => {
         try {
             if (Items.Items.listId != undefined) {
-                let web = new Web(siteUrls);
+                let web = new Web(Items.Items.siteUrl);
                 await web.lists.getById(Items.Items.listId).items.getById(itemId).delete();
             } else {
-                let web = new Web(siteUrls);
+                let web = new Web(Items.Items.siteUrl);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).delete();
             }
             Items.Call();
@@ -1268,19 +1285,130 @@ const EditTaskPopup = (Items: any) => {
             console.log("Error:", error.message);
         }
     }
+
+    // ************* this is for FeedBack Comment Section Functions ************
+
     const CommentSectionCallBack = React.useCallback((EditorData: any) => {
         CommentBoxData = EditorData
+        BuildFeedBackArray();
 
-        console.log("Editor Data call back HTML ====", EditorData)
     }, [])
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
         SubCommentBoxData = feedBackData;
-        console.log("Feedback Array in Edit Sub comp=====", feedBackData)
+        BuildFeedBackArray();
     }, [])
 
+    const BuildFeedBackArray = () => {
+        let TempFeedBackArray: any = [];
+        if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
+            TempFeedBackArray = CommentBoxData.concat(SubCommentBoxData)
+        }
+        if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
+            let message = JSON.parse(FeedBackBackupArray);
+            let feedbackArray: any = [];
+            if (message != null) {
+                feedbackArray = message[0]?.FeedBackDescriptions
+            }
+            let tempArray: any = [];
+            if (feedbackArray[0] != undefined) {
+                tempArray.push(feedbackArray[0])
+            } else {
+                let tempObject: any =
+                {
+                    "Title": '<p> </p>',
+                    "Completed": false,
+                    "isAddComment": false,
+                    "isShowComment": false,
+                    "isPageType": '',
+                    "isShowLight":""
+                }
+                tempArray.push(tempObject);
+            }
+            CommentBoxData = tempArray;
+            TempFeedBackArray = tempArray.concat(SubCommentBoxData);
+        }
+        if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
+            let message = JSON.parse(FeedBackBackupArray);
+            if (message != null) {
+                let feedbackArray = message[0]?.FeedBackDescriptions;
+                feedbackArray?.map((array: any, index: number) => {
+                    if (index > 0) {
+                        SubCommentBoxData.push(array);
+                    }
+                })
+                TempFeedBackArray = CommentBoxData.concat(SubCommentBoxData);
+            } else {
+                TempFeedBackArray = CommentBoxData;
+            }
+        }
+        let ApprovedStatusCount: any = 0;
+        if (TempFeedBackArray?.length > 0) {
+            TempFeedBackArray?.map((item: any) => {
+                if (item.isShowLight == "Approve") {
+                    ApprovedStatusCount++ ;
+                    let StatusInput: any = 3;
+                    if (StatusInput == 3) {
+                        setInputFieldDisable(false)
+                        setStatusOnChangeSmartLight(3);
+                    }
+                }
+                if(item.Phone){
+                    // CategoryChange("Phone", 199);
+                }
+                if(item.Subtext?.length > 0){
+                    item.Subtext.map((subItem:any)=>{
+                        if (subItem.isShowLight == "Approve") {
+                            ApprovedStatusCount++ ;
+                            let StatusInput: any = 3;
+                            if (StatusInput == 3) {
+                                setInputFieldDisable(false)
+                                setStatusOnChangeSmartLight(3);
+                            }
+                        }
+                        if(item.Phone){
+                            // CategoryChange("Phone", 199);
+                        }
+                    })
+                }
+            })
+            TempFeedBackArray?.map((item: any) => {
+                if (item.isShowLight == "Reject" || item.isShowLight == "Maybe") {
+                    if(ApprovedStatusCount == 0){
+                        let StatusInput: any = 2;
+                        if (StatusInput == 2) {
+                            setInputFieldDisable(true)
+                            setStatusOnChangeSmartLight(2);
+                        }
+                    }
+                }
+                if(item.Subtext?.length > 0){
+                    item.Subtext.map((subItem:any)=>{
+                        if (subItem.isShowLight == "Reject" || subItem.isShowLight == "Maybe") {
+                            if(ApprovedStatusCount == 0){
+                                let StatusInput: any = 2;
+                                if (StatusInput == 2) {
+                                    setInputFieldDisable(true)
+                                    setStatusOnChangeSmartLight(2);
+                                }
+                            }
+                        }
+                    })
+                }
+            })
+        }
+    }
+
+    const setStatusOnChangeSmartLight = (StatusInput: any) => {
+        StatusArray.map((percentStatus: any, index: number) => {
+            if (percentStatus.value == StatusInput) {
+                setTaskStatus(percentStatus.taskStatusComment);
+                setPercentCompleteStatus(percentStatus.status);
+                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+            }
+        })
+    }
+
     // **************** this is for category change and remove function functions ******************
-
-
 
     const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
         let tempString: any = [];
@@ -1348,6 +1476,11 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     }
+
+    // ********** ========= End ============== category change and remove function ******************
+
+    // ************ this is for Save And Add Time sheet function *************
+
     const SaveAndAddTimeSheet = () => {
         UpdateTaskInfoFunction("TimeSheetPopup");
         setTimeSheetPopup(true);
@@ -1357,28 +1490,9 @@ const EditTaskPopup = (Items: any) => {
         setTimeSheetPopup(false);
         setModalIsOpenToFalse();
     }
-    const ImageCompareFunction = (imageData: any) => {
-        compareImageArray.push(imageData);
-        if (compareImageArray.length == 2) {
-            setImageComparePopup(true);
-        }
-    }
-    const ImageCompareFunctionClosePopup = () => {
-        setImageComparePopup(false);
-        setCompareImageArray([]);
 
-    }
-    const ImageCustomizeFunction = (currentImagIndex: any) => {
-        setImageCustomizePopup(true)
-    }
-    const ImageCustomizeFunctionClosePopup = () => {
-        setImageCustomizePopup(false)
-    }
+    // ************ ======= END ===== of Save And Add Time sheet function *************
 
-    const CommonClosePopupFunction = () => {
-        ImageCompareFunctionClosePopup();
-        ImageCustomizeFunctionClosePopup();
-    }
 
 
     // ************** this is for the Approver Related All Functions section *****************
@@ -1396,7 +1510,7 @@ const EditTaskPopup = (Items: any) => {
 
     }
 
-    //***************** This is for image Upload Section  Functions *****************
+    //***************** This is for Image Upload Section  Functions *****************
     const FlorarImageUploadComponentCallBack = (dt: any) => {
         setUploadBtnStatus(false);
         let DataObject: any = {
@@ -1415,7 +1529,7 @@ const EditTaskPopup = (Items: any) => {
         let lastindexArray = imageList[imageList.length - 1];
         let fileName: any = '';
         let tempArray: any = [];
-        let SiteUrl = siteUrls;
+        let SiteUrl = Items.Items.siteUrl;
         imageList?.map(async (imgItem: any, index: number) => {
             if (imgItem.data_url != undefined && imgItem.file != undefined) {
                 let date = new Date()
@@ -1428,12 +1542,15 @@ const EditTaskPopup = (Items: any) => {
                     imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
                     ImageUrl: imgItem.data_url,
                     UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
-                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : ""
+                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : "",
                 };
                 tempArray.push(ImgArray);
             } else {
                 tempArray.push(imgItem);
             }
+        })
+        tempArray?.map((tempItem: any) => {
+            tempItem.Checked = false
         })
         setTaskImages(tempArray);
         // UploadImageFunction(lastindexArray, fileName);
@@ -1465,7 +1582,7 @@ const EditTaskPopup = (Items: any) => {
         }
         if (Items.Items.listId != undefined) {
             (async () => {
-                let web = new Web(siteUrls);
+                let web = new Web(Items.Items.siteUrl);
                 let item = web.lists.getById(listId).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
@@ -1473,7 +1590,7 @@ const EditTaskPopup = (Items: any) => {
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(siteUrls);
+                let web = new Web(Items.Items.siteUrl);
                 let item = web.lists.getByTitle(listName).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
@@ -1494,14 +1611,14 @@ const EditTaskPopup = (Items: any) => {
 
         if (Items.Items.listId != undefined) {
             (async () => {
-                let web = new Web(siteUrls);
+                let web = new Web(Items.Items.siteUrl);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).delete();
                 console.log("Attachment deleted");
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(siteUrls);
+                let web = new Web(Items.Items.siteUrl);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).delete();
                 console.log("Attachment deleted");
@@ -1519,16 +1636,16 @@ const EditTaskPopup = (Items: any) => {
         for (var i = 0; i < byteArray.byteLength; i++) {
             fileData += String.fromCharCode(byteArray[i]);
         }
-        if (siteUrls != undefined) {
+        if (Items.Items.siteUrl != undefined) {
             (async () => {
-                let web = new Web(siteUrls);
+                let web = new Web(Items.Items.siteUrl);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(ImageName).setContent(data);
                 console.log("Attachment Updated");
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(siteUrls);
+                let web = new Web(Items.Items.siteUrl);
                 let item = web.lists.getById(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(ImageName).setContent(data);
                 console.log("Attachment Updated");
@@ -1547,6 +1664,49 @@ const EditTaskPopup = (Items: any) => {
     const MouseOutImageFunction = (e: any) => {
         e.preventDefault();
         setHoverImageModal("None");
+    }
+
+    const ImageCompareFunction = (imageData: any, index: any) => {
+        TaskImages[index].Checked = true;
+        // // if(TaskImages[index].Checked){
+        // //     TaskImages[index].Checked = false;
+        // // }else{
+        // //     TaskImages[index].Checked = true;
+        // // }
+
+        // if(compareImageArray.length >= 1){
+        //     if(compareImageArray[0].Title != imageData.Title){
+        //         compareImageArray.push(imageData)
+        //     }
+        // }else{
+        //     compareImageArray.push(imageData);
+        // }
+        compareImageArray.push(imageData)
+        if (compareImageArray.length == 2) {
+            setImageComparePopup(true);
+        }
+    }
+    const ImageCompareFunctionClosePopup = () => {
+        setImageComparePopup(false);
+        setCompareImageArray([]);
+        let tempArray: any = [];
+        TaskImages?.map((dataItem: any) => {
+            dataItem.Checked = false
+            tempArray.push(dataItem);
+        })
+        setTaskImages(tempArray);
+
+    }
+    const ImageCustomizeFunction = (currentImagIndex: any) => {
+        setImageCustomizePopup(true)
+    }
+    const ImageCustomizeFunctionClosePopup = () => {
+        setImageCustomizePopup(false)
+    }
+
+    const CommonClosePopupFunction = () => {
+        ImageCompareFunctionClosePopup();
+        ImageCustomizeFunctionClosePopup();
     }
 
 
@@ -2224,6 +2384,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <label className="form-label full-width">Status</label>
                                                 <input type="text" placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                    value={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 48 48" fill="none">
@@ -2309,7 +2470,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                            <CommentCard siteUrl={Items.Items.siteUrl} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                         </div>
                                         <div className="pull-right">
                                         </div>
@@ -2367,6 +2528,10 @@ const EditTaskPopup = (Items: any) => {
                                                         {imageList.map((ImageDtl, index) => (
                                                             <div key={index} className="image-item">
                                                                 <div className="my-1">
+                                                                    <div>
+                                                                        <input type="checkbox" className="rounded-0" checked={ImageDtl.Checked} onClick={() => ImageCompareFunction(ImageDtl, index)} />
+                                                                        <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
+                                                                    </div>
                                                                     <a href={ImageDtl.ImageUrl} target="_blank" data-interception="off">
                                                                         <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} onMouseOver={(e) => MouseHoverImageFunction(e, ImageDtl)}
                                                                             onMouseOut={(e) => MouseOutImageFunction(e)}
@@ -2375,19 +2540,19 @@ const EditTaskPopup = (Items: any) => {
 
                                                                     <div className="card-footer d-flex justify-content-between p-1 px-2">
                                                                         <div>
-                                                                            <input type="checkbox" onClick={() => ImageCompareFunction(ImageDtl)} />
-                                                                            <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
+                                                                           
                                                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                                                             <span className="mx-1">
-                                                                                <img style={{ width: "25px" }} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
+                                                                                <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
                                                                             </span>
                                                                         </div>
                                                                         <div>
-                                                                            <span onClick={() => ImageCustomizeFunction(index)}>
+                                                                            
+                                                                            <span onClick={(e) => onImageUpdate(index)} title="Replace image"><TbReplace /> </span>
+                                                                            <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
+                                                                            <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt />
                                                                             </span>
-                                                                            <span className="mx-1" onClick={(e) => onImageUpdate(index)}>| <TbReplace /> |</span>
-                                                                            <span onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}><RiDeleteBin6Line /></span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -3009,6 +3174,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="form-label full-width">Status</label>
                                                             <input type="text" placeholder="% Complete" className="form-control px-2" disabled={InputFieldDisable}
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                                value={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
                                                             <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 48 48" fill="none">
@@ -3094,7 +3260,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                                        <CommentCard siteUrl={Items.Items.siteUrl} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                                     </div>
                                                     <div className="pull-right">
                                                     </div>

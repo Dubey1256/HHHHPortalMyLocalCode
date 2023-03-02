@@ -136,35 +136,35 @@ const CommentBoxComponent = (commentData: any) => {
                                     </div>
                                     <div>
                                         <span className="mx-1">
-                                            <input className="form-check-input mx-1 rounded-0 commentSectionLabel " type="checkbox"
+                                            <input className="form-check-input mt-0 rounded-0 commentSectionLabel " type="checkbox"
                                                 checked={obj.Phone}
                                                 value={obj.Phone}
                                                 name='Phone'
                                             />
-                                            <label className="commentSectionLabel">Phone</label>
+                                            <label className="commentSectionLabel ms-1">Phone</label>
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
-                                            <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mx-1 rounded-0 commentSectionLabel "
+                                            <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mt-0 rounded-0 commentSectionLabel "
                                             />
-                                            <label className="commentSectionLabel">
+                                            <label className="commentSectionLabel ms-1">
                                                 Low Importance
                                             </label>
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
                                             <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
-                                                value={obj.HighImportance} className="form-check-input mx-1 rounded-0 commentSectionLabel "
+                                                value={obj.HighImportance} className="form-check-input mt-0 rounded-0 commentSectionLabel "
                                             />
-                                            <label className="commentSectionLabel">
+                                            <label className="commentSectionLabel ms-1">
                                                 High Importance
                                             </label>
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
-                                            <input type="checkbox" id="" className="form-check-input mx-1 rounded-0 commentSectionLabel "
+                                            <input type="checkbox" id="" className="form-check-input mt-0 rounded-0 commentSectionLabel "
                                                 name='Completed' checked={obj.Completed} value={obj.Completed} />
-                                            <label className="commentSectionLabel">
+                                            <label className="commentSectionLabel ms-1">
                                                 Mark As Completed
                                             </label>
                                         </span>
@@ -175,7 +175,7 @@ const CommentBoxComponent = (commentData: any) => {
                                     </div>
                                 </div>
                                 <div className="d-flex">
-                                    <span className="border p-1 me-1">{i + 1}</span>
+                                    <span className="SubTestBorder p-1 me-1">{i + 1}</span>
                                     {/* <HtmlEditorCard
                                         editorValue={obj.Title != undefined ? obj.Title : ''}
                                         HtmlEditorStateChange={HtmlEditorCallBack}
