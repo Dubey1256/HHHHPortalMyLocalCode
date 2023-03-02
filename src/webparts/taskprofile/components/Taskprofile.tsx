@@ -217,7 +217,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "DueDate","Approver/Id","Approver/Title","SmartInformation/Id","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments","DueDate","Approver/Id","Approver/Title","SmartInformation/Id","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("Team_x0020_Members","Approver","SmartInformation","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
      
@@ -280,6 +280,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state.listName),
       sitePage: this.props.Context?._pageContext?._web?.title,
+      Comments:taskDetails["Comments"]!=null?  JSON.parse(taskDetails["Comments"]):"",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
       OffshoreComments:OffshoreComments.length>0?OffshoreComments.reverse():null,
@@ -1008,7 +1009,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
             </a>
             {/* {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined&&this.currentUser[0].Title==this.state.Result["Approver"].Title &&<span><button>Approve</button><span><button>Reject</button></span></span>} */}
-            {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet  Approver={this.state.Result["Approver"]} currentUser={this.currentUser} items={this.state.Result}/>}
+            {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet  siteUrl={this.props.siteUrl} Context={this.props.Context} Approver={this.state.Result["Approver"]} currentUser={this.currentUser} items={this.state.Result}/>}
             </span>
             {this.state.Result?.sitePage=="SP"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
             {this.state.Result?.sitePage=="SH"&&<span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
