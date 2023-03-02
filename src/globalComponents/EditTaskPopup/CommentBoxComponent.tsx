@@ -19,8 +19,8 @@ const CommentBoxComponent = (commentData: any) => {
         let data: any = [];
         if (commentData.data != undefined) {
             let temp = commentData.data;
-            temp.map((tempItem:any, index:0)=>{
-                if(index == 0){
+            temp.map((tempItem: any, index: 0) => {
+                if (index == 0) {
                     data.push(tempItem);
                     Array.push(tempItem);
                 }
@@ -55,29 +55,22 @@ const CommentBoxComponent = (commentData: any) => {
             setCommentArray(copy);
             Array = copy;
         }
-        setTimeout(() => {
-            CallBack(Array);
-        }, 1000);
+        CallBack(Array);
     }
     const HtmlEditorCallBack = useCallback((EditorData: any) => {
         if (Array.length > 0) {
             Array[0].Title = EditorData;
         }
-        setTimeout(() => {
-            CallBack(Array);
-        }, 1000);
-
+        CallBack(Array);
     }, [])
 
     const SmartLightUpdate = (index: any, value: any) => {
         const copy = [...commentArray];
-        const obj = { ...commentArray[index], isShowLight:value};
+        const obj = { ...commentArray[index], isShowLight: value };
         copy[index] = obj;
         setCommentArray(copy);
         Array = copy;
-        setTimeout(() => {
-            CallBack(Array);
-        }, 1000);
+        CallBack(Array);
     }
 
     const postBtnHandle = (index: any) => {
@@ -95,16 +88,11 @@ const CommentBoxComponent = (commentData: any) => {
             setPostBtnStatus(true)
         }
         Array[0].Comments = commentData;
-        setTimeout(() => {
-            CallBack(Array);
-        }, 1000);
-
+        CallBack(Array);
     }, [])
     const subTextCallBack = useCallback((subTextData: any, commentId: any) => {
         Array[0].Subtext = subTextData;
-        setTimeout(() => {
-            CallBack(Array);
-        }, 1000);
+        CallBack(Array);
     }, [])
     return (
         <div>
