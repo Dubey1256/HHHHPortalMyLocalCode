@@ -40,7 +40,7 @@ let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = false;
 let ApprovalStatusGlobal: any = true;
-var ApproverBackupArray:any = [];
+var ApproverBackupArray: any = [];
 const EditTaskPopup = (Items: any) => {
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -93,6 +93,9 @@ const EditTaskPopup = (Items: any) => {
     const [HoverImageData, setHoverImageData] = React.useState([]);
     const [SiteTypes, setSiteTypes] = React.useState([]);
     const [categorySearchKey, setCategorySearchKey] = React.useState('');
+    const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
+    const [ComponentTaskCheck, setComponentTaskCheck] = React.useState(false);
+    const [ServicePopupType, setServicePopupType] = React.useState('');
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -178,7 +181,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             }
         }
-        if (type == "LinkedComponent") {
+        if (type == "LinkedServices") {
             if (PopupItemData?.linkedComponent?.length > 0) {
                 Items.Items.linkedComponent = PopupItemData.linkedComponent;
                 setLinkedComponentData(PopupItemData.linkedComponent);
@@ -380,6 +383,7 @@ const EditTaskPopup = (Items: any) => {
     const EditLinkedServices = (item: any, title: any) => {
         setIsServices(true);
         setShareWebComponent(item);
+        setServicePopupType(title);
     }
 
     const setPriority = function (val: any) {
@@ -564,7 +568,7 @@ const EditTaskPopup = (Items: any) => {
             let statusValue: any
             smartMeta?.map((item: any) => {
                 let saveImage = []
-                
+
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
                     tempCategoryData = item.Categories;
@@ -635,16 +639,15 @@ const EditTaskPopup = (Items: any) => {
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
-                if (item.Priority_x0020_Rank != undefined) {
-                    if (currentUsers != undefined) {
-                        currentUsers?.map((rank: any) => {
-                            if (rank.rank == item.Priority_x0020_Rank) {
-                                item.Priority_x0020_Rank = rank.rank;
-                            }
-                        })
-                    }
-
-                }
+                // if (item.Priority_x0020_Rank != undefined) {
+                //     if (currentUsers != undefined) {
+                //         currentUsers?.map((rank: any) => {
+                //             if (rank.rank == item.Priority_x0020_Rank) {
+                //                 item.Priority_x0020_Rank = rank.rank;
+                //             }
+                //         })
+                //     }
+                // }
                 item.TaskId = globalCommon.getTaskId(item);
                 let AssignedUsers: any = [];
                 let ApproverData: any = [];
@@ -719,7 +722,7 @@ const EditTaskPopup = (Items: any) => {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
                     let feedbackArray = message[0]?.FeedBackDescriptions
-                    let CommentBoxText = feedbackArray[0].Title.replace(/(<([^>]+)>)/ig, '');
+                    let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
                     item.CommentBoxText = CommentBoxText;
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
@@ -736,16 +739,16 @@ const EditTaskPopup = (Items: any) => {
                     FeedBackBackupArray = JSON.stringify(tempArray);
                 }
                 if (item.Component?.length > 0) {
-                    item.ComponentTask = true
+                    setComponentTaskCheck(true)
                     setSmartComponentData(item.Component);
                 } else {
-                    item.ComponentTask = false
+                    setComponentTaskCheck(false)
                 }
                 if (item.Services?.length > 0) {
-                    item.ServiceTask = true
+                    setServicesTaskCheck(true)
                     setSmartServicesData(item.Services);
                 } else {
-                    item.ServiceTask = false
+                    setServicesTaskCheck(false)
                 }
                 setEditData(item)
                 setPriorityStatus(item.Priority)
@@ -776,7 +779,7 @@ const EditTaskPopup = (Items: any) => {
             setPercentCompleteStatus('');
             setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
         }
-        
+
         if (StatusInput < 70 && StatusInput > 20) {
             setTaskStatus("In Progress");
             setPercentCompleteStatus(`${StatusInput}% In Progress`);
@@ -790,7 +793,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
-       
+
         if (StatusInput == 80) {
             // let tempArray: any = [];
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
@@ -888,10 +891,10 @@ const EditTaskPopup = (Items: any) => {
             ChangeTaskUserStatus = true;
 
         }
-        if(StatusInput == 1){
-            let tempArray:any = [];
-            if(ApproverBackupArray?.length > 0){
-                ApproverBackupArray.map((dataItem:any)=>{
+        if (StatusInput == 1) {
+            let tempArray: any = [];
+            if (ApproverBackupArray?.length > 0) {
+                ApproverBackupArray.map((dataItem: any) => {
                     tempArray.push(dataItem);
                 })
             }
@@ -905,10 +908,10 @@ const EditTaskPopup = (Items: any) => {
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
         setPercentCompleteCheck(false);
-        if(StatusData.value == 1){
-            let tempArray:any = [];
-            if(ApproverBackupArray?.length > 0){
-                ApproverBackupArray.map((dataItem:any)=>{
+        if (StatusData.value == 1) {
+            let tempArray: any = [];
+            if (ApproverBackupArray?.length > 0) {
+                ApproverBackupArray.map((dataItem: any) => {
                     tempArray.push(dataItem);
                 })
             }
@@ -1201,6 +1204,25 @@ const EditTaskPopup = (Items: any) => {
                 TeamMemberIds.push(taskInfo.Id);
             })
         }
+
+        // (3) Low
+        // (2) Normal
+
+        let Priority:any;
+        if(EditData.Priority_x0020_Rank){
+            let rank = EditData.Priority_x0020_Rank
+            if(rank <= 10 && rank >= 8){
+                Priority = "(1) High"
+            }
+            if(rank <= 7 && rank >= 4){
+                Priority = "(2) Normal"
+            }
+          
+            if(rank <= 3 && rank >= 0){
+                Priority = "(3) Low"
+            }
+           
+        }
         // else {
         //     if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
         //         EditData.Team_x0020_Members?.map((taskInfo: any) => {
@@ -1225,10 +1247,10 @@ const EditTaskPopup = (Items: any) => {
             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
                 IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
-                Priority_x0020_Rank: (itemRank != '' ? itemRank : EditData.Priority_x0020_Rank),
-                ItemRank: (itemRank != '' ? itemRank : EditData.Priority_x0020_Rank),
+                Priority_x0020_Rank: EditData.Priority_x0020_Rank,
+                ItemRank: EditData.ItemRank,
                 Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
-                Priority: PriorityStatus != undefined ? PriorityStatus : EditData.Priority,
+                Priority: Priority,
                 StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
                 PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
                 ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds?.length > 0) ? smartComponentsIds : [] },
@@ -1251,6 +1273,18 @@ const EditTaskPopup = (Items: any) => {
                 BasicImageInfo: JSON.stringify(UploadImageArray)
             }).then((res: any) => {
                 tempShareWebTypeData = [];
+                AllMetaData = []
+                taskUsers = []
+                CommentBoxData = []
+                SubCommentBoxData = []
+                updateFeedbackArray = []
+                tempShareWebTypeData = []
+                tempCategoryData = []
+                SiteTypeBackupArray = []
+                currentUserBackupArray = []
+                AutoCompleteItemsArray = []
+                FeedBackBackupArray = []
+                ApproverBackupArray = []
                 if (typeFunction != "TimeSheetPopup") {
                     Items.Call();
                 }
@@ -1415,7 +1449,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (item.Phone) {
                     // CategoryChange("Phone", 199);
-                    CategoryChangeUpdateFunction("false","Phone", 199)
+                    CategoryChangeUpdateFunction("false", "Phone", 199)
                 }
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
@@ -1432,7 +1466,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         if (item.Phone) {
-                            CategoryChangeUpdateFunction("false","Phone", 199)
+                            CategoryChangeUpdateFunction("false", "Phone", 199)
                         }
                     })
                 }
@@ -1496,13 +1530,13 @@ const EditTaskPopup = (Items: any) => {
         setShareWebTypeData(tempArray2);
     }
     const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
-        let statusValue:any = e.target.value;
-        let type:any = typeValue;
-        let Id :any = IdValue;
+        let statusValue: any = e.target.value;
+        let type: any = typeValue;
+        let Id: any = IdValue;
         CategoryChangeUpdateFunction(statusValue, type, Id)
     }
 
-    const CategoryChangeUpdateFunction =(Status:any, type:any, Id:any)=>{
+    const CategoryChangeUpdateFunction = (Status: any, type: any, Id: any) => {
         if (Status == "true") {
             removeCategoryItem(type, Id);
             if (type == "Phone") {
@@ -1817,6 +1851,20 @@ const EditTaskPopup = (Items: any) => {
     }
 
 
+    // ******* this is for Change Task Component And Service Component ************
+
+    const ChangeComponentStatus = (e: any, Type: any) => {
+        if (Type == "Component") {
+            setServicesTaskCheck(false);
+            setComponentTaskCheck(true);
+        }
+        if (Type == "Service") {
+            setServicesTaskCheck(true);
+            setComponentTaskCheck(false);
+        }
+    }
+
+
     // ************** this is custom header and custom Footers section functions for panel *************
 
     const onRenderCustomHeaderMain = () => {
@@ -2121,10 +2169,10 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group">
                                                     <label className="form-label full-width">Item Rank</label>
-                                                    <select className="form-select" defaultValue={EditData.Priority_x0020_Rank} onChange={(e) => setItemRank(e.target.value)}>
+                                                    <select className="form-select" defaultValue={EditData.ItemRank} onChange={(e) => setEditData({ ...EditData, ItemRank: e.target.value })}>
                                                         {currentUsers.map(function (h: any, i: any) {
                                                             return (
-                                                                <option key={i} selected={EditData.Priority_x0020_Rank == h.rank} value={h.rank} >{h.rankTitle}</option>
+                                                                <option key={i} selected={EditData.ItemRank == h.rank} value={h.rank} >{h.rankTitle}</option>
                                                             )
                                                         })}
                                                     </select>
@@ -2137,7 +2185,8 @@ const EditTaskPopup = (Items: any) => {
                                                     <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
                                                         <span className="form-check form-check-inline mb-0">
                                                             <input type="radio" id="Components"
-                                                                name="Portfolios" defaultChecked={EditData.ComponentTask}
+                                                                name="Portfolios" checked={ComponentTaskCheck}
+                                                                onClick={(e) => ChangeComponentStatus(e, "Component")}
                                                                 title="Component"
                                                                 ng-model="PortfolioTypes"
                                                                 ng-click="getPortfoliosData()"
@@ -2148,7 +2197,8 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="radio" id="Services"
                                                                 name="Portfolios" value="Services"
                                                                 title="Services"
-                                                                defaultChecked={EditData.ServiceTask}
+                                                                checked={ServicesTaskCheck}
+                                                                onClick={(e) => ChangeComponentStatus(e, "Service")}
                                                                 className="form-check-input" />
                                                             <label className="form-check-label mb-0">Services</label>
                                                         </span>
@@ -2189,11 +2239,11 @@ const EditTaskPopup = (Items: any) => {
                                                     }
 
                                                     <span className="input-group-text">
-                                                        {EditData.ComponentTask ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                        {ComponentTaskCheck ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                             onClick={(e) => EditComponent(EditData, 'Component')} /> : null}
-                                                        {EditData.ServiceTask ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                            onClick={(e) => EditComponent(EditData, 'Services')} /> : null}
-                                                        {EditData.ComponentTask == false && EditData.ServiceTask == false ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                        {ServicesTaskCheck ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                            onClick={(e) => EditLinkedServices(EditData, 'Services')} /> : null}
+                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                             onClick={(e) => alert("Please select anyone from Portfolio/Services")} /> : null}
 
                                                     </span>
@@ -2344,29 +2394,31 @@ const EditTaskPopup = (Items: any) => {
                                                 <div>
                                                     <div className="input-group">
                                                         <input type="text" className="form-control"
-                                                            placeholder="Priority" defaultValue={PriorityStatus ? PriorityStatus : ''}
+                                                            placeholder="Priority"
+                                                            defaultValue={EditData.Priority_x0020_Rank ? EditData.Priority_x0020_Rank : ''}
+                                                            onChange={(e) => setEditData({ ...EditData, Priority_x0020_Rank: e.target.value })}
                                                         />
                                                     </div>
                                                     <ul className="p-0 mt-1">
                                                         <li className="form-check">
                                                             <input className="form-check-input"
                                                                 name="radioPriority" type="radio"
-                                                                value="(1) High" checked={PriorityStatus === "(1) High"}
-                                                                onChange={(e: any) => setPriority("(1) High")}
+                                                                checked={EditData.Priority_x0020_Rank <= 10 && EditData.Priority_x0020_Rank >= 8}
+                                                                onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 8 })}
                                                             />
                                                             <label className="form-check-label">High</label>
                                                         </li>
                                                         <li className="form-check">
                                                             <input className="form-check-input" name="radioPriority"
-                                                                type="radio" value="(2) Normal" onChange={(e) => setPriority("(2) Normal")}
-                                                                checked={PriorityStatus === "(2) Normal"}
+                                                                type="radio" checked={EditData.Priority_x0020_Rank <= 7 && EditData.Priority_x0020_Rank >= 4}
+                                                                onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 4 })}
                                                             />
                                                             <label className="form-check-label">Normal</label>
                                                         </li>
                                                         <li className="form-check">
                                                             <input className="form-check-input" name="radioPriority"
-                                                                type="radio" value="(3) Low" onChange={(e) => setPriority("(3) Low")}
-                                                                checked={PriorityStatus === "(3) Low"}
+                                                                type="radio" checked={EditData.Priority_x0020_Rank <= 3 && EditData.Priority_x0020_Rank >= 0}
+                                                                onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 1 })}
                                                             />
                                                             <label className="form-check-label">Low</label>
                                                         </li>
@@ -2419,7 +2471,7 @@ const EditTaskPopup = (Items: any) => {
                                                         }
                                                         <span className="input-group-text">
                                                             <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                onClick={(e) => EditLinkedServices(EditData, 'Component')} />
+                                                                onClick={(e) => EditLinkedServices(EditData, 'LinkedServices')} />
                                                         </span>
                                                     </div>
                                                 </div>
@@ -2769,7 +2821,7 @@ const EditTaskPopup = (Items: any) => {
                     {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}>
                     </ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" CallBack={SelectCategoryCallBack} closePopupCallBack={smartCategoryPopup}></Picker>}
-                    {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call}></LinkedComponent>}
+                    {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -2949,10 +3001,10 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 pe-0 mt-2">
                                                             <div className="input-group">
                                                                 <label className="form-label full-width">Item Rank</label>
-                                                                <select className="form-select" defaultValue={EditData.Priority_x0020_Rank} onChange={(e) => setItemRank(e.target.value)}>
+                                                                <select className="form-select" defaultValue={EditData.ItemRank} onChange={(e) => setItemRank(e.target.value)}>
                                                                     {currentUsers.map(function (h: any, i: any) {
                                                                         return (
-                                                                            <option key={i} selected={EditData.Priority_x0020_Rank == h.rank} value={h.rank} >{h.rankTitle}</option>
+                                                                            <option key={i} selected={EditData.ItemRank == h.rank} value={h.rank} >{h.rankTitle}</option>
                                                                         )
                                                                     })}
                                                                 </select>
@@ -2965,7 +3017,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
                                                                     <span className="form-check form-check-inline mb-0">
                                                                         <input type="radio" id="Components"
-                                                                            name="Portfolios" defaultChecked={EditData.ComponentTask}
+                                                                            name="Portfolios" checked={ComponentTaskCheck}
                                                                             title="Component"
                                                                             ng-model="PortfolioTypes"
                                                                             ng-click="getPortfoliosData()"
@@ -2976,7 +3028,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <input type="radio" id="Services"
                                                                             name="Portfolios" value="Services"
                                                                             title="Services"
-                                                                            defaultChecked={EditData.ServiceTask}
+                                                                            checked={ServicesTaskCheck}
                                                                             className="form-check-input" />
                                                                         <label className="form-check-label mb-0">Services</label>
                                                                     </span>
@@ -3017,11 +3069,11 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
 
                                                                 <span className="input-group-text">
-                                                                    {EditData.ComponentTask ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                    {ComponentTaskCheck ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                         onClick={(e) => EditComponent(EditData, 'Component')} /> : null}
-                                                                    {EditData.ServiceTask ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                        onClick={(e) => EditComponent(EditData, 'Services')} /> : null}
-                                                                    {EditData.ComponentTask == false && EditData.ServiceTask == false ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                    {ServicesTaskCheck ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                        onClick={(e) => EditLinkedServices(EditData, 'Services')} /> : null}
+                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                         onClick={(e) => alert("Please select anyone from Portfolio/Services")} /> : null}
 
                                                                 </span>
@@ -3213,7 +3265,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     }
                                                                     <span className="input-group-text">
                                                                         <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                            onClick={(e) => EditLinkedServices(EditData, 'Component')} />
+                                                                            onClick={(e) => EditLinkedServices(EditData, 'LinkedServices')} />
                                                                     </span>
                                                                 </div>
                                                             </div>
