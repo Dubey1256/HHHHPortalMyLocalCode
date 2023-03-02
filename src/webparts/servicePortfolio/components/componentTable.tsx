@@ -593,7 +593,7 @@ function ComponentTable(SelectedProp: any) {
     const CreateMeetingPopups = (item: any) => {
         setMeetingPopup(true);
         MeetingItems['NoteCall'] = item;
-        closeTaskStatusUpdatePoup2();
+        
 
     }
     const Updateitem1 = () => {
