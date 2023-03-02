@@ -739,7 +739,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             styles={controlStyles}
         />);
 
-        const elemMemberTaskList = (<div className="ms-Grid">
+        const elemMemberTaskList = (<div className="ms-Grid-row">
             <DetailsList 
                 items={ this.state.sortedItems } 
                 columns={ this.state.columns }
@@ -1009,8 +1009,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     context = {this.props.context as any} 
 />}
 
-        const elemEditTaskImageInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock">
-            <div className="ms-Grid">
+        const elemEditTaskImageInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock"><div className="ms-Grid">
             <div className="ms-Grid-row">
                 <TextField
                     label="Image URL"
@@ -1053,33 +1052,23 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 <PivotItem headerText="IMAGE INFORMATION">{elemEditTaskImageInfo}</PivotItem>
             </Pivot>
         </Panel>);
-<div></div>
-        const elemControls = (<>
-            <div className="ms-Grid Alltable ">
-            <div className="tbl-headings">
-<span className="leftsec"><span>Showing  items </span>
-<span className="ms-1"> <SearchBox className="m-0" placeholder="Filter by Name:" styles={controlStyles} onChange={this.onSearchTextChange} value={this.state.searchText} /></span>
-</span>
-<span className="toolbox mx-auto Showing  items ">
-<PrimaryButton className="m-0" text="Add Team Member" styles={controlStyles} onClick={this.onAddTeamMemberClick} />
-</span>
-     
-            </div>
 
-                {/* <div className="ms-Grid-col ms-md8 ms-sm12">
+        const elemControls = (<>
+            <div className="ms-Grid-row">
+                <div className="ms-Grid-col ms-md8 ms-sm12">
                     <SearchBox placeholder="Filter by Name:" styles={controlStyles} onChange={this.onSearchTextChange} value={this.state.searchText} />
                 </div>
                 <div className="ms-Grid-col ms-md4 ms-sm12">
                     <PrimaryButton text="Add Team Member" styles={controlStyles} onClick={this.onAddTeamMemberClick} />
-                </div>             */}
+                </div>            
             </div>
             <div className="ms-Grid-row">{elemCommandBar}</div>
         </>
         );
 
-        return (<div data-is-scollable={true} className="ms-Grid ">
+        return (<div data-is-scollable={true} className="ms-Grid">
             { elemControls }
-            { elemMemberTaskList } 
+            { elemMemberTaskList }
             { elemNewTaskMember }
             { elemEditTaskMember }
             { elemDeleteDialog }
