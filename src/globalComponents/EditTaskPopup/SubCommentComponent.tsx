@@ -60,14 +60,11 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         tempArray?.map((tempData: any) => {
             Array.push(tempData);
         })
-        setTimeout(() => {
-            callBack(tempArray, SubTextItemsArray.commentId);
-        }, 1000);
+        callBack(tempArray, SubTextItemsArray.commentId);
         setSubCommentsData(tempArray);
     }
 
     function handleChangeChild(e: any) {
-
         if (e.target.matches("textarea")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
@@ -75,8 +72,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const obj = { ...subCommentsData[id], [name]: value };
             copy[id] = obj;
             setSubCommentsData(copy);
-            Array = copy
-         
+            Array = copy;
         }
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
@@ -86,11 +82,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             copy[id] = obj;
             setSubCommentsData(copy);
             Array = copy;
-           
         }
-        setTimeout(() => {
-            callBack(Array, SubTextItemsArray.commentId);
-        }, 1000);
+        callBack(Array, SubTextItemsArray.commentId);
     }
 
     const postBtnHandle = (index: any) => {
@@ -108,10 +101,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             setPostBtnStatus(true)
         }
         Array[Index].Comments = dataPost;
-        setTimeout(() => {
-            callBack(Array, SubTextItemsArray.commentId);
-        }, 1000);
-
+        callBack(Array, SubTextItemsArray.commentId);
     }, [])
     const SmartLightUpdateSubChildComment = (index: any, value: any) => {
         const copy = [...subCommentsData];
@@ -119,9 +109,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         copy[index] = obj;
         setSubCommentsData(copy);
         Array = copy;
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+        callBack(Array);
     }
     function createSubRows(state: any[]) {
         return (
@@ -135,22 +123,22 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                 onChange={handleChangeChild}
                             >
                                 <div className="Task-panel alignCenter justify-content-between ">
-                                        
+
                                     <div className="alignCenter">
                                         <span className="me-1">{`${SubTextItemsArray.index}.${index + 1}`}</span>
                                         <span className={isDisabled ? "my-1" : "my-1 Disabled-Link"}>
                                             {ApprovalStatus ?
-                                            <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
-                                                <span title="Rejected" onClick={() => SmartLightUpdateSubChildComment(index, "Reject")}
-                                                    className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
-                                                >
-                                                </span>
-                                                <span title="Maybe" onClick={() => SmartLightUpdateSubChildComment(index, "Maybe")} className={obj.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
-                                                </span>
-                                                <span title="Approved" onClick={() => SmartLightUpdateSubChildComment(index, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
-                                                </span>
-                                            </span> : null
-                                        }</span>
+                                                <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
+                                                    <span title="Rejected" onClick={() => SmartLightUpdateSubChildComment(index, "Reject")}
+                                                        className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
+                                                    >
+                                                    </span>
+                                                    <span title="Maybe" onClick={() => SmartLightUpdateSubChildComment(index, "Maybe")} className={obj.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                                                    </span>
+                                                    <span title="Approved" onClick={() => SmartLightUpdateSubChildComment(index, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+                                                    </span>
+                                                </span> : null
+                                            }</span>
                                     </div>
 
                                     <div>
