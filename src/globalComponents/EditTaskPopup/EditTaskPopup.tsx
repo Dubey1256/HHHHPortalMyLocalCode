@@ -26,7 +26,6 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from '../FlorarComponents/FlorarImageUploadComponent';
 
-
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -1393,6 +1392,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (item.Phone) {
                     // CategoryChange("Phone", 199);
+                    CategoryChangeUpdateFunction("false","Phone", 199)
                 }
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
@@ -1409,7 +1409,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         if (item.Phone) {
-                            // CategoryChange("Phone", 199);
+                            CategoryChangeUpdateFunction("false","Phone", 199)
                         }
                     })
                 }
@@ -1472,8 +1472,15 @@ const EditTaskPopup = (Items: any) => {
         })
         setShareWebTypeData(tempArray2);
     }
-    const CategoryChange = (e: any, type: any, Id: any) => {
-        if (e.target.value == "true") {
+    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+        let statusValue:any = e.target.value;
+        let type:any = typeValue;
+        let Id :any = IdValue;
+        CategoryChangeUpdateFunction(statusValue, type, Id)
+    }
+
+    const CategoryChangeUpdateFunction =(Status:any, type:any, Id:any)=>{
+        if (Status == "true") {
             removeCategoryItem(type, Id);
             if (type == "Phone") {
                 setPhoneStatus(false)
