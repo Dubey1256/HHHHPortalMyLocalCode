@@ -2707,7 +2707,7 @@ function ComponentTable(SelectedProp: any) {
         //  if (checkedList != undefined && checkedList.length === 1) {
         if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length > 0 && checkedList[0].Item_x0020_Type === 'Component')
             alert('You are not allowed to Restructure this item.')
-        if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length > 0 && checkedList[0].Item_x0020_Type === 'Component') {
+        if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length === 0 && checkedList[0].Item_x0020_Type === 'Component') {
 
             maidataBackup.forEach((obj) => {
                 obj.isRestructureActive = true;
@@ -2920,26 +2920,31 @@ function ComponentTable(SelectedProp: any) {
             maidataBackup.forEach((obj, index) => {
                 obj.isRestructureActive = false;
                 if (obj.Id === checkedList[0].Id) {
-                    //  maidataBackup[index].childs.splice(index, 1)
-                    checkedList[0].downArrowIcon = obj.downArrowIcon;;
-                    checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+                    if (obj.childs.length === 0) {
+                        obj.downArrowIcon = '';
+                        obj.RightArrowIcon = '';
+                    }
                 }
                 if (obj.childs != undefined && obj.childs.length > 0) {
                     obj.childs.forEach((sub: any, indexsub: any) => {
                         sub.isRestructureActive = false;
                         if (sub.Id === checkedList[0].Id) {
                             obj.childs.splice(indexsub, 1)
-                            checkedList[0].downArrowIcon = obj.downArrowIcon;;
-                            checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+                            if (sub.childs.length === 0) {
+                                sub.downArrowIcon = '';
+                                sub.RightArrowIcon = '';
+                            }
+
                         }
                         if (sub.childs != undefined && sub.childs.length > 0) {
                             sub.childs.forEach((newsub: any, lastIndex: any) => {
                                 newsub.isRestructureActive = false;
                                 if (newsub.Id === checkedList[0].Id) {
                                     sub.childs.splice(lastIndex, 1)
-
-                                    checkedList[0].downArrowIcon = obj.downArrowIcon;;
-                                    checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+                                    if (newsub.childs.length === 0) {
+                                        newsub.downArrowIcon = '';
+                                        newsub.RightArrowIcon = '';
+                                    }
                                 }
 
                             })
@@ -2953,9 +2958,11 @@ function ComponentTable(SelectedProp: any) {
                 if (obj.Id === Ids[0]) {
                     obj.flag = true;
                     obj.show = true;
-                    checkedList[0].downArrowIcon = obj.downArrowIcon;;
-                    checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+                    obj.downArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                    obj.RightArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
                     obj.childs.push(checkedList[0]);
+                    obj.childsLength = obj.childs.length;
                 }
                 if (obj.childs != undefined && obj.childs.length > 0) {
                     obj.childs.forEach((sub: any, indexsub: any) => {
@@ -2963,18 +2970,25 @@ function ComponentTable(SelectedProp: any) {
                         if (sub.Id === Ids[0]) {
                             sub.flag = true;
                             sub.show = true;
-                            obj.childs.push(checkedList[0]);
-                            checkedList[0].downArrowIcon = obj.downArrowIcon;;
-                            checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+                            sub.downArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                            sub.RightArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
+                            sub.childs.push(checkedList[0]);
+                            sub.childsLength = sub.childs.length
                         }
                         if (sub.childs != undefined && sub.childs.length > 0) {
                             sub.childs.forEach((newsub: any, lastIndex: any) => {
                                 if (newsub.Id === Ids[0]) {
-                                    newsub.childs.push(checkedList[0]);
                                     newsub.flag = true;
                                     newsub.show = true;
-                                    checkedList[0].downArrowIcon = obj.downArrowIcon;;
-                                    checkedList[0].RightArrowIcon = obj.RightArrowIcon;
+                                    newsub.downArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                                    newsub.RightArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
+                                    newsub.childs.push(checkedList[0]);
+                                    newsub.childsLength = newsub.childs.length
+
+
+
                                 }
 
                             })
@@ -3163,8 +3177,9 @@ function ComponentTable(SelectedProp: any) {
                     checkedList[0].IsNew = true;
                     checkedList[0].Item_x0020_Type = ChengedItemTitl;
                     if (Item.childs != undefined) {
-                        // Item.downArrowIcon = checkedList[0].downArrowIcon
-                        // Item.RightArrowIcon = checkedList[0].RightArrowIcon;
+                        checkedList[0].downArrowIcon = Item.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        checkedList[0].RightArrowIcon = Item.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
                         Item.childs.push(checkedList[0]);
                     } else {
                         Item.childs = [];
@@ -4142,7 +4157,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             </td>
                                                                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                                                                 <div className="accordian-header" >
-                                                                                                                                                                    <span className='pe-2'><input type="checkbox"   onChange={(e) => onChangeHandler(subchilditem, item, e)}/></span>
+                                                                                                                                                                    <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(subchilditem, item, e)} /></span>
                                                                                                                                                                 </div>
 
                                                                                                                                                             </td>
