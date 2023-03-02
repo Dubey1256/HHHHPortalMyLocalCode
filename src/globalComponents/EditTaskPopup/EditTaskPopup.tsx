@@ -39,7 +39,7 @@ var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
-var ChangeTaskUserStatus:any = false;
+var ChangeTaskUserStatus: any = false;
 const EditTaskPopup = (Items: any) => {
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -624,7 +624,7 @@ const EditTaskPopup = (Items: any) => {
                     }
                     if (statusValue >= 3) {
                         ChangeTaskUserStatus = true;
-                    }else{
+                    } else {
                         ChangeTaskUserStatus = false;
                     }
                 }
@@ -880,7 +880,7 @@ const EditTaskPopup = (Items: any) => {
         }
         if (StatusInput >= 3) {
             ChangeTaskUserStatus = true;
-        }else{
+        } else {
             ChangeTaskUserStatus = false;
 
         }
@@ -2447,7 +2447,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <label className="form-label full-width">Status</label>
                                                 <input type="text" placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
-                                                   
+
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 48 48" fill="none">
@@ -2783,7 +2783,7 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="slider-image-section col-sm-6 p-2" style={{
                                     border: "2px solid #ccc"
                                 }}>
-                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false" >
+                                    <div id="carouselExampleControls" className="carousel slide" data-bs-interval="false">
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
@@ -2806,11 +2806,11 @@ const EditTaskPopup = (Items: any) => {
                                                 )
                                             })}
                                         </div>
-                                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" data-bs-interval="false">
                                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                                             <span className="visually-hidden">Previous</span>
                                         </button>
-                                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" data-bs-interval="false">
                                             <span className="carousel-control-next-icon" aria-hidden="true"></span>
                                             <span className="visually-hidden">Next</span>
                                         </button>
@@ -2952,49 +2952,49 @@ const EditTaskPopup = (Items: any) => {
                                                                     </span>
                                                                 </label>
                                                                 {smartComponentData?.length > 0 || smartServicesData?.length > 0 ? null :
-                                                        <>
-                                                            <input type="text" ng-model="SearchService"
-                                                                className="form-control"
-                                                                id="{{PortfoliosID}}" autoComplete="off"
-                                                            />
-                                                        </>
-                                                    }
-                                                    {smartComponentData.length > 0 ? smartComponentData?.map((com: any) => {
-                                                        return (
-                                                            <>
-                                                                <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                                    <a>
-                                                                        <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
-                                                                    </a>
-                                                                </div>
-                                                            </>
-                                                        )
-                                                    }) : null}
-                                                    {
-                                                        smartServicesData?.length > 0 ? smartServicesData?.map((com: any) => {
-                                                            return (
-                                                                <>
-                                                                    <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
-                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                                        <a>
-                                                                            <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
-                                                                        </a>
-                                                                    </div>
-                                                                </>
-                                                            )
-                                                        }) : null
-                                                    }
+                                                                    <>
+                                                                        <input type="text" ng-model="SearchService"
+                                                                            className="form-control"
+                                                                            id="{{PortfoliosID}}" autoComplete="off"
+                                                                        />
+                                                                    </>
+                                                                }
+                                                                {smartComponentData.length > 0 ? smartComponentData?.map((com: any) => {
+                                                                    return (
+                                                                        <>
+                                                                            <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                                <a>
+                                                                                    <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
+                                                                                </a>
+                                                                            </div>
+                                                                        </>
+                                                                    )
+                                                                }) : null}
+                                                                {
+                                                                    smartServicesData?.length > 0 ? smartServicesData?.map((com: any) => {
+                                                                        return (
+                                                                            <>
+                                                                                <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
+                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                                    <a>
+                                                                                        <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
+                                                                                    </a>
+                                                                                </div>
+                                                                            </>
+                                                                        )
+                                                                    }) : null
+                                                                }
 
-                                                    <span className="input-group-text">
-                                                        {EditData.ComponentTask ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                            onClick={(e) => EditComponent(EditData, 'Component')} /> : null}
-                                                        {EditData.ServiceTask ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                            onClick={(e) => EditComponent(EditData, 'Services')} /> : null}
-                                                        {EditData.ComponentTask == false && EditData.ServiceTask == false ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                            onClick={(e) => alert("Please select anyone from Portfolio/Services")} /> : null}
+                                                                <span className="input-group-text">
+                                                                    {EditData.ComponentTask ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                        onClick={(e) => EditComponent(EditData, 'Component')} /> : null}
+                                                                    {EditData.ServiceTask ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                        onClick={(e) => EditComponent(EditData, 'Services')} /> : null}
+                                                                    {EditData.ComponentTask == false && EditData.ServiceTask == false ? <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                        onClick={(e) => alert("Please select anyone from Portfolio/Services")} /> : null}
 
-                                                    </span>
+                                                                </span>
                                                             </div>
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
@@ -3257,7 +3257,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="form-label full-width">Status</label>
                                                             <input type="text" placeholder="% Complete" className="form-control px-2" disabled={InputFieldDisable}
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
-                                                                
+
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
                                                             <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 48 48" fill="none">
@@ -3363,7 +3363,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     }
 
-                                    <div id="carouselExampleControlsNoTouching" className="carousel slide" data-bs-touch="false">
+                                    <div id="carouselExampleControls" className="carousel slide" data-bs-interval="false">
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
@@ -3386,11 +3386,11 @@ const EditTaskPopup = (Items: any) => {
                                                 )
                                             })}
                                         </div>
-                                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" data-bs-interval="false">
                                             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                                             <span className="visually-hidden">Previous</span>
                                         </button>
-                                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" data-bs-interval="false">
                                             <span className="carousel-control-next-icon" aria-hidden="true"></span>
                                             <span className="visually-hidden">Next</span>
                                         </button>
