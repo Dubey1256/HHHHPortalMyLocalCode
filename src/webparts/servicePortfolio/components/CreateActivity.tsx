@@ -5,6 +5,7 @@ import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/T
 import FroalaImageUploadComponent from '../../../globalComponents/FlorarComponents/FlorarImageUploadComponent';
 import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
+import * as Moment from 'moment';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
@@ -19,6 +20,8 @@ var Task: any = []
 var TeamMemberIds: any = [];
 var portfolioId: any = ''
 var newIndex:any=''
+var FeedBackItemArray: any = [];
+var feedbackArray:any=[]
 const CreateActivity = (props: any) => {
     var AllItems = props.props
     SelectedTasks.push(AllItems)
@@ -306,9 +309,24 @@ const CreateActivity = (props: any) => {
         props.Call(res);
 
     }
-    const HtmlEditorCallBack = () => {
-        console.log('Working')
-    }
+    
+    const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
+        if (EditorData.length > 0) {
+            AllItems.Body = EditorData;
+           
+            let param: any = Moment(new Date().toLocaleString())
+            var FeedBackItem: any = {};
+            FeedBackItem['Title'] = "FeedBackPicture" + param; 
+            FeedBackItem['FeedBackDescriptions'] = [];
+            FeedBackItem.FeedBackDescriptions=[{
+                'Title':EditorData
+            }]
+             FeedBackItem['ImageDate'] = "" + param;
+             FeedBackItem['Completed'] = '';
+        }
+        FeedBackItemArray.push(FeedBackItem)
+    
+    }, [])
     const saveNoteCall = () => {
         var TaskprofileId: any = ''
         var WorstreamLatestId: any = ''
@@ -400,6 +418,8 @@ const CreateActivity = (props: any) => {
                             SharewebCategoriesId: { "results": CategoryID },
                             ServicesId: { "results": RelevantPortfolioIds},
                             SharewebTaskTypeId: 1,
+                            Body:AllItems.Body,
+                            FeedBack: JSON.stringify(FeedBackItemArray),
                             Shareweb_x0020_ID: value.SharewebID,
                             SharewebTaskLevel1No: value.LatestTaskNumber,
                             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
@@ -610,7 +630,7 @@ const CreateActivity = (props: any) => {
                 isBlocking={false}
             >
                 <div className="modal-body">
-
+                    <div className={AllItems.Portfolio_x0020_Type  == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                     <div className='row mt-2 border Create-taskpage'>
                         <fieldset>
                             <legend className="border-bottom fs-6 ">Sites</legend>
@@ -640,16 +660,16 @@ const CreateActivity = (props: any) => {
                     <div className='row'>
                         <div className='col-sm-10'>
                             <div className="row">
-                                <div className="col-sm-10 mb-10">
+                                <div className="col-sm-10 mb-10 mt-2">
                                     <label className="full_width">
                                         Task Name <a id='siteName'
                                             ng-click="countClick==0?AddPlaceHolder():Test()">Site Name</a>
                                     </label>
                                     <input className="form-control" type="text" ng-required="true" placeholder="Enter Task Name"
-                                        defaultValue={AllItems.Title} onChange={(e) => setSave({ ...save, Title: e.target.value })} />
+                                        defaultValue={AllItems.Title} onChange={(e: any) => AllItems.Title = e.target.value} />
 
                                 </div>
-                                <div className="col-sm-2 mb-10 padL-0">
+                                <div className="col-sm-2 mb-10 padL-0 mt-2">
                                     <label>Due Date</label>
                                     <DatePicker className="form-control"
                                                             selected={date}
@@ -671,7 +691,7 @@ const CreateActivity = (props: any) => {
                                     </div>
                                     <div className='col-sm-7'>
                                         <FroalaCommentBox
-                                            EditorValue={AllItems.Title != undefined ? AllItems.Title : ''}
+                                            EditorValue={AllItems.Body != undefined ? AllItems.Body : ''}
                                             callBack={HtmlEditorCallBack}
                                         >
                                         </FroalaCommentBox>
@@ -889,6 +909,7 @@ const CreateActivity = (props: any) => {
                             }
                         </div>
 
+                    </div>
                     </div>
 
                 </div>

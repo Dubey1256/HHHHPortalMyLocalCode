@@ -128,6 +128,8 @@ function ComponentTable(SelectedProp: any) {
     }
     const closeTaskStatusUpdatePoup2 = () => {
         setActivityPopup(false)
+        setchildsData([])
+        setMeetingItems([])
 
 
     }
@@ -591,7 +593,7 @@ function ComponentTable(SelectedProp: any) {
     const CreateMeetingPopups = (item: any) => {
         setMeetingPopup(true);
         MeetingItems['NoteCall'] = item;
-        closeTaskStatusUpdatePoup2();
+        
 
     }
     const Updateitem1 = () => {
@@ -2449,6 +2451,7 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
+        closeTaskStatusUpdatePoup2();
         setIsComponent(false);;
         setIsTask(false);
         setMeetingPopup(false);
@@ -2464,6 +2467,7 @@ function ComponentTable(SelectedProp: any) {
             if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
                 MainId = childItem.data.ComponentId[0]
             }
+            
             if (array != undefined) {
                 array.forEach((val: any) => {
                     val.flag = true;
@@ -2474,6 +2478,7 @@ function ComponentTable(SelectedProp: any) {
 
                 })
                 setData(array => ([...array]))
+                
             }
 
         }
@@ -4298,34 +4303,32 @@ function ComponentTable(SelectedProp: any) {
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
 
-            <Modal
-
+            <Panel
+               headerText="Create Item"
+              type={PanelType.custom}
+                customWidth="600px"
                 isOpen={ActivityPopup}
                 onDismiss={closeTaskStatusUpdatePoup2}
                 isBlocking={false}
             >
 
-                <div className="modal-dialog" style={{ width: "700px" }}>
-                    <div className="modal-content">
+               
+                 
 
-                        <div className="modal-header  mt-1 px-3">
+                        {/* <div className="modal-header  mt-1 px-3">
                             <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
                             <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        {/* <h3 className="modal-title">
-       
-        <span className="pull-right" style={{ marginRight: "30px" }}>
-            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png"
-                ng-click="openSmartTaxonomy('Client Category', Item.SharewebCategories,'');" />
-        </span>
-    </h3> */}
+                        </div> */}
+                       
 
 
                         <div className="modal-body bg-f5f5 clearfix">
-                            <div className="">
+                            <div className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                                 <div id="portfolio" className="section-event pt-0">
-                                    {
-                                        MeetingItems?.SharewebTaskType?.Title != 'Workstream' &&
+                                
+                                    {/* {
+                                    
+                                    MeetingItems.SharewebTaskType == undefined  &&
                                         <ul className="quick-actions">
 
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
@@ -4356,9 +4359,10 @@ function ComponentTable(SelectedProp: any) {
                                                 </div>
                                             </li>
                                         </ul>
-                                    }
+                                         
+                                    } */}
                                     {
-                                        MeetingItems?.SharewebTaskType?.Title == 'Workstream' &&
+                                        (childsData != undefined && childsData?.SharewebTaskType?.Title == 'Workstream') ?
                                         <ul className="quick-actions">
 
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
@@ -4404,18 +4408,48 @@ function ComponentTable(SelectedProp: any) {
                                                     Task
                                                 </div>
                                             </li>
-                                        </ul>
+                                        </ul>:
+                                         <ul className="quick-actions">
+
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                 <span className="icon-sites">
+                                                     <img className="icon-sites"
+                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                 </span>
+                                                 Implmentation
+                                             </div>
+                                         </li>
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Development')}>
+                                                 <span className="icon-sites">
+                                                     <img className="icon-sites"
+                                                         src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                 </span>
+                                                 Development
+                                             </div>
+                                         </li>
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                 <span className="icon-sites">
+                                                 </span>
+                                                 Activity
+                                             </div>
+                                         </li>
+                                     </ul>
 
                                     }
                                 </div>
                             </div>
 
                         </div>
-                    </div>
-                </div>
+                    
+               
 
 
-            </Modal >
+            </Panel >
             <Panel headerText={` Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
                 <div>
                     {ResturuningOpen ?

@@ -549,7 +549,7 @@ const CreateWS = (props: any) => {
                                 <div className="">
                                     <div ng-show="smartComponent.length==0" className="input-group">
                                         <label ng-show="!IsShowComSerBoth" className="full-width">Component</label>
-                                        <input type="text" className="full-width" id="txtSharewebComponentcrt"
+                                        <input type="text" id="txtSharewebComponentcrt"
                                         /><span role="status" aria-live="polite" title="Edit Component" data-toggle="modal"
                                         onClick={(e) => EditComponent(AllItems)}
                                             className="input-group-text">
