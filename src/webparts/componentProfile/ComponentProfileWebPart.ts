@@ -38,7 +38,7 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
 
   protected onInit(): Promise<void> {
     this._environmentMessage = this._getEnvironmentMessage();
-
+    
     return super.onInit();
   }
 

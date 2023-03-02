@@ -1,11 +1,15 @@
+
 import * as React from "react";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Version } from '@microsoft/sp-core-library';
 import * as moment from "moment";
 import { sortBy } from "@microsoft/sp-lodash-subset";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
+import Tooltip from "../../globalComponents/Tooltip";
+import { Title } from "@material-ui/icons";
 var serachTitle: any = '';
+
 const ComponentPortPolioPopup = (item: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [backupComponentsData, setBackupComponentsData] = React.useState([]);
@@ -14,7 +18,7 @@ const ComponentPortPolioPopup = (item: any) => {
     const [CheckBoxdata, setcheckbox] = React.useState([]);
     const [selectedComponent, selctedCompo] = React.useState('');
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
-    const [maidataBackup, setmaidataBackup] = React.useState([])
+    const [MainDataBackup, setMainDataBackup] = React.useState([])
     const [TotalTask, setTotalTask] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
@@ -36,7 +40,6 @@ const ComponentPortPolioPopup = (item: any) => {
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
-
         if (item.props.smartComponent != undefined && item.props.smartComponent.length == 0)
             item.props.smartComponent = CheckBoxdata;
         else {
@@ -56,204 +59,12 @@ const ComponentPortPolioPopup = (item: any) => {
         setTable(copy)
 
     }
-    var stringToArray = function (input: any) {
-        if (input) {
-            return input.match(/\S+/g);
-        } else {
-            return [];
-        }
-    };
-    var getHighlightdata = function (item: any, searchTerms: any) {
-        var keywordList = [];
-        if (serachTitle != undefined && serachTitle != '') {
-            keywordList = stringToArray(serachTitle);
-        } else {
-            keywordList = stringToArray(serachTitle);
-        }
-        var pattern: any = getRegexPattern(keywordList);
-        //let Title :any =(...item.Title)
-        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
-        // item.Title = item.Title;
-        keywordList = [];
-        pattern = '';
-    }
-    var getRegexPattern = function (keywordArray: any) {
-        var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
-        return new RegExp(pattern, "gi");
-    };
-    var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
-        var isSearchTermAvailable = true;
-        $.each(searchTerms, function (index: any, val: any) {
-            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
-                isSearchTermAvailable = true;
-                getHighlightdata(item, val.toLowerCase());
 
-            } else
-                isSearchTermAvailable = false;
-        })
-        return isSearchTermAvailable;
-    }
-    var isItemExistsNew = function (array: any, items: any) {
-        var isExists = false;
-        $.each(array, function (index: any, item: any) {
-            if (item.Id === items.Id && items.siteType === item.siteType) {
-                isExists = true;
-                return false;
-            }
-        });
-        return isExists;
-    }
-    let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
-        setSearch(e.target.value.toLowerCase());
-        serachTitle = e.target.value.toLowerCase();
-        var Title = titleName;
 
-        var AllFilteredTagNews: any = [];
-        var finalOthersData: any = []
-        var ALllTAsk: any = []
-        var childData: any = [];
-        var subChild: any = [];
-        var subChild2: any = [];
-        AllFilteredTagNews.forEach(function (val: any) {
-            val.Child = []
-            if (val.childs != undefined) {
-                val.childs.forEach(function (type: any) {
-                    type.Child = []
-                    if (type.childs != undefined) {
-                        type.childs.forEach(function (value: any) {
-                            value.Child = []
-                            if (value.childs != undefined) {
-                                value.childs.forEach(function (last: any) {
-                                    last.Child = []
 
-                                })
-                            }
-                        })
-                    }
-                })
-            }
-        })
-        var filterglobal = e.target.value.toLowerCase();
-        if (filterglobal != undefined && filterglobal.length >= 1) {
-            var searchTerms = stringToArray(filterglobal);
-            $.each(maidataBackup, function (pareIndex: any, item: any) {
-                item.flag = false;
-                item.isSearch = true;
-                item.show = false;
-                item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
-                if (item.flag == true) {
-                    AllFilteredTagNews.push(item)
-                }
 
-                if (item.childs != undefined && item.childs.length > 0) {
-                    $.each(item.childs, function (parentIndex: any, child1: any) {
-                        child1.flag = false;
-                        child1.isSearch = true;
-                        child1.flag = (getSearchTermAvialable1(searchTerms, child1, Title));
-                        if (child1.flag) {
-                            item.childs[parentIndex].flag = true;
-                            maidataBackup[pareIndex].flag = true;
-                            item.childs[parentIndex].show = true;
-                            maidataBackup[pareIndex].show = true;
-                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
-                                AllFilteredTagNews.push(item)
-                            }
-                            childData.push(child1)
-                            ALllTAsk.push(item)
 
-                        }
-                        if (child1.childs != undefined && child1.childs.length > 0) {
-                            $.each(child1.childs, function (index: any, subchild: any) {
-                                subchild.flag = false;
-                                subchild.flag = (getSearchTermAvialable1(searchTerms, subchild, Title));
-                                if (subchild.flag) {
-                                    item.childs[parentIndex].flag = true;
-                                    child1.flag = true;
-                                    child1.childs[index].flag = true;
-                                    child1.childs[index].show = true;
-                                    item.childs[parentIndex].show = true;
-                                    maidataBackup[pareIndex].flag = true;
-                                    maidataBackup[pareIndex].show = true;
-                                    if (!isItemExistsNew(AllFilteredTagNews, item)) {
-                                        AllFilteredTagNews.push(item)
-                                    }
-                                    if (!isItemExistsNew(childData, child1))
-                                        childData.push(child1)
-                                    subChild.push(subchild)
-
-                                }
-                                if (subchild.childs != undefined && subchild.childs.length > 0) {
-                                    $.each(subchild.childs, function (childindex: any, subchilds: any) {
-                                        subchilds.flag = false;
-                                        // subchilds.Title = subchilds.newTitle;
-                                        subchilds.flag = (getSearchTermAvialable1(searchTerms, subchilds, Title));
-                                        if (subchilds.flag) {
-                                            item.childs[parentIndex].flag = true;
-                                            child1.flag = true;
-                                            subchild.flag = true;
-                                            subchild.childs[childindex].flag = true;
-                                            child1.childs[index].flag = true;
-                                            child1.childs[index].show = true;
-                                            item.childs[parentIndex].show = true;
-                                            maidataBackup[pareIndex].flag = true;
-                                            maidataBackup[pareIndex].show = true;
-                                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
-                                                AllFilteredTagNews.push(item)
-                                            }
-                                            if (!isItemExistsNew(childData, child1))
-                                                childData.push(child1)
-                                            if (!isItemExistsNew(subChild, subChild))
-                                                subChild.push(subChild)
-                                            subChild2.push(subchilds)
-
-                                        }
-                                    })
-                                }
-                            })
-                        }
-
-                    })
-                }
-
-            })
-            const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            const AllDataTaskk = ALllTAsk.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            const SData = childData.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            const FData = subChild.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            if (AllDataTaskk != undefined) {
-                AllDataTaskk.forEach((newval: any) => {
-                    if (newval.Title == 'Others' && newval.childs != undefined) {
-                        newval.forEach((valllA: any) => {
-                            finalOthersData.push(valllA)
-                        })
-                    }
-
-                })
-            }
-
-            setTotalTask(finalOthersData)
-            setSubComponentsData(SData);
-            setFeatureData(FData);
-            setComponentsData(CData);
-        } else {
-            //  ungetFilterLength();
-            // setData(data => ([...maidataBackup]));
-            setComponentsData(maidataBackup);
-            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
-        }
-        // console.log($scope.ComponetsData['allComponentItemWithStructure']);
-
-    };
     const handleOpen = (item: any) => {
-
         item.show = item.show = item.show == true ? false : true;
         setComponentsData(componentsData => ([...componentsData]));
 
@@ -339,24 +150,22 @@ const ComponentPortPolioPopup = (item: any) => {
                 })
             }
             if (result.Item_x0020_Type == 'Root Component') {
-                result['Child'] = [];
+                result['childs'] = [];
                 RootComponentsData.push(result);
             }
             if (result.Item_x0020_Type == 'Component') {
-                result['Child'] = [];
+                result['childs'] = [];
                 ComponentsData.push(result);
 
 
             }
 
             if (result.Item_x0020_Type == 'SubComponent') {
-                result['Child'] = [];
+                result['childs'] = [];
                 SubComponentsData.push(result);
-
-
             }
             if (result.Item_x0020_Type == 'Feature') {
-                result['Child'] = [];
+                result['childs'] = [];
                 FeatureData.push(result);
             }
         });
@@ -365,7 +174,7 @@ const ComponentPortPolioPopup = (item: any) => {
             if (subcomp.Title != undefined) {
                 $.each(FeatureData, function (index: any, featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        subcomp['Child'].push(featurecomp);;
+                        subcomp['childs'].push(featurecomp);;
                     }
                 })
             }
@@ -375,66 +184,446 @@ const ComponentPortPolioPopup = (item: any) => {
             if (subcomp.Title != undefined) {
                 $.each(SubComponentsData, function (index: any, featurecomp: any) {
                     if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                        subcomp['Child'].push(featurecomp);;
+                        subcomp['childs'].push(featurecomp);;
                     }
                 })
             }
         })
-        //maidataBackup.push(ComponentsData)
-         setmaidataBackup(ComponentsData)
+        //MainDataBackup.push(ComponentsData)
+        setMainDataBackup(ComponentsData);
         setComponentsData(ComponentsData);
-        setmaidataBackup(ComponentsData)
-        setModalIsOpen(true)
+        const tempData: any = ComponentsData;
+        setMainDataBackup(tempData);
+        console.log("All Components Data =======================", ComponentsData)
+        setModalIsOpen(true);
+    }
+    // *********** this is for Column  searching in Table ******************
 
-    }
-// For searching
-var stringToArray = function (input: any) {
-    if (input) {
-        return input.match(/\S+/g);
-    } else {
-        return [];
-    }
-};
-var getRegexPattern = function (keywordArray: any) {
-    var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
-    return new RegExp(pattern, "gi");
-};
-var getHighlightdata = function (item: any, searchTerms: any) {
-    var keywordList = [];
-    if (serachTitle != undefined && serachTitle != '') {
-        keywordList = stringToArray(serachTitle);
-    } else {
-        keywordList = stringToArray(serachTitle);
-    }
-    var pattern: any = getRegexPattern(keywordList);
-    //let Title :any =(...item.Title)
-    item.TitleNew = item.Title;
-    item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
-    // item.Title = item.Title;
-    keywordList = [];
-    pattern = '';
-}
-var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
-    var isSearchTermAvailable = true;
-    $.each(searchTerms, function (index: any, val: any) {
-        if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
-            isSearchTermAvailable = true;
-            getHighlightdata(item, val.toLowerCase());
+    // const columnSearchFunction = (e: { target: { value: string; }; }, titleName: any) => {
+    //     let searchKey = e.target.value;
+    //     let filteredMainArrayData: any = [];
+    //     let filteredLevelTwoData: any = [];
+    //     let filteredLevelThreeData: any = [];
+    //     let filteredLevelFourData: any = [];
+    //     if (searchKey?.length > 0) {
+    //         if (titleName == "Title") {
+    //             MainDataBackup?.map((ComponentDataItem: any) => {
+    //                 if (ComponentDataItem.Title.toLowerCase().includes(searchKey)) {
+    //                     let changeArrayFirst: any = ComponentDataItem
+    //                     changeArrayFirst.childs = []
+    //                     filteredMainArrayData.push(changeArrayFirst)
+    //                     if (ComponentDataItem.childs != undefined && ComponentDataItem.childs?.length > 0) {
+    //                         ComponentDataItem.childs?.map((FirstChild: any) => {
+    //                             if (FirstChild.Title.toLowerCase().includes(searchKey)) {
+    //                                 let changeArraySecond: any = FirstChild
+    //                                 changeArraySecond.childs = []
+    //                                 filteredLevelTwoData.push(changeArraySecond);
+    //                                 if (FirstChild.childs != undefined && FirstChild.childs?.length > 0) {
+    //                                     FirstChild.childs?.map((SecondChild: any) => {
+    //                                         if (SecondChild.Title.toLowerCase().includes(searchKey)) {
+    //                                             let changeArrayThird: any = SecondChild;
+    //                                             changeArrayThird.childs = [];
+    //                                             filteredLevelThreeData.push(changeArrayThird);
+    //                                         }
+    //                                     })
+    //                                 }
+                                    
+    //                             } 
+    //                         })
+    //                     }
+                       
+    //                     // filteredMainArrayData.push(ComponentDataItem);
+    //                 } else {
+    //                     let changeArrayThird: any = [];
+    //                     filteredLevelThreeData.push(changeArrayThird);
+    //                 }
+    //             })
+    //         }
+    //         if (titleName == "ClientCategory") {
+    //             MainDataBackup?.map((ComponentDataItem: any) => {
+    //                 if (ComponentDataItem.ClientCategory != undefined && ComponentDataItem.ClientCategory?.length > 0) {
+    //                     ComponentDataItem.ClientCategory?.map((ClientData: any) => {
+    //                         if (ClientData.Title.toLowerCase().includes(searchKey)) {
+    //                             filteredMainArrayData.push(ComponentDataItem);
+    //                         }
+    //                     })
+    //                 }
 
-        } else
-            isSearchTermAvailable = false;
-    })
-    return isSearchTermAvailable;
-}
-  
+    //                 // if (ComponentData.Title.toLowerCase().includes(searchKey)) {
+    //                 //     // if (ComponentData.childs != undefined && ComponentData.childs?.length > 0) {
+
+    //                 //     // } else {
+    //                 //     //     filteredMainArrayData.push(ComponentData);
+    //                 //     // }
+    //                 //     filteredMainArrayData.push(ComponentData);
+    //                 // }
+    //             })
+    //             MainDataBackup?.map((ComponentDataItem: any) => {
+    //                 if (ComponentDataItem.ClientCategory != undefined && ComponentDataItem.ClientCategory?.length > 0) {
+    //                 if (ComponentDataItem.Title.toLowerCase().includes(searchKey)) {
+    //                     let changeArrayFirst: any = ComponentDataItem
+    //                     changeArrayFirst.childs = []
+    //                     filteredMainArrayData.push(changeArrayFirst)
+    //                     if (ComponentDataItem.childs != undefined && ComponentDataItem.childs?.length > 0) {
+    //                         ComponentDataItem.childs?.map((FirstChild: any) => {
+    //                             if (FirstChild.Title.toLowerCase().includes(searchKey)) {
+    //                                 let changeArraySecond: any = FirstChild
+    //                                 changeArraySecond.childs = []
+    //                                 filteredLevelTwoData.push(changeArraySecond);
+    //                                 if (FirstChild.childs != undefined && FirstChild.childs?.length > 0) {
+    //                                     FirstChild.childs?.map((SecondChild: any) => {
+    //                                         if (SecondChild.Title.toLowerCase().includes(searchKey)) {
+    //                                             let changeArrayThird: any = SecondChild;
+    //                                             changeArrayThird.childs = [];
+    //                                             filteredLevelThreeData.push(changeArrayThird);
+    //                                         }
+    //                                     })
+    //                                 }
+                                    
+    //                             } 
+    //                         })
+    //                     }
+                       
+    //                     // filteredMainArrayData.push(ComponentDataItem);
+    //                 } else {
+    //                     let changeArrayThird: any = [];
+    //                     filteredLevelThreeData.push(changeArrayThird);
+    //                 }
+                
+    //             }})
+    //         }
+    //         if (titleName == "TeamLeaderUser") {
+    //             MainDataBackup?.map((ComponentDataItem: any) => {
+    //                 if (ComponentDataItem.TeamLeaderUser != undefined && ComponentDataItem.TeamLeaderUser?.length > 0) {
+    //                     ComponentDataItem.TeamLeaderUser?.map((ClientData: any) => {
+    //                         if (ClientData.Title.toLowerCase().includes(searchKey)) {
+    //                             filteredMainArrayData.push(ComponentDataItem);
+    //                         }
+    //                     })
+    //                 }
+
+    //                 // if (ComponentData.Title.toLowerCase().includes(searchKey)) {
+    //                 //     // if (ComponentData.childs != undefined && ComponentData.childs?.length > 0) {
+
+    //                 //     // } else {
+    //                 //     //     filteredMainArrayData.push(ComponentData);
+    //                 //     // }
+    //                 //     filteredMainArrayData.push(ComponentData);
+    //                 // }
+    //             })
+    //         }
+    //         if (titleName == "PercentComplete") {
+    //             MainDataBackup?.map((ComponentDataItem: any) => {
+    //                 if (ComponentDataItem.PercentComplete == searchKey) {
+    //                     // if (ComponentData.childs != undefined && ComponentData.childs?.length > 0) {
+
+    //                     // } else {
+    //                     //     filteredMainArrayData.push(ComponentData);
+    //                     // }
+    //                     filteredMainArrayData.push(ComponentDataItem);
+    //                 }
+    //             })
+    //         }
+    //         if (titleName == "ItemRank") {
+    //             MainDataBackup?.map((ComponentDataItem: any) => {
+    //                 if (ComponentDataItem.ItemRank == searchKey) {
+    //                     // if (ComponentData.childs != undefined && ComponentData.childs?.length > 0) {
+
+    //                     // } else {
+    //                     //     filteredMainArrayData.push(ComponentData);
+    //                     // }
+    //                     filteredMainArrayData.push(ComponentDataItem);
+    //                 }
+    //             })
+    //         }
+    //         if (titleName == "DueDate") {
+    //             MainDataBackup?.map((ComponentDataItem: any) => {
+    //                 if (ComponentDataItem.DueDate.toLowerCase().includes(searchKey)) {
+    //                     // if (ComponentData.childs != undefined && ComponentData.childs?.length > 0) {
+
+    //                     // } else {
+    //                     //     filteredMainArrayData.push(ComponentData);
+    //                     // }
+    //                     filteredMainArrayData.push(ComponentDataItem);
+    //                 }
+    //             })
+    //         }
+    //         if (filteredLevelThreeData?.length > 0) {
+    //             $.each(filteredLevelTwoData, function (index: any, subcomp: any) {
+    //                 if (subcomp.Title != undefined) {
+    //                     $.each(filteredLevelThreeData, function (index: any, featurecomp: any) {
+    //                         if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+    //                             subcomp['childs'].push(featurecomp);;
+    //                         }
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //         if (filteredLevelTwoData?.length > 0) {
+    //             $.each(filteredMainArrayData, function (index: any, subcomp: any) {
+    //                 if (subcomp.Title != undefined) {
+    //                     $.each(filteredLevelTwoData, function (index: any, featurecomp: any) {
+    //                         if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+    //                             subcomp['childs'].push(featurecomp);;
+    //                         }
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //         setComponentsData(filteredMainArrayData);
+    //     } else {
+    //         setComponentsData(MainDataBackup);
+    //     }
+    // }
+
+
+    // const columnsearching = (e: { target: { value: string; }; }, titleName: any) =>{
+    //     let searchKey = e.target.value;
+    //     if(MainDataBackup!=undefined){
+    //         let filteredMainArrayData: any = [];
+    //     MainDataBackup?.forEach((ComponentDataItem: any) => {
+
+    //         if(ComponentDataItem.Title.toLowerCase().includes(searchKey) ){
+    //             filteredMainArrayData.push(ComponentDataItem)
+    //         }
+    //         if(ComponentDataItem.childs != undefined){
+    //             ComponentDataItem.childs = []
+    //             ComponentDataItem.childs.forEach((nextComponentDataItem: any) => {
+                    
+    //                 if(nextComponentDataItem.Title.toLowerCase().includes(searchKey)){
+    //                     ComponentDataItem.childs.push(nextComponentDataItem)
+    //                 }
+    //                 if(nextComponentDataItem.childs != undefined){
+    //                     nextComponentDataItem.childs=[]
+    //                     nextComponentDataItem.childs.forEach((ThirdComponentDataItem: any) => {
+    //                         if(ThirdComponentDataItem.Title.toLowerCase().includes(searchKey)){
+    //                             nextComponentDataItem.childs.push(ThirdComponentDataItem)
+    //                         }
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //         setComponentsData(filteredMainArrayData);
+    //     })
+        
+    //     }
+    //     }
+    var getRegexPattern = function (keywordArray: any) {
+        var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
+        return new RegExp(pattern, "gi");
+    };
+    var getHighlightdata = function (item: any, searchTerms: any) {
+        var keywordList = [];
+        if (serachTitle != undefined && serachTitle != '') {
+            keywordList = stringToArray(serachTitle);
+        } else {
+            keywordList = stringToArray(serachTitle);
+        }
+        var pattern: any = getRegexPattern(keywordList);
+        //let Title :any =(...item.Title)
+        item.TitleNew = item.Title;
+        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+        // item.Title = item.Title;
+        keywordList = [];
+        pattern = '';
+    }
+    var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
+        var isSearchTermAvailable = true;
+        $.each(searchTerms, function (index: any, val: any) {
+            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+                isSearchTermAvailable = true;
+                getHighlightdata(item, val.toLowerCase());
+
+            } else
+                isSearchTermAvailable = false;
+        })
+        return isSearchTermAvailable;
+    }
+    
+
+    var stringToArray = function (input: any) {
+        if (input) {
+            return input.match(/\S+/g);
+        } else {
+            return [];
+        }
+    };
+
+
+    var isItemExistsNew = function (array: any, items: any) {
+        var isExists = false;
+        $.each(array, function (index: any, item: any) {
+            if (item.Id === items.Id && items.siteType === item.siteType) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
+    }
+    var AllFilteredTagNews: any = [];
+    var finalOthersData: any = []
+    var ALllTAsk: any = []
+    var childData: any = [];
+    var subChild: any = [];
+    var subChild2: any = [];
+
+
+    let handleChange1 = (e: { target: { value: string; }; }, Title: any) => {
+        setSearch(e.target.value.toLowerCase());
+        serachTitle = e.target.value.toLowerCase();
+    var filterglobal = e.target.value.toLowerCase();
+        if (filterglobal != undefined && filterglobal.length >= 1) {
+            var searchTerms = stringToArray(filterglobal);
+            $.each(MainDataBackup, function (pareIndex: any, item: any) {
+                item.flag = false;
+                item.isSearch = true;
+                item.show = false;
+                item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
+                if (item.flag == true) {
+                    AllFilteredTagNews.push(item)
+                }
+
+                if (item.childs != undefined && item.childs.length > 0) {
+                    $.each(item.childs, function (parentIndex: any, child1: any) {
+                        child1.flag = false;
+                        child1.isSearch = true;
+                        child1.flag = (getSearchTermAvialable1(searchTerms, child1, Title));
+                        if (child1.flag) {
+                            item.childs[parentIndex].flag = true;
+                            MainDataBackup[pareIndex].flag = true;
+                            item.childs[parentIndex].show = true;
+                            MainDataBackup[pareIndex].show = true;
+                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                AllFilteredTagNews.push(item)
+                            }
+                            childData.push(child1)
+                            ALllTAsk.push(item)
+
+                        }
+                        if (child1.childs != undefined && child1.childs.length > 0) {
+                            $.each(child1.childs, function (index: any, subchild: any) {
+                                subchild.flag = false;
+                                subchild.flag = (getSearchTermAvialable1(searchTerms, subchild, Title));
+                                if (subchild.flag) {
+                                    item.childs[parentIndex].flag = true;
+                                    child1.flag = true;
+                                    child1.childs[index].flag = true;
+                                    child1.childs[index].show = true;
+                                    item.childs[parentIndex].show = true;
+                                    MainDataBackup[pareIndex].flag = true;
+                                    MainDataBackup[pareIndex].show = true;
+                                    if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                        AllFilteredTagNews.push(item)
+                                    }
+                                    if (!isItemExistsNew(childData, child1))
+                                        childData.push(child1)
+                                    subChild.push(subchild)
+
+                                }
+                                if (subchild.childs != undefined && subchild.childs.length > 0) {
+                                    $.each(subchild.childs, function (childindex: any, subchilds: any) {
+                                        subchilds.flag = false;
+                                        // subchilds.Title = subchilds.newTitle;
+                                        subchilds.flag = (getSearchTermAvialable1(searchTerms, subchilds, Title));
+                                        if (subchilds.flag) {
+                                            item.childs[parentIndex].flag = true;
+                                            child1.flag = true;
+                                            subchild.flag = true;
+                                            subchild.childs[childindex].flag = true;
+                                            child1.childs[index].flag = true;
+                                            child1.childs[index].show = true;
+                                            item.childs[parentIndex].show = true;
+                                            MainDataBackup[pareIndex].flag = true;
+                                            MainDataBackup[pareIndex].show = true;
+                                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                                AllFilteredTagNews.push(item)
+                                            }
+                                            if (!isItemExistsNew(childData, child1))
+                                                childData.push(child1)
+                                            if (!isItemExistsNew(subChild, subChild))
+                                                subChild.push(subChild)
+                                            subChild2.push(subchilds)
+
+                                        }
+                                    })
+                                }
+                            })
+                        }
+
+                    })
+                }
+
+            })
+            const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const AllDataTaskk = ALllTAsk.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const SData = childData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const FData = subChild.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            if (AllDataTaskk != undefined) {
+                AllDataTaskk.forEach((newval: any) => {
+                    if (newval.Title == 'Others' && newval.childs != undefined) {
+                        newval.forEach((valllA: any) => {
+                            finalOthersData.push(valllA)
+                        })
+                    }
+
+                })
+            }
+
+            setTotalTask(finalOthersData)
+            setSubComponentsData(SData);
+            setFeatureData(FData);
+            setComponentsData(CData);
+        } else {
+            //  ungetFilterLength();
+            // setData(data => ([...maidataBackup]));
+            setComponentsData(MainDataBackup);
+            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
+        }
+        }
+        
+
+    //************ Custom Header And Footer  **********
+
+    const CustomFooter = () => {
+        return (
+            <footer className="d-flex justify-content-end me-4 mt-2">
+                <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
+                <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
+            </footer>
+        );
+    };
+
+    const onRenderCustomHeader = (
+    ) => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Select Components`}
+                    </span>
+                </div>
+                <Tooltip ComponentId="1667" />
+            </div>
+        );
+    };
+
 
     return (
         <Panel
-            headerText={`Select Components`}
+            onRenderHeader={onRenderCustomHeader}
             type={PanelType.large}
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
             isBlocking={false}
+            onRenderFooter={CustomFooter}
         >
             <div>
                 <div className="modal-body">
@@ -448,13 +637,13 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "2%" }}>
                                                     <div style={{ width: "2%" }}>
                                                         <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                            {item.Child != undefined &&
+                                                            {item.childs?.length > 0 && item.childs != undefined ?
                                                                 <a className='hreflink'
                                                                     title="Tap to expand the childs">
                                                                     <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
                                                                         : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />}
                                                                     </div>
-                                                                </a>
+                                                                </a> : null
                                                             }
                                                         </div>
                                                     </div>
@@ -482,7 +671,9 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 </th>
                                                 <th style={{ width: "18%" }}>
                                                     <div style={{ width: "17%" }} className="smart-relative ">
-                                                        <input id="searchClientCategory" onChange={event => handleChange1(event, 'Shareweb_x0020_ID')} type="search" placeholder="Client Category" title="Client Category" className="full_width searchbox_height" />
+                                                        <input id="searchClientCategory" 
+                                                        onChange={event => handleChange1(event, 'ClientCategory')}
+                                                         type="search" placeholder="Client Category" title="Client Category" className="full_width searchbox_height" />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
@@ -492,7 +683,8 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "20%" }}>
                                                     <div style={{ width: "19%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
-                                                            title="Client Category" className="full_width searchbox_height" 
+                                                            title="Team Member" className="full_width searchbox_height"
+                                                            onChange={event => handleChange1(event, 'TeamLeaderUser')}
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -504,7 +696,8 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
-                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'PercentComplete')}
+                                                            title="Client Category" className="full_width searchbox_height" 
+                                                            onChange={event => handleChange1(event, 'PercentComplete')}
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -516,10 +709,11 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative corm-control">
                                                         <input id="searchClientCategory" type="search" placeholder="Item Rank"
-                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'ItemRank')}
+                                                            title="Client Category" className="full_width searchbox_height" 
+                                                            onChange={event => handleChange1(event, 'ItemRank')}
                                                         />
                                                         <span className="sorticon">
-                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
                                                             <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
                                                         </span>
                                                     </div>
@@ -527,7 +721,8 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                 <th style={{ width: "10%" }}>
                                                     <div style={{ width: "9%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Due"
-                                                            title="Client Category" className="full_width searchbox_height"  onChange={event => handleChange1(event, 'DueDate')}
+                                                            title="Client Category" className="full_width searchbox_height" 
+                                                            onChange={event => handleChange1(event, 'DueDate')}
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -553,7 +748,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
 
                                                                         <td style={{ width: "2%" }}>
                                                                             <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                                                {item.Child != undefined &&
+                                                                                {item.childs?.length > 0 &&
                                                                                     <a className='hreflink'
                                                                                         title="Tap to expand the childs">
                                                                                         <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
@@ -583,13 +778,13 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                                             <div className="">
                                                                                 <span>
                                                                                     <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                                                        {item.Child != undefined &&
+                                                                                        {item.childs != undefined && item.childs?.length > 0 ?
                                                                                             <a className='hreflink'
                                                                                                 title="Tap to expand the childs">
                                                                                                 <div className="sign">{item.show ? <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png" />
                                                                                                     : <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png" />}
                                                                                                 </div>
-                                                                                            </a>
+                                                                                            </a> : null
                                                                                         }
                                                                                     </div>
 
@@ -616,19 +811,15 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                                                     </span>
                                                                                 </span>
                                                                             } */}
-                                                                           <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                            <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item?.Id}
                                                                             >
                                                                                 <span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
+
                                                                                 {/* {item.Title} */}
                                                                             </a>
-                                                                            
-                                                                            
-                                                                               
-
-                                                                            
-                                                                            {item?.childs != undefined &&
-                                                                                <span className='ms-1'>({item?.childsLength})</span>
+                                                                            {item?.childs?.length > 0 &&
+                                                                                <span className='ms-1'>({item?.childs.length})</span>
                                                                             }
 
                                                                             {item?.Short_x0020_Description_x0020_On != null &&
@@ -675,7 +866,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                         </tr>
                                                         {item.show && (
                                                             <>
-                                                                {item.Child.map(function (childitem: any) {
+                                                                {item.childs.map(function (childitem: any) {
 
                                                                     return (
 
@@ -686,7 +877,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                                                         <tr className="for-c02">
                                                                                             <td style={{ width: "2%" }}>
                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childitem)}>
-                                                                                                    {childitem.Child.length > 0 &&
+                                                                                                    {childitem.childs.length > 0 &&
                                                                                                         <a className='hreflink'
                                                                                                             title="Tap to expand the childs">
                                                                                                             <div className="sign">{childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
@@ -714,7 +905,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                                                             </td>
                                                                                             <td style={{ width: "2%" }}>
                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childitem)}>
-                                                                                                    {childitem.Child.length > 0 &&
+                                                                                                    {childitem.childs.length > 0 &&
                                                                                                         <a className='hreflink'
                                                                                                             title="Tap to expand the childs">
                                                                                                             <div className="sign">{childitem.show ? <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png" />
@@ -729,10 +920,11 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                                                             <td style={{ width: "22%" }}>
                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                >{childitem.Title}
+                                                                                                >
+                                                                                                    <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
                                                                                                 </a>
-                                                                                                {childitem.Child.length > 0 &&
-                                                                                                    <span className="ms-1 siteColor">({childitem.Child.length})</span>
+                                                                                                {childitem.childs.length > 0 &&
+                                                                                                    <span className="ms-1 siteColor">({childitem.childs.length})</span>
                                                                                                 }
 
                                                                                                 {childitem.Short_x0020_Description_x0020_On != null &&
@@ -781,7 +973,7 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
 
                                                                             {childitem.show && (
                                                                                 <>
-                                                                                    {childitem.Child.map(function (childinew: any) {
+                                                                                    {childitem.childs.map(function (childinew: any) {
                                                                                         return (
                                                                                             <tr >
                                                                                                 <td className="p-0" colSpan={10}>
@@ -808,10 +1000,12 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
 
                                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                >{childinew.Title}
+                                                                                                                >
+                                                                                                                    <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
+                                                                                                                   
                                                                                                                 </a>
-                                                                                                                {childinew.Child.length > 0 &&
-                                                                                                                    <span className="ms-1 siteColor">({childinew.Child.length})</span>
+                                                                                                                {childinew.childs.length > 0 &&
+                                                                                                                    <span className="ms-1 siteColor">({childinew.childs.length})</span>
                                                                                                                 }
 
                                                                                                                 {childinew.Short_x0020_Description_x0020_On != null &&
@@ -863,28 +1057,15 @@ var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any)
                                                             </>
                                                         )}
                                                     </>
-
-
                                                 )
-
                                             })}
-
-
-
                                         </tbody>
-
-
-
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <footer className="float-end mt-2">
-                    <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
-                    <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
-                </footer>
             </div >
         </Panel >
     )

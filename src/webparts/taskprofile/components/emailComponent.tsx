@@ -1,20 +1,47 @@
   import * as React from 'react';
-  import  { useState } from 'react';
+  import  { useState,useEffect } from 'react';
   import "@pnp/sp/sputilities";
   import { IEmailProperties } from "@pnp/sp/sputilities";
-  import { Web } from "sp-pnp-js";   
   import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
-
-
-  // import { spfi, SPFx as spSPFx } from "@pnp/sp";
+   import { Web } from 'sp-pnp-js';
    const EmailComponenet=( props:any)=>{
-    const[emailBody,setemailBody]=useState(null)
-    console.log(props);
-    const getResult=()=>{
-
-    }
+    const [taskdetails,setTaskDetails]=useState(null);
+    //  useEffect(()=>{
+    //   getResult();
+    //  },[])
+    //  console.log(props);
+    // const getResult= async()=>{
+    //   let web = new Web(props.siteUrl);
+    //   let taskDetails = [];
+    //   taskDetails = await web.lists
+    //     .getByTitle(props.items.listName)
+    //     .items
+    //     .getById(props.items.Id)
+    //     .select("ID", "Title", "Comments","DueDate","Approver/Id","Approver/Title","SmartInformation/Id","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+    //   .expand("Team_x0020_Members","Approver","SmartInformation","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
+    //   .get()
+    //     console.log(taskDetails);
+    //     setTaskDetails(taskDetails)
+    // }
+    // const updateData=async()=>{
+    //   const web = new Web(props.items.siteUrl );
+       
+    //     await web.lists.getByTitle(props.items.listName).items.getById(props.items.Id).update({
+    //       PercentComplete: 3,
+          
+    //     }).then((res:any)=>{
+    //      console.log(res);
+         
+    //    })
+    //    .catch((err) => {
+    //      console.log(err.message);
+    //   });
+    //  };
+    
    const sendEmail=(send:any)=>{
-    console.log(props);
+    // if(send=="Approved"){
+    //   updateData();
+    // }
     let mention_To: any = [];
     mention_To.push(props.items.Author[0].Name.replace('{', '').replace('}', '').trim());
     console.log(mention_To);
@@ -27,55 +54,35 @@
       console.log(emailprops);
 
       SendEmail(emailprops);
-
-    }
-    // let emailprops = {
-    //   To: mention_To,
-    //   Subject: "[" + this.params1.get('Site') + " - Comment by " + this.props.Context.pageContext.user.displayName + "] " + this.state.Result["Title"],
-    //   Body: this.state.Result["Title"]
-    // }
-    // console.log(emailprops);
+      }
+   
      }
      const BindHtmlBody=()=> {
       let body = document.getElementById('htmlMailBody')
       console.log(body.innerHTML);
       return "<style>p>br {display: none;}</style>" + body.innerHTML;
     }
-  
+    
     const SendEmail=async(emailprops: any)=> {
-      const sp = new SPFI();
-      const emailProps: IEmailProperties = { To: ["user@site.com"],
-       CC: emailprops.To,
-        BCC: emailprops.To,
-         Subject: emailprops.Subject, 
-         Body: BindHtmlBody(),
-          AdditionalHeaders: { "content-type": "text/html" } }; 
-          // await sp.utility.sendEmail(emailProps); 
-          try {
-            const result = await sp.utility.sendEmail(emailProps);
-            console.log('Email sent successfully.');
-          } catch (error) {
-            console.log(`Error sending email: ${error}`);
-          }
-        
-          console.log("Email Sent!");
-      // let sp=spfi();
+   
       
-    //   sp.utility.sendEmail({
-    //     //Body of Email  
-    //     Body: BindHtmlBody(),
-    //     //Subject of Email  
-    //     Subject: emailprops.Subject,
-    //     //Array of string for To of Email  
-    //     To: emailprops.To,
-    //     AdditionalHeaders: {
-    //       "content-type": "text/html"
-    //     },
-    //   }).then(() => {
-    //     console.log("Email Sent!");
-    //   }) .catch((err) => {
-    //     console.log(err.message);
-    // });
+      let sp= spfi().using(spSPFx(props.Context));
+      
+      sp.utility.sendEmail({
+        //Body of Email  
+        Body: BindHtmlBody(),
+        //Subject of Email  
+        Subject: emailprops.Subject,
+        //Array of string for To of Email  
+        To: emailprops.To,
+        AdditionalHeaders: {
+          "content-type": "text/html"
+        },
+      }).then(() => {
+        console.log("Email Sent!");
+      }) .catch((err) => {
+        console.log(err.message);
+    });
     }
     const  joinObjectValues=(arr: any)=> {
       let val = '';
@@ -87,10 +94,10 @@
      return(
         <>
        {props.Approver!=undefined &&props.items.Categories.includes("Approval")&& props.currentUser!=undefined&&props.Approver.Title==props.currentUser[0].Title
-        &&<span><button  onClick={()=>sendEmail("Approve")}className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Reject")}>Reject</button></span></span>
+        &&<span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>
        }
-       {/* <span><button  onClick={()=>sendEmail("Approve")}className="btn btn-success">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Reject")}>Reject</button></span></span> */}
-     
+       {/* <span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>
+      */}
     
         {props.items != null  &&props.Approver!=undefined&&
           <div id='htmlMailBody' style={{ display: 'none' }}>
