@@ -11,9 +11,9 @@ const SP_IMAGES_LISTID: string = "8eb391f0-8692-4c8f-ba1f-32581164aa0a";
 const LMI_CONFIGURATION_LISTID: string = "FF5D9DA3-B1F6-4BDE-B74C-BC3FADCF1A51";
 
 export default class spservices {
-    sendEMail(usersTo: string[], usersCC: string[], eMailSubject: string, eMailBody: string) {
-        throw new Error("Method not implemented.");
-    }
+    // sendEMail(usersTo: string[], usersCC: string[], eMailSubject: string, eMailBody: string) {
+    //     throw new Error("Method not implemented.");
+    // }
     
     private _sp: SPFI = null;
     constructor() {
@@ -234,16 +234,16 @@ export default class spservices {
         return resUpdateListItem;
     }
 
-    // public async sendEMail(To: string[], CC: string[], Subject: string, Body: string) {
-    //     const emailProps: IEmailProperties = {
-    //         To: To,
-    //         CC: CC,
-    //         Subject: Subject,
-    //         Body: Body,
-    //         AdditionalHeaders: {
-    //             "content-type": "text/html"
-    //         },            
-    //     };
-    //     await this._sp.utility.sendEmail(emailProps);
-    // }
+    public async sendEMail(To: string[], CC: string[], Subject: string, Body: string) {
+        const emailProps: IEmailProperties = {
+            To: To,
+            CC: CC,
+            Subject: Subject,
+            Body: Body,
+            AdditionalHeaders: {
+                "content-type": "text/html"
+            },            
+        };
+        await this._sp.utility.sendEmail(emailProps);
+    }
 }

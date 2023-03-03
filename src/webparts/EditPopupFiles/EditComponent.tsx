@@ -109,16 +109,19 @@ function EditInstitution(item: any) {
     EditData.CompletedDate = date;
     setCompletiondate(date);
     setComponent((EditData) => [...EditData]);
+    setActivePicker(null);
   };
   const handleDatestart = (date: any) => {
     EditData.StartDate = date;
     setStartdate(date);
     setComponent((EditData) => [...EditData]);
+    setActivePicker(null);
   };
   const handleDatedue = (date: any) => {
     EditData.DueDate = date;
     setDate(date);
     setComponent((EditData) => [...EditData]);
+    setActivePicker(null);
   };
   const Call = React.useCallback((item1: any, type: any) => {
     if (type == "SmartComponent") {

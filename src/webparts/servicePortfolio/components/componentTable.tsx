@@ -128,6 +128,8 @@ function ComponentTable(SelectedProp: any) {
     }
     const closeTaskStatusUpdatePoup2 = () => {
         setActivityPopup(false)
+        setchildsData([])
+        setMeetingItems([])
 
 
     }
@@ -591,7 +593,7 @@ function ComponentTable(SelectedProp: any) {
     const CreateMeetingPopups = (item: any) => {
         setMeetingPopup(true);
         MeetingItems['NoteCall'] = item;
-        closeTaskStatusUpdatePoup2();
+        
 
     }
     const Updateitem1 = () => {
@@ -2449,6 +2451,7 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
+        closeTaskStatusUpdatePoup2();
         setIsComponent(false);;
         setIsTask(false);
         setMeetingPopup(false);
@@ -2464,6 +2467,7 @@ function ComponentTable(SelectedProp: any) {
             if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
                 MainId = childItem.data.ComponentId[0]
             }
+            
             if (array != undefined) {
                 array.forEach((val: any) => {
                     val.flag = true;
@@ -2474,6 +2478,7 @@ function ComponentTable(SelectedProp: any) {
 
                 })
                 setData(array => ([...array]))
+                
             }
 
         }
@@ -2705,8 +2710,23 @@ function ComponentTable(SelectedProp: any) {
     const buttonRestructuring = () => {
         var ArrayTest: any = [];
         //  if (checkedList != undefined && checkedList.length === 1) {
-        if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Component')
+        if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length > 0 && checkedList[0].Item_x0020_Type === 'Component')
             alert('You are not allowed to Restructure this item.')
+        if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length === 0 && checkedList[0].Item_x0020_Type === 'Component') {
+
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Item_x0020_Type === 'SubComponent') {
+                            sub.isRestructureActive = true;
+                            // ArrayTest.push(sub)
+                        }
+
+                    })
+                }
+            })
+        }
         if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'SubComponent') {
             maidataBackup.forEach((obj) => {
                 obj.isRestructureActive = true;
@@ -2885,7 +2905,108 @@ function ComponentTable(SelectedProp: any) {
         // setRestructureChecked(item);
     }
     let changetoTaxType: any = ''
+    const UpdateTaskRestructure = async function () {
+        var Ids: any = [];
+        if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
+            NewArrayBackup.forEach((obj, index) => {
+                if ((NewArrayBackup.length - 1) === index)
+                    Ids.push(obj.Id);
+            })
 
+        }
+
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        await web.lists.getById(checkedList[0].listId).items.getById(checkedList[0].Id).update({
+            // EventsId: checkedList[0].Portfolio_x0020_Type === 'Event' ? { "results": Ids } : [],
+            //    '__metadata': { 'type': 'SP.Data.'+checkedList[0].siteType+'ListItem' },
+            ComponentId: (checkedList[0].Portfolio_x0020_Type === 'Component') ? { "results": Ids } : { "results": [] },
+            ServicesId: (checkedList[0].Portfolio_x0020_Type === 'Service') ? { "results": Ids } : { "results": [] },
+        }).then((res: any) => {
+            maidataBackup.forEach((obj, index) => {
+                obj.isRestructureActive = false;
+                if (obj.Id === checkedList[0].Id) {
+                    if (obj.childs.length === 0) {
+                        obj.downArrowIcon = '';
+                        obj.RightArrowIcon = '';
+                    }
+                }
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any, indexsub: any) => {
+                        sub.isRestructureActive = false;
+                        if (sub.Id === checkedList[0].Id) {
+                            obj.childs.splice(indexsub, 1)
+                            if (sub.childs.length === 0) {
+                                sub.downArrowIcon = '';
+                                sub.RightArrowIcon = '';
+                            }
+
+                        }
+                        if (sub.childs != undefined && sub.childs.length > 0) {
+                            sub.childs.forEach((newsub: any, lastIndex: any) => {
+                                newsub.isRestructureActive = false;
+                                if (newsub.Id === checkedList[0].Id) {
+                                    sub.childs.splice(lastIndex, 1)
+                                    if (newsub.childs.length === 0) {
+                                        newsub.downArrowIcon = '';
+                                        newsub.RightArrowIcon = '';
+                                    }
+                                }
+
+                            })
+                        }
+
+                    })
+                }
+
+            })
+            maidataBackup.forEach((obj, index) => {
+                if (obj.Id === Ids[0]) {
+                    obj.flag = true;
+                    obj.show = true;
+                    obj.downArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                    obj.RightArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
+                    obj.childs.push(checkedList[0]);
+                    obj.childsLength = obj.childs.length;
+                }
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any, indexsub: any) => {
+                        sub.isRestructureActive = false;
+                        if (sub.Id === Ids[0]) {
+                            sub.flag = true;
+                            sub.show = true;
+                            sub.downArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                            sub.RightArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
+                            sub.childs.push(checkedList[0]);
+                            sub.childsLength = sub.childs.length
+                        }
+                        if (sub.childs != undefined && sub.childs.length > 0) {
+                            sub.childs.forEach((newsub: any, lastIndex: any) => {
+                                if (newsub.Id === Ids[0]) {
+                                    newsub.flag = true;
+                                    newsub.show = true;
+                                    newsub.downArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                                    newsub.RightArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
+                                    newsub.childs.push(checkedList[0]);
+                                    newsub.childsLength = newsub.childs.length
+
+
+
+                                }
+
+                            })
+                        }
+
+                    })
+                }
+
+            })
+            setData(data => ([...maidataBackup]));
+            RestruringCloseCall()
+        })
+    }
     const UpdateRestructure = async function () {
         let PortfolioStructureIDs: any = ''
         var Item: any = ''
@@ -3061,8 +3182,9 @@ function ComponentTable(SelectedProp: any) {
                     checkedList[0].IsNew = true;
                     checkedList[0].Item_x0020_Type = ChengedItemTitl;
                     if (Item.childs != undefined) {
-                        // Item.downArrowIcon = checkedList[0].downArrowIcon
-                        // Item.RightArrowIcon = checkedList[0].RightArrowIcon;
+                        checkedList[0].downArrowIcon = Item.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
+                        checkedList[0].RightArrowIcon = Item.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
+
                         Item.childs.push(checkedList[0]);
                     } else {
                         Item.childs = [];
@@ -3749,7 +3871,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "2%" }}>{item.siteType === "Master Tasks" && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}</td>
+                                                                                    <td style={{ width: "2%" }}>{item.siteType === "Master Tasks" && item.Title !== 'Others' && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}</td>
                                                                                     <td style={{ width: "2%" }}>{item.siteType === "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}
                                                                                         {item.siteType != "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
@@ -4040,7 +4162,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             </td>
                                                                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                                                                 <div className="accordian-header" >
-                                                                                                                                                                    <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                                                    <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(subchilditem, item, e)} /></span>
                                                                                                                                                                 </div>
 
                                                                                                                                                             </td>
@@ -4181,34 +4303,32 @@ function ComponentTable(SelectedProp: any) {
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
 
-            <Modal
-
+            <Panel
+               headerText="Create Item"
+              type={PanelType.custom}
+                customWidth="600px"
                 isOpen={ActivityPopup}
                 onDismiss={closeTaskStatusUpdatePoup2}
                 isBlocking={false}
             >
 
-                <div className="modal-dialog" style={{ width: "700px" }}>
-                    <div className="modal-content">
+               
+                 
 
-                        <div className="modal-header  mt-1 px-3">
+                        {/* <div className="modal-header  mt-1 px-3">
                             <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
                             <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        {/* <h3 className="modal-title">
-       
-        <span className="pull-right" style={{ marginRight: "30px" }}>
-            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png"
-                ng-click="openSmartTaxonomy('Client Category', Item.SharewebCategories,'');" />
-        </span>
-    </h3> */}
+                        </div> */}
+                       
 
 
                         <div className="modal-body bg-f5f5 clearfix">
-                            <div className="">
+                            <div className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                                 <div id="portfolio" className="section-event pt-0">
-                                    {
-                                        MeetingItems?.SharewebTaskType?.Title != 'Workstream' &&
+                                
+                                    {/* {
+                                    
+                                    MeetingItems.SharewebTaskType == undefined  &&
                                         <ul className="quick-actions">
 
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
@@ -4239,9 +4359,10 @@ function ComponentTable(SelectedProp: any) {
                                                 </div>
                                             </li>
                                         </ul>
-                                    }
+                                         
+                                    } */}
                                     {
-                                        MeetingItems?.SharewebTaskType?.Title == 'Workstream' &&
+                                        (childsData != undefined && childsData?.SharewebTaskType?.Title == 'Workstream') ?
                                         <ul className="quick-actions">
 
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
@@ -4287,18 +4408,48 @@ function ComponentTable(SelectedProp: any) {
                                                     Task
                                                 </div>
                                             </li>
-                                        </ul>
+                                        </ul>:
+                                         <ul className="quick-actions">
+
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                 <span className="icon-sites">
+                                                     <img className="icon-sites"
+                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                 </span>
+                                                 Implmentation
+                                             </div>
+                                         </li>
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Development')}>
+                                                 <span className="icon-sites">
+                                                     <img className="icon-sites"
+                                                         src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                 </span>
+                                                 Development
+                                             </div>
+                                         </li>
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                 <span className="icon-sites">
+                                                 </span>
+                                                 Activity
+                                             </div>
+                                         </li>
+                                     </ul>
 
                                     }
                                 </div>
                             </div>
 
                         </div>
-                    </div>
-                </div>
+                    
+               
 
 
-            </Modal >
+            </Panel >
             <Panel headerText={` Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
                 <div>
                     {ResturuningOpen ?
@@ -4337,18 +4488,19 @@ function ComponentTable(SelectedProp: any) {
                                 </a></span>
                             </div>
                             {console.log("restructure functio test in div===================================")}
-                            {/* {RestructureChecked != undefined && RestructureChecked.length > 1 ? */}
-                            <div>
-                                <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
-                                <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
-                            </div>
-                            {/* : ''} */}
+                            {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type != 'Task' ?
+                                <div>
+                                    <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
+                                    <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
+                                </div>
+                                : ''}
                         </div>
                         : ''}
                 </div>
                 <footer className="mt-2 text-end">
-
-                    <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>
+                    {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Task' ?
+                        <button type="button" className="btn btn-primary " onClick={(e) => UpdateTaskRestructure()}>Save</button>
+                        : <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>}
                     <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
 
 

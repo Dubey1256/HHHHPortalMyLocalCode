@@ -68,13 +68,13 @@ export default function FroalaCommnetBoxes(textItems: any) {
 
         if (tempArray?.length == 0) {
             setBtnStatus(false)
-            setTimeout(() => {
-                callBack("delete");
-            }, 1000);
+
+            callBack("delete");
+
         } else {
-            setTimeout(() => {
-                callBack(tempArray);
-            }, 1000);
+
+            callBack(tempArray);
+
         }
         setState(tempArray);
     }
@@ -98,9 +98,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
             setState(copy);
             Array = copy
         }
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+
+        callBack(Array);
+
     }
 
     const subTextCallBack = useCallback((subTextData: any, commentId: any) => {
@@ -113,9 +113,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
         if (arrayIndex != undefined) {
             Array[arrayIndex].Subtext = subTextData;
         }
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+
+        callBack(Array);
+
     }, [])
 
     const postBtnHandle = (index: any) => {
@@ -133,9 +133,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
             setPostBtnStatus(true)
         }
         Array[Index].Comments = dataPost;
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+
+        callBack(Array);
+
     }, [])
 
     const SmartLightUpdateSubComment = (index: any, value: any) => {
@@ -144,9 +144,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
         copy[index] = obj;
         setState(copy);
         Array = copy;
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+
+        callBack(Array);
+
     }
     function createRows(state: any[]) {
         return (
