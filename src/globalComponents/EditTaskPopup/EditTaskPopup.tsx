@@ -2229,7 +2229,7 @@ const EditTaskPopup = (Items: any) => {
                                                     {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                         return (
                                                             <>
-                                                                <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
+                                                                <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
                                                                         <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -2242,7 +2242,7 @@ const EditTaskPopup = (Items: any) => {
                                                         smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                             return (
                                                                 <>
-                                                                    <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
+                                                                    <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
                                                                         <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                         <a>
                                                                             <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -2332,7 +2332,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 {ShareWebTypeData?.map((type: any, index: number) => {
                                                                     if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                         return (
-                                                                            <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                            <div className="block px-2 py-1 d-flex my-1 justify-content-between">
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                     {type.Title}
                                                                                 </a>
@@ -2384,7 +2384,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div>
                                                             {EditData.TaskApprovers?.map((Approver: any, index: number) => {
                                                                 return (
-                                                                    <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                    <div className="block px-2 py-1 d-flex my-1 justify-content-between">
                                                                         {/* href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`} */}
                                                                         <div>
                                                                             <a style={{ color: "#fff !important" }} target="_blank" data-interception="off">
@@ -2479,7 +2479,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         {smartServicesData?.map((com: any) => {
                                                                             return (
                                                                                 <div>
-                                                                                    <div className="d-flex Component-container-edit-task">
+                                                                                    <div className="d-flex block px-2 py-1">
                                                                                         <div>
                                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                 {com.Title}
@@ -2514,7 +2514,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 {smartComponentData?.map((com: any) => {
                                                                     return (
                                                                         <div>
-                                                                            <div className="d-flex Component-container-edit-task">
+                                                                            <div className="d-flex block px-2 py-1">
                                                                                 <div>
                                                                                     <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                         {com.Title}
@@ -2591,8 +2591,8 @@ const EditTaskPopup = (Items: any) => {
 
                                                 {PercentCompleteStatus?.length > 0 ?
                                                     <span className="full-width">
-                                                        <input type='radio' className="my-2" checked />
-                                                        <label className="ps-2">
+                                                        <input type='radio' className="form-check-input my-2" checked />
+                                                        <label className="ps-2 pt-1">
                                                             {PercentCompleteStatus}
                                                         </label>
                                                     </span> : null}
@@ -2727,7 +2727,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <div className="my-1">
                                                                     <div>
                                                                         <input type="checkbox" className="rounded-0" checked={ImageDtl.Checked} onClick={() => ImageCompareFunction(ImageDtl, index)} />
-                                                                        <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
+                                                                        <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 30) : ''}</span>
                                                                     </div>
                                                                     <a href={ImageDtl.ImageUrl} target="_blank" data-interception="off">
                                                                         <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} onMouseOver={(e) => MouseHoverImageFunction(e, ImageDtl)}
@@ -3096,7 +3096,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                                     return (
                                                                         <>
-                                                                            <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
+                                                                            <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                 <a>
                                                                                     <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -3114,7 +3114,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                                         return (
                                                                             <>
-                                                                                <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
+                                                                                <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
                                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                     <a>
                                                                                         <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -3209,7 +3209,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             {ShareWebTypeData?.map((type: any, index: number) => {
                                                                                 if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                                     return (
-                                                                                        <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                                        <div className="block px-2 py-1 d-flex my-1 justify-content-between">
                                                                                             <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                                 {type.Title}
                                                                                             </a>
@@ -3310,7 +3310,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 {smartServicesData?.map((com: any) => {
                                                                                     return (
                                                                                         <>
-                                                                                            <div className="d-flex Component-container-edit-task">
+                                                                                            <div className="d-flex block px-2 py-1">
 
                                                                                                 <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                     {com.Title}
@@ -3340,7 +3340,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             {smartComponentData?.map((com: any) => {
                                                                                 return (
                                                                                     <>
-                                                                                        <div className="d-flex Component-container-edit-task">
+                                                                                        <div className="d-flex block px-2 py-1">
 
                                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                 {com.Title}
@@ -3399,7 +3399,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     {smartServicesData?.map((com: any) => {
                                                                                         return (
                                                                                             <div>
-                                                                                                <div className="d-flex Component-container-edit-task">
+                                                                                                <div className="d-flex block px-2 py-1">
 
                                                                                                     <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                         {com.Title}
@@ -3434,7 +3434,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             {smartComponentData?.map((com: any) => {
                                                                                 return (
                                                                                     <div>
-                                                                                        <div className="d-flex Component-container-edit-task">
+                                                                                        <div className="d-flex block px-2 py-1">
 
                                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                 {com.Title}
