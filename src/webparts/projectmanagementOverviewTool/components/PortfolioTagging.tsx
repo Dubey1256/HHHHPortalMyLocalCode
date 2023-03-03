@@ -33,265 +33,8 @@ const PortfolioTagging = (item: any) => {
         GetComponents();
     },
         []);
-    function Example(callBack: any, type: any) {
-
-        item.Call(callBack?.props, type);
-
-    }
-
-    const setModalIsOpenToFalse = () => {
-        Example(undefined, item?.type);
-        setModalIsOpen(false)
-    }
-    const setModalIsOpenToOK = () => {
-        if(item?.type == 'Service'){
-            if(item?.props?.smartService!=undefined){
-                item.props.smartService = selectedComponent;
-            }
-            
-        }else{
-            if(item?.props?.smartComponent!=undefined){
-                item.props.smartComponent = selectedComponent;
-            }
-        }
-        
-        Example(item, item?.type);
-        setModalIsOpen(false);
-    }
-
-    const sortByDng = () => {
-
-        const copy = componentsData
-
-        copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
-
-        setTable(copy)
-
-    }
-    var stringToArray = function (input: any) {
-        if (input) {
-            return input.match(/\S+/g);
-        } else {
-            return [];
-        }
-    };
-    var getHighlightdata = function (item: any, searchTerms: any) {
-        var keywordList = [];
-        if (serachTitle != undefined && serachTitle != '') {
-            keywordList = stringToArray(serachTitle);
-        } else {
-            keywordList = stringToArray(serachTitle);
-        }
-        var pattern: any = getRegexPattern(keywordList);
-        //let Title :any =(...item.Title)
-        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
-        // item.Title = item.Title;
-        keywordList = [];
-        pattern = '';
-    }
-    var getRegexPattern = function (keywordArray: any) {
-        var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
-        return new RegExp(pattern, "gi");
-    };
-    var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
-        var isSearchTermAvailable = true;
-        $.each(searchTerms, function (index: any, val: any) {
-            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
-                isSearchTermAvailable = true;
-                getHighlightdata(item, val.toLowerCase());
-
-            } else
-                isSearchTermAvailable = false;
-        })
-        return isSearchTermAvailable;
-    }
-    var isItemExistsNew = function (array: any, items: any) {
-        var isExists = false;
-        $.each(array, function (index: any, item: any) {
-            if (item.Id === items.Id && items.siteType === item.siteType) {
-                isExists = true;
-                return false;
-            }
-        });
-        return isExists;
-    }
-    let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
-        setSearch(e.target.value.toLowerCase());
-        serachTitle = e.target.value.toLowerCase();
-        var Title = titleName;
-
-        var AllFilteredTagNews: any = [];
-        var finalOthersData: any = []
-        var ALllTAsk: any = []
-        var childData: any = [];
-        var subChild: any = [];
-        var subChild2: any = [];
-        AllFilteredTagNews.forEach(function (val: any) {
-            val.Child = []
-            if (val.childs != undefined) {
-                val.childs.forEach(function (type: any) {
-                    type.Child = []
-                    if (type.childs != undefined) {
-                        type.childs.forEach(function (value: any) {
-                            value.Child = []
-                            if (value.childs != undefined) {
-                                value.childs.forEach(function (last: any) {
-                                    last.Child = []
-
-                                })
-                            }
-                        })
-                    }
-                })
-            }
-        })
-        var filterglobal = e.target.value.toLowerCase();
-        if (filterglobal != undefined && filterglobal.length >= 1) {
-            var searchTerms = stringToArray(filterglobal);
-            $.each(maidataBackup, function (pareIndex: any, item: any) {
-                item.flag = false;
-                item.isSearch = true;
-                item.show = false;
-                item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
-                if (item.flag == true) {
-                    AllFilteredTagNews.push(item)
-                }
-
-                if (item.childs != undefined && item.childs.length > 0) {
-                    $.each(item.childs, function (parentIndex: any, child1: any) {
-                        child1.flag = false;
-                        child1.isSearch = true;
-                        child1.flag = (getSearchTermAvialable1(searchTerms, child1, Title));
-                        if (child1.flag) {
-                            item.childs[parentIndex].flag = true;
-                            maidataBackup[pareIndex].flag = true;
-                            item.childs[parentIndex].show = true;
-                            maidataBackup[pareIndex].show = true;
-                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
-                                AllFilteredTagNews.push(item)
-                            }
-                            childData.push(child1)
-                            ALllTAsk.push(item)
-
-                        }
-                        if (child1.childs != undefined && child1.childs.length > 0) {
-                            $.each(child1.childs, function (index: any, subchild: any) {
-                                subchild.flag = false;
-                                subchild.flag = (getSearchTermAvialable1(searchTerms, subchild, Title));
-                                if (subchild.flag) {
-                                    item.childs[parentIndex].flag = true;
-                                    child1.flag = true;
-                                    child1.childs[index].flag = true;
-                                    child1.childs[index].show = true;
-                                    item.childs[parentIndex].show = true;
-                                    maidataBackup[pareIndex].flag = true;
-                                    maidataBackup[pareIndex].show = true;
-                                    if (!isItemExistsNew(AllFilteredTagNews, item)) {
-                                        AllFilteredTagNews.push(item)
-                                    }
-                                    if (!isItemExistsNew(childData, child1))
-                                        childData.push(child1)
-                                    subChild.push(subchild)
-
-                                }
-                                if (subchild.childs != undefined && subchild.childs.length > 0) {
-                                    $.each(subchild.childs, function (childindex: any, subchilds: any) {
-                                        subchilds.flag = false;
-                                        // subchilds.Title = subchilds.newTitle;
-                                        subchilds.flag = (getSearchTermAvialable1(searchTerms, subchilds, Title));
-                                        if (subchilds.flag) {
-                                            item.childs[parentIndex].flag = true;
-                                            child1.flag = true;
-                                            subchild.flag = true;
-                                            subchild.childs[childindex].flag = true;
-                                            child1.childs[index].flag = true;
-                                            child1.childs[index].show = true;
-                                            item.childs[parentIndex].show = true;
-                                            maidataBackup[pareIndex].flag = true;
-                                            maidataBackup[pareIndex].show = true;
-                                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
-                                                AllFilteredTagNews.push(item)
-                                            }
-                                            if (!isItemExistsNew(childData, child1))
-                                                childData.push(child1)
-                                            if (!isItemExistsNew(subChild, subChild))
-                                                subChild.push(subChild)
-                                            subChild2.push(subchilds)
-
-                                        }
-                                    })
-                                }
-                            })
-                        }
-
-                    })
-                }
-
-            })
-            const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            const AllDataTaskk = ALllTAsk.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            const SData = childData.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            const FData = subChild.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            if (AllDataTaskk != undefined) {
-                AllDataTaskk.forEach((newval: any) => {
-                    if (newval.Title == 'Others' && newval.childs != undefined) {
-                        newval.forEach((valllA: any) => {
-                            finalOthersData.push(valllA)
-                        })
-                    }
-
-                })
-            }
-
-            setTotalTask(finalOthersData)
-            setSubComponentsData(SData);
-            setFeatureData(FData);
-            setComponentsData(CData);
-        } else {
-            //  ungetFilterLength();
-            // setData(data => ([...maidataBackup]));
-            setComponentsData(maidataBackup);
-            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
-        }
-        // console.log($scope.ComponetsData['allComponentItemWithStructure']);
-
-    };
-    const handleOpen = (item: any) => {
-
-        item.show = item.show = item.show == true ? false : true;
-        setComponentsData(componentsData => ([...componentsData]));
-
-    };
-    var Response: [] = [];
-    const GetTaskUsers = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let taskUsers = [];
-        taskUsers = await web.lists
-            .getByTitle('Task Users')
-            .items
-            .get();
-        Response = taskUsers;
-        //console.log(this.taskUsers);
-
-    }
-    var isItemExist = function(search:any){
-        let result =false;
-        selectedComponent?.filter(function(comp:any){
-           if(comp?.Id===search?.Id){
-            result= true;
-           }
-        });
-        return result
-      }
-    const GetComponents = async () => {
+// get all data 
+  const GetComponents = async () => {
         var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
         var SubComponentsData: any[] = [];
         var FeatureData: any[] = [];
@@ -404,13 +147,266 @@ const PortfolioTagging = (item: any) => {
                     })
                 }
             })
-            //maidataBackup.push(ComponentsData)
-            // setmaidataBackup(ComponentsData)
+            maidataBackup.push(ComponentsData)
+            setmaidataBackup(ComponentsData)
             setComponentsData(ComponentsData);
             setmaidataBackup(ComponentsData)
             setModalIsOpen(true)
         }
     }
+
+
+    function Example(callBack: any, type: any) {
+
+        item.Call(callBack?.props, type);
+
+    }
+
+    const setModalIsOpenToFalse = () => {
+        Example(undefined, item?.type);
+        setModalIsOpen(false)
+    }
+    const setModalIsOpenToOK = () => {
+        if(item?.type == 'Service'){
+            if(item?.props?.smartService!=undefined){
+                item.props.smartService = selectedComponent;
+            }
+            
+        }else{
+            if(item?.props?.smartComponent!=undefined){
+                item.props.smartComponent = selectedComponent;
+            }
+        }
+        
+        Example(item, item?.type);
+        setModalIsOpen(false);
+    }
+
+    const sortByDng = () => {
+
+        const copy = componentsData
+
+        copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
+
+        setTable(copy)
+
+    }
+   
+   
+    
+    
+
+
+
+    var getRegexPattern = function (keywordArray: any) {
+        var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
+        return new RegExp(pattern, "gi");
+    };
+    var getHighlightdata = function (item: any, searchTerms: any) {
+        var keywordList = [];
+        if (serachTitle != undefined && serachTitle != '') {
+            keywordList = stringToArray(serachTitle);
+        } else {
+            keywordList = stringToArray(serachTitle);
+        }
+        var pattern: any = getRegexPattern(keywordList);
+        //let Title :any =(...item.Title)
+        item.TitleNew = item.Title;
+        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+        // item.Title = item.Title;
+        keywordList = [];
+        pattern = '';
+    }
+    var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
+        var isSearchTermAvailable = true;
+        $.each(searchTerms, function (index: any, val: any) {
+            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+                isSearchTermAvailable = true;
+                getHighlightdata(item, val.toLowerCase());
+
+            } else
+                isSearchTermAvailable = false;
+        })
+        return isSearchTermAvailable;
+    }
+    
+
+    var stringToArray = function (input: any) {
+        if (input) {
+            return input.match(/\S+/g);
+        } else {
+            return [];
+        }
+    };
+
+
+    var isItemExistsNew = function (array: any, items: any) {
+        var isExists = false;
+        $.each(array, function (index: any, item: any) {
+            if (item.Id === items.Id && items.siteType === item.siteType) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
+    }
+    var AllFilteredTagNews: any = [];
+    var finalOthersData: any = []
+    var ALllTAsk: any = []
+    var childData: any = [];
+    var subChild: any = [];
+    var subChild2: any = [];
+    let handleChange1 = (e: { target: { value: string; }; }, Title: any) => {
+        setSearch(e.target.value.toLowerCase());
+        serachTitle = e.target.value.toLowerCase();
+    var filterglobal = e.target.value.toLowerCase();
+        if (filterglobal != undefined && filterglobal.length >= 1) {
+            var searchTerms = stringToArray(filterglobal);
+            $.each(maidataBackup, function (pareIndex: any, item: any) {
+                item.flag = false;
+                item.isSearch = true;
+                item.show = false;
+                item.flag = (getSearchTermAvialable1(searchTerms, item, Title));
+                if (item.flag == true) {
+                    AllFilteredTagNews.push(item)
+                }
+
+                if (item.Child != undefined && item.Child.length > 0) {
+                    $.each(item.Child, function (parentIndex: any, child1: any) {
+                        child1.flag = false;
+                        child1.show = false;
+                        child1.isSearch = true;
+                        child1.flag = (getSearchTermAvialable1(searchTerms, child1, Title));
+                        if (child1.flag) {
+                            item.Child[parentIndex].flag = true;
+                            maidataBackup[pareIndex].flag = true;
+                            item.Child[parentIndex].show = true;
+                            maidataBackup[pareIndex].show = true;
+                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                AllFilteredTagNews.push(item)
+                            }
+                            childData.push(child1)
+                            ALllTAsk.push(item)
+
+                        }
+                        if (child1.Child != undefined && child1.Child.length > 0) {
+                            $.each(child1.Child, function (index: any, subchild: any) {
+                                subchild.flag = false;
+                                subchild.show = false;
+                                subchild.flag = (getSearchTermAvialable1(searchTerms, subchild, Title));
+                                if (subchild.flag) {
+                                    item.childs[parentIndex].flag = true;
+                                    child1.flag = true;
+                                    child1.Child[index].flag = true;
+                                    child1.Child[index].show = true;
+                                    item.Child[parentIndex].show = true;
+                                    maidataBackup[pareIndex].flag = true;
+                                    maidataBackup[pareIndex].show = true;
+                                    if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                        AllFilteredTagNews.push(item)
+                                    }
+                                    if (!isItemExistsNew(childData, child1))
+                                        childData.push(child1)
+                                    subChild.push(subchild)
+
+                                }
+                                if (subchild.Child != undefined && subchild.Child.length > 0) {
+                                    $.each(subchild.childs, function (childindex: any, subchilds: any) {
+                                        subchilds.flag = false;
+                                        // subchilds.Title = subchilds.newTitle;
+                                        subchilds.flag = (getSearchTermAvialable1(searchTerms, subchilds, Title));
+                                        if (subchilds.flag) {
+                                            item.childs[parentIndex].flag = true;
+                                            child1.flag = true;
+                                            subchild.flag = true;
+                                            subchild.Child[childindex].flag = true;
+                                            child1.Child[index].flag = true;
+                                            child1.Child[index].show = true;
+                                            item.childs[parentIndex].show = true;
+                                            maidataBackup[pareIndex].flag = true;
+                                            maidataBackup[pareIndex].show = true;
+                                            if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                                                AllFilteredTagNews.push(item)
+                                            }
+                                            if (!isItemExistsNew(childData, child1))
+                                                childData.push(child1)
+                                            if (!isItemExistsNew(subChild, subChild))
+                                                subChild.push(subChild)
+                                            subChild2.push(subchilds)
+
+                                        }
+                                    })
+                                }
+                            })
+                        }
+
+                    })
+                }
+
+            })
+            const CData = AllFilteredTagNews.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const AllDataTaskk = ALllTAsk.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const SData = childData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            const FData = subChild.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            if (AllDataTaskk != undefined) {
+                AllDataTaskk.forEach((newval: any) => {
+                    if (newval.Title == 'Others' && newval.childs != undefined) {
+                        newval.forEach((valllA: any) => {
+                            finalOthersData.push(valllA)
+                        })
+                    }
+
+                })
+            }
+
+            setTotalTask(finalOthersData)
+            setSubComponentsData(SData);
+            setFeatureData(FData);
+            setComponentsData(CData);
+        } else {
+            //  ungetFilterLength();
+            // setData(data => ([...maidataBackup]));
+            setComponentsData(maidataBackup);
+            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
+        }
+        }
+        
+    const handleOpen = (item: any) => {
+
+        item.show = item.show = item.show == true ? false : true;
+        setComponentsData(componentsData => ([...componentsData]));
+
+    };
+    var Response: [] = [];
+    const GetTaskUsers = async () => {
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let taskUsers = [];
+        taskUsers = await web.lists
+            .getByTitle('Task Users')
+            .items
+            .get();
+        Response = taskUsers;
+        //console.log(this.taskUsers);
+
+    }
+    var isItemExist = function(search:any){
+        let result =false;
+        selectedComponent?.filter(function(comp:any){
+           if(comp?.Id===search?.Id){
+            result= true;
+           }
+        });
+        return result
+      }
+  
     const selectPortfolio = (item: any) => {
         let itemAlreadySelect = false;
         let componentArray=selectedComponent;
@@ -731,7 +727,9 @@ const PortfolioTagging = (item: any) => {
                                                                                             <td style={{ width: "22%" }}>
                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                >{childitem.Title}
+                                                                                                >
+                                                                                                      <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                                    
                                                                                                 </a>
                                                                                                 {childitem.Child.length > 0 &&
                                                                                                     <span className="ms-1 siteColor">({childitem.Child.length})</span>
@@ -810,7 +808,8 @@ const PortfolioTagging = (item: any) => {
 
                                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                >{childinew.Title}
+                                                                                                                >  <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
+                                                                                                            
                                                                                                                 </a>
                                                                                                                 {childinew.Child.length > 0 &&
                                                                                                                     <span className="ms-1 siteColor">({childinew.Child.length})</span>
