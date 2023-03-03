@@ -350,12 +350,28 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         />);
 
         const elemControls = (<>
-            <div className="ms-Grid-col ms-md8 ms-sm12">
-                <SearchBox placeholder="Filter by Name:" styles={controlStyles} onChange={this.onSearchTextChange} />
+         <div className="tbl-headings">
+<span className="leftsec">
+<span> Showing  items </span> <span className="ms-1"> <SearchBox className="m-0" placeholder="Filter by Name:" styles={controlStyles} onChange={this.onSearchTextChange} /> </span>
+</span>
+<span className="toolbox mx-auto">
+<PrimaryButton className="m-0" text="Add Team Group" styles={controlStyles} onClick={this.onAddGroupMemberClick} />
+
+</span>
+
+
+              
+            </div>
+
+
+
+
+            {/* <div className="ms-Grid-col ms-md8 ms-sm12">
+              
             </div>
             <div className="ms-Grid-col ms-md4 ms-sm12">
                 <PrimaryButton text="Add Team Group" styles={controlStyles} onClick={this.onAddGroupMemberClick} />
-            </div>
+            </div> */}
         </>);
 
         const elemTaskMetadata = (this.state.showEditPanel &&  <div>
@@ -488,8 +504,8 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
             {elemEditGroupTaskFields}          
         </Panel>);
 
-        return (<div className="ms-Grid">
-            <div className="ms-Grid-row">{elemControls}</div>
+        return (<div className="ms-Grid ">
+            <div className="ms-Grid Alltable">{elemControls}</div>
             <div className="ms-Grid-row">{elemCommandBar}</div>
             <div className="ms-Grid-row">{elemGroupTaskList}</div>
             {elemNewTaskGroup}
