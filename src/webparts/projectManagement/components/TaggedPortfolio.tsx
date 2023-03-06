@@ -365,17 +365,19 @@ const TaggedPortfolio = (props: any) => {
             <section className="sidebar__section sidebar__section--menu" >
               <nav className="nav__item">
                 <ul className="nav__list">
-                  <li id="DefaultViewSelectId" className="nav__item">
-                    <a ng-click="ChangeView('DefaultView','DefaultViewSelectId')" className="nav__link">
+                  <li id="DefaultViewSelectId" className="nav__item ">
+                    <a ng-click="ChangeView('DefaultView','DefaultViewSelectId')" className="nav__link border-bottom pb-1">
                       <span className="nav__icon nav__icon--home"></span>
-                      <span className="nav__text">Components</span>
+                      <span className="nav__text">Components <span className="float-end "  style={{ cursor: 'pointer' }} onClick={(e) => EditPortfolio(Masterdata[0], 'Component')}><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M22.8746 14.3436C22.8774 18.8722 22.8262 22.6308 22.7608 22.6962C22.6954 22.7616 18.9893 22.8128 14.525 22.8101C10.0606 22.8073 6.32545 22.8876 6.22467 22.9884C5.99582 23.2172 6.00541 24.6394 6.23742 24.8714C6.33182 24.9658 10.0617 25.0442 14.526 25.0455C18.9903 25.0469 22.6959 25.1009 22.7606 25.1657C22.8254 25.2304 22.8808 28.9921 22.8834 33.5248L22.8884 41.7663L23.9461 41.757L25.0039 41.7476L25.0012 33.3997L24.9986 25.0516L33.2932 25.0542C37.8555 25.0556 41.6431 25.0017 41.7105 24.9343C41.8606 24.7842 41.8537 23.0904 41.7024 22.9392C41.6425 22.8793 37.8594 22.8258 33.2955 22.8204L24.9975 22.8104L24.9925 14.4606L24.9874 6.11084L23.9285 6.11035L22.8695 6.10998L22.8746 14.3436Z" fill="#fff"/>
+</svg></span></span>
                     </a>
                   </li>
-                  <li className="nav__item p-2 pt-0">
+                  <li className="nav__item  pb-1 pt-0">
                     <div className="nav__text" >
                       {
                         Masterdata[0]?.smartComponent?.length > 0 ?
-                          <ul className='nav__subList scrollbarCustom'>
+                          <ul className='nav__subList scrollbarCustom pt-1 ps-0'>
                             {
                               Masterdata[0]?.smartComponent?.map((component: any) => {
                                 return (
@@ -404,13 +406,13 @@ const TaggedPortfolio = (props: any) => {
                           //   </table>
                           // </div>
                           :
-                          <div className="border rounded-2 p-2 pt-0 text-center">
+                          <div className="nontag mt-2 text-center">
                             No Tagged Component
                           </div>
                       }
-                      <div className="text-end mt-2 bt-2">
+                      {/* <div className="text-end text-center p-1 mt-2 bt-2 border btn-primary">
                         <span style={{ cursor: 'pointer' }} onClick={(e) => EditPortfolio(Masterdata[0], 'Component')}>Tag Components</span>
-                      </div>
+                      </div> */}
                     </div>
                   </li>
                 </ul>
@@ -419,18 +421,20 @@ const TaggedPortfolio = (props: any) => {
             <section className="sidebar__section sidebar__section--menu">
               <nav className="nav__item">
                 <ul className="nav__list">
-                  <li id="DefaultViewSelectId" className="nav__item">
-                    <a ng-click="ChangeView('DefaultView','DefaultViewSelectId')" className="nav__link">
+                  <li id="DefaultViewSelectId" className="nav__item  pt-0  ">
+                    <a ng-click="ChangeView('DefaultView','DefaultViewSelectId')" className="nav__link border-bottom pb-1">
                       <span className="nav__icon nav__icon--home"></span>
-                      <span className="nav__text">Services</span>
+                      <span className="nav__text">Services <span className="float-end " style={{ cursor: 'pointer' }} onClick={(e) => EditPortfolio(Masterdata[0], 'Service')}><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M22.8746 14.3436C22.8774 18.8722 22.8262 22.6308 22.7608 22.6962C22.6954 22.7616 18.9893 22.8128 14.525 22.8101C10.0606 22.8073 6.32545 22.8876 6.22467 22.9884C5.99582 23.2172 6.00541 24.6394 6.23742 24.8714C6.33182 24.9658 10.0617 25.0442 14.526 25.0455C18.9903 25.0469 22.6959 25.1009 22.7606 25.1657C22.8254 25.2304 22.8808 28.9921 22.8834 33.5248L22.8884 41.7663L23.9461 41.757L25.0039 41.7476L25.0012 33.3997L24.9986 25.0516L33.2932 25.0542C37.8555 25.0556 41.6431 25.0017 41.7105 24.9343C41.8606 24.7842 41.8537 23.0904 41.7024 22.9392C41.6425 22.8793 37.8594 22.8258 33.2955 22.8204L24.9975 22.8104L24.9925 14.4606L24.9874 6.11084L23.9285 6.11035L22.8695 6.10998L22.8746 14.3436Z" fill="#fff"/>
+</svg></span></span>
                     </a>
                   </li>
-                  <li id="DefaultViewSelectId" className="nav__item p-2 pt-0">
+                  <li id="DefaultViewSelectId" className="nav__item  pb-1 pt-0">
 
                     <div className="nav__text">
                       {
                         Masterdata[0]?.smartService?.length > 0 ?
-                        <ul className='nav__subList scrollbarCustom'>
+                        <ul className='nav__subList scrollbarCustom pt-1 ps-0'>
                             {
                                Masterdata[0]?.smartService?.map((service: any) => {
                                 return (
@@ -460,13 +464,13 @@ const TaggedPortfolio = (props: any) => {
                           //   </table>
                           // </div>
                           :
-                          <div className="border rounded-2 p-2 pt-0 text-center">
+                          <div className="nontag mt-2 text-center">
                             No Tagged Service
                           </div>
                       }
-                      <div className="text-end mt-2 bt-2">
+                      {/* <div className="text-end text-center p-1 mt-2 bt-2 border   btn-primary">
                         <span style={{ cursor: 'pointer' }} onClick={(e) => EditPortfolio(Masterdata[0], 'Service')}>Tag Services</span>
-                      </div>
+                      </div> */}
                     </div>
                   </li>
                 </ul>
@@ -606,7 +610,7 @@ const TaggedPortfolio = (props: any) => {
                                 <div> Title </div></th>
 
                               <th style={{ width: "10%" }}>
-                                <div> Portfolio Type </div>
+                                <div> Portfolio</div>
                               </th>
 
                               <th style={{ width: "10%" }}>
