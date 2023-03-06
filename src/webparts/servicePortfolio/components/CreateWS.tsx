@@ -20,9 +20,11 @@ var TeamMemberIds: any = [];
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
     SelectedTasks=[]
-    var AllItems = props.props
-    console.log(props)
-    SelectedTasks.push(AllItems)
+    if(props != undefined){
+        var AllItems = props.props
+        SelectedTasks.push(AllItems)
+        console.log(props)
+    }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
     const [isDropItem, setisDropItem] = React.useState(false);
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
@@ -42,8 +44,9 @@ const CreateWS = (props: any) => {
     const[IsPopupComponent,setIsPopupComponent]= React.useState(false)
     const [CategoriesData, setCategoriesData] = React.useState([]);
     const [checkedWS, setcheckedWS] = React.useState(true);
-    const [checkedTask, setcheckedTask] = React.useState(true);
+    const [checkedTask, setcheckedTask] = React.useState(false);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+    const [breadcrumb, setbreadcrumb] = React.useState([]);
 
     const closeTaskStatusUpdatePoup = (res: any) => {
         setTaskStatuspopup(false)
@@ -53,6 +56,20 @@ const CreateWS = (props: any) => {
     React.useEffect(()=>{
        
         selectType('Workstream');
+        props.data.forEach((val:any)=>{
+            var ParentArray:any=[]
+          if(val.Id == AllItems.Id){
+            ParentArray.push(val);
+          }
+          if(val.childs != undefined){
+            val.childs.map((child:any)=>{
+                ParentArray.childs=[]
+                if(child.Id == AllItems.Id){
+                    ParentArray.childs.push(child)
+                }
+            })
+          }
+        })
         
     },[])
     var ItemRankTitle: any = ''
@@ -305,11 +322,11 @@ const CreateWS = (props: any) => {
         }).then((res: any) => {
             console.log(res);
             if(PopupType=='CreatePopup'){
-                closeTaskStatusUpdatePoup(res);
-                res.data['SiteIcon']= AllItems.SiteIcon
+               res.data['SiteIcon']= AllItems.SiteIcon
                 res.data['listId']= AllItems.listId
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
+                closeTaskStatusUpdatePoup(res);
             }
             else{
                 closeTaskStatusUpdatePoup(res);
@@ -489,7 +506,12 @@ const CreateWS = (props: any) => {
     const selectType = async (type: any) => {
         if(type == 'Task'){
           setcheckedWS(false)
+          setcheckedTask(true)
         }
+        if(type == 'Workstream'){
+            setcheckedWS(true)
+            setcheckedTask(false)
+          }
         
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         TaskTypeItems = await web.lists
@@ -531,7 +553,7 @@ const CreateWS = (props: any) => {
                         </span>
                         <span className="col-sm-2" >
                             <label>
-                                <input type="radio"  onClick={() => selectType('Task')} className="me-1" />Task
+                                <input type="radio"   checked={checkedTask} onClick={() => selectType('Task')} className="me-1" />Task
                             </label>
                         </span>
 
@@ -540,11 +562,11 @@ const CreateWS = (props: any) => {
                         <div className="col-sm-8 pad0">
                         <label className="full-width"></label>
                             <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title" defaultValue={AllItems.Title} onChange={(e: any) => AllItems.Title = e.target.value}
+                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => AllItems.Title = e.target.value}
                             />
                         </div>
                         <div className="col-sm-4">
-                            {AllItems.Portfolio_x0020_Type == 'Component'
+                            {AllItems?.Portfolio_x0020_Type == 'Component'
                                 &&
                                 <div className="">
                                     <div ng-show="smartComponent.length==0" className="input-group">
@@ -593,13 +615,13 @@ const CreateWS = (props: any) => {
                                 <label className="full-width">Item Rank</label>
                                 <select
                               className="full_width searchbox_height"
-                              defaultValue={AllItems.ItemRankTitle}
+                              defaultValue={AllItems?.ItemRankTitle}
                               onChange={(e) =>
                                 (AllItems.ItemRankTitle = e.target.value)
                               }
                             >
                               <option>
-                                {AllItems.ItemRankTitle == undefined
+                                {AllItems?.ItemRankTitle == undefined
                                   ? "select Item Rank"
                                   : AllItems.ItemRankTitle}
                               </option>
@@ -608,9 +630,9 @@ const CreateWS = (props: any) => {
                                   return (
                                     <option
                                       key={i}
-                                      defaultValue={AllItems.ItemRankTitle}
+                                      defaultValue={AllItems?.ItemRankTitle}
                                     >
-                                      {AllItems.ItemRankTitle == h.rankTitle
+                                      {AllItems?.ItemRankTitle == h.rankTitle
                                         ? AllItems.ItemRankTitle
                                         : h.rankTitle}
                                     </option>
@@ -651,7 +673,7 @@ const CreateWS = (props: any) => {
                             <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                             <DatePicker className="form-control"
                                                             selected={date}
-                                                            value={AllItems.DueDate}
+                                                            value={AllItems?.DueDate}
                                                             onChange={handleDatedue}
                                                             dateFormat="dd/MM/yyyy"
                                                            

@@ -27,6 +27,7 @@ import { PortfolioStructureCreationCard } from '../../../globalComponents/tableC
 import CreateActivity from './CreateActivity';
 import CreateWS from './CreateWS'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Tooltip from '../../../globalComponents/Tooltip';
 
 
 
@@ -39,6 +40,8 @@ var ComponentsDataCopy: any = [];
 var SubComponentsDataCopy: any = [];
 var FeatureDataCopy: any = [];
 var array: any = [];
+var MeetingItems:any=[]
+var childsData:any=[]
 var AllTask: any = [];
 var serachTitle: any = '';
 let ChengedTitle: any = '';
@@ -51,9 +54,9 @@ function ComponentTable(SelectedProp: any) {
     const [ComponentsData, setComponentsData] = React.useState([])
     const [SubComponentsData, setSubComponentsData] = React.useState([])
     const [TotalTask, setTotalTask] = React.useState([])
-    const [childsData, setchildsData] = React.useState<any>([])
+    //const [childsData, setchildsData] = React.useState<any>([])
     const [ActivityDisable, setActivityDisable] = React.useState(true);
-    const [MeetingItems, setMeetingItems] = React.useState<any>([])
+   // const [MeetingItems, setMeetingItems] = React.useState<any>([])
     const [ActivityPopup, setActivityPopup] = React.useState(false);
     const [TaggedAllTask, setTaggedAllTask] = React.useState([])
     const [FeatureData, setFeatureData] = React.useState([])
@@ -127,33 +130,54 @@ function ComponentTable(SelectedProp: any) {
         return isExists;
     }
     const closeTaskStatusUpdatePoup2 = () => {
+        MeetingItems?.forEach((val:any):any=>{
+            val.chekBox =false;
+        })
         setActivityPopup(false)
-        setchildsData([])
-        setMeetingItems([])
+       // childsData =[]
+        MeetingItems =[]
+        childsData =[]
+        // setMeetingItems([])
 
 
     }
     const openActivity = () => {
-        if (MeetingItems.SharewebTaskType != undefined) {
-            if (MeetingItems.SharewebTaskType.Title == 'Activities') {
-                setWSPopup(true)
+        if(MeetingItems.length > 1){
+            alert('More than 1 Parents selected, Select only 1 Parent to create a child item')
+        }
+        else{
+            if(MeetingItems[0] != undefined){
+            if (MeetingItems[0].SharewebTaskType != undefined) {
+                if (MeetingItems[0].SharewebTaskType.Title == 'Activities') {
+                    setWSPopup(true)
+                }
+            }
+            if (MeetingItems != undefined && MeetingItems[0].SharewebTaskType?.Title == 'Workstream') {
+                setActivityPopup(true)
+            }
+            if(MeetingItems[0].Portfolio_x0020_Type == 'Service'&& MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined){
+                MeetingItems[0]['NoteCall'] = 'Activities';
+                setMeetingPopup(true)
+            }
+            if (MeetingItems[0].Portfolio_x0020_Type == 'Component' && MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined) {
+                setActivityPopup(true)
             }
         }
-        if (childsData.SharewebTaskType != undefined) {
-            if (childsData.SharewebTaskType.Title == 'Activities') {
+        }
+      
+        if (childsData[0] != undefined && childsData[0].SharewebTaskType != undefined) {
+            if (childsData[0].SharewebTaskType.Title == 'Activities') {
                 setWSPopup(true)
-                setMeetingItems(childsData)
+                MeetingItems.push(childsData[0])
+                //setMeetingItems(childsData)
             }
         }
-        if (MeetingItems != undefined && MeetingItems.SharewebTaskType?.Title == 'Workstream') {
+      
+        if (childsData[0] != undefined && childsData[0].SharewebTaskType.Title == 'Workstream') {
             setActivityPopup(true)
+            MeetingItems.push(childsData[0])
         }
-        if (childsData != undefined && childsData.SharewebTaskType?.Title == 'Workstream') {
-            setActivityPopup(true)
-        }
-        if (MeetingItems.SharewebTaskType == undefined && childsData.SharewebTaskType == undefined) {
-            setActivityPopup(true)
-        }
+     
 
 
 
@@ -592,7 +616,7 @@ function ComponentTable(SelectedProp: any) {
 
     const CreateMeetingPopups = (item: any) => {
         setMeetingPopup(true);
-        MeetingItems['NoteCall'] = item;
+        MeetingItems[0]['NoteCall'] = item;
         
 
     }
@@ -1055,13 +1079,14 @@ function ComponentTable(SelectedProp: any) {
                         map(AllTasks, (result: any) => {
                             result.TeamLeaderUser = []
                             result.AllTeamName = result.AllTeamName === undefined ? '' : result.AllTeamName;
+                            result.chekbox=false;
                             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
 
                             if (result.DueDate == 'Invalid date' || '') {
                                 result.DueDate = result.DueDate.replaceAll("Invalid date", "")
                             }
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
+                            result.chekbox=false;
                             if (result.Short_x0020_Description_x0020_On != undefined) {
                                 result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
                             }
@@ -2454,6 +2479,9 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
+        MeetingItems?.forEach((val:any):any=>{
+            val.chekBox =false;
+        })
         closeTaskStatusUpdatePoup2();
         setIsComponent(false);;
         setIsTask(false);
@@ -2508,15 +2536,18 @@ function ComponentTable(SelectedProp: any) {
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     const onChangeHandler = (itrm: any, child: any, e: any) => {
-        var Array: any = []
+        var Arrays: any = []
+       
 
         const { checked } = e.target;
         if (checked == true) {
+            itrm.chekBox = true;
             if (itrm.SharewebTaskType == undefined) {
                 setActivityDisable(false)
                 itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                 itrm['listName'] = 'Master Tasks';
-                setMeetingItems(itrm);
+                MeetingItems.push(itrm)
+                //setMeetingItems(itrm);
 
             }
             if (itrm.SharewebTaskType != undefined) {
@@ -2524,14 +2555,23 @@ function ComponentTable(SelectedProp: any) {
                     setActivityDisable(false)
                     itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
                     itrm['listName'] = 'Master Tasks';
-                    Array.push(itrm)
+                    Arrays.push(itrm)
                     itrm['PortfolioId'] = child.Id;
-                    setchildsData(itrm)
+                    childsData.push(itrm)
                 }
             }
         }
         if (checked == false) {
-            setActivityDisable(true)
+            itrm.chekBox = false;
+            MeetingItems?.forEach((val:any,index:any)=>{
+                if(val.Id == itrm.Id){
+                    MeetingItems.splice(index,1)
+                }
+            })
+            if(MeetingItems.length == 0){
+           setActivityDisable(true)
+            }
+
             $('#ClientCategoryPopup').hide();
         }
 
@@ -3235,6 +3275,18 @@ function ComponentTable(SelectedProp: any) {
     //         PortfolioLevelNum = 1;
     //     }
     // }
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Create Activity ${MeetingItems[0]?.Title}`}
+                    </span>
+                </div>
+                <Tooltip ComponentId={MeetingItems[0]?.Id} />
+            </div>
+        );
+    };
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
 
@@ -3791,7 +3843,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
                                                                                             {/* checked={item.checked === true ? true : false} */}
-                                                                                            <span className='pe-2'><input type="checkbox"
+                                                                                            <span className='pe-2'><input type="checkbox" checked={item.chekBox}
                                                                                                 onChange={(e) => onChangeHandler(item, 'Parent', e)} /></span>
                                                                                         </div>
 
@@ -4301,16 +4353,16 @@ function ComponentTable(SelectedProp: any) {
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            {MeetingPopup && <CreateActivity props={MeetingItems} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
-            {WSPopup && <CreateWS props={MeetingItems} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateWS>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
             <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
 
             <Panel
-               headerText="Create Item"
-              type={PanelType.custom}
-                customWidth="600px"
+               onRenderHeader={onRenderCustomHeaderMain}
+               type={PanelType.custom}
+               customWidth="600px"
                 isOpen={ActivityPopup}
                 onDismiss={closeTaskStatusUpdatePoup2}
                 isBlocking={false}
@@ -4366,7 +4418,7 @@ function ComponentTable(SelectedProp: any) {
                                          
                                     } */}
                                     {
-                                        (childsData != undefined && childsData?.SharewebTaskType?.Title == 'Workstream') ?
+                                        (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
                                         <ul className="quick-actions">
 
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
