@@ -610,7 +610,7 @@ const TaggedPortfolio = (props: any) => {
                                 <div> Title </div></th>
 
                               <th style={{ width: "10%" }}>
-                                <div> Portfolio Type </div>
+                                <div> Portfolio</div>
                               </th>
 
                               <th style={{ width: "10%" }}>
