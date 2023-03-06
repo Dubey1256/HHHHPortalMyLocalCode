@@ -111,6 +111,13 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         Array = copy;
         callBack(Array);
     }
+    const postBtnHandleCallBackCancel =useCallback((status:any)=>{
+        if (status) {
+            setPostBtnStatus(false)
+        } else {
+            setPostBtnStatus(true)
+        }
+    },[])
     function createSubRows(state: any[]) {
         return (
             <div className="add-text-box">
@@ -208,6 +215,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                         postStatus={postBtnStatus}
                                         allUsers={SubTextItemsArray.allUsers}
                                         callBack={postBtnHandleCallBack}
+                                        CancelCallback={postBtnHandleCallBackCancel}
                                     />
                                 </div>
                             </div>

@@ -83,27 +83,32 @@ const AddCommentComponent = (FbData: any) => {
     const editPostCloseFunction = () => {
         setEditPostPanel(false);
     }
-    const updateCommentFunction = (e:any, CommentData:any) => {
+    const updateCommentFunction = (e: any, CommentData: any) => {
         FeedBackArray[CommentData.Index].Title = e.target.value;
         FbData.callBack(true, FeedBackArray, 0);
     }
+
+    const cancelCommentBtn = () => {
+        FbData.CancelCallback(true);
+    }
+
     return (
         <div>
-            <section className="previous-FeedBack-section">
+            <section className="previous-FeedBack-section clearfix">
                 {FeedBackArray != null && FeedBackArray?.length > 0 ?
                     <div>
                         {FeedBackArray?.map((commentDtl: any, index: number) => {
                             return (
                                 <div>
-                                    <div className="col d-flex add_cmnt my-1">
+                                    <div className="col-10 d-flex float-end add_cmnt my-1">
                                         <div className="">
-                                            <img style={{width: "40px", borderRadius: "50%",height: "40px", margin:"5px"}} src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
+                                            <img style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
                                                 commentDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                         </div>
                                         <div className="col-11 pe-0 mt-2 ms-1" >
                                             <div className='d-flex justify-content-between align-items-center'>
                                                 <span className="siteColor font-weight-normal">
-                                                {commentDtl.AuthorName} - {commentDtl.Created}
+                                                    {commentDtl.AuthorName} - {commentDtl.Created}
                                                 </span>
                                                 <span>
                                                     <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
@@ -125,14 +130,11 @@ const AddCommentComponent = (FbData: any) => {
             <div>
                 {
                     FbData.postStatus ?
-                        <section className="Post-FeedBack-section">
-                            <div className="border pb-5">
-                                <div className="col mt-2 mx-3">
-                                    <textarea id="txtComment" onChange={(e) => handleChangeInput(e)} className="form-control full-width" ></textarea>
-                                </div>
-                                <div className="float-end pt-1 me-3">
-                                    <button type="button" className="post btn btn-primary " onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
-                                </div>
+                        <section className="mt-1 clearfix">
+                            <div className="col-10 d-flex float-end my-1">
+                                <textarea id="txtComment SubTestBorder" style={{ width: "80%", height: "40px" }} onChange={(e) => handleChangeInput(e)} className="" ></textarea>
+                                <button type="button" className="post btn btn-primary mx-1" onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
+                                <button type="button" className="post btn btn-default" onClick={cancelCommentBtn}>Cancel</button>
                             </div>
                         </section>
                         : null
