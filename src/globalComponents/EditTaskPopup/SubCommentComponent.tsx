@@ -111,6 +111,13 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         Array = copy;
         callBack(Array);
     }
+    const postBtnHandleCallBackCancel =useCallback((status:any)=>{
+        if (status) {
+            setPostBtnStatus(false)
+        } else {
+            setPostBtnStatus(true)
+        }
+    },[])
     function createSubRows(state: any[]) {
         return (
             <div className="add-text-box">
@@ -170,7 +177,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             <label className="commentSectionLabel ms-1">Mark As Completed</label>
                                         </span>
                                         <span> | </span>
-                                        <span className="hreflink mx-1 commentSectionLabel" style={{ color: "#000066" }}>
+                                        <span className="hreflink siteColor mx-1 commentSectionLabel">
                                             <span onClick={() => postBtnHandle(index)}> Add Comment </span>
                                         </span>
                                         <span> | </span>
@@ -208,6 +215,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                         postStatus={postBtnStatus}
                                         allUsers={SubTextItemsArray.allUsers}
                                         callBack={postBtnHandleCallBack}
+                                        CancelCallback={postBtnHandleCallBackCancel}
                                     />
                                 </div>
                             </div>

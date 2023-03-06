@@ -2401,9 +2401,12 @@ function ComponentTable(SelectedProp: any) {
         return csvData;
     };
     const clearSearch = () => {
-        setSearch('')
-
-    }
+       // const arrayCopy =[...AllCountItems.DatabackupItems]
+       // setData(data =>[...arrayCopy]);
+        setSearch('');
+ 
+     }
+ 
 
     // Expand Table 
     const expndpopup = (e: any) => {
@@ -2756,6 +2759,9 @@ function ComponentTable(SelectedProp: any) {
 
             maidataBackup.forEach((obj) => {
                 obj.isRestructureActive = true;
+                if (obj.Id === checkedList[0].Id)
+                obj.isRestructureActive = false;
+                ArrayTest.push(...[obj])
                 if (obj.childs != undefined && obj.childs.length > 0) {
                     obj.childs.forEach((sub: any) => {
                         if (sub.Item_x0020_Type === 'SubComponent') {
@@ -4068,7 +4074,6 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         <td className="p-0" colSpan={12}>
                                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
-                                                                                                                                    <td style={{ width: "2%" }}>
                                                                                                                                         <td style={{ width: "2%" }}>
                                                                                                                                             {childinew.childs.length > 0 &&
                                                                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childinew)}>
@@ -4082,7 +4087,6 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                 </div>
                                                                                                                                             }
                                                                                                                                         </td>
-                                                                                                                                    </td>
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                         <div className="accordian-header" >
                                                                                                                                             {/* checked={item.checked === true ? true : false} */}

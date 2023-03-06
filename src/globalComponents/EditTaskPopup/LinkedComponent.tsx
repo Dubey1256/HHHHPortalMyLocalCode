@@ -24,7 +24,7 @@ const LinkedServices = (item: any) => {
         item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
-        Example(item, PopupType);
+        Example(item, "LinkedServices");
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
@@ -34,7 +34,7 @@ const LinkedServices = (item: any) => {
             item.props.linkedComponent = [];
             item.props.linkedComponent = CheckBoxData;
         }
-        Example(item, PopupType);
+        Example(item, "LinkedServices");
         setModalIsOpen(false);
     }
     const handleOpen = (item: any) => {
