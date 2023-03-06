@@ -148,6 +148,15 @@ export default function FroalaCommnetBoxes(textItems: any) {
         callBack(Array);
 
     }
+
+    const postBtnHandleCallBackCancel =useCallback((status:any)=>{
+        if (status) {
+            setPostBtnStatus(false)
+        } else {
+            setPostBtnStatus(true)
+        }
+    },[])
+
     function createRows(state: any[]) {
         return (
             <div className="add-text-box">
@@ -260,6 +269,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         postStatus={postBtnStatus}
                                         allUsers={textItems.allUsers}
                                         callBack={postBtnHandleCallBack}
+                                        CancelCallback={postBtnHandleCallBackCancel}
                                     />
                                 </div>
                                 <div>
