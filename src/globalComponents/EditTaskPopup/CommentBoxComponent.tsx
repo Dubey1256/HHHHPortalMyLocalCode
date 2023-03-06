@@ -158,7 +158,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
-                                            <span className="hreflink commentSectionLabel" style={{ color: "#000066" }} onClick={() => postBtnHandle(i)}>Add Comment </span>
+                                            <span className="hreflink siteColor commentSectionLabel" onClick={() => postBtnHandle(i)}>Add Comment </span>
                                         </span>
                                     </div>
                                 </div>
