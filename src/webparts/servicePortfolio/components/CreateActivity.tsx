@@ -9,6 +9,7 @@ import * as Moment from 'moment';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
+import Tooltip from '../../../globalComponents/Tooltip';
 //import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -19,14 +20,18 @@ var SelectedTasks: any = []
 var Task: any = []
 var TeamMemberIds: any = [];
 var portfolioId: any = ''
+var WorstreamLatestId: any = ''
 var newIndex:any=''
 var FeedBackItemArray: any = [];
 var feedbackArray:any=[]
 const CreateActivity = (props: any) => {
-    var AllItems = props.props
-    SelectedTasks.push(AllItems)
-    portfolioId=AllItems.Id
-    console.log(props)
+    if(props != undefined){
+        var AllItems = props.props
+        SelectedTasks.push(AllItems)
+      
+        //portfolioId=AllItems.Id
+        console.log(props)
+    }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
     const [date, setDate] = React.useState(undefined);
     const [siteTypess, setSiteType] = React.useState([]);
@@ -39,7 +44,7 @@ const CreateActivity = (props: any) => {
     const [isDropItem, setisDropItem] = React.useState(false);
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
-    const [linkedComponentData, setLinkedComponentData] = React.useState([]);
+    const [linkedComponentData, setLinkedComponentData] = React.useState<any>([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
@@ -63,9 +68,20 @@ const CreateActivity = (props: any) => {
             if(AllItems.Portfolio_x0020_Type == 'Component'){
                 smartComponentData.push(AllItems);
             }
+            // if(AllItems.SharewebTaskType.Title == 'Workstream' && AllItems.Portfolio_x0020_Type == 'Component'){
+            //     if(AllItems.Component != undefined && AllItems.Component.length > 0){
+            //         smartComponentData.push(AllItems.Component[0].Id)
+            //     }
+            // }
+
             if(AllItems.Portfolio_x0020_Type == 'Service'){
                 linkedComponentData.push(AllItems);
             }
+            // if(AllItems.SharewebTaskType.Title == 'Workstream' && AllItems.Portfolio_x0020_Type == 'Service'){
+            //     if(AllItems.Services != undefined && AllItems.Services.length > 0){
+            //         linkedComponentData.push(AllItems.Services[0].Id)
+            //     }
+            // }
            
         }
         
@@ -109,7 +125,7 @@ const CreateActivity = (props: any) => {
         });
         return Items;
     }
-    const setActiveTile = (item: keyof typeof save, isActiveItem: keyof typeof isActive, value: any) => {
+    const setActiveTile = async (item: keyof typeof save, isActiveItem: keyof typeof isActive, value: any) => {
         AllItems['SiteListItem'] = value.Title
         let saveItem = save;
         let isActiveData = isActive;
@@ -117,25 +133,25 @@ const CreateActivity = (props: any) => {
             value.IscreateTask = true
         }
         getActivitiesDetails(value)
-        // if(AllItems.NoteCall == 'Task'){
-        //     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        //     let componentDetails = [];
-        //     componentDetails = await web.lists
-        //         .getById(AllItems.listId)
-        //         .items
-        //         .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
-        //         .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-        //         .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
-        //         .orderBy("Created", false)
-        //         .top(4999)
-        //         .get()
-        //     console.log(componentDetails)
-        //     if (componentDetails.length == 0) {
-        //         WorstreamLatestId = 1;
-        //     } else {
-        //         WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
-        //     }
-        // }
+        if(AllItems.NoteCall == 'Task'){
+            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+            let componentDetails = [];
+            componentDetails = await web.lists
+                .getById(AllItems.listId)
+                .items
+                .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
+                .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
+                .orderBy("Created", false)
+                .top(4999)
+                .get()
+            console.log(componentDetails)
+            if (componentDetails.length == 0) {
+                WorstreamLatestId = 1;
+            } else {
+                WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+            }
+        }
         if (save[item] !== value.Title) {
             saveItem[item] = value.Title;
             setSave(saveItem);
@@ -329,7 +345,7 @@ const CreateActivity = (props: any) => {
     }, [])
     const saveNoteCall = () => {
         var TaskprofileId: any = ''
-        var WorstreamLatestId: any = ''
+        
         var RelevantPortfolioIds:any=[]
         var Component: any = []
         smartComponentData.forEach((com: any) => {
@@ -353,15 +369,22 @@ const CreateActivity = (props: any) => {
         //     }
 
         // })
-        if(linkedComponentData ==  undefined && linkedComponentData?.length == 0){
-            RelevantPortfolioIds  = portfolioId;
+        if(linkedComponentData ==  undefined && linkedComponentData.length == 0){
+            RelevantPortfolioIds.push(portfolioId)
         }
         if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
             linkedComponentData?.map((com: any) => {
                 if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                    $.each(linkedComponentData, function (index: any, smart: any) {
-                        RelevantPortfolioIds.push(smart.Id)
-                    })
+                    if(linkedComponentData[0] != undefined && linkedComponentData[0].SharewebTaskType != undefined && linkedComponentData[0].SharewebTaskType.Title == 'Workstream'){
+                        $.each(com.Services, function (index: any, smart: any) {
+                            RelevantPortfolioIds.push(smart.Id)
+                        })
+                    }
+                    else{
+                        $.each(linkedComponentData, function (index: any, smart: any) {
+                            RelevantPortfolioIds.push(smart.Id)
+                        })
+                    }
                 }
             })
         }
@@ -520,7 +543,7 @@ const CreateActivity = (props: any) => {
                                 Body:AllItems.Description,
                                 Shareweb_x0020_ID: SharewebID,
                                 Priority: AllItems.Priority,
-                               // SharewebTaskLevel2No: WorstreamLatestId,
+                                SharewebTaskLevel2No: WorstreamLatestId,
                                 SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
                                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
@@ -619,12 +642,24 @@ const CreateActivity = (props: any) => {
         }
 
     }
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Create Activity`}
+                    </span>
+                </div>
+                <Tooltip ComponentId={AllItems.Id} />
+            </div>
+        );
+    };
     return (
         <>
             <Panel
-                headerText="Create Quick Option - Activity"
-                type={PanelType.custom}
-                customWidth="1348px"
+               onRenderHeader={onRenderCustomHeaderMain}
+               type={PanelType.custom}
+               customWidth="1348px"
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
@@ -928,7 +963,7 @@ const CreateActivity = (props: any) => {
                             }
                         })
                     }
-                    <button type="button" className="btn btn-primary" onClick={() => saveNoteCall()}>
+                    <button type="button" className="btn btn-primary m-2" onClick={() => saveNoteCall()}>
                         Submit
                     </button>
 
