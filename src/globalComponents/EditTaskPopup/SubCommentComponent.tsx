@@ -170,7 +170,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             <label className="commentSectionLabel ms-1">Mark As Completed</label>
                                         </span>
                                         <span> | </span>
-                                        <span className="hreflink mx-1 commentSectionLabel" style={{ color: "#000066" }}>
+                                        <span className="hreflink siteColor mx-1 commentSectionLabel">
                                             <span onClick={() => postBtnHandle(index)}> Add Comment </span>
                                         </span>
                                         <span> | </span>
