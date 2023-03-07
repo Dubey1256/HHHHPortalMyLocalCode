@@ -71,6 +71,7 @@ const EditTaskPopup = (Items: any) => {
     const [ImageComparePopup, setImageComparePopup] = React.useState(false);
     const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
+    const [replaceImagePopup, setReplaceImagePopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
     const [composition, setComposition] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
@@ -1840,6 +1841,22 @@ const EditTaskPopup = (Items: any) => {
         ImageCustomizeFunctionClosePopup();
     }
 
+    const FlorarImageReplaceComponentCallBack = (dt: any) => {
+        let DataObject: any = {
+            data_url: dt,
+            file: "Image/jpg"
+        }
+        console.log("Replace Image Data ======", DataObject)
+        // let arrayIndex: any = TaskImages?.length
+        // TaskImages.push(DataObject)
+        // if (dt.length > 0) {
+        //     onUploadImageFunction(TaskImages, [arrayIndex]);
+        // }
+    }
+    const closeReplaceImagePopup = () => {
+        setReplaceImagePopup(false)
+    }
+
 
     // ***************** this is for the Copy and Move Task Functions ***************
 
@@ -1918,6 +1935,20 @@ const EditTaskPopup = (Items: any) => {
             </div>
         );
     };
+
+
+    const onRenderCustomReplaceImageHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span className="siteColor">
+                        Replace Image
+                    </span>
+                </div>
+                <Tooltip ComponentId="1683" />
+            </div>
+        )
+    }
 
     const onRenderCustomFooterMain = () => {
         return (
@@ -2753,7 +2784,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                         <div>
 
-                                                                            <span onClick={(e) => onImageUpdate(index)} title="Replace image"><TbReplace /> </span>
+                                                                            <span onClick={() => setReplaceImagePopup(true)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt />
@@ -3764,6 +3795,32 @@ const EditTaskPopup = (Items: any) => {
                     </div>
                 </div>
             </Panel>
+
+            {/* ********************* this is Replace Image panel ****************** */}
+            <Panel
+                onRenderHeader={onRenderCustomReplaceImageHeader}
+                isOpen={replaceImagePopup}
+                onDismiss={closeReplaceImagePopup}
+                isBlocking={false}
+                type={PanelType.custom}
+                customWidth="500px"
+
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                    <div className="modal-body">
+                        <FlorarImageUploadComponent callBack={FlorarImageReplaceComponentCallBack} />
+                    </div>
+                    <footer className="float-end mt-1">
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={()=> alert("We are working on It. This feature will be live soon...")} >
+                            Update
+                        </button>
+                        <button type="button" className="btn btn-default px-3" onClick={closeReplaceImagePopup}>
+                            Cancel
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+
         </div>
     )
 }
