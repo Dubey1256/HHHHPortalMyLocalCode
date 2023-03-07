@@ -648,17 +648,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           
           type={PanelType.custom}
           customWidth="500px"
-          headerText='Update Comment'
+          // headerText='Update Comment'
           onDismiss={(e) => this.CloseModal(e)}
         >
 
 
           <div>
-            {/* <div className='modal-header mb-2'>
+            <div className='modal-header mb-2'>
               <h3 className='modal-title'>Update Comment</h3>
 
               <span><Tooltip /> </span> <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.CloseModal(e)}></button>
-            </div> */}
+            </div>
             <div className='modal-body'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>

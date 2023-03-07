@@ -73,6 +73,7 @@ export default class spservices {
     public async getUserInfo(userEMail: string) {
         let resUserInfo;
         try {
+           
             resUserInfo = (await this._sp.web.ensureUser(userEMail)).data;
         }
         catch(error) {

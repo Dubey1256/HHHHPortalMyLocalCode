@@ -77,11 +77,14 @@ function EditInstitution(item: any) {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
+  const [pickerOpen, setPickerOpen] = React.useState(false);
   const [datepicker, setdatepicker] = React.useState(false);
   const [activePicker, setActivePicker] = React.useState(null);
   // Date picker closer
+  
   const handlePickerFocus = (pickerName: any) => {
     setActivePicker(pickerName);
+    
   };
 
   const handlePickerBlur = () => {
@@ -111,6 +114,8 @@ function EditInstitution(item: any) {
     setComponent((EditData) => [...EditData]);
     setActivePicker(null);
   };
+
+  
   const handleDatestart = (date: any) => {
     EditData.StartDate = date;
     setStartdate(date);
@@ -1545,6 +1550,42 @@ function EditInstitution(item: any) {
                             </div>
                           )}
                           {EditData.Portfolio_x0020_Type == "Component" && (
+                            <div className="input-group serviepannelgreena">
+                              {linkedComponentData?.length > 0 ? (
+                                <div>
+                                  {linkedComponentData?.map((com: any) => {
+                                    return (
+                                      <>
+                                        <div className="d-flex Component-container-edit-task  bg-69">
+                                          <div className="">
+                                            <a
+                                              className="hreflink service"
+                                              target="_blank"
+                                              data-interception="off"
+                                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                            >
+                                              {com.Title}
+                                            </a>
+                                            <img
+                                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                              onClick={() =>
+                                                setLinkedComponentData([])
+                                              }
+                                            />
+                                          </div>
+                                        </div>
+                                      </>
+                                    );
+                                  })}
+                                </div>
+                              ) : null}
+                              {/* <span className="input-group-text">
+                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                onClick={(e) => EditComponent(EditData, 'Component')} />
+                                                        </span> */}
+                            </div>
+                          )}
+                           {EditData.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
@@ -1552,7 +1593,7 @@ function EditInstitution(item: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task">
-                                          <div>
+                                          <div >
                                             <a
                                               className="hreflink "
                                               target="_blank"
@@ -1673,6 +1714,7 @@ function EditInstitution(item: any) {
                               onFocus={() => handlePickerFocus("startDate")}
                               onBlur={handlePickerBlur}
                               open={activePicker === "startDate"}
+                          
                             />
                           </div>
                         </div>
@@ -1690,6 +1732,7 @@ function EditInstitution(item: any) {
                               onFocus={() => handlePickerFocus("date")}
                               onBlur={handlePickerBlur}
                               open={activePicker === "date"}
+                              
                             />
                           </div>
                         </div>
@@ -1711,6 +1754,7 @@ function EditInstitution(item: any) {
                               }
                               onBlur={handlePickerBlur}
                               open={activePicker === "Completiondate"}
+                             
                             />
                           </div>
                         </div>
