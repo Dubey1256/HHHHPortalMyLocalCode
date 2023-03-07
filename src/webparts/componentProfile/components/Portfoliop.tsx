@@ -432,7 +432,7 @@ function Portfolio({ ID }: any) {
                               src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"
                             />{" "}
                             <a>{item.Title}</a>{" "}
-                            <span style={{ paddingLeft: "3%" }}>
+                            <span >
                               {" "}
                               <img
                                 src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
