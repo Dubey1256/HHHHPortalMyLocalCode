@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { IProjectManagementProps } from './IProjectManagementProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-// import ProjectManagementMain from './ProjectManagementMain';
-import TaggedPortfolio from './TaggedPortfolio';
+import ProjectManagementMain from './ProjectManagementMain';
+// import TaggedPortfolio from './TaggedPortfolio';
 
 
 export default class ProjectManagement extends React.Component<IProjectManagementProps, {}> {
@@ -18,7 +18,7 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
     } = this.props;
     return (
       <div>
-       <TaggedPortfolio pageContext={this.props.pageContext}/> 
+       <ProjectManagementMain pageContext={this.props.pageContext}/> 
       </div>
     );
   }
