@@ -349,9 +349,17 @@ const CreateActivity = (props: any) => {
         var RelevantPortfolioIds:any=[]
         var Component: any = []
         smartComponentData.forEach((com: any) => {
+            if(smartComponentData[0] != undefined && smartComponentData[0].SharewebTaskType != undefined && smartComponentData[0].SharewebTaskType.Title == 'Workstream'){
+                $.each(com.Component, function (index: any, smart: any) {
+                    Component.push(smart.Id)
+                })
+            }
+            else{
+
             if (com != undefined) {
                 Component.push(com.Id)
             }
+        }
 
         })
       

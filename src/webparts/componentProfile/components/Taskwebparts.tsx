@@ -2226,11 +2226,15 @@ let isOpenPopup =false;
                                                                         {item.siteType === "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                         >
-                                                                            <span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
+                                                                              <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                              {/* {item.TitleNew} */}
+                                                                         
                                                                         </a>}
                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                        ><span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
+                                                                        >
+                                                                            {item.TitleNew}
+                                                                              <span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
                                                                         </a>}
                                                                         {item.childs != undefined && item.childs.length > 0 &&
                                                                             <span>{item.childs.length == 0 ? "" : <span className='ms-1'>({item.childsLength})</span>}</span>
@@ -2341,11 +2345,15 @@ let isOpenPopup =false;
                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                 >
-                                                                                                    <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                                      <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                              
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
-                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                                >
+                                                                                                    
+                                                                                                    <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                              
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined && childitem.childs.length > 0 &&
                                                                                                     <span className='ms-1'>({childitem.childsLength})</span>
@@ -2463,12 +2471,15 @@ let isOpenPopup =false;
                                                                                                                     <td style={{ width: "23%" }}>
                                                                                                                         {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
-                                                                                                                          
+                                                                                                                        >
+                                                                                                                            
+                                                                                                      <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
+                                                                                              
+                                                                                                                            
                                                                                                                         </a>}
                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
-                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
+                                                                                                                        > <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
                                                                                                                         </a>}
                                                                                                                         {childinew.childs != undefined && childinew.childs.length > 0 &&
                                                                                                                             <span className='ms-1'>({childinew.childs.length})</span>
@@ -2596,12 +2607,14 @@ let isOpenPopup =false;
                                                                                                                                         <td style={{ width: "23%" }}>
                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                 href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem?.TitleNew }}></span>
-                                                                                                                                               
+                                                                                                                                            >
+                                                                                                                                                 <span dangerouslySetInnerHTML={{ __html: subchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                 href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
-                                                                                                                                            ><span dangerouslySetInnerHTML={{ __html: subchilditem?.TitleNew }}></span>
+                                                                                                                                            >  <span dangerouslySetInnerHTML={{ __html: subchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined && subchilditem.childs.length > 0 &&
                                                                                                                                                 <span className='ms-1'>({subchilditem.childs.length})</span>
@@ -2722,13 +2735,13 @@ let isOpenPopup =false;
                                                                                                                                                             <td style={{ width: "23%" }}>
                                                                                                                                                                 {nextsubchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                                                ><span dangerouslySetInnerHTML={{ __html: nextsubchilditem?.TitleNew }}></span>
-                                                                                                                                                                    
+                                                                                                                                                                >  <span dangerouslySetInnerHTML={{ __html: nextsubchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + nextsubchilditem.Id + '&Site=' + nextsubchilditem.siteType}
-                                                                                                                                                                ><span dangerouslySetInnerHTML={{ __html: nextsubchilditem?.TitleNew }}></span>
-                                                                                                                                                                    
+                                                                                                                                                                > <span dangerouslySetInnerHTML={{ __html: nextsubchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.childs != undefined && nextsubchilditem.childs.length > 0 &&
                                                                                                                                                                     <span className='ms-1'>({nextsubchilditem.childs.length})</span>
