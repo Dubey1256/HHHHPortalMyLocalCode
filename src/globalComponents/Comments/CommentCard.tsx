@@ -649,7 +649,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           type={PanelType.custom}
           customWidth="500px"
           // headerText='Update Comment'
-          onDismiss={(e) => this.CloseModal(e)}
+          // onDismiss={(e) => this.CloseModal(e)}
         >
 
 
