@@ -663,7 +663,7 @@ const EditTaskPopup = (Items: any) => {
                             })
                         }
                     })
-                    if (statusValue == 1 || statusValue == 2 || ApprovalStatusGlobal) {
+                    if ((statusValue == 1 || statusValue == 2) && ApprovalStatusGlobal) {
                         if (ApproverData?.length > 0) {
                             taskUsers.map((userData1: any) => {
                                 ApproverData?.map((itemData: any) => {
@@ -1259,7 +1259,7 @@ const EditTaskPopup = (Items: any) => {
         //     }
         // }
         try {
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+            let web = new Web(Items.Items.siteUrl);
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
                 IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
                 Priority_x0020_Rank: EditData.Priority_x0020_Rank,
@@ -1366,7 +1366,7 @@ const EditTaskPopup = (Items: any) => {
         var link = "mailTo:"
             + "?cc:"
             + "&subject=" + " [" + Items.Items.siteType + "-Task ] " + EmailData.Title
-            + "&body=" + `https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
+            + "&body=" + `${Items.Items.siteUrl}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
         window.location.href = link;
     }
     const deleteTaskFunction = async (TaskID: number) => {
@@ -1453,14 +1453,16 @@ const EditTaskPopup = (Items: any) => {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Approve") {
                     ApprovedStatusCount++;
-                    let StatusInput: any = 3;
-                    if (StatusInput == 3) {
-                        setInputFieldDisable(false)
-                        setStatusOnChangeSmartLight(3);
-                        // setTaskAssignedTo([]);
-                        // EditData.TaskAssignedUsers = [];
-                        // setTaskTeamMembers([]);
-                        // EditData.Team_x0020_Members = [];
+                    if (EditData.PercentComplete <= 3) {
+                        let StatusInput: any = 3;
+                        if (StatusInput == 3) {
+                            setInputFieldDisable(false)
+                            setStatusOnChangeSmartLight(3);
+                            // setTaskAssignedTo([]);
+                            // EditData.TaskAssignedUsers = [];
+                            // setTaskTeamMembers([]);
+                            // EditData.Team_x0020_Members = [];
+                        }
                     }
                 }
                 if (item.Phone) {
@@ -1471,14 +1473,16 @@ const EditTaskPopup = (Items: any) => {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Approve") {
                             ApprovedStatusCount++;
-                            let StatusInput: any = 3;
-                            if (StatusInput == 3) {
-                                setInputFieldDisable(false)
-                                setStatusOnChangeSmartLight(3);
-                                // setTaskAssignedTo([]);
-                                // EditData.TaskAssignedUsers = [];
-                                // setTaskTeamMembers([]);
-                                // EditData.Team_x0020_Members = [];
+                            if (EditData.PercentComplete <= 3) {
+                                let StatusInput: any = 3;
+                                if (StatusInput == 3) {
+                                    setInputFieldDisable(false)
+                                    setStatusOnChangeSmartLight(3);
+                                    // setTaskAssignedTo([]);
+                                    // EditData.TaskAssignedUsers = [];
+                                    // setTaskTeamMembers([]);
+                                    // EditData.Team_x0020_Members = [];
+                                }
                             }
                         }
                         if (item.Phone) {
@@ -1490,10 +1494,12 @@ const EditTaskPopup = (Items: any) => {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Reject" || item.isShowLight == "Maybe") {
                     if (ApprovedStatusCount == 0) {
-                        let StatusInput: any = 2;
-                        if (StatusInput == 2) {
-                            setInputFieldDisable(true)
-                            setStatusOnChangeSmartLight(2);
+                        if (EditData.PercentComplete >= 2) {
+                            let StatusInput: any = 2;
+                            if (StatusInput <= 2) {
+                                setInputFieldDisable(true)
+                                setStatusOnChangeSmartLight(2);
+                            }
                         }
                     }
                 }
@@ -1501,10 +1507,12 @@ const EditTaskPopup = (Items: any) => {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Reject" || subItem.isShowLight == "Maybe") {
                             if (ApprovedStatusCount == 0) {
-                                let StatusInput: any = 2;
-                                if (StatusInput == 2) {
-                                    setInputFieldDisable(true)
-                                    setStatusOnChangeSmartLight(2);
+                                if (EditData.PercentComplete <= 2) {
+                                    let StatusInput: any = 2;
+                                    if (StatusInput == 2) {
+                                        setInputFieldDisable(true)
+                                        setStatusOnChangeSmartLight(2);
+                                    }
                                 }
                             }
                         }
@@ -1951,7 +1959,7 @@ const EditTaskPopup = (Items: any) => {
                         <div>
                             <span>
                                 <a className="mx-2" target="_blank" data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                    href={`${Items.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
                                     Go To Profile Page
                                 </a>
                             </span> ||
@@ -1967,7 +1975,7 @@ const EditTaskPopup = (Items: any) => {
                                 Share This Task
                             </span> ||
                             <a target="_blank" className="mx-2" data-interception="off"
-                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                href={`${Items.Items.siteUrl}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
                                 Open Out-Of-The-Box Form
                             </a>
                             <span >
@@ -2025,7 +2033,7 @@ const EditTaskPopup = (Items: any) => {
                         <div>
                             <span>
                                 <a className="mx-2" target="_blank" data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                    href={`${Items.Items.siteType}/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
                                     Go To Profile Page
                                 </a>
                             </span> ||
@@ -2041,7 +2049,7 @@ const EditTaskPopup = (Items: any) => {
                                 Share This Task
                             </span> ||
                             <a target="_blank" className="mx-2" data-interception="off"
-                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                href={`${Items.Items.siteType}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
                                 Open Out-Of-The-Box Form
                             </a>
                             <span >
@@ -2230,7 +2238,7 @@ const EditTaskPopup = (Items: any) => {
                                                         return (
                                                             <>
                                                                 <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
                                                                         <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                     </a>
@@ -2243,7 +2251,7 @@ const EditTaskPopup = (Items: any) => {
                                                             return (
                                                                 <>
                                                                     <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
-                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                         <a>
                                                                             <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                         </a>
@@ -2333,7 +2341,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                         return (
                                                                             <div className="block px-2 py-1 d-flex my-1 justify-content-between">
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                     {type.Title}
                                                                                 </a>
                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => removeCategoryItem(type.Title, type.Id)} className="p-1" />
@@ -2481,7 +2489,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <div>
                                                                                     <div className="d-flex block px-2 py-1">
                                                                                         <div>
-                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                 {com.Title}
                                                                                             </a>
                                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartServicesData([])} />
@@ -2516,7 +2524,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <div>
                                                                             <div className="d-flex block px-2 py-1">
                                                                                 <div>
-                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                         {com.Title}
                                                                                     </a>
                                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -2651,7 +2659,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <a
                                                                     target="_blank"
                                                                     data-interception="off"
-                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                    href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
                                                                     <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                         on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
                                                                         data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
@@ -3097,7 +3105,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     return (
                                                                         <>
                                                                             <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                 <a>
                                                                                     <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                                 </a>
@@ -3115,7 +3123,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         return (
                                                                             <>
                                                                                 <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
-                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                     <a>
                                                                                         <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                                     </a>
@@ -3210,7 +3218,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                                     return (
                                                                                         <div className="block px-2 py-1 d-flex my-1 justify-content-between">
-                                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                                 {type.Title}
                                                                                             </a>
                                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => removeCategoryItem(type.Title, type.Id)} className="p-1" />
@@ -3312,7 +3320,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         <>
                                                                                             <div className="d-flex block px-2 py-1">
 
-                                                                                                <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                                <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                     {com.Title}
                                                                                                 </a>
                                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartServicesData([])} />
@@ -3342,7 +3350,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <>
                                                                                         <div className="d-flex block px-2 py-1">
 
-                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                 {com.Title}
                                                                                             </a>
                                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -3401,7 +3409,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             <div>
                                                                                                 <div className="d-flex block px-2 py-1">
 
-                                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                         {com.Title}
                                                                                                     </a>
                                                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartServicesData([])} />
@@ -3436,7 +3444,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <div>
                                                                                         <div className="d-flex block px-2 py-1">
 
-                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                 {com.Title}
                                                                                             </a>
                                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -3572,7 +3580,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a
                                                                                 target="_blank"
                                                                                 data-interception="off"
-                                                                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                                href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
                                                                                 <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                                     on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
                                                                                     data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
