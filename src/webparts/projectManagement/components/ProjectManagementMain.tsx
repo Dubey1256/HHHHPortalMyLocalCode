@@ -230,6 +230,7 @@ const ProjectManagementMain = (props: any) => {
                     .select("Id,StartDate,DueDate,Title,PercentComplete,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title")
                     .top(4999)
                     .filter("ProjectId eq " + QueryId)
+                    .orderBy('Priority_x0020_Rank',false)
                     .expand("Project,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType")
                     .get();
                 arraycount++;
@@ -407,7 +408,7 @@ const ProjectManagementMain = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
                     </span>
                 )
             },
@@ -418,8 +419,9 @@ const ProjectManagementMain = (props: any) => {
             },
             {
                 internalHeader: 'Priority',
+                isSorted: true,
+                isSortedDesc: true,
                 accessor: 'Priority_x0020_Rank',
-                isSorted: false,
                 showSortIcon: true,
             },
             {
@@ -447,7 +449,7 @@ const ProjectManagementMain = (props: any) => {
                 isSorted: false,
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
-                    <span onClick={() => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+                    <span title='Edit Task' onClick={() => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
 
                 ),
             },
@@ -584,8 +586,8 @@ const ProjectManagementMain = (props: any) => {
                                                         {
                                                             Masterdata?.smartComponent?.map((component: any, index: any) => {
                                                                 return (
-                                                                    <li  className={component?.filterActive?'nav__item bg-ee':'nav__item'}>
-                                                                        <span><a className={component?.filterActive?'hreflink ':'text-white hreflink'} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, 'Component')}>{component?.Title}</a></span>
+                                                                    <li className={component?.filterActive ? 'nav__item bg-ee' : 'nav__item'}>
+                                                                        <span><a className={component?.filterActive ? 'hreflink ' : 'text-white hreflink'} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, 'Component')}>{component?.Title}</a></span>
                                                                     </li>
                                                                 )
                                                             })
@@ -621,8 +623,8 @@ const ProjectManagementMain = (props: any) => {
                                                         {
                                                             Masterdata?.smartService?.map((service: any, index: any) => {
                                                                 return (
-                                                                    <li className={service?.filterActive?'nav__item bg-ee':'nav__item'}>
-                                                                        <span><a className={service?.filterActive?'hreflink ':'text-white hreflink'} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(service, index, 'Service')}>{service?.Title}</a></span>
+                                                                    <li className={service?.filterActive ? 'nav__item bg-ee' : 'nav__item'}>
+                                                                        <span><a className={service?.filterActive ? 'hreflink ' : 'text-white hreflink'} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(service, index, 'Service')}>{service?.Title}</a></span>
                                                                     </li>
                                                                 )
                                                             })
@@ -646,11 +648,12 @@ const ProjectManagementMain = (props: any) => {
                                 <section>
                                     <div>
                                         <div className='align-items-center d-flex justify-content-between'>
-                                            <div>
+                                            <div className='align-items-center d-flex'>
                                                 <h2 className='heading'>
                                                     <img className='circularImage rounded-circle ' src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png" />
-                                                    <> <a>{Masterdata?.Title}</a> <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)}></img></>
+                                                    <> <a>{Masterdata?.Title} </a></>
                                                 </h2>
+                                                <span className="mx-2 svg__iconbox svg__icon--edit" title="Edit Project"></span>
                                             </div>
                                             <div>
                                                 <div className='d-flex'>
@@ -665,86 +668,86 @@ const ProjectManagementMain = (props: any) => {
                                     <div>
                                         <div className='row'>
                                             <div className='col-md-12 bg-white'>
-                                                            <div className='team_member row  py-2'>
-                                                                <div className='col-md-6 p-0'>
-                                                                    <dl>
-                                                                        <dt className='bg-fxdark'>Due Date</dt>
-                                                                        <dd className='bg-light'>
+                                                <div className='team_member row  py-2'>
+                                                    <div className='col-md-6 p-0'>
+                                                        <dl>
+                                                            <dt className='bg-fxdark'>Due Date</dt>
+                                                            <dd className='bg-light'>
 
-                                                                            <span>
+                                                                <span>
 
-                                                                                <a>{Masterdata.DueDate != null ? Moment(Masterdata.Created).format('DD/MM/YYYY') : ""}</a>
+                                                                    <a>{Masterdata.DueDate != null ? Moment(Masterdata.Created).format('DD/MM/YYYY') : ""}</a>
 
-                                                                            </span>
-                                                                            <span
-                                                                                className="pull-right" title="Edit Inline"
-                                                                                ng-click="EditContents(Task,'editableDueDate')">
-                                                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                                            </span>
-                                                                        </dd>
-                                                                    </dl>
-                                                                    <dl>
-                                                                        <dt className='bg-fxdark'>Priority</dt>
-                                                                        <dd className='bg-light'>
+                                                                </span>
+                                                                <span
+                                                                    className="pull-right" title="Edit Inline"
+                                                                    ng-click="EditContents(Task,'editableDueDate')">
+                                                                    <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                                </span>
+                                                            </dd>
+                                                        </dl>
+                                                        <dl>
+                                                            <dt className='bg-fxdark'>Priority</dt>
+                                                            <dd className='bg-light'>
 
-                                                                            <a>{Masterdata.Priority != null ? Masterdata.Priority : ""}</a>
-                                                                            <span
-                                                                                className="hreflink pull-right" title="Edit Inline"
-                                                                            >
-                                                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                                            </span>
+                                                                <a>{Masterdata.Priority != null ? Masterdata.Priority : ""}</a>
+                                                                <span
+                                                                    className="hreflink pull-right" title="Edit Inline"
+                                                                >
+                                                                    <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                                </span>
 
-                                                                        </dd>
-                                                                    </dl>
-
-
-                                                                </div>
-                                                                <div className='col-md-6 p-0'>
-
-                                                                    <dl>
-                                                                        <dt className='bg-fxdark'>Assigned To</dt>
-                                                                        <dd className='bg-light'>
-                                                                            {Masterdata?.AssignedUser?.map((image: any) =>
-                                                                                <span className="headign" title={image.Title}><img className='circularImage rounded-circle' src={image.useimageurl} /></span>
-                                                                            )}
-
-                                                                        </dd>
-                                                                    </dl>
-                                                                    <dl>
-                                                                        <dt className='bg-fxdark'>% Complete</dt>
-                                                                        <dd className='bg-light'>
-                                                                            <a>{Masterdata.PercentComplete != null ? Masterdata.PercentComplete : ""}</a>
-                                                                            <span className="pull-right">
-                                                                                <span className="pencil_icon">
-                                                                                    <span ng-show="isOwner" className="hreflink"
-                                                                                        title="Edit Inline"
-                                                                                    >
-                                                                                        <i className="fa fa-pencil" aria-hidden="true"></i>
-                                                                                    </span>
-                                                                                </span>
-                                                                            </span>
-
-                                                                        </dd>
-                                                                    </dl>
+                                                            </dd>
+                                                        </dl>
 
 
-                                                                </div>
-                                                                <div className='team_member row  py-2'>
-                                                                    <div className='col-md-12 p-0'>
-                                                                        <dl className='bg-light p-2'>
+                                                    </div>
+                                                    <div className='col-md-6 p-0'>
 
-                                                                            <a>{Masterdata.Body != null ? Masterdata.Body : ""}</a>
-                                                                            <span
-                                                                                className="hreflink pull-right" title="Edit Inline"
-                                                                            >
-                                                                                <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
-                                                                            </span>
+                                                        <dl>
+                                                            <dt className='bg-fxdark'>Assigned To</dt>
+                                                            <dd className='bg-light'>
+                                                                {Masterdata?.AssignedUser?.map((image: any) =>
+                                                                    <span className="headign" title={image.Title}><img className='circularImage rounded-circle' src={image.useimageurl} /></span>
+                                                                )}
+
+                                                            </dd>
+                                                        </dl>
+                                                        <dl>
+                                                            <dt className='bg-fxdark'>% Complete</dt>
+                                                            <dd className='bg-light'>
+                                                                <a>{Masterdata.PercentComplete != null ? Masterdata.PercentComplete : ""}</a>
+                                                                <span className="pull-right">
+                                                                    <span className="pencil_icon">
+                                                                        <span ng-show="isOwner" className="hreflink"
+                                                                            title="Edit Inline"
+                                                                        >
+                                                                            <i className="fa fa-pencil" aria-hidden="true"></i>
+                                                                        </span>
+                                                                    </span>
+                                                                </span>
+
+                                                            </dd>
+                                                        </dl>
 
 
-                                                                        </dl>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                    </div>
+                                                    <div className='team_member row  py-2'>
+                                                        <div className='col-md-12 p-0'>
+                                                            <dl className='bg-light p-2'>
+
+                                                                <a>{Masterdata.Body != null ? Masterdata.Body : ""}</a>
+                                                                <span
+                                                                    className="hreflink pull-right" title="Edit Inline"
+                                                                >
+                                                                    <i className="fa fa-pencil siteColor" aria-hidden="true"></i>
+                                                                </span>
+
+
+                                                            </dl>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                         </div>
@@ -754,11 +757,11 @@ const ProjectManagementMain = (props: any) => {
                                     <div className="row">
                                         <div className="section-event border-top">
                                             <div className="wrapper">
-                                                {sidebarStatus.sideBarFilter?
-                                                <div className="text-end">
-                                                    <a onClick={()=> clearPortfolioFilter()}>Clear Portfolio Filter</a>
-                                                </div>:''}
-                                                
+                                                {sidebarStatus.sideBarFilter ?
+                                                    <div className="text-end">
+                                                        <a onClick={() => clearPortfolioFilter()}>Clear Portfolio Filter</a>
+                                                    </div> : ''}
+
                                                 {/* <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                                     <thead>
                                                         <tr>
