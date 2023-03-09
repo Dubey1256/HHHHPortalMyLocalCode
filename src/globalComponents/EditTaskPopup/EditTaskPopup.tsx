@@ -41,6 +41,8 @@ var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = false;
 let ApprovalStatusGlobal: any = true;
 var ApproverBackupArray: any = [];
+var ReplaceImageIndex: any;
+var ReplaceImageData: any;
 const EditTaskPopup = (Items: any) => {
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -111,6 +113,8 @@ const EditTaskPopup = (Items: any) => {
         { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
+
+
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
     // }
@@ -1841,17 +1845,30 @@ const EditTaskPopup = (Items: any) => {
         ImageCustomizeFunctionClosePopup();
     }
 
+    const openReplaceImagePopup = (index: any) => {
+        setReplaceImagePopup(true);
+        ReplaceImageIndex = index;
+    }
+
     const FlorarImageReplaceComponentCallBack = (dt: any) => {
         let DataObject: any = {
             data_url: dt,
             file: "Image/jpg"
         }
+        ReplaceImageData = DataObject;
         console.log("Replace Image Data ======", DataObject)
         // let arrayIndex: any = TaskImages?.length
         // TaskImages.push(DataObject)
         // if (dt.length > 0) {
         //     onUploadImageFunction(TaskImages, [arrayIndex]);
         // }
+    }
+    const UpdateImage = () => {
+        if (ReplaceImageData != undefined && ReplaceImageIndex != undefined) {
+            ReplaceImageFunction(ReplaceImageData, ReplaceImageIndex);
+            setReplaceImagePopup(false);
+            GetEditData();
+        }
     }
     const closeReplaceImagePopup = () => {
         setReplaceImagePopup(false)
@@ -2784,7 +2801,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                         <div>
 
-                                                                            <span onClick={() => setReplaceImagePopup(true)} title="Replace image"><TbReplace /> </span>
+                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt />
@@ -3811,7 +3828,7 @@ const EditTaskPopup = (Items: any) => {
                         <FlorarImageUploadComponent callBack={FlorarImageReplaceComponentCallBack} />
                     </div>
                     <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={()=> alert("We are working on It. This feature will be live soon...")} >
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateImage} >
                             Update
                         </button>
                         <button type="button" className="btn btn-default px-3" onClick={closeReplaceImagePopup}>
