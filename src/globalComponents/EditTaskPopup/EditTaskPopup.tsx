@@ -74,6 +74,7 @@ const EditTaskPopup = (Items: any) => {
     const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
     const [replaceImagePopup, setReplaceImagePopup] = React.useState(false);
+    const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
     const [composition, setComposition] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
@@ -99,6 +100,7 @@ const EditTaskPopup = (Items: any) => {
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [ComponentTaskCheck, setComponentTaskCheck] = React.useState(false);
     const [ServicePopupType, setServicePopupType] = React.useState('');
+    const [AllProjectData, SetAllProjectData] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -126,6 +128,7 @@ const EditTaskPopup = (Items: any) => {
         getCurrentUserDetails();
         getSmartMetaData();
         loadAllCategoryData();
+        GetMasterData();
         // getInformationForSmartLight();
         // Descriptions();
     }, [])
@@ -576,7 +579,6 @@ const EditTaskPopup = (Items: any) => {
             let statusValue: any
             smartMeta?.map((item: any) => {
                 let saveImage = []
-
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
                     tempCategoryData = item.Categories;
@@ -730,8 +732,12 @@ const EditTaskPopup = (Items: any) => {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
                     let feedbackArray = message[0]?.FeedBackDescriptions
-                    let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
-                    item.CommentBoxText = CommentBoxText;
+                    if (feedbackArray.length > 0) {
+                        let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
+                        item.CommentBoxText = CommentBoxText;
+                    } else {
+                        item.CommentBoxText = "<p></p>"
+                    }
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
                 } else {
@@ -765,6 +771,25 @@ const EditTaskPopup = (Items: any) => {
         } catch (error) {
             console.log("Error :", error.message);
         }
+    }
+
+    const GetMasterData = async () => {
+        try {
+            let web = new Web(Items.Items.siteUrl);
+            let AllTask: any = [];
+            AllTask = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF')
+                .items
+                .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title")
+                .expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent")
+                .top(4999)
+                .filter("Item_x0020_Type eq 'Project'")
+                .getAll();
+            SetAllProjectData(AllTask);
+            console.log("All Project Data ======", AllTask);
+        } catch (error) {
+            console.log("Error:", error.message)
+        }
+
     }
 
     // const getInformationForSmartLight = () => {
@@ -1922,6 +1947,11 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+    // ************** this is for Project Management Section Functions ************
+
+    const closeProjectManagementPopup = () => {
+        setProjectManagementPopup(false);
+    }
 
     // ************** this is custom header and custom Footers section functions for panel *************
 
@@ -1960,6 +1990,18 @@ const EditTaskPopup = (Items: any) => {
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span className="siteColor">
                         Replace Image
+                    </span>
+                </div>
+                <Tooltip ComponentId="1683" />
+            </div>
+        )
+    }
+    const onRenderCustomProjectManagementHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span className="siteColor">
+                        Select Project
                     </span>
                 </div>
                 <Tooltip ComponentId="1683" />
@@ -2588,6 +2630,20 @@ const EditTaskPopup = (Items: any) => {
                                                     </div> : null}
 
                                                 </div>
+                                                <div className="col-12">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width">
+                                                            Project
+                                                        </label>
+                                                        <input type="text"
+                                                            className="form-control "
+                                                        />
+                                                        <span className="input-group-text">
+                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" />
+                                                        </span>
+                                                    </div>
+                                                </div>
 
                                             </div>
                                         </div>
@@ -2862,7 +2918,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
-                                        {EditData.Title != null ? <>
+                                        {EditData.Id != null ? <>
                                             <CommentBoxComponent
                                                 data={EditData.FeedBackArray}
                                                 callBack={CommentSectionCallBack}
@@ -3508,11 +3564,22 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div> : null}
 
                                                             </div>
-
+                                                            <div className="col-12">
+                                                                <div className="input-group">
+                                                                    <label className="form-label full-width">
+                                                                        Project
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        className="form-control "
+                                                                    />
+                                                                    <span className="input-group-text">
+                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                            onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")} title="Project Items Popup" />
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-
-
                                                     <div className="col-12 mb-2">
                                                         <div className="input-group">
                                                             <label className="form-label full-width ">Relevant URL</label>
@@ -3836,6 +3903,18 @@ const EditTaskPopup = (Items: any) => {
                         </button>
                     </footer>
                 </div>
+            </Panel>
+
+            {/* ********************* this is Replace Image panel ****************** */}
+            <Panel
+                onRenderHeader={onRenderCustomProjectManagementHeader}
+                isOpen={ProjectManagementPopup}
+                onDismiss={closeProjectManagementPopup}
+                isBlocking={false}
+                type={PanelType.custom}
+                customWidth="1100px"
+            >
+                <h6>We are working on it. This feature will be live soon .....</h6>
             </Panel>
 
         </div>
