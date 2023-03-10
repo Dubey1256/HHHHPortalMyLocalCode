@@ -50,6 +50,7 @@ const CreateActivity = (props: any) => {
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
+     const [site, setSite] = React.useState('');
     const [isActive, setIsActive] = React.useState({
         siteType: false,
         time: false,
@@ -106,13 +107,59 @@ const CreateActivity = (props: any) => {
         siteConfig?.forEach((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
                 site.IscreateTask = false;
+               
                 SitesTypes.push(site);
             }
         })
+        if(AllItems.NoteCall=='Task'){
+            SitesTypes?.forEach((type:any)=>{
+            if(type.listId == AllItems.listId){
+                type.IscreateTask = true;
+            }
+            })
+             
+            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+            let componentDetails = [];
+            componentDetails = await web.lists
+                .getById(AllItems.listId)
+                .items
+                .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
+                .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
+                .orderBy("Created", false)
+                .top(4999)
+                .get()
+            console.log(componentDetails)
+            if (componentDetails.length == 0) {
+                WorstreamLatestId = 1;
+            } else {
+                WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+            }
+            getTasktype();
+        }
        
         setSiteType(SitesTypes)
         //setModalIsOpenToTrue();
     }
+    const getTasktype=async ()=>{
+        if(AllItems.NoteCall == 'Task'){
+            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        TaskTypeItems = await web.lists
+            .getById('21b55c7b-5748-483a-905a-62ef663972dc')
+            .items
+            .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
+            .top(4999)
+            .get()
+        console.log(TaskTypeItems)
+        TaskTypeItems?.forEach((item: any,index:any) => {
+            if (item.Title == AllItems.NoteCall) {
+                SharewebTasknewTypeId = item.Id;
+                SharewebTasknewType = item.Title;
+                newIndex = index
+            }
+        })
+    }
+}
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];
         metadataItems?.forEach((taxItem: any) => {
@@ -133,25 +180,25 @@ const CreateActivity = (props: any) => {
             value.IscreateTask = true
         }
         getActivitiesDetails(value)
-        if(AllItems.NoteCall == 'Task'){
-            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-            let componentDetails = [];
-            componentDetails = await web.lists
-                .getById(AllItems.listId)
-                .items
-                .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-                .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
-                .orderBy("Created", false)
-                .top(4999)
-                .get()
-            console.log(componentDetails)
-            if (componentDetails.length == 0) {
-                WorstreamLatestId = 1;
-            } else {
-                WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
-            }
-        }
+        // if(AllItems.NoteCall == 'Task'){
+        //     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        //     let componentDetails = [];
+        //     componentDetails = await web.lists
+        //         .getById(AllItems.listId)
+        //         .items
+        //         .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
+        //         .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
+        //         .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
+        //         .orderBy("Created", false)
+        //         .top(4999)
+        //         .get()
+        //     console.log(componentDetails)
+        //     if (componentDetails.length == 0) {
+        //         WorstreamLatestId = 1;
+        //     } else {
+        //         WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+        //     }
+        // }
         if (save[item] !== value.Title) {
             saveItem[item] = value.Title;
             setSave(saveItem);
@@ -262,25 +309,6 @@ const CreateActivity = (props: any) => {
     var SharewebID: any = ''
     const getActivitiesDetails = async (item: any) => {
         console.log(item)
-        if(AllItems.NoteCall == 'Task'){
-            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        TaskTypeItems = await web.lists
-            .getById('21b55c7b-5748-483a-905a-62ef663972dc')
-            .items
-            .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
-            .top(4999)
-            .get()
-        console.log(TaskTypeItems)
-        TaskTypeItems?.forEach((item: any,index:any) => {
-            if (item.Title == AllItems.NoteCall) {
-                SharewebTasknewTypeId = item.Id;
-                SharewebTasknewType = item.Title;
-                newIndex = index
-            }
-        })
-
-        }
-        else{
             let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
             let componentDetails = [];
             componentDetails = await web.lists
@@ -317,7 +345,7 @@ const CreateActivity = (props: any) => {
                 }
                 item.SharewebID = SharewebID
             }
-        }
+        
        
     }
     const closeTaskStatusUpdatePoup = (res:any) => {
@@ -429,20 +457,28 @@ const CreateActivity = (props: any) => {
                     })
                 } 
                }
-        if (AllItems.Title == undefined) {
-            alert("Enter The Task Name");
-        }
-        else if (AllItems.SiteListItem == undefined) {
-            alert("Select Task List.");
-        }
+       
 
         else {
             siteTypess.forEach(async (value: any) => {
                 if (value.IscreateTask == true) {
                     if (AllItems.NoteCall == 'Activities') {
+                        if (AllItems.Title == undefined) {
+                            alert("Enter The Task Name");
+                        }
+                        else if (AllItems.SiteListItem == undefined) {
+                            alert("Select Task List.");
+                        }
+                        if(value.selectSiteName == true){
+                            var Title =  save.Title != undefined && save.Title != '' ? save.Title + value.Title  : AllItems.Title + value.Title
+                            save.Title =''
+                        }
+                        else{
+                            var Title =  save.Title != undefined && save.Title != '' ? save.Title   : AllItems.Title 
+                        }
                         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
                         await web.lists.getById(value.listId).items.add({
-                            Title: save.Title != undefined && save.Title != '' ? save.Title : AllItems.Title,
+                            Title: Title != undefined && Title != '' ? Title  : AllItems.Title,
                             ComponentId: { "results": Component },
                             Categories: categoriesItem ? categoriesItem : null,
                             DueDate: date != undefined ? new Date(date).toDateString() : date,
@@ -662,6 +698,13 @@ const CreateActivity = (props: any) => {
             </div>
         );
     };
+    const SelectSiteType=()=>{
+        var mySite:any=[]
+        siteTypess.forEach((value:any)=>{
+            value.selectSiteName = true;
+        })
+        setSite('Site Name')
+    }
     return (
         <>
             <Panel
@@ -673,8 +716,11 @@ const CreateActivity = (props: any) => {
                 isBlocking={false}
             >
                 <div className="modal-body">
+                   
+                  
                     <div className={AllItems.Portfolio_x0020_Type  == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                     <div className='row mt-2 border Create-taskpage'>
+                    {AllItems.NoteCall != 'Task' &&
                         <fieldset>
                             <legend className="border-bottom fs-6 ">Sites</legend>
                             <ul className="quick-actions">
@@ -699,6 +745,7 @@ const CreateActivity = (props: any) => {
                                 })}
                             </ul>
                         </fieldset>
+}
                     </div>
                     <div className='row'>
                         <div className='col-sm-10'>
@@ -706,10 +753,10 @@ const CreateActivity = (props: any) => {
                                 <div className="col-sm-10 mb-10 mt-2">
                                     <label className="full_width">
                                         Task Name <a id='siteName'
-                                            ng-click="countClick==0?AddPlaceHolder():Test()">Site Name</a>
+                                           onClick={SelectSiteType}>Site Name</a>
                                     </label>
                                     <input className="form-control" type="text" ng-required="true" placeholder="Enter Task Name"
-                                        defaultValue={AllItems.Title} onChange={(e: any) => AllItems.Title = e.target.value} />
+                                        defaultValue={`${AllItems.Title}${site}`} onChange={(e: any) => AllItems.Title = e.target.value} />
 
                                 </div>
                                 <div className="col-sm-2 mb-10 padL-0 mt-2">
@@ -954,6 +1001,7 @@ const CreateActivity = (props: any) => {
 
                     </div>
                     </div>
+                    
 
                 </div>
 

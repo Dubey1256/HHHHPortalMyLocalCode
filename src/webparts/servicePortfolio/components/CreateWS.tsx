@@ -7,6 +7,8 @@ import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/T
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import * as Moment from 'moment';
+import * as moment from "moment-timezone";
 import Tooltip from '../../../globalComponents/Tooltip';
 
 const TaskItemRank: any = [];
@@ -18,7 +20,7 @@ var Task: any = []
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
-var ParentArray: any = []
+
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
     SelectedTasks = []
@@ -32,6 +34,7 @@ const CreateWS = (props: any) => {
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [smartComponentData, setSmartComponentData] = React.useState([]);
+    const [ParentArray, setParentArray] = React.useState([]);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
@@ -58,22 +61,25 @@ const CreateWS = (props: any) => {
     React.useEffect(() => {
 
         selectType('Workstream');
+        var Parent: any = []
         props.data.forEach((val: any) => {
 
             if (val.Id == AllItems.Id) {
-                ParentArray.push(val);
+                Parent.push(val);
             }
             if (val.childs != undefined) {
                 val.child = []
                 val.childs.map((chi: any) => {
                     if (chi.Id == AllItems.Id) {
-                        ParentArray.push(val);
+                        Parent.push(val);
                         val.child.push(chi)
 
                     }
                 })
+               
             }
         })
+        setParentArray(Parent)
 
     }, [])
     var ItemRankTitle: any = ''
@@ -327,7 +333,8 @@ const CreateWS = (props: any) => {
             console.log(res);
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['listId'] = AllItems.listId
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['Shareweb_x0020_ID'] = SharewebID
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -542,13 +549,22 @@ const CreateWS = (props: any) => {
             <div className="d-flex full-width pb-1" >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span>
-                        {`Create Activity`}
+                        {`Create Item`}
                     </span>
                 </div>
                 <Tooltip ComponentId={AllItems.Id} />
             </div>
         );
     };
+    const SelectDate=(Date:any)=>{
+        if(Date == 'Today'){
+      // var change = Moment().format()
+      // var dateFormat = new Date(change)
+      // var finalDate = Moment(change).format("DD/MM/YYYY") 
+      var change =  moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm')
+       setDate(change)
+        }
+    }
     return (
         <>
             <Panel
@@ -565,18 +581,19 @@ const CreateWS = (props: any) => {
                             ParentArray?.map((pare: any) => {
                                 return (
                                     <>
-                                        <ul>
-                                            <li>{pare.Title}</li>
+                                        <tr className='d-flex'>
+                                        <td className='list-none mx-2'><b>Parent</b></td>
+                                            <td className='list-none mx-2'>{`${pare.Title} >`}</td>
                                             {
                                                 pare.child?.map((childsitem: any) => {
                                                     return (
                                                         <>
-                                                            <li>{childsitem.Title}</li>
+                                                            <td className='list-none'>{childsitem.Title}</td>
                                                         </>
                                                     )
                                                 })
                                             }
-                                        </ul>
+                                        </tr>
                                     </>
                                 )
                             })
@@ -648,7 +665,7 @@ const CreateWS = (props: any) => {
 
                     </div>
                     <div className='row mt-4'>
-                        <div className='col-sm-3'>
+                        <div className='col-sm-4'>
                             <div className="input-group">
                                 <label className="full-width">Item Rank</label>
                                 <select
@@ -679,7 +696,7 @@ const CreateWS = (props: any) => {
                                 </select>
                             </div>
                         </div>
-                        <div className='col-sm-3'>
+                        <div className='col-sm-4'>
                             <fieldset>
                                 <label className="full-width">Priority
                                 <span>
@@ -724,7 +741,7 @@ const CreateWS = (props: any) => {
                             </fieldset>
 
                         </div>
-                        <div className='col-sm-3'>
+                        <div className='col-sm-4'>
                             <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                             <DatePicker className="form-control"
                                 selected={date}
@@ -734,8 +751,32 @@ const CreateWS = (props: any) => {
 
 
                             />
+                             <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
+                                    </label>
+                                </div>
+                                <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+                                    </label>
+                                </div>
+                                <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
+                                    </label>
+                                </div>
+                                <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
+                                    </label>
+                                </div>
                         </div>
-                        <div className="col-sm-3">
+                        {/* <div className="col-sm-3">
                             <div className="input-group">
                                 <label className='full-width'>Categories</label>
                                 <input type="text" className="form-control" id="txtCategories" />
@@ -779,7 +820,7 @@ const CreateWS = (props: any) => {
                                     })}
                                 </div> : null
                             }
-                        </div>
+                        </div> */}
 
                     </div>
                     <div className='row mt-2'>

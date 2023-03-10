@@ -1875,7 +1875,6 @@ const EditTaskPopup = (Items: any) => {
         ReplaceImageIndex = index;
     }
 
-
     const FlorarImageReplaceComponentCallBack = (dt: any) => {
         let DataObject: any = {
             data_url: dt,
