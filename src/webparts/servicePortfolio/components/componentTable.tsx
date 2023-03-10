@@ -2484,7 +2484,7 @@ function ComponentTable(SelectedProp: any) {
             val.chekBox =false;
         })
         closeTaskStatusUpdatePoup2();
-        setIsComponent(false);;
+        setIsComponent(false);; 
         setIsTask(false);
         setMeetingPopup(false);
         setWSPopup(false);
