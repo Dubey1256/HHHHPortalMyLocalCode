@@ -730,8 +730,12 @@ const EditTaskPopup = (Items: any) => {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
                     let feedbackArray = message[0]?.FeedBackDescriptions
-                    let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
-                    item.CommentBoxText = CommentBoxText;
+                    if(feedbackArray.length > 0){
+                        let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
+                        item.CommentBoxText = CommentBoxText;
+                    }else{
+                        item.CommentBoxText = "<p></p>"
+                    }
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
                 } else {

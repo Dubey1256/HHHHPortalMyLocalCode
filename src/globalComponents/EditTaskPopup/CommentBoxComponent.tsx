@@ -17,7 +17,7 @@ const CommentBoxComponent = (commentData: any) => {
     let SmartLightStatus: any = commentData.SmartLightStatus;
     useEffect(() => {
         let data: any = [];
-        if (commentData.data != undefined) {
+        if (commentData.data != undefined && commentData.data.length > 0) {
             let temp = commentData.data;
             temp.map((tempItem: any, index: 0) => {
                 if (index == 0) {
