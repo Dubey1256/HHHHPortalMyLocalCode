@@ -1477,11 +1477,11 @@ let isOpenPopup =false;
             if (MeetingItems != undefined && MeetingItems[0].SharewebTaskType?.Title == 'Workstream') {
                 setActivityPopup(true)
             }
-            if(MeetingItems[0].Portfolio_x0020_Type == 'Service'&& MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined){
-                MeetingItems[0]['NoteCall'] = 'Activities';
-                setMeetingPopup(true)
-            }
-            if (MeetingItems[0].Portfolio_x0020_Type == 'Component' && MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined) {
+            // if(MeetingItems[0].Portfolio_x0020_Type == 'Service'&& MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined){
+            //     MeetingItems[0]['NoteCall'] = 'Activities';
+            //     setMeetingPopup(true)
+            // }
+            if (MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined) {
                 setActivityPopup(true)
             }
         }
@@ -2497,7 +2497,6 @@ let isOpenPopup =false;
                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                         >
-                                                                            {item.TitleNew}
                                                                               <span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
                                                                         </a>}
                                                                         {item.childs != undefined && item.childs.length > 0 &&

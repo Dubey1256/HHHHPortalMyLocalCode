@@ -25,6 +25,19 @@ import TimeEntryPopup from './TimeEntryComponent';
 import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from '../FlorarComponents/FlorarImageUploadComponent';
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import {
+    useTable,
+    useSortBy,
+    useFilters,
+    useExpanded,
+    usePagination,
+    HeaderGroup,
+} from 'react-table';
+import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
+import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -41,6 +54,9 @@ var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = false;
 let ApprovalStatusGlobal: any = true;
 var ApproverBackupArray: any = [];
+var ReplaceImageIndex: any;
+var ReplaceImageData: any;
+var AllProjectBackupArray: any = [];
 const EditTaskPopup = (Items: any) => {
     var siteUrls:any;
     if(Items != undefined &&  Items.Items.siteUrl != undefined && Items.Items.siteUrl.length<20){
@@ -79,6 +95,7 @@ const EditTaskPopup = (Items: any) => {
     const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
     const [replaceImagePopup, setReplaceImagePopup] = React.useState(false);
+    const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
     const [composition, setComposition] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
@@ -104,6 +121,12 @@ const EditTaskPopup = (Items: any) => {
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [ComponentTaskCheck, setComponentTaskCheck] = React.useState(false);
     const [ServicePopupType, setServicePopupType] = React.useState('');
+    const [AllProjectData, SetAllProjectData] = React.useState([]);
+    const [selectedProject, setSelectedProject] = React.useState([]);
+    const [SearchedProjectData, setSearchedProjectData] = React.useState([]);
+    const [ProjectSearchKey, setProjectSearchKey] = React.useState('');
+    const [ApproverPopupStatus, setApproverPopupStatus] = React.useState(false);
+    const [AllEmployeeData, setAllEmployeeData] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -118,6 +141,14 @@ const EditTaskPopup = (Items: any) => {
         { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
+
+    var siteUrls: any;
+    if (Items != undefined && Items.Items.siteUrl != undefined && Items.Items.siteUrl.length < 20) {
+        siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
+    } else {
+        siteUrls = Items.Items.siteUrl
+    }
+
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
     // }
@@ -129,6 +160,8 @@ const EditTaskPopup = (Items: any) => {
         getCurrentUserDetails();
         getSmartMetaData();
         loadAllCategoryData();
+        GetMasterData();
+        GetExtraLookupColumnData();
         // getInformationForSmartLight();
         // Descriptions();
     }, [])
@@ -503,6 +536,8 @@ const EditTaskPopup = (Items: any) => {
         axios.get("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc")
             .then((response: AxiosResponse) => {
                 taskUsers = response.data.value;
+                getAllEmployeeData();
+                console.log("All Task user Data On Task Popup ========",response.data.value );
                 $.each(taskUsers, function (index: any, user: any) {
                     var ApproverUserItem = '';
                     var UserApproverMail: any = []
@@ -551,11 +586,28 @@ const EditTaskPopup = (Items: any) => {
         //     console.log("Error:", error.message);
         // }
     }
+    
+    // ********** this is for Getting All  Employee For Approval Function Data *******************
+
+    const getAllEmployeeData =()=>{
+        let UsersData:any =[];
+        let Groups:any =[];
+        taskUsers.map((EmpData:any)=>{
+            if(EmpData.ItemType == "Group"){
+                Groups.push(EmpData);
+            }
+            if(EmpData.ItemType == "User"){
+                UsersData.push(EmpData);
+            }
+        })
+    }
+
 
     const GetEditData = async () => {
         try {
             let web = new Web(siteUrls);
-            let smartMeta;
+            let smartMeta: any;
+            let extraLookupColumnData: any;
             if (Items.Items.listId != undefined) {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
@@ -579,7 +631,6 @@ const EditTaskPopup = (Items: any) => {
             let statusValue: any
             smartMeta?.map((item: any) => {
                 let saveImage = []
-
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
                     tempCategoryData = item.Categories;
@@ -733,8 +784,12 @@ const EditTaskPopup = (Items: any) => {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
                     let feedbackArray = message[0]?.FeedBackDescriptions
-                    let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
-                    item.CommentBoxText = CommentBoxText;
+                    if (feedbackArray != undefined && feedbackArray.length > 0) {
+                        let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
+                        item.CommentBoxText = CommentBoxText;
+                    } else {
+                        item.CommentBoxText = "<p></p>"
+                    }
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
                 } else {
@@ -768,6 +823,113 @@ const EditTaskPopup = (Items: any) => {
         } catch (error) {
             console.log("Error :", error.message);
         }
+    }
+
+    const GetExtraLookupColumnData = async () => {
+        try {
+            let web = new Web(siteUrls);
+            let extraLookupColumnData: any;
+            if (Items.Items.listId != undefined) {
+                extraLookupColumnData = await web.lists
+                    .getById(Items.Items.listId)
+                    .items
+                    .select("Project/Id, Project/Title")
+                    .top(5000)
+                    .filter(`Id eq ${Items.Items.Id}`)
+                    .expand('Project')
+                    .get();
+                if (extraLookupColumnData.length > 0) {
+                    let Data: any;
+                    Data = extraLookupColumnData[0]?.Project;
+                    if (Data != undefined && Data != null) {
+                        let TempArray: any = [];
+                        AllProjectBackupArray.map((ProjectData: any) => {
+                            if (ProjectData.Id == Data.Id) {
+                                ProjectData.Checked = true;
+                                setSelectedProject([ProjectData]);
+                                TempArray.push(ProjectData);
+                            } else {
+                                ProjectData.Checked = false;
+                                TempArray.push(ProjectData);
+                            }
+                        })
+                        SetAllProjectData(TempArray);
+                    }
+
+                }
+                // console.log("Extra Lookup Data =======", extraLookupColumnData);
+            } else {
+                extraLookupColumnData = await web.lists
+                    .getByTitle(Items.Items.listName)
+                    .items
+                    .select("Project/Id, Project/Title")
+                    .top(5000)
+                    .filter(`Id eq ${Items.Items.Id}`)
+                    .expand('Project')
+                    .get();
+                if (extraLookupColumnData.length > 0) {
+                    let Data: any;
+                    Data = extraLookupColumnData[0]?.Project;
+                    if (Data != undefined && Data != null) {
+                        let TempArray: any = [];
+                        AllProjectBackupArray.map((ProjectData: any) => {
+                            if (ProjectData.Id == Data.Id) {
+                                ProjectData.Checked = true;
+                                setSelectedProject([ProjectData]);
+                                TempArray.push(ProjectData);
+                            } else {
+                                ProjectData.Checked = false;
+                                TempArray.push(ProjectData);
+                            }
+                        })
+                        SetAllProjectData(TempArray);
+                    }
+                }
+            }
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
+
+
+
+    }
+
+    const GetMasterData = async () => {
+        try {
+            let web = new Web(siteUrls);
+            let AllProjects: any = [];
+            AllProjects = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF')
+                .items
+                .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title")
+                .expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent")
+                .top(4999)
+                .filter("Item_x0020_Type eq 'Project'")
+                .getAll();
+            AllProjects.map((items: any) => {
+                items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                items.AssignedUser = []
+                items.TeamMembersSearch = '';
+                if (items.AssignedTo != undefined) {
+                    items.AssignedTo.map((taskUser: any) => {
+                        taskUsers.map((user: any) => {
+                            if (user.AssingedToUserId == taskUser.Id) {
+                                if (user?.Title != undefined) {
+                                    items.TeamMembersSearch = items.TeamMembersSearch + ' ' + user?.Title
+                                }
+                            }
+                        })
+                    })
+                }
+                items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : "";
+                items.Checked = false;
+            })
+            SetAllProjectData(AllProjects);
+            AllProjectBackupArray = AllProjects;
+            console.log("All Project Data ======", AllProjects);
+        } catch (error) {
+            console.log("Error:", error.message)
+        }
+
     }
 
     // const getInformationForSmartLight = () => {
@@ -1294,7 +1456,8 @@ const EditTaskPopup = (Items: any) => {
                     Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
                     Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
                 },
-                BasicImageInfo: JSON.stringify(UploadImageArray)
+                BasicImageInfo: JSON.stringify(UploadImageArray),
+                ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null)
             }).then((res: any) => {
                 tempShareWebTypeData = [];
                 AllMetaData = []
@@ -1848,17 +2011,31 @@ const EditTaskPopup = (Items: any) => {
         ImageCustomizeFunctionClosePopup();
     }
 
+    const openReplaceImagePopup = (index: any) => {
+        setReplaceImagePopup(true);
+        ReplaceImageIndex = index;
+    }
+
+
     const FlorarImageReplaceComponentCallBack = (dt: any) => {
         let DataObject: any = {
             data_url: dt,
             file: "Image/jpg"
         }
+        ReplaceImageData = DataObject;
         console.log("Replace Image Data ======", DataObject)
         // let arrayIndex: any = TaskImages?.length
         // TaskImages.push(DataObject)
         // if (dt.length > 0) {
         //     onUploadImageFunction(TaskImages, [arrayIndex]);
         // }
+    }
+    const UpdateImage = () => {
+        if (ReplaceImageData != undefined && ReplaceImageIndex != undefined) {
+            ReplaceImageFunction(ReplaceImageData, ReplaceImageIndex);
+            setReplaceImagePopup(false);
+            GetEditData();
+        }
     }
     const closeReplaceImagePopup = () => {
         setReplaceImagePopup(false)
@@ -1912,7 +2089,164 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+    // ************** this is for Project Management Section Functions ************
+    const closeProjectManagementPopup = () => {
+        setProjectManagementPopup(false);
+    }
+    const SelectProjectFunction = (selectedData: any) => {
+        let TempArray: any = [];
+        AllProjectBackupArray.map((ProjectData: any) => {
+            if (ProjectData.Id == selectedData.Id) {
+                ProjectData.Checked = true;
+                TempArray.push(ProjectData);
+                // setSelectedProject([ProjectData])
+            } else {
+                ProjectData.Checked = false;
+                TempArray.push(ProjectData);
+            }
+        })
+        SetAllProjectData(TempArray);
+    }
 
+    const saveSelectedProject = () => {
+        if (AllProjectData != undefined && AllProjectData.length > 0) {
+            AllProjectData.map((dataItem: any) => {
+                if (dataItem.Checked) {
+                    setSelectedProject([dataItem]);
+                }
+            })
+        }
+        // setSelectedProject([tempSelectedProjectData]);
+        setProjectManagementPopup(false);
+    }
+
+
+    const autoSuggestionsForProject = (e: any) => {
+        let searchedKey: any = e.target.value;
+        setProjectSearchKey(e.target.value);
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            AllProjectData?.map((itemData: any) => {
+                if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            })
+            setSearchedProjectData(tempArray);
+        } else {
+            setSearchedProjectData([]);
+        }
+
+    }
+
+    const SelectProjectFromAutoSuggestion = (data: any) => {
+        setProjectSearchKey('');
+        setSearchedProjectData([]);
+        setSelectedProject(data);
+    }
+
+    const columns = React.useMemo(
+        () => [
+            {
+                internalHeader: '',
+                id: 'Id', // 'id' is required
+                isSorted: false,
+                showSortIcon: false,
+                Cell: ({ row }: any) => (
+                    <span>
+                        <input type='checkbox' checked={row.original.Checked} onClick={() => SelectProjectFunction(row.original)} />
+                    </span>
+                ),
+            },
+            {
+                internalHeader: 'Title',
+                accessor: 'Title',
+                showSortIcon: true,
+                Cell: ({ row }: any) => (
+                    <span>
+                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                    </span>
+                )
+            },
+            {
+                internalHeader: 'Percent Complete',
+                accessor: 'PercentComplete',
+                showSortIcon: true,
+            },
+            {
+                internalHeader: 'Priority',
+                accessor: 'Priority_x0020_Rank',
+                showSortIcon: true,
+            },
+            {
+                internalHeader: 'Team Members',
+                accessor: 'TeamMembersSearch',
+                showSortIcon: true,
+                Cell: ({ row }: any) => (
+                    <span>
+                        <ShowTaskTeamMembers props={row?.original} TaskUsers={taskUsers}></ShowTaskTeamMembers>
+                    </span>
+                )
+            },
+            {
+                internalHeader: 'Due Date',
+                showSortIcon: true,
+                accessor: 'DisplayDueDate',
+            },
+
+        ],
+        [AllProjectData]
+    );
+
+    const data = AllProjectData;
+
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        page,
+        prepareRow,
+        visibleColumns,
+        canPreviousPage,
+        canNextPage,
+        pageOptions,
+        pageCount,
+        gotoPage,
+        nextPage,
+        previousPage,
+        setPageSize,
+        state: { pageIndex, pageSize },
+    }: any = useTable(
+        {
+            columns,
+            data,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 }
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+
+    const generateSortingIndicator = (column: any) => {
+        return column.isSorted ? (column.isSortedDesc ? <FaSortDown /> : <FaSortUp />) : (column.showSortIcon ? <FaSort /> : '');
+    };
+
+    const onChangeInSelect = (event: any) => {
+        setPageSize(Number(event.target.value));
+    };
+
+    // ************ this is for Approver Popup Function  ************** 
+    const OpenApproverPopupFunction = () => {
+        setApproverPopupStatus(true);
+    }
+    const closeApproverPopup = () => {
+        setApproverPopupStatus(false)
+    }
+
+    const selectApproverFunction = (selectedData:any) => {
+
+    }
     // ************** this is custom header and custom Footers section functions for panel *************
 
     const onRenderCustomHeaderMain = () => {
@@ -1950,6 +2284,30 @@ const EditTaskPopup = (Items: any) => {
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span className="siteColor">
                         Replace Image
+                    </span>
+                </div>
+                <Tooltip ComponentId="1683" />
+            </div>
+        )
+    }
+    const onRenderCustomProjectManagementHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span className="siteColor">
+                        Select Project
+                    </span>
+                </div>
+                <Tooltip ComponentId="1683" />
+            </div>
+        )
+    }
+    const onRenderCustomApproverHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span className="siteColor">
+                        Select Approver
                     </span>
                 </div>
                 <Tooltip ComponentId="1683" />
@@ -2420,7 +2778,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div
                                                             className="form-check">
-                                                            <label> Quick Approval</label>
+                                                            <label>Quick Approval</label>
                                                             <input
                                                                 type="radio"
                                                                 className="form-check-input" />
@@ -2442,7 +2800,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                         {index == 0 ? <span className="float-end ">
                                                                             <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                                onClick={() => alert("We are working on It. This feature will be live soon...")} />
+                                                                                onClick={OpenApproverPopupFunction} />
                                                                         </span> : null}
                                                                     </div>
                                                                 )
@@ -2577,6 +2935,51 @@ const EditTaskPopup = (Items: any) => {
 
                                                     </div> : null}
 
+                                                </div>
+                                                <div className="col-12">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width">
+                                                            Project
+                                                        </label>
+                                                        <input type="text"
+                                                            className="form-control"
+                                                            value={ProjectSearchKey}
+                                                            onChange={(e) => autoSuggestionsForProject(e)}
+                                                        />
+                                                        <span className="input-group-text">
+                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" />
+                                                        </span>
+                                                    </div>
+                                                    {SearchedProjectData?.length > 0 ? (
+                                                        <div className="SmartTableOnTaskPopup">
+                                                            <ul className="list-group">
+                                                                {SearchedProjectData.map((item: any) => {
+                                                                    return (
+                                                                        <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
+                                                                            <a>{item.Title}</a>
+                                                                        </li>
+                                                                    )
+                                                                }
+                                                                )}
+                                                            </ul>
+                                                        </div>) : null}
+                                                    {selectedProject != undefined && selectedProject.length > 0 ?
+                                                        <div>
+                                                            {selectedProject.map((ProjectData: any) => {
+                                                                return (
+                                                                    <div className="d-flex block px-2 py-1">
+                                                                        <div>
+                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                                {ProjectData.Title}
+                                                                            </a>
+                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSelectedProject([])} />
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            })}
+
+                                                        </div> : null}
                                                 </div>
 
                                             </div>
@@ -2791,7 +3194,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                         <div>
 
-                                                                            <span onClick={() => setReplaceImagePopup(true)} title="Replace image"><TbReplace /> </span>
+                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt />
@@ -2852,7 +3255,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
-                                        {EditData.Title != null ? <>
+                                        {EditData.Id != null ? <>
                                             <CommentBoxComponent
                                                 data={EditData.FeedBackArray}
                                                 callBack={CommentSectionCallBack}
@@ -3303,6 +3706,29 @@ const EditTaskPopup = (Items: any) => {
                                                                             className="form-check-input " />
                                                                     </div>
                                                                 </div>
+                                                                {ApprovalStatus ?
+                                                                    <div>
+                                                                        {EditData.TaskApprovers?.map((Approver: any, index: number) => {
+                                                                            return (
+                                                                                <div className="block px-2 py-1 d-flex my-1 justify-content-between">
+                                                                                    {/* href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`} */}
+                                                                                    <div>
+                                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off">
+                                                                                            {Approver.Title}
+                                                                                        </a>
+                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                                                            onClick={() => removeApproverFunction(Approver.Title, Approver.Id)} className="p-1"
+                                                                                        />
+                                                                                    </div>
+                                                                                    {index == 0 ? <span className="float-end ">
+                                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                                            onClick={OpenApproverPopupFunction} />
+                                                                                    </span> : null}
+                                                                                </div>
+                                                                            )
+                                                                        })}
+                                                                    </div> : null
+                                                                }
 
                                                             </div>
                                                         </div>
@@ -3498,11 +3924,53 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div> : null}
 
                                                             </div>
+                                                            <div className="col-12">
+                                                                <div className="input-group">
+                                                                    <label className="form-label full-width">
+                                                                        Project
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        className="form-control"
+                                                                        value={ProjectSearchKey}
+                                                                        onChange={(e) => autoSuggestionsForProject(e)}
+                                                                    />
+                                                                    <span className="input-group-text">
+                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                            onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" />
+                                                                    </span>
+                                                                </div>
+                                                                {SearchedProjectData?.length > 0 ? (
+                                                                    <div className="SmartTableOnTaskPopup">
+                                                                        <ul className="list-group">
+                                                                            {SearchedProjectData.map((item: any) => {
+                                                                                return (
+                                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
+                                                                                        <a>{item.Title}</a>
+                                                                                    </li>
+                                                                                )
+                                                                            }
+                                                                            )}
+                                                                        </ul>
+                                                                    </div>) : null}
+                                                                {selectedProject != undefined && selectedProject.length > 0 ?
+                                                                    <div>
+                                                                        {selectedProject.map((ProjectData: any) => {
+                                                                            return (
+                                                                                <div className="d-flex block px-2 py-1">
+                                                                                    <div>
+                                                                                        <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                                            {ProjectData.Title}
+                                                                                        </a>
+                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSelectedProject([])} />
+                                                                                    </div>
+                                                                                </div>
+                                                                            )
+                                                                        })}
 
+                                                                    </div> : null}
+                                                            </div>
                                                         </div>
                                                     </div>
-
-
                                                     <div className="col-12 mb-2">
                                                         <div className="input-group">
                                                             <label className="form-label full-width ">Relevant URL</label>
@@ -3818,7 +4286,7 @@ const EditTaskPopup = (Items: any) => {
                         <FlorarImageUploadComponent callBack={FlorarImageReplaceComponentCallBack} />
                     </div>
                     <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={()=> alert("We are working on It. This feature will be live soon...")} >
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateImage} >
                             Update
                         </button>
                         <button type="button" className="btn btn-default px-3" onClick={closeReplaceImagePopup}>
@@ -3827,6 +4295,138 @@ const EditTaskPopup = (Items: any) => {
                     </footer>
                 </div>
             </Panel>
+
+            {/* ********************* this is Project Management Image panel ****************** */}
+            <Panel
+                onRenderHeader={onRenderCustomProjectManagementHeader}
+                isOpen={ProjectManagementPopup}
+                onDismiss={closeProjectManagementPopup}
+                isBlocking={false}
+                type={PanelType.custom}
+                customWidth="1100px"
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ''}>
+                    <div className="modal-body p-0 mt-2">
+                        <Table className="SortingTable" bordered hover {...getTableProps()}>
+                            <thead>
+                                {headerGroups.map((headerGroup: any) => (
+                                    <tr  {...headerGroup.getHeaderGroupProps()}>
+                                        {headerGroup.headers.map((column: any) => (
+                                            <th  {...column.getHeaderProps()}>
+                                                <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
+                                                    {column.render('Header')}
+                                                    {generateSortingIndicator(column)}
+                                                </span>
+                                                <Filter column={column} />
+                                            </th>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </thead>
+
+                            <tbody {...getTableBodyProps()}>
+                                {page.map((row: any) => {
+                                    prepareRow(row)
+                                    return (
+                                        <tr {...row.getRowProps()}  >
+                                            {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
+                                                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                            })}
+                                        </tr>
+                                    )
+
+                                })}
+                            </tbody>
+                        </Table>
+                    </div>
+                    <footer className="float-end mt-1">
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
+                            Save
+                        </button>
+                        <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
+                            Cancel
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+
+            {/* ********************* this is Approval panel ****************** */}
+            <Panel
+                onRenderHeader={onRenderCustomApproverHeader}
+                isOpen={ApproverPopupStatus}
+                onDismiss={closeApproverPopup}
+                isBlocking={false}
+                type={PanelType.medium}
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                    <div className="">
+                        <div className='col-sm-12 categScroll'>
+                            {/* <ul className="categories-menu p-0">
+                                {AllCategories.map(function (item: any) {
+                                    return (
+                                        <>
+                                            <li>
+                                                {item.Item_x005F_x0020_Cover != null &&
+                                                    <p onClick={() => selectApproverFunction(item)} className='mb-0 hreflink' >
+                                                        <a>
+                                                            <img className="flag_icon"
+                                                                style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
+                                                            {item.Title}
+                                                        </a>
+                                                    </p>
+                                                }
+                                                <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
+                                                    {item.childs?.map(function (child1: any) {
+                                                        return (
+                                                            <>
+                                                                {child1.Title != null ?
+                                                                    <li>
+                                                                        <p onClick={() => selectApproverFunction(child1)} className='mb-0 hreflink'>
+                                                                            <a>
+                                                                                {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                    style={{ height: "12px", width: "18px;" }}
+                                                                                    src={child1.Item_x005F_x0020_Cover.Url} /> :
+                                                                                    null}
+                                                                                {child1.Title}
+                                                                                {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                    <div className="popover__content">
+                                                                                        <span>{child1.Description1}</span>
+                                                                                    </div>
+                                                                                </div> : null}
+
+                                                                            </a>
+                                                                        </p>
+
+
+                                                                    </li> : null
+                                                                }
+                                                            </>
+                                                        )
+                                                    })}
+                                                </ul>
+                                            </li>
+                                        </>
+                                    )
+                                })}
+                            </ul> */}
+
+                            <h5 className="p-3 m-2">
+                                We are working on it. This feature will be live soon .....
+                            </h5>
+                        </div>
+                    </div>
+                    <footer className="float-end mt-1">
+                        <button type="button" className="btn btn-primary px-3 mx-1">
+                            Save
+                        </button>
+                        <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
+                            Cancel
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+
 
         </div>
     )

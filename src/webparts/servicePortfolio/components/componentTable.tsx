@@ -2025,15 +2025,19 @@ function ComponentTable(SelectedProp: any) {
 
         $.each(ComponetsData['allComponets'], function (index: any, result: any) {
             result.show = false;
+            result.checkBox = false;
             if (result.childs != undefined) {
                 result.childs.forEach(function (i: any) {
                     i.show = []
+                    i.checkBox = false;
                     if (i.childs != undefined) {
                         i.childs.forEach(function (subc: any) {
                             subc.show = []
+                            subc.checkBox = false;
                             if (subc.childs != undefined) {
                                 subc.childs.forEach(function (last: any) {
                                     last.show = []
+                                    last.checkBox = false;
                                 })
                             }
                         })
@@ -2401,12 +2405,9 @@ function ComponentTable(SelectedProp: any) {
         return csvData;
     };
     const clearSearch = () => {
-       // const arrayCopy =[...AllCountItems.DatabackupItems]
-       // setData(data =>[...arrayCopy]);
-        setSearch('');
- 
-     }
- 
+        setSearch('')
+
+    }
 
     // Expand Table 
     const expndpopup = (e: any) => {
@@ -2483,7 +2484,7 @@ function ComponentTable(SelectedProp: any) {
             val.chekBox =false;
         })
         closeTaskStatusUpdatePoup2();
-        setIsComponent(false);;
+        setIsComponent(false);; 
         setIsTask(false);
         setMeetingPopup(false);
         setWSPopup(false);
@@ -2759,9 +2760,6 @@ function ComponentTable(SelectedProp: any) {
 
             maidataBackup.forEach((obj) => {
                 obj.isRestructureActive = true;
-                if (obj.Id === checkedList[0].Id)
-                obj.isRestructureActive = false;
-                ArrayTest.push(...[obj])
                 if (obj.childs != undefined && obj.childs.length > 0) {
                     obj.childs.forEach((sub: any) => {
                         if (sub.Item_x0020_Type === 'SubComponent') {
@@ -3963,12 +3961,15 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                 </div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "2%" }}>
-                                                                                                                <div className="accordian-header" >
-                                                                                                                    {/* checked={item.checked === true ? true : false} */}
-                                                                                                                    <span className='pe-2'><input type="checkbox"
+                                                                                                            <td style={{ width: "2%" }}>{
+                                                                                                                childitem.SharewebTaskType?.Title != 'Task' &&
+                                                                                                            
+                                                                                                                <div className="accordian-header">
+
+                                                                                                                    <span className='pe-2'><input type="checkbox" checked={childitem.chekBox}
                                                                                                                         onChange={(e) => onChangeHandler(childitem, item, e)} /></span>
                                                                                                                 </div>
+                                                                                }
 
                                                                                                             </td>
                                                                                                             {/* <td style={{ width: "2%" }}></td> */}
@@ -4074,6 +4075,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         <td className="p-0" colSpan={12}>
                                                                                                                             <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                                 <tr className="tdrow">
+                                                                                                                                    
                                                                                                                                         <td style={{ width: "2%" }}>
                                                                                                                                             {childinew.childs.length > 0 &&
                                                                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childinew)}>
@@ -4087,12 +4089,18 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                 </div>
                                                                                                                                             }
                                                                                                                                         </td>
+                                                                                                                                   
                                                                                                                                     <td style={{ width: "2%" }}>
-                                                                                                                                        <div className="accordian-header" >
-                                                                                                                                            {/* checked={item.checked === true ? true : false} */}
-                                                                                                                                            <span className='pe-2'><input type="checkbox"
+                                                                                                                                       
+                                                                                                                                            {
+                                                                                                                                                  childinew.SharewebTaskType?.Title != 'Task' &&
+                                                                                                                                                  <div className="accordian-header" >
+                                                                                                                                        
+                                                                                                                                            <span className='pe-2'><input type="checkbox"  checked={childinew.chekBox}
                                                                                                                                                 onChange={(e) => onChangeHandler(childinew, item, e)} /></span>
+                                                                                                                                           
                                                                                                                                         </div>
+                                                                                                                                         }
 
                                                                                                                                     </td>
 
@@ -4216,10 +4224,12 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                                                 </div>
                                                                                                                                                             </td>
-                                                                                                                                                            <td style={{ width: "2%" }}>
+                                                                                                                                                            <td style={{ width: "2%" }}>{
+                                                                                                                                                            subchilditem.SharewebTaskType?.Title != 'Task' &&
                                                                                                                                                                 <div className="accordian-header" >
                                                                                                                                                                     <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(subchilditem, item, e)} /></span>
                                                                                                                                                                 </div>
+                                                                                                                                }
 
                                                                                                                                                             </td>
                                                                                                                                                             {/* <td style={{ width: "2%" }}></td> */}
@@ -4499,7 +4509,7 @@ function ComponentTable(SelectedProp: any) {
                                     }
                                 </div>
                             </div>
-
+                            <button type="button" className="btn btn-default btn-default ms-1 pull-right" onClick={closeTaskStatusUpdatePoup2}>Cancel</button>
                         </div>
                     
                
