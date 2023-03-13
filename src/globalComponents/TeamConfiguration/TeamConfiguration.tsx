@@ -91,13 +91,24 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private async GetTaskDetails() {
         let web = new Web(this.props.ItemInfo.siteUrl);
         let taskDetails = [];
-        taskDetails = await web.lists
+        if(this.props.ItemInfo.listId != undefined){
+            taskDetails = await web.lists
+            .getById(this.props.ItemInfo.listId)
+            .items
+            .getById(this.props.ItemInfo.Id)
+            .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
+            .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+            .get()
+        }else{
+            taskDetails = await web.lists
             .getByTitle(this.props.ItemInfo.listName)
             .items
             .getById(this.props.ItemInfo.Id)
             .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
             .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
             .get()
+        }
+       
 
         console.log('Task Details---');
         console.log(taskDetails);
@@ -467,7 +478,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         </div>
                                     </div>
                                 </div>
-                                {(this.props.ItemInfo.Item_x0020_Type != 'Component' && this.props.ItemInfo.Item_x0020_Type != 'SubComponent' && this.props.ItemInfo.Item_x0020_Type != 'Feature') &&
+                                
                                     <div className='col-sm-3'>
                                         <h6 >Working Members</h6>
                                         <div className="col"
@@ -491,7 +502,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
                                         </div>
                                     </div>
-                                }
+                                
                                 <div className="col-sm-2">
                                     <div>
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}

@@ -26,6 +26,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
+let serachTitle: any = '';
 export default function ComponentTable({ props }: any) {
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -152,6 +153,7 @@ export default function ComponentTable({ props }: any) {
                                 item.flag = true;
                                 item.siteType = config.Title;
                                 item.childs = [];
+                                item.TitleNew = item.Title;
                                 item.listId = config.listId;
                                 // item.Item_x0020_Type = 'Task';
                                 item.siteUrl = GlobalConstants.SP_SITE_URL;
@@ -351,6 +353,43 @@ export default function ComponentTable({ props }: any) {
         setTable(copy)
 
     }
+
+
+
+    // Global Search 
+    var getRegexPattern = function (keywordArray: any) {
+        var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
+        return new RegExp(pattern, "gi");
+    };
+    var getHighlightdata = function (item: any, searchTerms: any) {
+        var keywordList = [];
+        if (serachTitle != undefined && serachTitle != '') {
+            keywordList = stringToArray(serachTitle);
+        } else {
+            keywordList = stringToArray(serachTitle);
+        }
+        var pattern: any = getRegexPattern(keywordList);
+        //let Title :any =(...item.Title)
+        item.TitleNew = item.Title;
+        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+        // item.Title = item.Title;
+        keywordList = [];
+        pattern = '';
+    }
+    var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
+        var isSearchTermAvailable = true;
+        $.each(searchTerms, function (index: any, val: any) {
+            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+                isSearchTermAvailable = true;
+                getHighlightdata(item, val.toLowerCase());
+
+            } else
+                isSearchTermAvailable = false;
+        })
+        return isSearchTermAvailable;
+    }
+    
+
     var stringToArray = function (input: any) {
         if (input) {
             return input.match(/\S+/g);
@@ -358,16 +397,17 @@ export default function ComponentTable({ props }: any) {
             return [];
         }
     };
-    var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
-        var isSearchTermAvailable = true;
-        $.each(searchTerms, function (index: any, val: any) {
-            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
-                isSearchTermAvailable = true;
 
-            } else
-                isSearchTermAvailable = false;
-        })
-        return isSearchTermAvailable;
+
+    var isItemExistsNew = function (array: any, items: any) {
+        var isExists = false;
+        $.each(array, function (index: any, item: any) {
+            if (item.Id === items.Id && items.siteType === item.siteType) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
     }
     let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
         setSearch(e.target.value.toLowerCase());
@@ -744,6 +784,7 @@ export default function ComponentTable({ props }: any) {
             // result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
             result.CreatedDateImg = []
             result.childsLength = 0;
+            result.TitleNew = result.Title;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -1013,7 +1054,7 @@ export default function ComponentTable({ props }: any) {
 
         //maidataBackup.push(ComponentsData)
         var temp: any = {};
-        temp.Title = 'Tasks';
+        temp.TitleNew = 'Tasks';
         temp.childs = [];
         //  temp.AllTeamMembers = [];
         //  temp.AllTeamMembers = [];
@@ -1074,7 +1115,7 @@ export default function ComponentTable({ props }: any) {
             }
         })
         var temp: any = {};
-        temp.Title = 'Tasks';
+        temp.TitleNew = 'Tasks';
         temp.childs = [];
         temp.flag = true;
         ComponetsData['allComponets'].push(temp);
@@ -1875,7 +1916,7 @@ let isOpenPopup =false;
                         </span>
                         <span className="g-search">
                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all"
-                                ng-model="SearchComponent.GlobalSearch" />
+                                onChange={(e) => handleChange1(e, "Title")} />
                             <span className="gsearch-btn" ng-click="SearchAll_Item()"><i className="fa fa-search"></i></span>
                         </span>
                     </span>
@@ -1928,7 +1969,7 @@ let isOpenPopup =false;
                                         <th style={{ width: "7%" }}>
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input type="search" placeholder="TaskId" className="full_width searchbox_height"
-                                                // onChange={(e)=>SearchVale(e,"TaskId")} 
+                                                 onChange={(e) => handleChange1(e, "Shareweb_x0020_ID")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -1939,7 +1980,7 @@ let isOpenPopup =false;
                                         <th style={{ width: "23%" }}>
                                             <div style={{ width: "22%" }} className="smart-relative">
                                                 <input type="search" placeholder="Title" className="full_width searchbox_height"
-                                                //  onChange={(e)=>SearchAll(e)}
+                                                 onChange={(e) => handleChange1(e, "Title")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -1963,7 +2004,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "4%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="%"
                                                     title="Percentage Complete" className="full_width searchbox_height"
-                                                // onChange={(e) => handleChange1(e, "ClientCategory")} 
+                                                onChange={(e) => handleChange1(e, "PercentComplete")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -1991,7 +2032,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="ItemRank"
                                                     title="Item Rank" className="full_width searchbox_height"
-                                                // onChange={(e) => handleChange1(e, "ClientCategory")}
+                                                onChange={(e) => handleChange1(e, "ItemRank")}
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2049,7 +2090,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "8%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Due Date"
                                                     title="Due Date" className="full_width searchbox_height"
-                                                // onChange={(e) => handleChange1(e, "Status")}
+                                                onChange={(e) => handleChange1(e, "DueDate")}
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2078,7 +2119,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "10%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
                                                     title="Created Date" className="full_width searchbox_height"
-                                                // onChange={(e) => handleChange1(e, "ItemRank")} 
+                                                onChange={(e) => handleChange1(e, "Created")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2185,11 +2226,15 @@ let isOpenPopup =false;
                                                                         {item.siteType === "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                         >
-                                                                            {item.Title}
+                                                                              <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                              {/* {item.TitleNew} */}
+                                                                         
                                                                         </a>}
                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                        >{item.Title}
+                                                                        >
+                                                                            {item.TitleNew}
+                                                                              <span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
                                                                         </a>}
                                                                         {item.childs != undefined && item.childs.length > 0 &&
                                                                             <span>{item.childs.length == 0 ? "" : <span className='ms-1'>({item.childsLength})</span>}</span>
@@ -2299,11 +2344,16 @@ let isOpenPopup =false;
                                                                                             <td style={{ width: "23%" }}>
                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                >{childitem.Title}
+                                                                                                >
+                                                                                                      <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                              
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
-                                                                                                >{childitem.Title}
+                                                                                                >
+                                                                                                    
+                                                                                                    <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                              
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined && childitem.childs.length > 0 &&
                                                                                                     <span className='ms-1'>({childitem.childsLength})</span>
@@ -2421,11 +2471,15 @@ let isOpenPopup =false;
                                                                                                                     <td style={{ width: "23%" }}>
                                                                                                                         {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                        >{childinew.Title}
+                                                                                                                        >
+                                                                                                                            
+                                                                                                      <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
+                                                                                              
+                                                                                                                            
                                                                                                                         </a>}
                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
-                                                                                                                        >{childinew.Title}
+                                                                                                                        > <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
                                                                                                                         </a>}
                                                                                                                         {childinew.childs != undefined && childinew.childs.length > 0 &&
                                                                                                                             <span className='ms-1'>({childinew.childs.length})</span>
@@ -2553,11 +2607,14 @@ let isOpenPopup =false;
                                                                                                                                         <td style={{ width: "23%" }}>
                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                 href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                            >
+                                                                                                                                                 <span dangerouslySetInnerHTML={{ __html: subchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                 href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
-                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                            >  <span dangerouslySetInnerHTML={{ __html: subchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined && subchilditem.childs.length > 0 &&
                                                                                                                                                 <span className='ms-1'>({subchilditem.childs.length})</span>
@@ -2678,11 +2735,13 @@ let isOpenPopup =false;
                                                                                                                                                             <td style={{ width: "23%" }}>
                                                                                                                                                                 {nextsubchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                                                >{nextsubchilditem.Title}
+                                                                                                                                                                >  <span dangerouslySetInnerHTML={{ __html: nextsubchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + nextsubchilditem.Id + '&Site=' + nextsubchilditem.siteType}
-                                                                                                                                                                >{nextsubchilditem.Title}
+                                                                                                                                                                > <span dangerouslySetInnerHTML={{ __html: nextsubchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.childs != undefined && nextsubchilditem.childs.length > 0 &&
                                                                                                                                                                     <span className='ms-1'>({nextsubchilditem.childs.length})</span>

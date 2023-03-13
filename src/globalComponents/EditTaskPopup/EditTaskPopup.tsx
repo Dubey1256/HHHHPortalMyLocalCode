@@ -41,6 +41,8 @@ var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = false;
 let ApprovalStatusGlobal: any = true;
 var ApproverBackupArray: any = [];
+var ReplaceImageIndex: any;
+var ReplaceImageData: any;
 const EditTaskPopup = (Items: any) => {
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -71,6 +73,8 @@ const EditTaskPopup = (Items: any) => {
     const [ImageComparePopup, setImageComparePopup] = React.useState(false);
     const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
+    const [replaceImagePopup, setReplaceImagePopup] = React.useState(false);
+    const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
     const [composition, setComposition] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
@@ -96,6 +100,7 @@ const EditTaskPopup = (Items: any) => {
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [ComponentTaskCheck, setComponentTaskCheck] = React.useState(false);
     const [ServicePopupType, setServicePopupType] = React.useState('');
+    const [AllProjectData, SetAllProjectData] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -110,6 +115,8 @@ const EditTaskPopup = (Items: any) => {
         { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
+
+
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
     // }
@@ -121,6 +128,7 @@ const EditTaskPopup = (Items: any) => {
         getCurrentUserDetails();
         getSmartMetaData();
         loadAllCategoryData();
+        GetMasterData();
         // getInformationForSmartLight();
         // Descriptions();
     }, [])
@@ -133,6 +141,7 @@ const EditTaskPopup = (Items: any) => {
             if (PopupItemData?.smartComponent?.length > 0) {
                 Items.Items.smartComponent = PopupItemData.smartComponent;
                 setSmartComponentData(PopupItemData.smartComponent);
+                setSmartServicesData([])
                 console.log("Popup component smartComponent ", PopupItemData.smartComponent)
             }
         }
@@ -185,6 +194,8 @@ const EditTaskPopup = (Items: any) => {
             if (PopupItemData?.linkedComponent?.length > 0) {
                 Items.Items.linkedComponent = PopupItemData.linkedComponent;
                 setLinkedComponentData(PopupItemData.linkedComponent);
+                setSmartServicesData(PopupItemData.linkedComponent);
+                setSmartComponentData([]);
                 console.log("Popup component linkedComponent", PopupItemData.linkedComponent)
             }
         }
@@ -568,7 +579,6 @@ const EditTaskPopup = (Items: any) => {
             let statusValue: any
             smartMeta?.map((item: any) => {
                 let saveImage = []
-
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
                     tempCategoryData = item.Categories;
@@ -660,7 +670,7 @@ const EditTaskPopup = (Items: any) => {
                             })
                         }
                     })
-                    if (statusValue < 2 || ApprovalStatusGlobal) {
+                    if ((statusValue == 1 || statusValue == 2) && ApprovalStatusGlobal) {
                         if (ApproverData?.length > 0) {
                             taskUsers.map((userData1: any) => {
                                 ApproverData?.map((itemData: any) => {
@@ -722,8 +732,12 @@ const EditTaskPopup = (Items: any) => {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
                     let feedbackArray = message[0]?.FeedBackDescriptions
-                    let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
-                    item.CommentBoxText = CommentBoxText;
+                    if (feedbackArray.length > 0) {
+                        let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
+                        item.CommentBoxText = CommentBoxText;
+                    } else {
+                        item.CommentBoxText = "<p></p>"
+                    }
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
                 } else {
@@ -757,6 +771,25 @@ const EditTaskPopup = (Items: any) => {
         } catch (error) {
             console.log("Error :", error.message);
         }
+    }
+
+    const GetMasterData = async () => {
+        try {
+            let web = new Web(Items.Items.siteUrl);
+            let AllTask: any = [];
+            AllTask = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF')
+                .items
+                .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title")
+                .expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent")
+                .top(4999)
+                .filter("Item_x0020_Type eq 'Project'")
+                .getAll();
+            SetAllProjectData(AllTask);
+            console.log("All Project Data ======", AllTask);
+        } catch (error) {
+            console.log("Error:", error.message)
+        }
+
     }
 
     // const getInformationForSmartLight = () => {
@@ -899,6 +932,7 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             setTaskAssignedTo(tempArray);
+            setTaskTeamMembers(tempArray);
         }
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
     }
@@ -916,6 +950,7 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             setTaskAssignedTo(tempArray);
+            setTaskTeamMembers(tempArray);
         }
         if (StatusData.value == 2) {
             setInputFieldDisable(true)
@@ -1063,6 +1098,7 @@ const EditTaskPopup = (Items: any) => {
     var ResponsibleTeamIds: any = [];
     var TeamMemberIds: any = [];
     var CategoryTypeID: any = [];
+    var SmartServicesId: any = [];
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImageArray: any = []
         if (TaskImages != undefined && TaskImages?.length > 0) {
@@ -1177,6 +1213,15 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
+        if (smartServicesData != undefined && smartServicesData?.length > 0) {
+            smartServicesData?.map((com: any) => {
+                if (smartServicesData != undefined && smartServicesData?.length >= 0) {
+                    $.each(smartServicesData, function (index: any, smart: any) {
+                        SmartServicesId.push(smart.Id);
+                    })
+                }
+            })
+        }
         if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
             linkedComponentData?.map((com: any) => {
                 if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
@@ -1208,20 +1253,20 @@ const EditTaskPopup = (Items: any) => {
         // (3) Low
         // (2) Normal
 
-        let Priority:any;
-        if(EditData.Priority_x0020_Rank){
+        let Priority: any;
+        if (EditData.Priority_x0020_Rank) {
             let rank = EditData.Priority_x0020_Rank
-            if(rank <= 10 && rank >= 8){
+            if (rank <= 10 && rank >= 8) {
                 Priority = "(1) High"
             }
-            if(rank <= 7 && rank >= 4){
+            if (rank <= 7 && rank >= 4) {
                 Priority = "(2) Normal"
             }
-          
-            if(rank <= 3 && rank >= 0){
+
+            if (rank <= 3 && rank >= 0) {
                 Priority = "(3) Low"
             }
-           
+
         }
         // else {
         //     if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
@@ -1244,7 +1289,7 @@ const EditTaskPopup = (Items: any) => {
         //     }
         // }
         try {
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+            let web = new Web(Items.Items.siteUrl);
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
                 IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
                 Priority_x0020_Rank: EditData.Priority_x0020_Rank,
@@ -1255,12 +1300,13 @@ const EditTaskPopup = (Items: any) => {
                 PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
                 ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds?.length > 0) ? smartComponentsIds : [] },
                 Categories: CategoriesData ? CategoriesData : null,
-                RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
+                // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
                 SharewebCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID?.length > 0) ? CategoryTypeID : [] },
                 DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
                 CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
                 Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
                 Mileage: (EditData.Mileage ? EditData.Mileage : ''),
+                ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId?.length > 0) ? SmartServicesId : [] },
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                 Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
@@ -1350,7 +1396,7 @@ const EditTaskPopup = (Items: any) => {
         var link = "mailTo:"
             + "?cc:"
             + "&subject=" + " [" + Items.Items.siteType + "-Task ] " + EmailData.Title
-            + "&body=" + `https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
+            + "&body=" + `${Items.Items.siteUrl}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
         window.location.href = link;
     }
     const deleteTaskFunction = async (TaskID: number) => {
@@ -1437,14 +1483,16 @@ const EditTaskPopup = (Items: any) => {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Approve") {
                     ApprovedStatusCount++;
-                    let StatusInput: any = 3;
-                    if (StatusInput == 3) {
-                        setInputFieldDisable(false)
-                        setStatusOnChangeSmartLight(3);
-                        // setTaskAssignedTo([]);
-                        // EditData.TaskAssignedUsers = [];
-                        // setTaskTeamMembers([]);
-                        // EditData.Team_x0020_Members = [];
+                    if (EditData.PercentComplete <= 3) {
+                        let StatusInput: any = 3;
+                        if (StatusInput == 3) {
+                            setInputFieldDisable(false)
+                            setStatusOnChangeSmartLight(3);
+                            // setTaskAssignedTo([]);
+                            // EditData.TaskAssignedUsers = [];
+                            // setTaskTeamMembers([]);
+                            // EditData.Team_x0020_Members = [];
+                        }
                     }
                 }
                 if (item.Phone) {
@@ -1455,14 +1503,16 @@ const EditTaskPopup = (Items: any) => {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Approve") {
                             ApprovedStatusCount++;
-                            let StatusInput: any = 3;
-                            if (StatusInput == 3) {
-                                setInputFieldDisable(false)
-                                setStatusOnChangeSmartLight(3);
-                                // setTaskAssignedTo([]);
-                                // EditData.TaskAssignedUsers = [];
-                                // setTaskTeamMembers([]);
-                                // EditData.Team_x0020_Members = [];
+                            if (EditData.PercentComplete <= 3) {
+                                let StatusInput: any = 3;
+                                if (StatusInput == 3) {
+                                    setInputFieldDisable(false)
+                                    setStatusOnChangeSmartLight(3);
+                                    // setTaskAssignedTo([]);
+                                    // EditData.TaskAssignedUsers = [];
+                                    // setTaskTeamMembers([]);
+                                    // EditData.Team_x0020_Members = [];
+                                }
                             }
                         }
                         if (item.Phone) {
@@ -1474,10 +1524,12 @@ const EditTaskPopup = (Items: any) => {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Reject" || item.isShowLight == "Maybe") {
                     if (ApprovedStatusCount == 0) {
-                        let StatusInput: any = 2;
-                        if (StatusInput == 2) {
-                            setInputFieldDisable(true)
-                            setStatusOnChangeSmartLight(2);
+                        if (EditData.PercentComplete >= 2) {
+                            let StatusInput: any = 2;
+                            if (StatusInput <= 2) {
+                                setInputFieldDisable(true)
+                                setStatusOnChangeSmartLight(2);
+                            }
                         }
                     }
                 }
@@ -1485,10 +1537,12 @@ const EditTaskPopup = (Items: any) => {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Reject" || subItem.isShowLight == "Maybe") {
                             if (ApprovedStatusCount == 0) {
-                                let StatusInput: any = 2;
-                                if (StatusInput == 2) {
-                                    setInputFieldDisable(true)
-                                    setStatusOnChangeSmartLight(2);
+                                if (EditData.PercentComplete <= 2) {
+                                    let StatusInput: any = 2;
+                                    if (StatusInput == 2) {
+                                        setInputFieldDisable(true)
+                                        setStatusOnChangeSmartLight(2);
+                                    }
                                 }
                             }
                         }
@@ -1816,6 +1870,35 @@ const EditTaskPopup = (Items: any) => {
         ImageCustomizeFunctionClosePopup();
     }
 
+    const openReplaceImagePopup = (index: any) => {
+        setReplaceImagePopup(true);
+        ReplaceImageIndex = index;
+    }
+
+    const FlorarImageReplaceComponentCallBack = (dt: any) => {
+        let DataObject: any = {
+            data_url: dt,
+            file: "Image/jpg"
+        }
+        ReplaceImageData = DataObject;
+        console.log("Replace Image Data ======", DataObject)
+        // let arrayIndex: any = TaskImages?.length
+        // TaskImages.push(DataObject)
+        // if (dt.length > 0) {
+        //     onUploadImageFunction(TaskImages, [arrayIndex]);
+        // }
+    }
+    const UpdateImage = () => {
+        if (ReplaceImageData != undefined && ReplaceImageIndex != undefined) {
+            ReplaceImageFunction(ReplaceImageData, ReplaceImageIndex);
+            setReplaceImagePopup(false);
+            GetEditData();
+        }
+    }
+    const closeReplaceImagePopup = () => {
+        setReplaceImagePopup(false)
+    }
+
 
     // ***************** this is for the Copy and Move Task Functions ***************
 
@@ -1864,15 +1947,20 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+    // ************** this is for Project Management Section Functions ************
+
+    const closeProjectManagementPopup = () => {
+        setProjectManagementPopup(false);
+    }
 
     // ************** this is custom header and custom Footers section functions for panel *************
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="d-flex full-width pb-1" >
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
-                    <span>
+                    <span className="siteColor">
                         {`${EditData.TaskId} ${EditData.Title}`}
                     </span>
                 </div>
@@ -1883,10 +1971,10 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomHeaderCopyAndMoveTaskPanel = () => {
         return (
-            <div className="d-flex full-width pb-1" >
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
-                    <span>
+                    <span className="siteColor">
                         Select Site
                     </span>
                 </div>
@@ -1895,9 +1983,35 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
+
+    const onRenderCustomReplaceImageHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span className="siteColor">
+                        Replace Image
+                    </span>
+                </div>
+                <Tooltip ComponentId="1683" />
+            </div>
+        )
+    }
+    const onRenderCustomProjectManagementHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span className="siteColor">
+                        Select Project
+                    </span>
+                </div>
+                <Tooltip ComponentId="1683" />
+            </div>
+        )
+    }
+
     const onRenderCustomFooterMain = () => {
         return (
-            <footer>
+            <footer className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                 <div className="d-flex justify-content-between px-4 py-2 me-3">
                     <div>
                         <div className="">
@@ -1935,7 +2049,7 @@ const EditTaskPopup = (Items: any) => {
                         <div>
                             <span>
                                 <a className="mx-2" target="_blank" data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                    href={`${Items.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
                                     Go To Profile Page
                                 </a>
                             </span> ||
@@ -1945,13 +2059,13 @@ const EditTaskPopup = (Items: any) => {
                                 </a>
                             </span> ||
 
-                            <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
+                            <span className="hreflink siteColor" onClick={() => shareThisTaskFunction(EditData)} >
                                 <img className="mail-width mx-2"
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
                                 Share This Task
                             </span> ||
                             <a target="_blank" className="mx-2" data-interception="off"
-                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                href={`${Items.Items.siteUrl}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
                                 Open Out-Of-The-Box Form
                             </a>
                             <span >
@@ -1971,7 +2085,7 @@ const EditTaskPopup = (Items: any) => {
     }
     const onRenderCustomFooterOther = () => {
         return (
-            <footer>
+            <footer className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                 <div className="me-3 d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
@@ -2009,7 +2123,7 @@ const EditTaskPopup = (Items: any) => {
                         <div>
                             <span>
                                 <a className="mx-2" target="_blank" data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                    href={`${Items.Items.siteType}/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
                                     Go To Profile Page
                                 </a>
                             </span> ||
@@ -2019,13 +2133,13 @@ const EditTaskPopup = (Items: any) => {
                                 </a>
                             </span> ||
 
-                            <span className="hreflink" onClick={() => shareThisTaskFunction(EditData)} style={{ color: "#000066" }} >
+                            <span className="hreflink siteColor" onClick={() => shareThisTaskFunction(EditData)} >
                                 <img className="mail-width mx-2"
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
                                 Share This Task
                             </span> ||
                             <a target="_blank" className="mx-2" data-interception="off"
-                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                href={`${Items.Items.siteType}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
                                 Open Out-Of-The-Box Form
                             </a>
                             <span >
@@ -2040,7 +2154,7 @@ const EditTaskPopup = (Items: any) => {
         )
     }
     return (
-        <>
+        <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {/* ***************** this is status panel *********** */}
             <Panel
                 headerText={`Update Task Status`}
@@ -2048,7 +2162,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeTaskStatusUpdatePopup}
                 isBlocking={false}
             >
-                <div >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="modal-body">
                         <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
                             <tbody>
@@ -2085,7 +2199,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeTimeSheetPopup}
                 isBlocking={false}
             >
-                <div className="modal-body">
+                <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
                     <TimeEntryPopup props={Items.Items} />
                 </div>
             </Panel>
@@ -2098,8 +2212,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
                 onRenderFooter={onRenderCustomFooterMain}
             >
-                <div >
-
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="modal-body">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
@@ -2203,7 +2316,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="form-check-label mb-0">Services</label>
                                                         </span>
                                                     </label>
-                                                    {smartComponentData?.length > 0 || smartServicesData?.length > 0 ? null :
+                                                    {smartComponentData?.length > 0 && ComponentTaskCheck || smartServicesData?.length > 0 && ServicesTaskCheck ? null :
                                                         <>
                                                             <input type="text" ng-model="SearchService"
                                                                 className="form-control"
@@ -2211,11 +2324,11 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                         </>
                                                     }
-                                                    {smartComponentData.length > 0 ? smartComponentData?.map((com: any) => {
+                                                    {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                         return (
                                                             <>
-                                                                <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
+                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
                                                                         <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                     </a>
@@ -2224,11 +2337,11 @@ const EditTaskPopup = (Items: any) => {
                                                         )
                                                     }) : null}
                                                     {
-                                                        smartServicesData?.length > 0 ? smartServicesData?.map((com: any) => {
+                                                        smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                             return (
                                                                 <>
-                                                                    <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
-                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                    <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
+                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                         <a>
                                                                             <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                         </a>
@@ -2317,8 +2430,8 @@ const EditTaskPopup = (Items: any) => {
                                                                 {ShareWebTypeData?.map((type: any, index: number) => {
                                                                     if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                         return (
-                                                                            <div className="Component-container-edit-task d-flex my-1 justify-content-between">
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                            <div className="block px-2 py-1 d-flex my-1 justify-content-between">
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                     {type.Title}
                                                                                 </a>
                                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => removeCategoryItem(type.Title, type.Id)} className="p-1" />
@@ -2369,7 +2482,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div>
                                                             {EditData.TaskApprovers?.map((Approver: any, index: number) => {
                                                                 return (
-                                                                    <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                                    <div className="block px-2 py-1 d-flex my-1 justify-content-between">
                                                                         {/* href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`} */}
                                                                         <div>
                                                                             <a style={{ color: "#fff !important" }} target="_blank" data-interception="off">
@@ -2444,43 +2557,94 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-12 mb-2">
-                                                    <div className="input-group">
-                                                        <label className="form-label full-width">
-                                                            Linked Service
-                                                        </label>
-                                                        {
-                                                            linkedComponentData?.length > 0 ? <div>
-                                                                {linkedComponentData?.map((com: any) => {
-                                                                    return (
-                                                                        <>
-                                                                            <div className="d-flex Component-container-edit-task">
+                                                    {ComponentTaskCheck ?
+                                                        <div >
+                                                            <div className="input-group">
+                                                                <label className="form-label full-width">
+                                                                    Linked Service
+                                                                </label>
+                                                                <input type="text"
+                                                                    className="form-control "
+                                                                />
+                                                                <span className="input-group-text">
+                                                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                        onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")} />
+                                                                </span>
+                                                            </div>
+                                                            {
+                                                                smartServicesData?.length > 0 ?
+                                                                    <div>
+                                                                        {smartServicesData?.map((com: any) => {
+                                                                            return (
                                                                                 <div>
-                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                    <div className="d-flex block px-2 py-1">
+                                                                                        <div>
+                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                                {com.Title}
+                                                                                            </a>
+                                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartServicesData([])} />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )
+                                                                        })}
+                                                                    </div> :
+                                                                    null
+                                                            }
+
+                                                        </div> : null}
+                                                    {ServicesTaskCheck ? <div >
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">
+                                                                Linked Component
+                                                            </label>
+                                                            <input type="text"
+                                                                className="form-control "
+                                                            />
+                                                            <span className="input-group-text">
+                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                    onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")} />
+                                                            </span>
+                                                        </div>
+
+                                                        {
+                                                            smartComponentData?.length > 0 ? <div>
+                                                                {smartComponentData?.map((com: any) => {
+                                                                    return (
+                                                                        <div>
+                                                                            <div className="d-flex block px-2 py-1">
+                                                                                <div>
+                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                         {com.Title}
                                                                                     </a>
-                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
+                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                                 </div>
                                                                             </div>
-                                                                        </>
+                                                                        </div>
                                                                     )
                                                                 })}
                                                             </div> :
-                                                                <input type="text"
-                                                                    className="form-control"
-                                                                />
+                                                                null
                                                         }
+
+                                                    </div> : null}
+
+                                                </div>
+                                                <div className="col-12">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width">
+                                                            Project
+                                                        </label>
+                                                        <input type="text"
+                                                            className="form-control "
+                                                        />
                                                         <span className="input-group-text">
                                                             <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                onClick={(e) => EditLinkedServices(EditData, 'LinkedServices')} />
+                                                                onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" />
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="col-12" title="Connect Service Tasks">
-                                                    <div className="col-sm-11 pad0 taskprofilepagegreen text-right">
-                                                    </div>
-                                                    <div className="row taskprofilepagegreen">
-                                                    </div>
-                                                </div>
+
                                             </div>
                                         </div>
 
@@ -2539,8 +2703,8 @@ const EditTaskPopup = (Items: any) => {
 
                                                 {PercentCompleteStatus?.length > 0 ?
                                                     <span className="full-width">
-                                                        <input type='radio' className="my-2" checked />
-                                                        <label className="ps-2">
+                                                        <input type='radio' className="form-check-input my-2" checked />
+                                                        <label className="ps-2 pt-1">
                                                             {PercentCompleteStatus}
                                                         </label>
                                                     </span> : null}
@@ -2599,7 +2763,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <a
                                                                     target="_blank"
                                                                     data-interception="off"
-                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                    href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
                                                                     <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                         on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
                                                                         data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
@@ -2675,7 +2839,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <div className="my-1">
                                                                     <div>
                                                                         <input type="checkbox" className="rounded-0" checked={ImageDtl.Checked} onClick={() => ImageCompareFunction(ImageDtl, index)} />
-                                                                        <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 6) : ''}</span>
+                                                                        <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 24) : ''}</span>
                                                                     </div>
                                                                     <a href={ImageDtl.ImageUrl} target="_blank" data-interception="off">
                                                                         <img src={ImageDtl.ImageUrl ? ImageDtl.ImageUrl : ''} onMouseOver={(e) => MouseHoverImageFunction(e, ImageDtl)}
@@ -2693,7 +2857,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                         <div>
 
-                                                                            <span onClick={(e) => onImageUpdate(index)} title="Replace image"><TbReplace /> </span>
+                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt />
@@ -2754,7 +2918,7 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
-                                        {EditData.Title != null ? <>
+                                        {EditData.Id != null ? <>
                                             <CommentBoxComponent
                                                 data={EditData.FeedBackArray}
                                                 callBack={CommentSectionCallBack}
@@ -2925,7 +3089,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
                 onRenderFooter={onRenderCustomFooterOther}
             >
-                <div className="modal-body">
+                <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
@@ -3041,31 +3205,41 @@ const EditTaskPopup = (Items: any) => {
                                                                         />
                                                                     </>
                                                                 }
-                                                                {smartComponentData.length > 0 ? smartComponentData?.map((com: any) => {
+                                                                {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                                     return (
                                                                         <>
-                                                                            <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                            <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                 <a>
                                                                                     <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                                 </a>
                                                                             </div>
                                                                         </>
                                                                     )
-                                                                }) : null}
+                                                                }) : <>
+                                                                    <input type="text" ng-model="SearchService"
+                                                                        className="form-control"
+                                                                        id="{{PortfoliosID}}" autoComplete="off"
+                                                                    />
+                                                                </>}
                                                                 {
-                                                                    smartServicesData?.length > 0 ? smartServicesData?.map((com: any) => {
+                                                                    smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                                         return (
                                                                             <>
-                                                                                <div className="d-flex Component-container-edit-task" style={{ width: "85%" }}>
-                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                                <div className="d-flex block px-2 py-1" style={{ width: "85%" }}>
+                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                     <a>
                                                                                         <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                                                     </a>
                                                                                 </div>
                                                                             </>
                                                                         )
-                                                                    }) : null
+                                                                    }) : <>
+                                                                        <input type="text" ng-model="SearchService"
+                                                                            className="form-control"
+                                                                            id="{{PortfoliosID}}" autoComplete="off"
+                                                                        />
+                                                                    </>
                                                                 }
 
                                                                 <span className="input-group-text">
@@ -3147,8 +3321,8 @@ const EditTaskPopup = (Items: any) => {
                                                                             {ShareWebTypeData?.map((type: any, index: number) => {
                                                                                 if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                                     return (
-                                                                                        <div className="Component-container-edit-task d-flex my-1 justify-content-between">
-                                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                        <div className="block px-2 py-1 d-flex my-1 justify-content-between">
+                                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                                 {type.Title}
                                                                                             </a>
                                                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => removeCategoryItem(type.Title, type.Id)} className="p-1" />
@@ -3238,22 +3412,53 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div>
                                                             </div>
                                                             <div className="col-12 mb-2">
-                                                                <div className="input-group">
-                                                                    <label className="form-label full-width">
-                                                                        Linked Service
-                                                                    </label>
-                                                                    {
-                                                                        linkedComponentData?.length > 0 ? <div>
-                                                                            {linkedComponentData?.map((com: any) => {
-                                                                                return (
-                                                                                    <>
-                                                                                        <div className="d-flex Component-container-edit-task">
-                                                                                            <div>
-                                                                                                <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                {ComponentTaskCheck ?
+                                                                    <div className="input-group">
+                                                                        <label className="form-label full-width">
+                                                                            Linked Service
+                                                                        </label>
+                                                                        {
+                                                                            smartServicesData?.length > 0 ? <div>
+                                                                                {smartServicesData?.map((com: any) => {
+                                                                                    return (
+                                                                                        <>
+                                                                                            <div className="d-flex block px-2 py-1">
+
+                                                                                                <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                     {com.Title}
                                                                                                 </a>
-                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
+                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartServicesData([])} />
+
                                                                                             </div>
+                                                                                        </>
+                                                                                    )
+                                                                                })}
+                                                                            </div> :
+                                                                                <input type="text"
+                                                                                    className="form-control"
+                                                                                />
+                                                                        }
+                                                                        <span className="input-group-text">
+                                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                                onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")} />
+                                                                        </span>
+                                                                    </div> : null}
+                                                                {ServicesTaskCheck ? <div className="input-group">
+                                                                    <label className="form-label full-width">
+                                                                        Linked Component
+                                                                    </label>
+                                                                    {
+                                                                        smartComponentData?.length > 0 ? <div>
+                                                                            {smartComponentData?.map((com: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        <div className="d-flex block px-2 py-1">
+
+                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                                {com.Title}
+                                                                                            </a>
+                                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
+
                                                                                         </div>
                                                                                     </>
                                                                                 )
@@ -3265,9 +3470,10 @@ const EditTaskPopup = (Items: any) => {
                                                                     }
                                                                     <span className="input-group-text">
                                                                         <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                                            onClick={(e) => EditLinkedServices(EditData, 'LinkedServices')} />
+                                                                            onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")} />
                                                                     </span>
-                                                                </div>
+                                                                </div> : null}
+
                                                             </div>
 
                                                             <div className="col-12" title="Relevant Portfolio Items">
@@ -3284,16 +3490,96 @@ const EditTaskPopup = (Items: any) => {
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-12" title="Connect Service Tasks">
-                                                                <div className="col-sm-11 pad0 taskprofilepagegreen text-right">
-                                                                </div>
-                                                                <div className="row taskprofilepagegreen">
+                                                            <div className="col-12 mb-2">
+                                                                {ComponentTaskCheck ?
+                                                                    <div >
+                                                                        <div className="input-group">
+                                                                            <label className="form-label full-width">
+                                                                                Linked Service
+                                                                            </label>
+                                                                            <input type="text"
+                                                                                className="form-control "
+                                                                            />
+                                                                            <span className="input-group-text">
+                                                                                <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                                    onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")} />
+                                                                            </span>
+                                                                        </div>
+                                                                        {
+                                                                            smartServicesData?.length > 0 ?
+                                                                                <div>
+                                                                                    {smartServicesData?.map((com: any) => {
+                                                                                        return (
+                                                                                            <div>
+                                                                                                <div className="d-flex block px-2 py-1">
+
+                                                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                                        {com.Title}
+                                                                                                    </a>
+                                                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartServicesData([])} />
+
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        )
+                                                                                    })}
+                                                                                </div> :
+                                                                                null
+                                                                        }
+
+                                                                    </div> : null}
+                                                                {ServicesTaskCheck ? <div >
+                                                                    <div className="input-group">
+                                                                        <label className="form-label full-width">
+                                                                            Linked Component
+                                                                        </label>
+                                                                        <input type="text"
+                                                                            className="form-control "
+                                                                        />
+                                                                        <span className="input-group-text">
+                                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                                onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")} />
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {
+                                                                        smartComponentData?.length > 0 ? <div>
+                                                                            {smartComponentData?.map((com: any) => {
+                                                                                return (
+                                                                                    <div>
+                                                                                        <div className="d-flex block px-2 py-1">
+
+                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                                {com.Title}
+                                                                                            </a>
+                                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
+
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            })}
+                                                                        </div> :
+                                                                            null
+                                                                    }
+
+                                                                </div> : null}
+
+                                                            </div>
+                                                            <div className="col-12">
+                                                                <div className="input-group">
+                                                                    <label className="form-label full-width">
+                                                                        Project
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        className="form-control "
+                                                                    />
+                                                                    <span className="input-group-text">
+                                                                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                            onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")} title="Project Items Popup" />
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-
-
                                                     <div className="col-12 mb-2">
                                                         <div className="input-group">
                                                             <label className="form-label full-width ">Relevant URL</label>
@@ -3409,7 +3695,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a
                                                                                 target="_blank"
                                                                                 data-interception="off"
-                                                                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                                href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
                                                                                 <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
                                                                                     on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
                                                                                     data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
@@ -3524,7 +3810,7 @@ const EditTaskPopup = (Items: any) => {
             </Panel>
 
             {/* ********************** this in hover image modal ****************** */}
-            <div className='hoverImageModal' style={{ display: hoverImageModal }}>
+            <div className={ServicesTaskCheck ? "hoverImageModal serviepannelgreena" : "hoverImageModal"} style={{ display: hoverImageModal }}>
                 <div className="hoverImageModal-popup">
                     <div className="hoverImageModal-container">
                         <span style={{ color: 'white' }}>{HoverImageData[0]?.ImageName}</span>
@@ -3554,7 +3840,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
             >
                 <div className="modal-body">
-                    <div>
+                    <div className={ServicesTaskCheck ? " serviepannelgreena" : ""} >
                         <div className="col-md-12 p-3 select-sites-section">
                             <div className="card rounded-0 mb-10">
                                 <div className="card-header">
@@ -3593,7 +3879,45 @@ const EditTaskPopup = (Items: any) => {
                     </div>
                 </div>
             </Panel>
-        </>
+
+            {/* ********************* this is Replace Image panel ****************** */}
+            <Panel
+                onRenderHeader={onRenderCustomReplaceImageHeader}
+                isOpen={replaceImagePopup}
+                onDismiss={closeReplaceImagePopup}
+                isBlocking={false}
+                type={PanelType.custom}
+                customWidth="500px"
+
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                    <div className="modal-body">
+                        <FlorarImageUploadComponent callBack={FlorarImageReplaceComponentCallBack} />
+                    </div>
+                    <footer className="float-end mt-1">
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateImage} >
+                            Update
+                        </button>
+                        <button type="button" className="btn btn-default px-3" onClick={closeReplaceImagePopup}>
+                            Cancel
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+
+            {/* ********************* this is Replace Image panel ****************** */}
+            <Panel
+                onRenderHeader={onRenderCustomProjectManagementHeader}
+                isOpen={ProjectManagementPopup}
+                onDismiss={closeProjectManagementPopup}
+                isBlocking={false}
+                type={PanelType.custom}
+                customWidth="1100px"
+            >
+                <h6>We are working on it. This feature will be live soon .....</h6>
+            </Panel>
+
+        </div>
     )
 }
 export default React.memo(EditTaskPopup);

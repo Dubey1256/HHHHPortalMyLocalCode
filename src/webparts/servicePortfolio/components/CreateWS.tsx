@@ -7,6 +7,9 @@ import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/T
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import * as Moment from 'moment';
+import * as moment from "moment-timezone";
+import Tooltip from '../../../globalComponents/Tooltip';
 
 const TaskItemRank: any = [];
 var TaskTypeItems: any = [];
@@ -17,17 +20,21 @@ var Task: any = []
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
+
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
-    SelectedTasks=[]
-    var AllItems = props.props
-    console.log(props)
-    SelectedTasks.push(AllItems)
+    SelectedTasks = []
+    if (props != undefined) {
+        var AllItems = props.props
+        SelectedTasks.push(AllItems)
+        console.log(props)
+    }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
     const [isDropItem, setisDropItem] = React.useState(false);
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [smartComponentData, setSmartComponentData] = React.useState([]);
+    const [ParentArray, setParentArray] = React.useState([]);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
@@ -39,22 +46,42 @@ const CreateWS = (props: any) => {
     const [selectPriority, setselectPriority] = React.useState('');
     const [Priorityy, setPriorityy] = React.useState(false);
     const [Categories, setCategories] = React.useState([]);
-    const[IsPopupComponent,setIsPopupComponent]= React.useState(false)
+    const [IsPopupComponent, setIsPopupComponent] = React.useState(false)
     const [CategoriesData, setCategoriesData] = React.useState([]);
     const [checkedWS, setcheckedWS] = React.useState(true);
-    const [checkedTask, setcheckedTask] = React.useState(true);
+    const [checkedTask, setcheckedTask] = React.useState(false);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+    const [breadcrumb, setbreadcrumb] = React.useState([]);
 
     const closeTaskStatusUpdatePoup = (res: any) => {
         setTaskStatuspopup(false)
         props.Call(res);
 
     }
-    React.useEffect(()=>{
-       
+    React.useEffect(() => {
+
         selectType('Workstream');
-        
-    },[])
+        var Parent: any = []
+        props.data.forEach((val: any) => {
+
+            if (val.Id == AllItems.Id) {
+                Parent.push(val);
+            }
+            if (val.childs != undefined) {
+                val.child = []
+                val.childs.map((chi: any) => {
+                    if (chi.Id == AllItems.Id) {
+                        Parent.push(val);
+                        val.child.push(chi)
+
+                    }
+                })
+               
+            }
+        })
+        setParentArray(Parent)
+
+    }, [])
     var ItemRankTitle: any = ''
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
     const DDComponentCallBack = (dt: any) => {
@@ -163,7 +190,7 @@ const CreateWS = (props: any) => {
     }
     var TaskprofileId: any = ''
     var WorstreamLatestId: any = ''
-    var PopupType =''
+    var PopupType = ''
     const createWorkStream = async (Type: any) => {
         PopupType = Type;
         if (AllItems == '' || AllItems.length > 0) {
@@ -208,31 +235,31 @@ const CreateWS = (props: any) => {
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
             TaskprofileId = SelectedTasks[0].Id;
         }
-        if (Task.Component != undefined  && Task.Component.length > 0) {
+        if (Task.Component != undefined && Task.Component.length > 0) {
             SharewebID = 'CA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
         }
-        if (Task.Services != undefined  && Task.Services.length > 0) {
+        if (Task.Services != undefined && Task.Services.length > 0) {
             SharewebID = 'SA' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
         }
         // if (Task.SharewebTaskType != undefined && Task.SharewebTaskType.Title != undefined) {
         //     SharewebID = 'A' + Task.SharewebTaskLevel1No + '-W' + WorstreamLatestId;
         // }
         var Component: any = []
-        var RelevantPortfolioIds:any=[]
-        
+        var RelevantPortfolioIds: any = []
+
         // smartComponentData.forEach((com: any) => {
         //     if (com != undefined) {
         //         Component.push(com.Id)
         //     }
 
         // })
-        if(AllItems.Portfolio_x0020_Type == 'Component'){
+        if (AllItems.Portfolio_x0020_Type == 'Component') {
             Component.push(AllItems.PortfolioId)
         }
-        if(AllItems.Portfolio_x0020_Type == 'Service'){
+        if (AllItems.Portfolio_x0020_Type == 'Service') {
             RelevantPortfolioIds.push(AllItems.PortfolioId)
         }
-        
+
         var categoriesItem = '';
         CategoriesData.map((category) => {
             if (category.Title != undefined) {
@@ -290,9 +317,9 @@ const CreateWS = (props: any) => {
             SharewebCategoriesId: { "results": CategoryID },
             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
             ParentTaskId: AllItems.Id,
-            ServicesId: { "results": RelevantPortfolioIds},
+            ServicesId: { "results": RelevantPortfolioIds },
             Priority: AllItems.Priority,
-            Body:AllItems.Description,
+            Body: AllItems.Description,
             DueDate: date != undefined ? new Date(date).toDateString() : date,
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
@@ -300,22 +327,22 @@ const CreateWS = (props: any) => {
             SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-           Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
         }).then((res: any) => {
             console.log(res);
-            if(PopupType=='CreatePopup'){
-                closeTaskStatusUpdatePoup(res);
-                res.data['SiteIcon']= AllItems.SiteIcon
-                res.data['listId']= AllItems.listId
+            if (PopupType == 'CreatePopup') {
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
-            }
-            else{
                 closeTaskStatusUpdatePoup(res);
             }
-           
-           
+            else {
+                closeTaskStatusUpdatePoup(res);
+            }
+
+
 
         })
 
@@ -329,34 +356,34 @@ const CreateWS = (props: any) => {
         setCategoriesData(CategoriesData => ([...CategoriesData]));
 
     }
-    const SelectPriority =(priority:any,e:any)=>{
-        if(priority == '(1) High'){
+    const SelectPriority = (priority: any, e: any) => {
+        if (priority == '(1) High') {
             setselectPriority('8')
         }
-        if(priority == '(2) Normal'){
+        if (priority == '(2) Normal') {
             setselectPriority("4")
         }
-        if(priority == '(3) Low'){
+        if (priority == '(3) Low') {
             setselectPriority("1")
         }
+    }
+    const Priority = (e: any) => {
+        if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
+            setselectPriority(e.target.value)
+            setPriorityy(true)
         }
-        const Priority=(e:any)=>{
-            if(e.target.value == '1' || e.target.value == '2' || e.target.value == '3'){
-                setselectPriority(e.target.value)
-                setPriorityy(true)
-            }
-            if(e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7'){
-                setselectPriority(e.target.value)
-                setPriorityy(true)
-            }
-            if(e.target.value == '8' || e.target.value == '9' || e.target.value == '10'){
-                setselectPriority(e.target.value)
-                setPriorityy(true)
-            }
-    
+        if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
+            setselectPriority(e.target.value)
+            setPriorityy(true)
         }
+        if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
+            setselectPriority(e.target.value)
+            setPriorityy(true)
+        }
+
+    }
     const createChildAsTask = async (item: any, Type: any, index: any) => {
-        var RelevantPortfolioIds:any=[]
+        var RelevantPortfolioIds: any = []
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let componentDetails: any = [];
         componentDetails = await web.lists
@@ -396,7 +423,7 @@ const CreateWS = (props: any) => {
             //     if (com != undefined) {
             //         Component.push(com.Id)
             //     }
-    
+
             // })
             // if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
             //     linkedComponentData?.map((com: any) => {
@@ -407,10 +434,10 @@ const CreateWS = (props: any) => {
             //         }
             //     })
             // }
-            if(AllItems.Portfolio_x0020_Type == 'Component'){
+            if (AllItems.Portfolio_x0020_Type == 'Component') {
                 Component.push(AllItems.PortfolioId)
             }
-            if(AllItems.Portfolio_x0020_Type == 'Service'){
+            if (AllItems.Portfolio_x0020_Type == 'Service') {
                 RelevantPortfolioIds.push(AllItems.PortfolioId)
             }
             var categoriesItem = '';
@@ -450,13 +477,13 @@ const CreateWS = (props: any) => {
             await web.lists.getById(AllItems.listId).items.add({
                 Title: AllItems.Title,
                 ComponentId: { "results": Component },
-             Categories: categoriesItem ? categoriesItem : null,
-             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+                Categories: categoriesItem ? categoriesItem : null,
+                Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
                 SharewebCategoriesId: { "results": CategoryID },
                 ParentTaskId: AllItems.Id,
-                ServicesId: { "results": RelevantPortfolioIds},
+                ServicesId: { "results": RelevantPortfolioIds },
                 SharewebTaskTypeId: SharewebTasknewTypeId,
-                Body:AllItems.Description,
+                Body: AllItems.Description,
                 DueDate: date != undefined ? new Date(date).toDateString() : date,
                 Shareweb_x0020_ID: SharewebID,
                 Priority: AllItems.Priority,
@@ -468,8 +495,8 @@ const CreateWS = (props: any) => {
 
             }).then((res: any) => {
                 console.log(res);
-                res.data['SiteIcon']= AllItems.SiteIcon
-                res.data['listId']= AllItems.listId
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
                 closeTaskStatusUpdatePoup(res);
             })
         }
@@ -487,10 +514,15 @@ const CreateWS = (props: any) => {
 
     }
     const selectType = async (type: any) => {
-        if(type == 'Task'){
-          setcheckedWS(false)
+        if (type == 'Task') {
+            setcheckedWS(false)
+            setcheckedTask(true)
         }
-        
+        if (type == 'Workstream') {
+            setcheckedWS(true)
+            setcheckedTask(false)
+        }
+
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         TaskTypeItems = await web.lists
             .getById('21b55c7b-5748-483a-905a-62ef663972dc')
@@ -509,12 +541,33 @@ const CreateWS = (props: any) => {
     const handleDatedue = (date: any) => {
         AllItems.DueDate = date;
         setDate(date);
-        
+
     };
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Create Item`}
+                    </span>
+                </div>
+                <Tooltip ComponentId={AllItems.Id} />
+            </div>
+        );
+    };
+    const SelectDate=(Date:any)=>{
+        if(Date == 'Today'){
+      // var change = Moment().format()
+      // var dateFormat = new Date(change)
+      // var finalDate = Moment(change).format("DD/MM/YYYY") 
+      var change =  moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm')
+       setDate(change)
+        }
+    }
     return (
         <>
             <Panel
-                headerText="Create Item"
+                onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
                 customWidth="900px"
                 isOpen={TaskStatuspopup}
@@ -522,39 +575,62 @@ const CreateWS = (props: any) => {
                 isBlocking={false}
             >
                 <div className="modal-body border p-3 bg-f5f5">
-
+                    <div className='row'>
+                        {
+                            ParentArray?.map((pare: any) => {
+                                return (
+                                    <>
+                                        <tr className='d-flex'>
+                                        <td className='list-none mx-2'><b>Parent</b></td>
+                                            <td className='list-none mx-2'>{`${pare.Title} >`}</td>
+                                            {
+                                                pare.child?.map((childsitem: any) => {
+                                                    return (
+                                                        <>
+                                                            <td className='list-none'>{childsitem.Title}</td>
+                                                        </>
+                                                    )
+                                                })
+                                            }
+                                        </tr>
+                                    </>
+                                )
+                            })
+                        }
+                    </div>
                     <div className='row mt-2'>
+
                         <span className="col-sm-2 padL-0 ">
                             <label>
-                                <input type="radio" checked={checkedWS}  onClick={() => selectType('Workstream')} className="me-1" />Workstream
+                                <input type="radio" checked={checkedWS} onClick={() => selectType('Workstream')} className="me-1" />Workstream
                             </label>
                         </span>
                         <span className="col-sm-2" >
                             <label>
-                                <input type="radio"  onClick={() => selectType('Task')} className="me-1" />Task
+                                <input type="radio" checked={checkedTask} onClick={() => selectType('Task')} className="me-1" />Task
                             </label>
                         </span>
 
                     </div>
                     <div className='row'>
                         <div className="col-sm-8 pad0">
-                        <label className="full-width"></label>
+                            <label className="full-width"></label>
                             <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title" defaultValue={AllItems.Title} onChange={(e: any) => AllItems.Title = e.target.value}
+                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => AllItems.Title = e.target.value}
                             />
                         </div>
                         <div className="col-sm-4">
-                            {AllItems.Portfolio_x0020_Type == 'Component'
+                            {AllItems?.Portfolio_x0020_Type == 'Component'
                                 &&
                                 <div className="">
                                     <div ng-show="smartComponent.length==0" className="input-group">
                                         <label ng-show="!IsShowComSerBoth" className="full-width">Component</label>
                                         <input type="text" id="txtSharewebComponentcrt"
                                         /><span role="status" aria-live="polite" title="Edit Component" data-toggle="modal"
-                                        onClick={(e) => EditComponent(AllItems)}
+                                            onClick={(e) => EditComponent(AllItems)}
                                             className="input-group-text">
-                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
-                                            </span>
+                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png" />
+                                        </span>
                                     </div>
                                     <div className="col-sm-12 padL-0 PadR0">
                                         <div className="col-sm-12  top-assign  mb-10 padL-0 PadR0">
@@ -588,101 +664,142 @@ const CreateWS = (props: any) => {
 
                     </div>
                     <div className='row mt-4'>
-                        <div className='col-sm-3'>
+                        <div className='col-sm-4'>
                             <div className="input-group">
                                 <label className="full-width">Item Rank</label>
                                 <select
-                              className="full_width searchbox_height"
-                              defaultValue={AllItems.ItemRankTitle}
-                              onChange={(e) =>
-                                (AllItems.ItemRankTitle = e.target.value)
-                              }
-                            >
-                              <option>
-                                {AllItems.ItemRankTitle == undefined
-                                  ? "select Item Rank"
-                                  : AllItems.ItemRankTitle}
-                              </option>
-                              {TaskItemRank &&
-                                TaskItemRank[0].map(function (h: any, i: any) {
-                                  return (
-                                    <option
-                                      key={i}
-                                      defaultValue={AllItems.ItemRankTitle}
-                                    >
-                                      {AllItems.ItemRankTitle == h.rankTitle
-                                        ? AllItems.ItemRankTitle
-                                        : h.rankTitle}
+                                    className="full_width searchbox_height"
+                                    defaultValue={AllItems?.ItemRankTitle}
+                                    onChange={(e) =>
+                                        (AllItems.ItemRankTitle = e.target.value)
+                                    }
+                                >
+                                    <option>
+                                        {AllItems?.ItemRankTitle == undefined
+                                            ? "select Item Rank"
+                                            : AllItems.ItemRankTitle}
                                     </option>
-                                  );
-                                })}
-                            </select>
+                                    {TaskItemRank &&
+                                        TaskItemRank[0].map(function (h: any, i: any) {
+                                            return (
+                                                <option
+                                                    key={i}
+                                                    defaultValue={AllItems?.ItemRankTitle}
+                                                >
+                                                    {AllItems?.ItemRankTitle == h.rankTitle
+                                                        ? AllItems.ItemRankTitle
+                                                        : h.rankTitle}
+                                                </option>
+                                            );
+                                        })}
+                                </select>
                             </div>
                         </div>
-                        <div className='col-sm-3'>
+                        <div className='col-sm-4'>
                             <fieldset>
-                                <label className="full-width">Priority</label>
+                                <label className="full-width">Priority
+                                <span>
+                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+
+                                    <div className="popover__content">
+                                        <span>
+                                       
+                                                8-10 = High Priority,<br/>
+                                                4-7 = Normal Priority,<br/>
+                                                    1-3 = Low Priority
+                                                    </span>
+                                               
+                                            </div>
+                                           
+                                    </div>
+                                    </span></label>
+                               
                                 <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
-                                    defaultValue={selectPriority}  onChange={(e:any)=>Priority(e)} />
+                                    defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
                                 <div className="mt-2">
                                     <label>
                                         <input className="form-check-input  me-1" name="radioPriority"
-                                            type="radio" value="(1) High" 
-                                            defaultChecked={Priorityy} onClick={(e:any)=>SelectPriority('(1) High',e)} />High
+                                            type="radio" value="(1) High"
+                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
                                     </label>
                                 </div>
                                 <div className="">
                                     <label>
                                         <input className="form-check-input me-1" name="radioPriority"
                                             type="radio" value="(2) Normal"
-                                            defaultChecked={Priorityy} onClick={(e:any)=>SelectPriority('(2) Normal',e)} />Normal
+                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
                                     </label>
                                 </div>
                                 <div className="">
                                     <label>
                                         <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low"  defaultChecked={Priorityy} onClick={(e:any)=>SelectPriority('(3) Low',e)}  />Low
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
                                     </label>
                                 </div>
                             </fieldset>
 
                         </div>
-                        <div className='col-sm-3'>
+                        <div className='col-sm-4'>
                             <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                             <DatePicker className="form-control"
-                                                            selected={date}
-                                                            value={AllItems.DueDate}
-                                                            onChange={handleDatedue}
-                                                            dateFormat="dd/MM/yyyy"
-                                                           
+                                selected={date}
+                                value={AllItems?.DueDate}
+                                onChange={handleDatedue}
+                                dateFormat="dd/MM/yyyy"
 
-                                                        />
-                        </div>
-                        <div className="col-sm-3">
-                                <div className="input-group">
-                                    <label className='full-width'>Categories</label>
-                                    <input type="text" className="form-control" id="txtCategories" />
-                                
-                                    <span className="input-group-text">
 
-                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                            onClick={() => EditComponentPicker(AllItems)} />
-                                    </span>
+                            />
+                             <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
+                                    </label>
                                 </div>
-                                <div className="col-sm-12 mt-2">
-                            {CheckCategory.map((item: any) => {
-                                return (
-                                    <>
-                                        <div
-                                            className="col-sm-12 padL-0 checkbox">
-                                            <input type="checkbox"
-                                                ng-click="selectRootLevelTerm(item)" />
-                                            <span style={{ marginLeft: "20px" }}> {item.Title}</span>
-                                        </div>
-                                    </>
-                                )
-                            })}
+                                <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+                                    </label>
+                                </div>
+                                <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
+                                    </label>
+                                </div>
+                                <div className="">
+                                    <label>
+                                        <input className="form-check-input me-1" name="radioPriority"
+                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
+                                    </label>
+                                </div>
                         </div>
+                        {/* <div className="col-sm-3">
+                            <div className="input-group">
+                                <label className='full-width'>Categories</label>
+                                <input type="text" className="form-control" id="txtCategories" />
+
+                                <span className="input-group-text">
+
+                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                        onClick={() => EditComponentPicker(AllItems)} />
+                                </span>
+                            </div>
+                            <div className="col-sm-12 mt-2">
+                                {CheckCategory.map((item: any) => {
+                                    return (
+                                        <>
+                                            <div
+                                                className="col-sm-12 padL-0 checkbox">
+                                                <input type="checkbox"
+                                                    ng-click="selectRootLevelTerm(item)" />
+                                                <span style={{ marginLeft: "20px" }}> {item.Title}</span>
+                                            </div>
+                                        </>
+                                    )
+                                })}
+                            </div>
                             {CategoriesData != undefined ?
                                 <div className='col-sm-12 padL-0 PadR0'>
                                     {CategoriesData?.map((type: any, index: number) => {
@@ -702,8 +819,8 @@ const CreateWS = (props: any) => {
                                     })}
                                 </div> : null
                             }
-                        </div>
-                        
+                        </div> */}
+
                     </div>
                     <div className='row mt-2'>
                         <TeamConfigurationCard ItemInfo={AllItems} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
@@ -711,7 +828,7 @@ const CreateWS = (props: any) => {
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>
                             <label className='full_width'>Description</label>
-                            <textarea rows={4}  className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
+                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
                         </div>
                     </div>
                     {/* <div className="row">

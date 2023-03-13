@@ -672,7 +672,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 <th style={{ width: "18%" }}>
                                                     <div style={{ width: "17%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" 
-                                                        onChange={event => handleChange1(event, 'ClientCategory')}
+                                                        // onChange={event => handleChange1(event, 'ClientCategory')}
                                                          type="search" placeholder="Client Category" title="Client Category" className="full_width searchbox_height" />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -684,7 +684,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     <div style={{ width: "19%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
                                                             title="Team Member" className="full_width searchbox_height"
-                                                            onChange={event => handleChange1(event, 'TeamLeaderUser')}
+                                                            // onChange={event => handleChange1(event, 'TeamLeaderUser')}
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
