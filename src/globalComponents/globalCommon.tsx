@@ -108,7 +108,7 @@ export const getTaskId = (item: any) => {
             if (item.SharewebTaskType.Title == 'Project')
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
 
-            if (item.Component.length === 0 && item.Events.length === 0 && item.Services.length === 0) {
+            if (item.Component.length === 0  && item.Services.length === 0) {
                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
             }
         }
