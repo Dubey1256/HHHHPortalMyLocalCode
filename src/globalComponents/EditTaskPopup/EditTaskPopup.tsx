@@ -42,6 +42,13 @@ var ChangeTaskUserStatus: any = false;
 let ApprovalStatusGlobal: any = true;
 var ApproverBackupArray: any = [];
 const EditTaskPopup = (Items: any) => {
+    var siteUrls:any;
+    if(Items != undefined &&  Items.Items.siteUrl != undefined && Items.Items.siteUrl.length<20){
+        siteUrls=`https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
+    }else{
+        siteUrls= Items.Items.siteUrl
+    }
+
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -395,7 +402,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const getSmartMetaData = async () => {
-        let web = new Web(Items.Items.siteUrl);
+        let web = new Web(siteUrls);
         let MetaData: any = [];
         let siteConfig: any = [];
         let tempArray: any = [];
@@ -547,7 +554,7 @@ const EditTaskPopup = (Items: any) => {
 
     const GetEditData = async () => {
         try {
-            let web = new Web(Items.Items.siteUrl);
+            let web = new Web(siteUrls);
             let smartMeta;
             if (Items.Items.listId != undefined) {
                 smartMeta = await web.lists
@@ -555,7 +562,7 @@ const EditTaskPopup = (Items: any) => {
                     .items
                     .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
-                    .filter(`Id eq ${Items.Items.ID}`)
+                    .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
@@ -565,7 +572,7 @@ const EditTaskPopup = (Items: any) => {
                     .items
                     .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
-                    .filter(`Id eq ${Items.Items.ID}`)
+                    .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
                     .get();
             }
@@ -1091,7 +1098,7 @@ const EditTaskPopup = (Items: any) => {
         }
         // images?.map((imgDtl: any) => {
         //     if (imgDtl.dataURL != undefined) {
-        //         var imgUrl = Items.Items.siteUrl + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
+        //         var imgUrl = siteUrls + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
         //     }
         //     // else {
         //     //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
@@ -1260,8 +1267,8 @@ const EditTaskPopup = (Items: any) => {
         //     }
         // }
         try {
-            let web = new Web(Items.Items.siteUrl);
-            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.ID).update({
+            let web = new Web(siteUrls);
+            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({
                 IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
                 Priority_x0020_Rank: EditData.Priority_x0020_Rank,
                 ItemRank: EditData.ItemRank,
@@ -1367,7 +1374,7 @@ const EditTaskPopup = (Items: any) => {
         var link = "mailTo:"
             + "?cc:"
             + "&subject=" + " [" + Items.Items.siteType + "-Task ] " + EmailData.Title
-            + "&body=" + `${Items.Items.siteUrl}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
+            + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
         window.location.href = link;
     }
     const deleteTaskFunction = async (TaskID: number) => {
@@ -1381,10 +1388,10 @@ const EditTaskPopup = (Items: any) => {
     const deleteItemFunction = async (itemId: any) => {
         try {
             if (Items.Items.listId != undefined) {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(itemId).delete();
             } else {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).delete();
             }
             Items.Call();
@@ -1661,7 +1668,7 @@ const EditTaskPopup = (Items: any) => {
         let lastindexArray = imageList[imageList.length - 1];
         let fileName: any = '';
         let tempArray: any = [];
-        let SiteUrl = Items.Items.siteUrl;
+        let SiteUrl = siteUrls;
         imageList?.map(async (imgItem: any, index: number) => {
             if (imgItem.data_url != undefined && imgItem.file != undefined) {
                 let date = new Date()
@@ -1714,7 +1721,7 @@ const EditTaskPopup = (Items: any) => {
         }
         if (Items.Items.listId != undefined) {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getById(listId).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
@@ -1722,7 +1729,7 @@ const EditTaskPopup = (Items: any) => {
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(listName).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
@@ -1743,14 +1750,14 @@ const EditTaskPopup = (Items: any) => {
 
         if (Items.Items.listId != undefined) {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).delete();
                 console.log("Attachment deleted");
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).delete();
                 console.log("Attachment deleted");
@@ -1768,16 +1775,16 @@ const EditTaskPopup = (Items: any) => {
         for (var i = 0; i < byteArray.byteLength; i++) {
             fileData += String.fromCharCode(byteArray[i]);
         }
-        if (Items.Items.siteUrl != undefined) {
+        if (siteUrls != undefined) {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(ImageName).setContent(data);
                 console.log("Attachment Updated");
             })().catch(console.log)
         } else {
             (async () => {
-                let web = new Web(Items.Items.siteUrl);
+                let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(ImageName).setContent(data);
                 console.log("Attachment Updated");
@@ -1990,7 +1997,7 @@ const EditTaskPopup = (Items: any) => {
                         <div>
                             <span>
                                 <a className="mx-2" target="_blank" data-interception="off"
-                                    href={`${Items.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
+                                    href={`${siteUrls}/SitePages/Task-Profile.aspx?taskId=${EditData.ID}&Site=${Items.Items.siteType}`}>
                                     Go To Profile Page
                                 </a>
                             </span> ||
@@ -2006,7 +2013,7 @@ const EditTaskPopup = (Items: any) => {
                                 Share This Task
                             </span> ||
                             <a target="_blank" className="mx-2" data-interception="off"
-                                href={`${Items.Items.siteUrl}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
+                                href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
                                 Open Out-Of-The-Box Form
                             </a>
                             <span >
@@ -2706,7 +2713,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={Items.Items.siteUrl} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                            <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                         </div>
                                         <div className="pull-right">
                                         </div>
@@ -3627,7 +3634,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={Items.Items.siteUrl} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                                        <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                                     </div>
                                                     <div className="pull-right">
                                                     </div>
