@@ -1116,6 +1116,8 @@ function ComponentTable(SelectedProp: any) {
                                     result.ClientCategory.push(catego);
                                 })
                             }
+                            if(result.Id ===1441)
+                            console.log(result);
                             result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
                             if (result['Shareweb_x0020_ID'] == undefined) {
                                 result['Shareweb_x0020_ID'] = "";
@@ -2282,6 +2284,7 @@ function ComponentTable(SelectedProp: any) {
         }
         var temp: any = {};
         temp.Title = 'Others';
+        temp.TitleNew = 'Others';
         temp.childs = [];
         temp.childsLength = 0;
         temp.flag = true;
@@ -3712,7 +3715,7 @@ function ComponentTable(SelectedProp: any) {
                                                         <th style={{ width: "17%" }}>
                                                             <div style={{ width: "16%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Team"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Team members" className="full_width searchbox_height"
                                                                 // onChange={event => handleChange(event, 'Team')} 
                                                                 />
                                                                 <span className="sorticon">
@@ -3725,7 +3728,7 @@ function ComponentTable(SelectedProp: any) {
                                                         <th style={{ width: "6%" }}>
                                                             <div style={{ width: "5%" }} className="smart-relative">
                                                                 <input id="searchClientCategory" type="search" placeholder="Status"
-                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    title="Status" className="full_width searchbox_height"
                                                                     onChange={event => handleChange1(event, 'PercentComplete')} />
                                                                 <span className="sorticon">
                                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -3830,19 +3833,23 @@ function ComponentTable(SelectedProp: any) {
                                                                                     </td>
                                                                                     {/* <td style={{ width: "6%" }}></td> */}
                                                                                     <td style={{ width: "20%" }}>
-                                                                                        {item.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                        {item.siteType == "Master Tasks" && item.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                                         >
                                                                                             <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
                                                                                             {/* {item.Title} */}
                                                                                         </a>}
-                                                                                        {item.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
-                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                                        {item.siteType != "Master Tasks" && item.Title !== 'Others' &&
+                                                                                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
+                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/{item.siteType}/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType }
                                                                                         >
+                                                                                           
                                                                                             <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
-                                                                                            {/* {item.Title} */}
+                                                                                          
 
                                                                                         </a>}
+                                                                                        {item.Title === 'Others' &&
+                                                                                        <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>}
                                                                                         {item.childs != undefined &&
                                                                                             <span className='ms-1'>({item.childsLength})</span>
                                                                                         }
@@ -3953,11 +3960,11 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                             <td style={{ width: "20%" }}>
                                                                                                                 {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id }
                                                                                                                 ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
                                                                                                                 </a>}
                                                                                                                 {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType }
                                                                                                                 ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
                                                                                                                 </a>}
                                                                                                                 {(childitem.childs != undefined && childitem.childs.length > 0) && childitem.Item_x0020_Type == 'Feature' &&
@@ -4078,11 +4085,11 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                         {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
 
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id }
                                                                                                                                         ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
                                                                                                                                         </a>}
                                                                                                                                         {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType }
                                                                                                                                         ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
                                                                                                                                         </a>}
                                                                                                                                         {/* {childinew.childs.length > 0 &&
@@ -4204,11 +4211,11 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                                             <td style={{ width: "20%" }}>
                                                                                                                                                                 {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id }
                                                                                                                                                                 ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
                                                                                                                                                                 </a>}
                                                                                                                                                                 {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType }
                                                                                                                                                                 ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
                                                                                                                                                                 </a>}
                                                                                                                                                                 {(subchilditem.childs != undefined && subchilditem.childs.length > 0) &&
