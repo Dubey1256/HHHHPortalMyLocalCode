@@ -333,8 +333,7 @@ const CreateWS = (props: any) => {
             console.log(res);
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['SiteIcon'] = AllItems.SiteIcon
-                res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data['listId'] = AllItems.listId
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
