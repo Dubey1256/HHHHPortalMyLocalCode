@@ -55,7 +55,7 @@ export default function ComponentTable({ props }: any) {
      const [tablecontiner, settablecontiner]: any = React.useState("hundred");
    
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-    IsUpdated = props.Portfolio_x0020_Type;
+    IsUpdated = props?.Portfolio_x0020_Type;
     // for smarttime
     
     var IsExitSmartfilter = function (array: any, Item: any) {

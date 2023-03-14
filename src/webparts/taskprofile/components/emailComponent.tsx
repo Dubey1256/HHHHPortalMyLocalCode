@@ -5,34 +5,61 @@
   import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
    import { Web } from 'sp-pnp-js';
    const EmailComponenet=( props:any)=>{
-    const [taskdetails,setTaskDetails]=useState(null);
+    // const [taskdetails,setTaskDetails]=useState(null);
+     const [taskpermission,settaskpermission]=useState(null);
+     const [show, setshow]=useState(true);
      useEffect(()=>{
-      getResult();
+      // getResult();
      },[])
 
   
     console.log(props);
-    const getResult= async()=>{
-      let web = new Web(props.siteUrl);
-      let taskDetails = [];
-      taskDetails = await web.lists
-        .getByTitle(props.items.listName)
-        .items
-        .getById(props.items.Id)
-        .select("ID", "Title", "Comments","DueDate","Approver/Id","Approver/Title","SmartInformation/Id","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("Team_x0020_Members","Approver","SmartInformation","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
-      .get()
-        console.log(taskDetails);
-        setTaskDetails(taskDetails)
-    }
-    const updateData=async()=>{
+    // const getResult= async()=>{
+    //   let web = new Web(props.siteUrl);
+    //   let taskDetails = [];
+    //   taskDetails = await web.lists
+    //     .getByTitle(props.items.listName)
+    //     .items
+    //     .getById(props.items.Id)
+    //     .select("ID", "Title", "Comments","DueDate","Approver/Id","Approver/Title","SmartInformation/Id","AssignedTo/Id","SharewebTaskLevel1No","SharewebTaskLevel2No","OffshoreComments","AssignedTo/Title","OffshoreImageUrl","SharewebCategories/Id","SharewebCategories/Title", "ClientCategory/Id","ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+    //   .expand("Team_x0020_Members","Approver","SmartInformation","AssignedTo","SharewebCategories", "Author", "ClientCategory","Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
+    //   .get()
+    //     console.log(taskDetails);
+    //     setTaskDetails(taskDetails)
+    // }
+    const updateData=async( permission:any)=>{
+      settaskpermission(permission)
       const web = new Web(props.items.siteUrl );
-       
-        await web.lists.getByTitle(props.items.listName).items.getById(props.items.Id).update({
-          PercentComplete: 3,
+        const feedback:any=props.items.FeedBack!=null?props.items.FeedBack:null;
+        feedback?.map((items:any)=>{
+         if( items.FeedBackDescriptions.length>0){
+          items.FeedBackDescriptions.map((feedback:any)=>{
+            if(feedback.isShowLight===""){
+              
+              feedback.isShowLight=permission
+            }else{
+             
+              feedback.isShowLight=permission
+            }
           
+         
+          })
+         }
+        })
+        console.log(feedback);
+        let percentageComplete;
+        if(permission=="Approve"){
+          percentageComplete=0.03;
+        }
+        else{
+          percentageComplete=0.02;
+        }
+        await web.lists.getByTitle(props.items.listName).items.getById(props.items.Id).update({
+          PercentComplete: percentageComplete,
+          FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
         }).then((res:any)=>{
          console.log(res);
+         props.approvalcallback();
          
        })
        .catch((err) => {
@@ -40,9 +67,13 @@
       });
      };
     
-   const sendEmail=(send:any)=>{
+   const sendEmail=async(send:any)=>{
+    
     if(send=="Approved"){
-      updateData();
+     await updateData("Approve");
+    }
+    else if(send=="Rejected"){
+      await updateData("Reject");
     }
     
     console.log(props);
@@ -62,7 +93,7 @@
    
      }
      const BindHtmlBody=()=> {
-      let body = document.getElementById('htmlMailBody')
+      let body = document.getElementById('htmlMailBodyemail')
       console.log(body.innerHTML);
       return "<style>p>br {display: none;}</style>" + body.innerHTML;
     }
@@ -100,12 +131,13 @@
        {props.Approver!=undefined &&props.items.Categories.includes("Approval")&& props.currentUser!=undefined&&props.Approver.Title==props.currentUser[0].Title
         &&<span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>
        }
-       <span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>
-     
-    
-        {props.items != null  &&props.Approver!=undefined&&
-          <div id='htmlMailBody' style={{ display: 'none' }}>
-
+      {props.items.FeedBack!=null&&props.items.FeedBack[0].FeedBackDescriptions[0]&&<span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>}
+     {props.items != null  &&props.Approver!=undefined&&
+          <div id='htmlMailBodyemail' style={{ display: 'none' }}>
+            <div style={{marginTop:"2pt"}}>Hi,</div>
+          {taskpermission!=null&&taskpermission=="Approve"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props.items.Approver.Title}, team will process it further. Refer {taskpermission} Comments.</div>}
+          {taskpermission!=null&&taskpermission=="Reject"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props.items.Approver.Title}. Refer {taskpermission} Comments.</div>}
+           
             <div style={{ marginTop: "11.25pt" }}>
               <a href={props.items["TaskUrl"]} target="_blank">{props.items["Title"]}</a><u></u><u></u></div>
             <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
@@ -311,8 +343,9 @@
                           </td>
                         </tr>
                         <tr>
+                        
                           <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
-                            {props.items["Comments"]!=undefined &&props.items["Comments"]?.map((cmtData: any, i: any) => {
+                          {props.items["Comments"]!=undefined && props.items["Comments"].length>0&&props.items["Comments"]?.map((cmtData: any, i: any) => {
                               return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                 <div style={{ marginBottom: "3.75pt" }}>
                                   <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
@@ -323,6 +356,7 @@
                               </div>
                             })}
                           </td>
+                          
                         </tr>
                       </tbody>
                     </table>
