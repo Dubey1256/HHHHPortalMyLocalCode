@@ -339,6 +339,9 @@ const CreateWS = (props: any) => {
                 closeTaskStatusUpdatePoup(res);
             }
             else {
+                res.data['SiteIcon'] = AllItems.SiteIcon
+                res.data['listId'] = AllItems.listId
+                setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
 

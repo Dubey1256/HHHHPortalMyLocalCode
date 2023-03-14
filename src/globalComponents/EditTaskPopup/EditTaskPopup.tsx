@@ -58,6 +58,13 @@ var ReplaceImageIndex: any;
 var ReplaceImageData: any;
 var AllProjectBackupArray: any = [];
 const EditTaskPopup = (Items: any) => {
+    var siteUrls:any;
+    if(Items != undefined &&  Items.Items.siteUrl != undefined && Items.Items.siteUrl.length<20){
+        siteUrls=`https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
+    }else{
+        siteUrls= Items.Items.siteUrl
+    }
+
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);

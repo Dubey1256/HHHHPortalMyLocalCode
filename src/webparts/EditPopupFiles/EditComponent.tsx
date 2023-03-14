@@ -77,14 +77,11 @@ function EditInstitution(item: any) {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
-  const [pickerOpen, setPickerOpen] = React.useState(false);
   const [datepicker, setdatepicker] = React.useState(false);
   const [activePicker, setActivePicker] = React.useState(null);
   // Date picker closer
-  
   const handlePickerFocus = (pickerName: any) => {
     setActivePicker(pickerName);
-    
   };
 
   const handlePickerBlur = () => {
@@ -114,8 +111,6 @@ function EditInstitution(item: any) {
     setComponent((EditData) => [...EditData]);
     setActivePicker(null);
   };
-
-  
   const handleDatestart = (date: any) => {
     EditData.StartDate = date;
     setStartdate(date);
@@ -1310,9 +1305,9 @@ function EditInstitution(item: any) {
     return (
       <>
         <div
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
+          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", paddingLeft: "24px" }}
         >
-          {`Service-Portfolio > ${EditData.Title}`}
+          {`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
         </div>
         <Tooltip />
       </>
@@ -1347,7 +1342,7 @@ function EditInstitution(item: any) {
     <>
       {console.log("Done")}
       <Panel
-        headerText={`  Service-Portfolio > ${EditData.Title}`}
+        headerText={`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
         onRenderHeader={onRenderCustomHeader}
@@ -1356,7 +1351,7 @@ function EditInstitution(item: any) {
       >
         {EditData != undefined && EditData.Title != undefined && (
           <div id="EditGrueneContactSearch">
-            <div className="modal-body">
+            <div className={`${EditData.Portfolio_x0020_Type == "Service" ? "modal-body serviepannelgreena":"modal-body"}`}>
               <ul className="nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
@@ -1550,13 +1545,13 @@ function EditInstitution(item: any) {
                             </div>
                           )}
                           {EditData.Portfolio_x0020_Type == "Component" && (
-                            <div className="input-group serviepannelgreena">
+                            <div className="input-group">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="d-flex Component-container-edit-task  bg-69">
+                                        <div className="d-flex Component-container-edit-task  block">
                                           <div className="">
                                             <a
                                               className="hreflink service"
@@ -1592,10 +1587,10 @@ function EditInstitution(item: any) {
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="d-flex Component-container-edit-task">
-                                          <div >
+                                        <div className="d-flex Component-container-edit-task  block ">
+                                          <div className="serviepannelgreena">
                                             <a
-                                              className="hreflink "
+                                              className="hreflink service "
                                               target="_blank"
                                               data-interception="off"
                                               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
@@ -1670,7 +1665,7 @@ function EditInstitution(item: any) {
                                     return (
                                       <>
                                         <div
-                                          className="d-flex Component-container-edit-task"
+                                          className="d-flex Component-container-edit-task block"
                                           style={{ width: "81%" }}
                                         >
                                           <a
@@ -1714,7 +1709,6 @@ function EditInstitution(item: any) {
                               onFocus={() => handlePickerFocus("startDate")}
                               onBlur={handlePickerBlur}
                               open={activePicker === "startDate"}
-                          
                             />
                           </div>
                         </div>
@@ -1732,7 +1726,6 @@ function EditInstitution(item: any) {
                               onFocus={() => handlePickerFocus("date")}
                               onBlur={handlePickerBlur}
                               open={activePicker === "date"}
-                              
                             />
                           </div>
                         </div>
@@ -1754,7 +1747,6 @@ function EditInstitution(item: any) {
                               }
                               onBlur={handlePickerBlur}
                               open={activePicker === "Completiondate"}
-                             
                             />
                           </div>
                         </div>
@@ -2218,7 +2210,7 @@ function EditInstitution(item: any) {
                                               "Email Notification" &&
                                             type.Title != "Approval" &&
                                             type.Title != "Immediate" && (
-                                              <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                              <div className="block d-flex justify-content-between my-1 p-1">
                                                 <a
                                                   style={{
                                                     color: "#fff !important",
