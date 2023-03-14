@@ -25,12 +25,15 @@ import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import CreateActivity from '../../servicePortfolio/components/CreateActivity';
 import CreateWS from '../../servicePortfolio/components/CreateWS';
+import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
 let serachTitle: any = '';
 var MeetingItems:any=[]
 var childsData:any=[]
+var array: any = [];
+var selectedCategory:any = [];
 export default function ComponentTable({ props }: any) {
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -63,11 +66,45 @@ export default function ComponentTable({ props }: any) {
      const [ActivityPopup, setActivityPopup] = React.useState(false);
      const [ActivityDisable, setActivityDisable] = React.useState(true);
      const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
-    
+    //  For selected client category
+    const [items, setItems] = React.useState([]);
+
+  function handleClick(item:any) {
+    const index = items.indexOf(item);
+    if (index !== -1) {
+      // Item already exists, remove it
+      const newItems = [...items];
+      newItems.splice(index, 1);
+      setItems(newItems);
+    } else {
+      // Item doesn't exist, add it
+      setItems([...items, item]);
+    }
+  }
+
+
+  
+
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     IsUpdated = props.Portfolio_x0020_Type;
     // for smarttime
     
+
+    //Open activity popup
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Create Activity ${MeetingItems[0]?.Title}`}
+                    </span>
+                </div>
+                <Tooltip ComponentId={MeetingItems[0]?.Id} />
+            </div>
+        );
+    }; 
+
+
     var IsExitSmartfilter = function (array: any, Item: any) {
         var isExists = false;
         var count = 0;
@@ -104,6 +141,7 @@ export default function ComponentTable({ props }: any) {
         // const { checked } = e.target;
 
     }
+
 
     const groupbyTasks = function (TaskArray: any, item: any) {
         item.childs = item.childs != undefined ? item.childs : [];
@@ -1204,6 +1242,14 @@ export default function ComponentTable({ props }: any) {
         const { checked } = e.target;
         if (checked == true) {
             itrm.chekBox = true;
+            if(itrm.ClientCategory != undefined && itrm.ClientCategory.length > 0){ 
+                 itrm.ClientCategory.map((clientcategory:any)=>{
+                    selectedCategory.push(clientcategory)           
+                 })
+                
+            
+            }
+            
             if (itrm.SharewebTaskType == undefined) {
                 setActivityDisable(false)
                 itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
@@ -1318,9 +1364,47 @@ export default function ComponentTable({ props }: any) {
     }
     function AddItem() {
     }
-    const Call = React.useCallback((item1) => {
-        setIsComponent(false);
+  
+
+
+    const Call = React.useCallback((childItem: any) => {
+        MeetingItems?.forEach((val:any):any=>{
+            val.chekBox =false;
+        })
+        closeTaskStatusUpdatePoup2();
+        setIsComponent(false);; 
         setIsTask(false);
+        setMeetingPopup(false);
+        setWSPopup(false);
+        var MainId: any = ''
+        if (childItem != undefined) {
+            childItem.data['flag'] = true;
+            childItem.data['TitleNew'] = childItem.data.Title;
+            childItem.data['SharewebTaskType'] = { Title: 'Activities' }
+            if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
+                MainId = childItem.data.ServicesId[0]
+            }
+            if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+                MainId = childItem.data.ComponentId[0]
+            }
+            
+            if (array != undefined) {
+                array.forEach((val: any) => {
+                    val.flag = true;
+                    val.show = false;
+                    if (val.Id == MainId) {
+                        val.childs.push(childItem.data)
+                    }
+
+                })
+                setData(array => ([...array]))
+                
+            }
+
+        }
+
+
+
     }, []);
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
@@ -1429,7 +1513,10 @@ let isOpenPopup =false;
         // myarray.push();
     }
     const [lgShow, setLgShow] = React.useState(false);
-    const handleClose = () => setLgShow(false);
+    function handleClose () { 
+        selectedCategory=[];
+        setLgShow(false);
+    }
     const [lgNextShow, setLgNextShow] = React.useState(false);
     const handleCloseNext = () => setLgNextShow(false);
     const [CreateacShow, setCreateacShow] = React.useState(false);
@@ -1474,6 +1561,7 @@ let isOpenPopup =false;
                     setWSPopup(true)
                 }
             }
+          
             if (MeetingItems != undefined && MeetingItems[0].SharewebTaskType?.Title == 'Workstream') {
                 setActivityPopup(true)
             }
@@ -1639,22 +1727,23 @@ let isOpenPopup =false;
                     <Modal.Title>
                         <h6>Select Client Category</h6>
                     </Modal.Title>
-                    <button type="button" className='Close-button' onClick={handleClose}></button>
+                    <button type="button" className='Close-button' onClick={handleClose}><RiDeleteBin6Line/></button>
                 </Modal.Header>
                 <Modal.Body className='p-2'>
                     <span className="bold">
                         Please select any one Client Category.
                     </span>
                     <div>
-                        {myarray2.map((item: any) => {
+                        {selectedCategory.map((item: any) => {
                             return (
-                                <div>  {item.Title}</div>
+                                <li onClick={() => handleClick(item.Title)}>{item.Title}</li>
+                                
                             )
                         })}
                     </div>
                 </Modal.Body >
                 <Modal.Footer>
-                    <Button variant="primary" onClick={() => setLgNextShow(true)}>
+                    <Button variant="primary" onClick={() =>  openActivity()}>
                         Ok
                     </Button>
                     <Button variant="secondary" onClick={handleClose}>
@@ -2183,18 +2272,25 @@ let isOpenPopup =false;
                         </span>
                     </span>
                     <span className="toolbox mx-auto">
-                         <button type="button" className="btn btn-primary"
-                            onClick={addModal} title=" Add Structure" disabled={false}>
-                           <MdAdd />
-                            Add Structure
-                        </button>
-                        <button type="button"
-                            className="btn btn-primary"
-                            onClick={() => openActivity()}
-                            disabled={ActivityDisable}>
-                            <MdAdd />
-                            Add Activity-Task
-                        </button>
+                    {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Feature' ?
+                                            <button type="button" disabled={true} className="btn btn-primary" onClick={addModal} title=" Add Structure">
+                                                Add Structure
+                                            </button>
+                                            : <button type="button" disabled={checkedList.length >= 2} className="btn btn-primary" onClick={addModal} title=" Add Structure">
+                                                Add Structure
+                                            </button>}
+                        
+                        
+                                            {(selectedCategory != undefined && selectedCategory.length > 0) ?
+                                            <button type="button"  onClick={() => setLgShow(true)}
+                                            disabled={ActivityDisable} className="btn btn-primary"  title=" Add Activity-Task">
+                                                Add Activity-Task
+                                            </button>
+                                            : <button type="button"  onClick={() => openActivity()}
+                                            disabled={ActivityDisable} className="btn btn-primary"  title=" Add Activity-Task">
+                                                Add Activity-Task
+                                            </button>}
+                
                         <button type="button" className="btn btn-primary"
                             onClick={buttonRestructuring}>
                             Restructure
@@ -3125,6 +3221,153 @@ let isOpenPopup =false;
             <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
+            <Panel
+               onRenderHeader={onRenderCustomHeaderMain}
+               type={PanelType.custom}
+               customWidth="600px"
+                isOpen={ActivityPopup}
+                onDismiss={closeTaskStatusUpdatePoup2}
+                isBlocking={false}
+            >
+
+               
+                 
+
+                        {/* <div className="modal-header  mt-1 px-3">
+                            <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
+                            <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div> */}
+                       
+
+
+                        <div className="modal-body bg-f5f5 clearfix">
+                            <div className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+                                <div id="portfolio" className="section-event pt-0">
+                                
+                                    {/* {
+                                    
+                                    MeetingItems.SharewebTaskType == undefined  &&
+                                        <ul className="quick-actions">
+
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                    </span>
+                                                    Implmentation
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Development')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                    </span>
+                                                    Development
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                    <span className="icon-sites">
+                                                    </span>
+                                                    Activity
+                                                </div>
+                                            </li>
+                                        </ul>
+                                         
+                                    } */}
+                                    {
+                                        (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
+                                        <ul className="quick-actions">
+
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={(e) => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" />
+
+                                                    </span>
+                                                    Bug
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" />
+
+                                                    </span>
+                                                    Feedback
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                        <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
+                                                    </span>
+                                                    Improvement
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
+                                                    </span>
+                                                    Design
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                    </span>
+                                                    Task
+                                                </div>
+                                            </li>
+                                        </ul>:
+                                         <ul className="quick-actions">
+
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                 <span className="icon-sites">
+                                                     <img className="icon-sites"
+                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                 </span>
+                                                 Implmentation
+                                             </div>
+                                         </li>
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Development')}>
+                                                 <span className="icon-sites">
+                                                     <img className="icon-sites"
+                                                         src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                 </span>
+                                                 Development
+                                             </div>
+                                         </li>
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                 <span className="icon-sites">
+                                                 </span>
+                                                 Activity
+                                             </div>
+                                         </li>
+                                     </ul>
+
+                                    }
+                                </div>
+                            </div>
+                            <button type="button" className="btn btn-default btn-default ms-1 pull-right" onClick={closeTaskStatusUpdatePoup2}>Cancel</button>
+                        </div>
+                    
+               
+
+
+            </Panel >
             
         </div>
     );
