@@ -1305,9 +1305,9 @@ function EditInstitution(item: any) {
     return (
       <>
         <div
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
+          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", paddingLeft: "24px" }}
         >
-          {`Service-Portfolio > ${EditData.Title}`}
+          {`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
         </div>
         <Tooltip />
       </>
@@ -1342,7 +1342,7 @@ function EditInstitution(item: any) {
     <>
       {console.log("Done")}
       <Panel
-        headerText={`  Service-Portfolio > ${EditData.Title}`}
+        headerText={`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
         onRenderHeader={onRenderCustomHeader}
@@ -1351,7 +1351,7 @@ function EditInstitution(item: any) {
       >
         {EditData != undefined && EditData.Title != undefined && (
           <div id="EditGrueneContactSearch">
-            <div className="modal-body">
+            <div className={`${EditData.Portfolio_x0020_Type == "Service" ? "modal-body serviepannelgreena":"modal-body"}`}>
               <ul className="nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
@@ -1551,10 +1551,46 @@ function EditInstitution(item: any) {
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="d-flex Component-container-edit-task">
-                                          <div>
+                                        <div className="d-flex Component-container-edit-task  block">
+                                          <div className="">
                                             <a
-                                              className="hreflink "
+                                              className="hreflink service"
+                                              target="_blank"
+                                              data-interception="off"
+                                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                            >
+                                              {com.Title}
+                                            </a>
+                                            <img
+                                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                              onClick={() =>
+                                                setLinkedComponentData([])
+                                              }
+                                            />
+                                          </div>
+                                        </div>
+                                      </>
+                                    );
+                                  })}
+                                </div>
+                              ) : null}
+                              {/* <span className="input-group-text">
+                                                            <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                                                onClick={(e) => EditComponent(EditData, 'Component')} />
+                                                        </span> */}
+                            </div>
+                          )}
+                           {EditData.Portfolio_x0020_Type == "Service" && (
+                            <div className="input-group">
+                              {linkedComponentData?.length > 0 ? (
+                                <div>
+                                  {linkedComponentData?.map((com: any) => {
+                                    return (
+                                      <>
+                                        <div className="d-flex Component-container-edit-task  block ">
+                                          <div className="serviepannelgreena">
+                                            <a
+                                              className="hreflink service "
                                               target="_blank"
                                               data-interception="off"
                                               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
@@ -1629,7 +1665,7 @@ function EditInstitution(item: any) {
                                     return (
                                       <>
                                         <div
-                                          className="d-flex Component-container-edit-task"
+                                          className="d-flex Component-container-edit-task block"
                                           style={{ width: "81%" }}
                                         >
                                           <a
@@ -2174,7 +2210,7 @@ function EditInstitution(item: any) {
                                               "Email Notification" &&
                                             type.Title != "Approval" &&
                                             type.Title != "Immediate" && (
-                                              <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                              <div className="block d-flex justify-content-between my-1 p-1">
                                                 <a
                                                   style={{
                                                     color: "#fff !important",

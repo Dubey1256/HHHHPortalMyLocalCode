@@ -624,7 +624,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         // console.log(DGroups);
         //  setdGroups(DGroups);
         console.log("search ", searchTerm);
-    };
+    }; 
 
     public render(): React.ReactElement<IStructureCreationProps> {
         return (

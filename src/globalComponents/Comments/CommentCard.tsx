@@ -139,8 +139,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       })
 
       tempTask["Comments"].sort(function (a: any, b: any) {
-        let keyA = a.ID,
-          keyB = b.ID;
+        // let keyA = a.ID,
+        //   keyB = b.ID;
+        let keyA =new Date(a.Created) ,
+          keyB = new Date(b.Created);
         // Compare the 2 dates
         if (keyA < keyB) return 1;
         if (keyA > keyB) return -1;
@@ -574,7 +576,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue?this.state.mentionValue:""} onChange={(e) => this.setMentionValue(e)}
                   className="form-control"
                   classNames={mentionClass}>
-                  <Mention trigger="@" data={this.mentionUsers} />
+                  <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
                 </MentionsInput>
               </span>
 
@@ -648,17 +650,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           
           type={PanelType.custom}
           customWidth="500px"
-          headerText='Update Comment'
-          onDismiss={(e) => this.CloseModal(e)}
+          // headerText='Update Comment'
+          // onDismiss={(e) => this.CloseModal(e)}
         >
 
 
           <div>
-            {/* <div className='modal-header mb-2'>
+            <div className='modal-header mb-2'>
               <h3 className='modal-title'>Update Comment</h3>
 
               <span><Tooltip /> </span> <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.CloseModal(e)}></button>
-            </div> */}
+            </div>
             <div className='modal-body'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>

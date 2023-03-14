@@ -3,6 +3,8 @@ import * as _ from "lodash";
 import * as React from "react";
 import { Utils }  from "./../../../common/Utils";
 import styles from "./CommonControl.module.scss";
+import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
+
 
 export interface IListLastModifiedItemsProps {
     Items: any[];
@@ -16,6 +18,8 @@ export interface IListLastModifiedItemsProps {
 export interface IListLastModifiedItemsState {
     columns: IColumn[];
     sortedItems: any[];
+    isOpenEditPopup: Boolean;
+    DataItem: any[];
     contextualMenuProps: IContextualMenuProps;    
 }
 
@@ -71,14 +75,28 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         this.state = {
             columns: _columns,
             sortedItems: this.props.Items,
+            isOpenEditPopup: false,
+            DataItem:[],
             contextualMenuProps: null
         }         
         
     }
 
+    private OpenEditPopUp(item:any) {
+        this.setState({
+          isOpenEditPopup: true,
+          DataItem:item
+        })
+      }
+    private CallBack() {
+        this.setState({
+          isOpenEditPopup: false
+        })
+      }
+
     private _onRenderTeamMembers(item: any, index: number, column: IColumn) {
 
-        let respTeam = item.TeamUsers.ResponsibleTeam;
+        let respTeam = item.TeamUsers?.ResponsibleTeam;
         let teamMembers: any[] = [];
         let combinedTeamMembers = [...item.TeamUsers.AssignedUsers, ...item.TeamUsers.TeamMembers];
 
@@ -172,7 +190,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     private _onRenderActionButtons(item: any, index: number, column: IColumn) {
         return (
             <div>
-                <Link href="#"><Icon iconName="Edit" style={{color:"black", paddingLeft:"10px"}} /></Link>
+                <Link href="#"><Icon iconName="Edit" style={{color:"black", paddingLeft:"10px"}} onClick={() => this.OpenEditPopUp(item) }/></Link>
                 <Link href="#"><Icon iconName="Delete" style={{color:"black", paddingLeft:"10px"}} onClick={
                     ()=>this.props.OnDelete(item.Id)
                 } /></Link>
@@ -565,7 +583,8 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                         isHeaderVisible = {true}
                         selectionMode = {SelectionMode.none} 
                     />
-                { elemContextualMenu }           
+                { elemContextualMenu }
+                {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.DataItem} Call={() => { this.CallBack() }} /> : ''}           
             </div>
         );
     }

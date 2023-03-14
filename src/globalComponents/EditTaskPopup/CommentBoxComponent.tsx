@@ -17,7 +17,7 @@ const CommentBoxComponent = (commentData: any) => {
     let SmartLightStatus: any = commentData.SmartLightStatus;
     useEffect(() => {
         let data: any = [];
-        if (commentData.data != undefined) {
+        if (commentData.data != undefined && commentData.data.length > 0) {
             let temp = commentData.data;
             temp.map((tempItem: any, index: 0) => {
                 if (index == 0) {
@@ -90,6 +90,15 @@ const CommentBoxComponent = (commentData: any) => {
         Array[0].Comments = commentData;
         CallBack(Array);
     }, [])
+
+    const postBtnHandleCallBackCancel =useCallback((status:any)=>{
+        if (status) {
+            setPostBtnStatus(false)
+        } else {
+            setPostBtnStatus(true)
+        }
+    },[])
+
     const subTextCallBack = useCallback((subTextData: any, commentId: any) => {
         Array[0].Subtext = subTextData;
         CallBack(Array);
@@ -158,7 +167,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
-                                            <span className="hreflink commentSectionLabel" style={{ color: "#000066" }} onClick={() => postBtnHandle(i)}>Add Comment </span>
+                                            <span className="hreflink siteColor commentSectionLabel" onClick={() => postBtnHandle(i)}>Add Comment </span>
                                         </span>
                                     </div>
                                 </div>
@@ -186,6 +195,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         postStatus={postBtnStatus}
                                         allUsers={commentData.allUsers}
                                         callBack={postBtnHandleCallBack}
+                                        CancelCallback={postBtnHandleCallBackCancel}
                                     />
                                 </div>
                                 <div>
