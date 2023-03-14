@@ -1731,7 +1731,7 @@ let isOpenPopup =false;
                 </Modal.Header>
                 <Modal.Body className='p-2'>
                     <span className="bold">
-                        Please select any one Client Category.
+                        <b>Please select any one Client Category.</b>
                     </span>
                     <div>
                         {selectedCategory.map((item: any) => {
