@@ -86,7 +86,7 @@ export default function ComponentTable({ props }: any) {
   
 
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-    IsUpdated = props.Portfolio_x0020_Type;
+    IsUpdated = props?.Portfolio_x0020_Type;
     // for smarttime
     
 
