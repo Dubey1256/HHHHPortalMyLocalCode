@@ -423,10 +423,10 @@ function TasksTable(props:any){
                         </span>
                     </span>
                     <span className="toolbox mx-auto">
-                         <button type="button" className="btn btn-primary"
+                         {/* <button type="button" className="btn btn-primary"
                             onClick={addModal} title=" Add Structure" disabled={false}>
                             Add Structure
-                        </button>
+                        </button> */}
                         <button type="button"
                             className="btn btn-primary"
                          disabled={true}>
