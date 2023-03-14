@@ -1727,7 +1727,7 @@ let isOpenPopup =false;
                     <Modal.Title>
                         <h6>Select Client Category</h6>
                     </Modal.Title>
-                    <button type="button" className='Close-button' onClick={handleClose}><RiDeleteBin6Line/></button>
+                    <button type="button" className='Close-button' onClick={handleClose}>X</button>
                 </Modal.Header>
                 <Modal.Body className='p-2'>
                     <span className="bold">
