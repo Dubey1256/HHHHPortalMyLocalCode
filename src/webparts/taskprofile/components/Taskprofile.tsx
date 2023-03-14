@@ -1383,7 +1383,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
 
                 <div className="row">
-                  {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} /> : ''}
+                  {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType !="" && this.state.Result.SharewebTaskType !=undefined &&  this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} /> : ''}
                 </div>
 
                 <div className='row'>
