@@ -117,6 +117,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
     private async getLastModifiedItems() {
         const curNavItem = this.state.selNavItem;
         let curListId = curNavItem.listId;
+        let curSiteURL = curNavItem.siteUrl;
+        let curSiteType = curNavItem.site;
         let queryStrings = (curNavItem.columns && curNavItem.columns.split("&$")) || [];
 
         let qStrings = this.getQueryStrings(queryStrings);
@@ -128,8 +130,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         if(selTabName=="DOCUMENTS") {
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
-                DocumentName: resListItem.FileLeafRef,
-                DocumentLink: resListItem.EncodedAbsUrl,
+                FolderName: resListItem.FileLeafRef,
+                FolderLink: resListItem.EncodedAbsUrl,
                 Modified: {
                     Date: this.formatDate(resListItem.Modified),
                     UserName: resListItem.Editor.Title,
@@ -140,7 +142,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     UserName: resListItem.Author.Title,
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
-                Id: resListItem.Id
+                Id: resListItem.Id,
+                
             }));
         }
         else if(selTabName=="FOLDERS") {
@@ -158,7 +161,10 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     UserName: resListItem.Author.Title,
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
-                Id: resListItem.Id
+                Id: resListItem.Id,
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="COMPONENTS") {
@@ -179,7 +185,10 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     UserName: resListItem.Author.Title,
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
-                Id: resListItem.Id
+                Id: resListItem.Id,
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="SERVICES") {
@@ -200,7 +209,10 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     UserName: resListItem.Author.Title,
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
-                Id: resListItem.Id
+                Id: resListItem.Id,
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="ALL") {
@@ -211,6 +223,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             let allTabItems = navItems.filter(navItem=>(excludedTabItems.indexOf(navItem.Title)==-1));
             allTabItems.forEach(async (tabItem, tabIndex) =>{
                 curListId = tabItem.ListId;
+                curSiteType = tabItem.Site;
+                curSiteURL = tabItem.SiteUrl
                 queryStrings = (tabItem.Columns && tabItem.Columns.split("&$")) || [];
                 let qStrings = this.getQueryStrings(queryStrings);
                 qStrings.Top = 100;
@@ -243,7 +257,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                             ...this.getUserInfo(resListItem.Author.Id)
                         },
                         Id: resListItem.Id,
-                        ListId: curListId
+                        ListId: curListId,
+                        siteType: curSiteType,
+                        siteUrl: curSiteURL
                     }));
                     listLastModifiedItems.push(...resListItems);                    
                 }
@@ -283,7 +299,10 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     UserName: resListItem.Author.Title,
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
-                Id: resListItem.Id
+                Id: resListItem.Id,
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }        
 
@@ -529,17 +548,14 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         const elemFilter = (
             <div className="tbl-headings">
 
-<span className="leftsec">
-<span> <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label></span> <span className="ms-1"> <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} /></span>
-</span>
-<span className="toolbox mx-auto">
- <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" className="me-2" styles={controlStyles} />
-<Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
-{elemClearFilter}
-</span>
-
-
-              
+                <span className="leftsec">
+                <span> <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label></span> <span className="ms-1"> <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} /></span>
+                </span>
+                <span className="toolbox mx-auto">
+                    <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" className="me-2" styles={controlStyles} />
+                    <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
+                    {elemClearFilter}
+                </span>
             </div>
         );
 

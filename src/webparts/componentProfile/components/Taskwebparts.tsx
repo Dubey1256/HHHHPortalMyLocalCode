@@ -23,10 +23,14 @@ import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import CreateActivity from '../../servicePortfolio/components/CreateActivity';
+import CreateWS from '../../servicePortfolio/components/CreateWS';
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
 let serachTitle: any = '';
+var MeetingItems:any=[]
+var childsData:any=[]
 export default function ComponentTable({ props }: any) {
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -54,7 +58,12 @@ export default function ComponentTable({ props }: any) {
     const [checkedList, setCheckedList] = React.useState([]);
     const [Isshow, setIsshow] = React.useState(false);
      const [tablecontiner, settablecontiner]: any = React.useState("hundred");
-   
+     const [MeetingPopup, setMeetingPopup] = React.useState(false);
+     const [WSPopup, setWSPopup] = React.useState(false);
+     const [ActivityPopup, setActivityPopup] = React.useState(false);
+     const [ActivityDisable, setActivityDisable] = React.useState(true);
+     const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
+    
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
     IsUpdated = props.Portfolio_x0020_Type;
     // for smarttime
@@ -1170,7 +1179,64 @@ export default function ComponentTable({ props }: any) {
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
-    const onChangeHandler = (itrm: any) => {
+    // const onChangeHandler = (itrm: any) => {
+    //     const list = [...checkedList];
+    //     var flag = true;
+    //     list.forEach((obj: any, index: any) => {
+    //         if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+    //             flag = false;
+    //             list.splice(index, 1);
+    //         }
+    //     })
+    //     if (flag)
+    //         list.push(itrm);
+        
+    //     console.log(list);
+    //     setCheckedList(checkedList => ([...list]));
+    // };
+
+
+
+    const onChangeHandler = (itrm: any, child: any, e: any) => {
+        var Arrays: any = []
+       
+
+        const { checked } = e.target;
+        if (checked == true) {
+            itrm.chekBox = true;
+            if (itrm.SharewebTaskType == undefined) {
+                setActivityDisable(false)
+                itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                itrm['listName'] = 'Master Tasks';
+                MeetingItems.push(itrm)
+                //setMeetingItems(itrm);
+
+            }
+            if (itrm.SharewebTaskType != undefined) {
+                if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+                    setActivityDisable(false)
+                    itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                    itrm['listName'] = 'Master Tasks';
+                    Arrays.push(itrm)
+                    itrm['PortfolioId'] = child.Id;
+                    childsData.push(itrm)
+                }
+            }
+        }
+        if (checked == false) {
+            itrm.chekBox = false;
+            MeetingItems?.forEach((val:any,index:any)=>{
+                if(val.Id == itrm.Id){
+                    MeetingItems.splice(index,1)
+                }
+            })
+            if(MeetingItems.length == 0){
+           setActivityDisable(true)
+            }
+
+            $('#ClientCategoryPopup').hide();
+        }
+
         const list = [...checkedList];
         var flag = true;
         list.forEach((obj: any, index: any) => {
@@ -1181,11 +1247,25 @@ export default function ComponentTable({ props }: any) {
         })
         if (flag)
             list.push(itrm);
-        
-        console.log(list);
+        maidataBackup.forEach((obj, index) => {
+            obj.isRestructureActive = false;
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                obj.childs.forEach((sub: any, indexsub: any) => {
+                    sub.isRestructureActive = false;
+                    if (sub.childs != undefined && sub.childs.length > 0) {
+                        sub.childs.forEach((newsub: any, lastIndex: any) => {
+                            newsub.isRestructureActive = false;
+
+                        })
+                    }
+
+                })
+            }
+
+        })
+        setData(data => ([...maidataBackup]));
         setCheckedList(checkedList => ([...list]));
     };
-
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
     var AllTimeSpentDetails: any = [];
@@ -1365,6 +1445,188 @@ let isOpenPopup =false;
         setData(data => ([...data]));
     }
     // Add activity popup array
+    const closeTaskStatusUpdatePoup2 = () => {
+        MeetingItems?.forEach((val:any):any=>{
+            val.chekBox =false;
+        })
+        setActivityPopup(false)
+       // childsData =[]
+        MeetingItems =[]
+        childsData =[]
+        // setMeetingItems([])
+
+
+    }
+    const CreateMeetingPopups = (item: any) => {
+        setMeetingPopup(true);
+        MeetingItems[0]['NoteCall'] = item;
+        
+
+    }
+    const openActivity = () => {
+        if(MeetingItems.length > 1){
+            alert('More than 1 Parents selected, Select only 1 Parent to create a child item')
+        }
+        else{
+            if(MeetingItems[0] != undefined){
+            if (MeetingItems[0].SharewebTaskType != undefined) {
+                if (MeetingItems[0].SharewebTaskType.Title == 'Activities') {
+                    setWSPopup(true)
+                }
+            }
+            if (MeetingItems != undefined && MeetingItems[0].SharewebTaskType?.Title == 'Workstream') {
+                setActivityPopup(true)
+            }
+            // if(MeetingItems[0].Portfolio_x0020_Type == 'Service'&& MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined){
+            //     MeetingItems[0]['NoteCall'] = 'Activities';
+            //     setMeetingPopup(true)
+            // }
+            if (MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined) {
+                setActivityPopup(true)
+            }
+        }
+        }
+      
+        if (childsData[0] != undefined && childsData[0].SharewebTaskType != undefined) {
+            if (childsData[0].SharewebTaskType.Title == 'Activities') {
+                setWSPopup(true)
+                MeetingItems.push(childsData[0])
+                //setMeetingItems(childsData)
+            }
+        }
+      
+        if (childsData[0] != undefined && childsData[0].SharewebTaskType.Title == 'Workstream') {
+            setActivityPopup(true)
+            MeetingItems.push(childsData[0])
+        }
+     
+
+
+
+
+    }
+    const buttonRestructuring = () => {
+        var ArrayTest: any = [];
+        //  if (checkedList != undefined && checkedList.length === 1) {
+        if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length > 0 && checkedList[0].Item_x0020_Type === 'Component')
+            alert('You are not allowed to Restructure this item.')
+        if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length === 0 && checkedList[0].Item_x0020_Type === 'Component') {
+
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.Id === checkedList[0].Id)
+                obj.isRestructureActive = false;
+                ArrayTest.push(...[obj])
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Item_x0020_Type === 'SubComponent') {
+                            sub.isRestructureActive = true;
+                            // ArrayTest.push(sub)
+                        }
+
+                    })
+                }
+            })
+        }
+        if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'SubComponent') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj])
+                            ArrayTest.push(...[sub])
+                            // ArrayTest.push(sub)
+                        }
+
+                    })
+                }
+
+
+            })
+        }
+        if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Feature') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        sub.isRestructureActive = true;
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj]);
+                            ArrayTest.push(...[sub]);
+                        }
+                        if (sub.childs != undefined && sub.childs.length > 0) {
+                            sub.childs.forEach((newsub: any) => {
+                                if (newsub.Id === checkedList[0].Id) {
+                                    ArrayTest.push(...[obj]);
+                                    ArrayTest.push(...[sub]);
+                                    ArrayTest.push(...[newsub]);
+                                }
+
+
+                            })
+                        }
+
+                    })
+                }
+
+            })
+        }
+        else if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Task') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.Id === checkedList[0].Id) {
+                    ArrayTest.push(...[obj])
+                }
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Item_x0020_Type === 'SubComponent')
+                            sub.isRestructureActive = true;
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj])
+                            ArrayTest.push(...[sub])
+                            // ArrayTest.push(sub)
+                        }
+                        if (sub.childs != undefined && sub.childs.length > 0) {
+                            sub.childs.forEach((subchild: any) => {
+                                if (subchild.Item_x0020_Type === 'SubComponent')
+                                    subchild.isRestructureActive = true;
+                                if (subchild.Id === checkedList[0].Id) {
+                                    ArrayTest.push(...[obj])
+                                    ArrayTest.push(...[sub])
+                                    ArrayTest.push(...[subchild])
+                                    // ArrayTest.push(sub)
+                                }
+                                if (subchild.childs != undefined && subchild.childs.length > 0) {
+                                    subchild.childs.forEach((listsubchild: any) => {
+                                        if (listsubchild.Id === checkedList[0].Id) {
+                                            ArrayTest.push(...[obj])
+                                            ArrayTest.push(...[sub])
+                                            ArrayTest.push(...[subchild])
+                                            ArrayTest.push(...[listsubchild])
+                                        }
+
+                                    })
+                                }
+
+                            })
+                        }
+
+                    })
+                }
+
+
+            })
+        }
+        setOldArrayBackup(ArrayTest)
+        setData((data) => [...maidataBackup]);
+
+        //  }
+        // setAddModalOpen(true)
+    }
+
+
+
     var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 15, "Title": "MileStone", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": [] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 15 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "etag": "\"4\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 105, "Title": "Development", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" }, "SmartFilters": null, "SortOrder": 3, "TaxType": "Category", "Selectable": true, "ParentID": 0, "SmartSuggestions": null, "ID": 105 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 282, "Title": "Implementation", "siteName": null, "siteUrl": null, "listId": null, "Description1": "This should be tagged if a task is for applying an already developed component/subcomponent/feature.", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "/SiteCollectionImages/ICONS/Shareweb/Implementation.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" }, "SmartFilters": null, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 282 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 11, "Title": "Bug", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 11 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "etag": "\"5\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 96, "Title": "Feedback", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" }, "SmartFilters": null, "SortOrder": 2, "TaxType": null, "Selectable": true, "ParentID": 0, "SmartSuggestions": false, "ID": 96 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "etag": "\"3\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 191, "Title": "Improvement", "siteName": null, "siteUrl": null, "listId": null, "Description1": "Use this task category for any improvements of EXISTING features", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" }, "SmartFilters": null, "SortOrder": 12, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 191 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 12, "Title": "Design", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 165, "SmartSuggestions": null, "ID": 12 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 100, "Title": "Activity", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 100 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists;(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 281, "Title": "Task", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 281 }] as unknown as { siteName: any, siteUrl: any, listId: any, Description1: any, results: any[], SmartSuggestions: any, SmartFilters: any }[];
     console.log(siteConfig)
     return (
@@ -1923,17 +2185,18 @@ let isOpenPopup =false;
                     <span className="toolbox mx-auto">
                          <button type="button" className="btn btn-primary"
                             onClick={addModal} title=" Add Structure" disabled={false}>
+                           <MdAdd />
                             Add Structure
                         </button>
                         <button type="button"
                             className="btn btn-primary"
-                            onClick={() => setLgShow(true)} disabled={true}>
+                            onClick={() => openActivity()}
+                            disabled={ActivityDisable}>
                             <MdAdd />
                             Add Activity-Task
                         </button>
-                        <button type="button"
-                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                            disabled={true}>
+                        <button type="button" className="btn btn-primary"
+                            onClick={buttonRestructuring}>
                             Restructure
                         </button>
                         <button type="button"
@@ -2032,7 +2295,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="ItemRank"
                                                     title="Item Rank" className="full_width searchbox_height"
-                                                onChange={(e) => handleChange1(e, "ItemRank")}
+                                                // onChange={(e) => handleChange1(e, "ItemRank")}
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2119,7 +2382,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "10%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
                                                     title="Created Date" className="full_width searchbox_height"
-                                                onChange={(e) => handleChange1(e, "Created")} 
+                                                // onChange={(e) => handleChange1(e, "Created")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2213,7 +2476,8 @@ let isOpenPopup =false;
                                                                     </td>
                                                                     <td style={{ width: "6%" }}>
                                                                         <div className="d-flex">
-                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(item)} />
+                                                                            <span className='pe-2'><input type="checkbox" checked={item.chekBox}
+                                                                                                onChange={(e) => onChangeHandler(item, 'Parent', e)} />
                                                                                 <a className="hreflink" data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
@@ -2233,7 +2497,6 @@ let isOpenPopup =false;
                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
                                                                         >
-                                                                            {item.TitleNew}
                                                                               <span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
                                                                         </a>}
                                                                         {item.childs != undefined && item.childs.length > 0 &&
@@ -2457,7 +2720,7 @@ let isOpenPopup =false;
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
-                                                                                                                        <span className='pe-2'><input type="checkbox" />
+                                                                                                                        <span className='pe-2'><input type="checkbox"  onChange={(e) => onChangeHandler(childinew, item, e)}/>
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
@@ -2592,7 +2855,7 @@ let isOpenPopup =false;
                                                                                                                                             </div>
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "6%" }}>
-                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(subchilditem, item, e)}/></span>
                                                                                                                                             <span>
                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                     <img className="icon-sites-img ml20" src={subchilditem.SiteIcon}></img>
@@ -2720,7 +2983,7 @@ let isOpenPopup =false;
                                                                                                                                                                 </div>
                                                                                                                                                             </td>
                                                                                                                                                             <td style={{ width: "6%" }}>
-                                                                                                                                                                <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                                                <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(nextsubchilditem, item, e)}/></span>
                                                                                                                                                                 <span>
                                                                                                                                                                     <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                                         <img className="icon-sites-img ml20" src={nextsubchilditem.SiteIcon}></img>
@@ -2856,6 +3119,8 @@ let isOpenPopup =false;
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
             
             <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />

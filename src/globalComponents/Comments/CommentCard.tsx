@@ -574,7 +574,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue?this.state.mentionValue:""} onChange={(e) => this.setMentionValue(e)}
                   className="form-control"
                   classNames={mentionClass}>
-                  <Mention trigger="@" data={this.mentionUsers} />
+                  <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
                 </MentionsInput>
               </span>
 

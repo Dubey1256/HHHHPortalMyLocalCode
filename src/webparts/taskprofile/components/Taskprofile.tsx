@@ -19,6 +19,7 @@ import RelevantDocuments from './RelevantDocuments';
 import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import { Sync } from '@material-ui/icons';
+import TasksTable from './TaskfooterTable';
 // import EmailComponenet from './emailComponent';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
@@ -1371,7 +1372,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 </div> : null}
 
 
-
+                <div className="row">
+                  {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType !="" && this.state.Result.SharewebTaskType !=undefined &&  this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} /> : ''}
+                </div>
 
                 <div className='row'>
                   {this.state.Result != undefined &&
