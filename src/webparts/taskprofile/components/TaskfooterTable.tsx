@@ -19,6 +19,7 @@ let AllWSTasks = [];
 var filter: any = '';
 let taskUsers :any =[];
 let IsShowRestru :any =false;
+let componentDetails:any = '';
 function TasksTable(props:any){
     const [data, setData] = React.useState([]);
      const [Isshow, setIsshow] = React.useState(false);
@@ -212,8 +213,38 @@ function TasksTable(props:any){
                     //})
                // })
             }
+            const GetComponents = async () => {
+                   var filt = "Id eq "+(props.props.Component.length >0 ? props.props.Component[0].Id :props.props.Service[0].Id)+"";
+                let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+              let compo =[];
+              compo = await web.lists
+                    .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+                    .items
+                    .select("ID", "Id", "Title", "Mileage", "Portfolio_x0020_Type","ItemType",
+                    )
+                   
+                    .top(4999)
+                    .filter(filt)
+                    .get()
+                    componentDetails=  compo[0]
+                    if(componentDetails.ItemType ==='Component')
+                    componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png';
+                    if(componentDetails.ItemType ==='SubComponent')
+                    componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+                    if(componentDetails.ItemType ==='Feature')
+                    componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
+                console.log(componentDetails);
+            }
             React.useEffect(() => {
                 getTaskUsers(); 
+                if((props.props.Component !=undefined && props.props.Component.length >0) || (props.props.Service !=undefined && props.props.Service[0].Id))
+                GetComponents()
+                if(props.props.ParentTask !=undefined && props.props.ParentTask.Title !=undefined )
+                props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+               else if(props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType ==='Activities')
+               props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+                if(props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType ==='Workstream' )
+                props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
                 GetSmartmetadata();
                
             },[]);
@@ -497,7 +528,10 @@ function TasksTable(props:any){
                 })
                let Items: any = []; Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
                setRestructureChecked(Items);
-               setNewArrayBackup(NewArrayBackup => ([...TestArray]));
+               if(TestArray.length ===0)
+               setNewArrayBackup(NewArrayBackup => ([...props.props]));
+              else setNewArrayBackup(NewArrayBackup => ([...TestArray]));
+              
         
             }
         
@@ -650,67 +684,24 @@ function TasksTable(props:any){
                  <div className="tbl-headings">
                     <span className="leftsec">
                         <span className=''>
-                            {props.props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type != 'SubComponent' && props.Item_x0020_Type != 'Feature' &&
+                            {componentDetails !== undefined && props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined &&
                                 <>
-                                    <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Shareweb/component_icon.png"} />    <a>{props.Title}</a>
+                                    <img className='icon-sites-img ml20'  src={componentDetails.SiteIcon} />
+                                    {'>'} <img className='icon-sites-img ml20' src={props.props.ParentIcon} />
+                                    {'>'} <img className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
                                 </>
                             }
-                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type != 'SubComponent' && props.Item_x0020_Type != 'Feature' &&
+                            {componentDetails === undefined  && props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined &&
                                 <>
-                                    <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"} />  <a>{props.Title}</a>
-                                </>}
-                            {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type == 'SubComponent' &&
-                                <>
-                                    {props.Parent != undefined &&
-                                        <a target='_blank' data-interception="off"
-                                            href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Shareweb/component_icon.png"} />
-                                        </a>
-                                    } {'>'} <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png"} />    <a>{props.Title}</a>
+                                    
+                                   <img  className='icon-sites-img ml20' src={props.props.ParentIcon} />
+                                    {'>'} <img  className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
                                 </>
                             }
-                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type == 'SubComponent' &&
+                             {componentDetails !== undefined && props.props.ParentTask === undefined &&
                                 <>
-                                    {props.Parent != undefined &&
-                                        <a target='_blank' data-interception="off"
-                                            href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"} />
-                                        </a>
-                                    } {'>'}
-                                    <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png"} />    <a>{props.Title}</a>
-                                </>
-                            }
-
-                            {props.Portfolio_x0020_Type == 'Component' && props.Item_x0020_Type == 'Feature' &&
-                                <>
-
-                                    {props.Parent != undefined &&
-                                        <a target='_blank' data-interception="off"
-                                            href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Shareweb/component_icon.png"} />
-                                        </a>
-
-                                    } {'>'}  {(props.Parent.ItemType != undefined && props.Parent.ItemType == "SubComponent") &&
-                                        <a target='_blank' data-interception="off"
-                                            href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png"} />
-                                        </a>
-                                    }  {'>'}  <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"} />    <a>{props.Title}</a>
-                                </>
-                            }
-                            {props.Portfolio_x0020_Type == 'Service' && props.Item_x0020_Type == 'Feature' &&
-                                <>
-                                    {props.Parent != undefined &&
-                                        <a target='_blank' data-interception="off"
-                                            href={GlobalConstants.MAIN_SITE_URL + `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"} />
-                                        </a>
-                                    } {'>'} {(props.Parent.ItemType != undefined && props.Parent.ItemType == "SubComponent") &&
-                                        <a target='_blank' data-interception="off"
-                                            href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`}>
-                                            <img className='client-icons' title={props.Parent.Title} src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png"} />
-                                        </a>
-                                    }  {'>'}  <img className='client-icons' title={props.Title} src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"} />    <a>{props.Title}</a>
+                                    <img  className='icon-sites-img ml20' src={componentDetails.SiteIcon} />
+                                    {'>'} <img  className='icon-sites-img ml20' src={props.props.CurrentIcon} /> <a>{props.props.Title}</a>
                                 </>
                             }
                         </span>
@@ -972,14 +963,14 @@ function TasksTable(props:any){
                                                                         onClick={setModalSmartIsOpenToTrue}
                                                                     >
                                                                         <i ><FaFilter onClick={setModalSmartIsOpenToTrue} /></i>
-                                                                    </span>
+                                                                    </span> 
                                                                 </span> */}
                                             </div>
                                         </th>
                                         <th style={{ width: "3%" }}>
                                             <div style={{ width: "2%" }}>
-                                                {/* {IsShowRestru ? 
-                                                <img onClick={(e) => OpenModal(props.props)} src={IsShowRestru && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"} ></img> :''} */}
+                                                {IsShowRestru ? 
+                                                <img  className='icon-sites-img ml20'  onClick={(e) => OpenModal(props.props)} src={IsShowRestru && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"} ></img> :''}
                                             </div>
                                         </th>
                                         <th style={{ width: "3%" }}>
@@ -989,7 +980,7 @@ function TasksTable(props:any){
                                 </thead>
                                 <tbody>
                                     <div id="SpfxProgressbar" style={{ display: "none" }}>
-                                        <img id="sharewebprogressbar-image" src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/32/loading_apple.gif"} alt="Loading..." />
+                                        <img  id="sharewebprogressbar-image" src={GlobalConstants.MAIN_SITE_URL + "/SiteCollectionImages/ICONS/32/loading_apple.gif"} alt="Loading..." />
                                     </div>
                                     {data?.length > 0 && data && data.map(function (item, index) {
 
@@ -1648,6 +1639,12 @@ function TasksTable(props:any){
                                 ><span>{NewArrayBackup[0].Title}</span>
                                 </a>  please click Submit to continue.</span> : ''}
                             </div>
+                            <div> {checkedList != undefined && checkedList.length > 0 && (checkedList[0].SharewebTaskType.Title === 'Task' || checkedList[0].SharewebTaskType === undefined || checkedList[0].SharewebTaskType.Title === undefined)?
+                                <div>
+                                    <span> {'Select Task Type. :'}<input type="radio" name="fav_language" value="Workstream" checked={RestructureChecked[0].Item_x0020_Type == "Workstream" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Workstream')} /><label className="ms-1"> {'Workstream'} </label></span>
+                                    <span> <input type='radio' name="fav_language" value="Task" checked={RestructureChecked[0].Item_x0020_Type === "Task" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Task')} /> <label className="ms-1"> {'Task'} </label> </span>
+                                </div>
+                                : ''}</div>
                             <div>
                                 <span>  Old: </span>
                                 {OldArrayBackup.map(function (obj: any, index) {
@@ -1678,12 +1675,7 @@ function TasksTable(props:any){
                                 </a></span>
                             </div>
                             {console.log("restructure functio test in div===================================")}
-                            {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type != 'Task' ?
-                                <div>
-                                    <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
-                                    <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
-                                </div>
-                                : ''}
+                           
                         </div>
                         : ''}
                 </div>
