@@ -10,16 +10,23 @@ import { MdAdd } from 'react-icons/Md';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
 import PortfolioStructureCreationCard from '../../../globalComponents/tableControls/PortfolioStructureCreation';
+import CreateActivity from '../../servicePortfolio/components/CreateActivity';
+import CreateWS from '../../servicePortfolio/components/CreateWS';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 var AllTasks: any = [];
 let siteConfig :any =[];
 var IsUpdated: any = '';
+var MeetingItems:any=[]
 let AllWSTasks = [];
+var allworkstreamTasks:any=[]
 var filter: any = '';
+var Array:any=[]
 let taskUsers :any =[];
 function TasksTable(props:any){
     const [data, setData] = React.useState([]);
      const [Isshow, setIsshow] = React.useState(false);
+     const [count, setCount] = React.useState(0);
+     const [ActivityDisable, setActivityDisable] = React.useState(true);
      const [checkedList, setCheckedList] = React.useState([]);
      const [AllUsers, setTaskUser] = React.useState([]); 
      const [IsTask, setIsTask] = React.useState(false);
@@ -28,8 +35,15 @@ function TasksTable(props:any){
      const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
      const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
+    const [MeetingPopup, setMeetingPopup] = React.useState(false);
+    const [WSPopup, setWSPopup] = React.useState(false);
+    const [ActivityPopup, setActivityPopup] = React.useState(false);
     const [lgShow, setLgShow] = React.useState(false);
      IsUpdated = props.Portfolio_x0020_Type;
+
+
+
+     
 
       const GetSmartmetadata = async () => {
         //  var metadatItem: any = []
@@ -158,7 +172,7 @@ function TasksTable(props:any){
                                     })
                                     let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask !=undefined && type.ParentTask.Id === props.props.Id) && (type.SharewebTaskType !=undefined && type.SharewebTaskType.Title != 'Workstream') });
                                     if(props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType ==='Activities')
-                                    var allworkstreamTasks =  $.grep(AllTasks, function (task: any) { return (task.SharewebTaskType !=undefined && task.SharewebTaskType.Title === 'Workstream')});
+                                     allworkstreamTasks =  $.grep(AllTasks, function (task: any) { return (task.SharewebTaskType !=undefined && task.SharewebTaskType.Title === 'Workstream')});
                                     if(allworkstreamTasks !=undefined && allworkstreamTasks.length >0){
                                         allworkstreamTasks.forEach((obj:any) =>{
                                             if(obj.Id !=undefined){
@@ -180,6 +194,7 @@ function TasksTable(props:any){
                                     allworkstreamTasks =[];
                                     allworkstreamTasks =allworkstreamTasks.concat(allParentTasks);
                                     setData(allworkstreamTasks);
+                                    Array.push()
                                 }
         
                             } catch (error) {
@@ -191,6 +206,7 @@ function TasksTable(props:any){
                // })
             }
             React.useEffect(() => {
+                MeetingItems.push(props)
                 getTaskUsers(); 
                 GetSmartmetadata();
                
@@ -271,8 +287,46 @@ function TasksTable(props:any){
             const setModalIsOpenToTrue = () => {
                 setModalIsOpen(true)
             }
-            const Call = React.useCallback((item1) => {
+            const Call = React.useCallback((childItem: any) => {
                 setIsTask(false);
+                setMeetingPopup(false);
+                setWSPopup(false);
+                var MainId: any = ''
+                if (childItem != undefined) {
+                    childItem.data['flag'] = true;
+                    childItem.data['TitleNew'] = childItem.data.Title;
+                    childItem.data['SharewebTaskType'] = { Title: 'Workstream' }
+                    if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
+                        MainId = childItem.data.ServicesId[0]
+                    }
+                    if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+                        MainId = childItem.data.ComponentId[0]
+                    }
+                    allworkstreamTasks.push(childItem.data)
+                    
+                    
+                    // if (allworkstreamTasks != undefined) {
+                    //     allworkstreamTasks.forEach((val: any) => {
+                    //         if (val.Id == MainId) {
+                    //             if(val.childs == undefined){
+                    //                 val.childs=[]
+                    //                 val.childs.push(childItem.data)
+                    //             }
+                    //             else{
+                    //                 val.childs.push(childItem.data)
+                    //             }
+                               
+                    //         }
+          
+                    //     })
+                        setData(allworkstreamTasks)
+                        setCount(count+1)
+                       
+                       
+                        
+                    
+        
+                }
             }, []);
             const TimeEntryCallBack = React.useCallback((item1) => {
                 setIsTimeEntry(false);
@@ -345,6 +399,19 @@ function TasksTable(props:any){
                 // setData((data) => [...ComponentsData]);
                 // setSharewebComponent(item);
             }, []);
+            const openActivity=()=>{
+                if(props.props.SharewebTaskType == 'Workstream'){
+                    MeetingItems[0].props['NoteCall']='Task'
+                    setMeetingPopup(true)
+                 }
+                 if(props.props.SharewebTaskType == 'Activities'){
+                    setWSPopup(true)
+                   
+                }
+                // if(props.SharewebTaskType == 'Task'){
+                    
+                // } 
+            }
     return (
       
         <div className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
@@ -428,12 +495,13 @@ function TasksTable(props:any){
                             Add Structure
                         </button> */}
                         <button type="button"
-                            className="btn btn-primary"
-                         disabled={true}>
-                              {/* //    onClick={() => setLgShow(true)} */}
-                            <MdAdd />
-                            Add Activity-Task
-                        </button>
+                                            className="btn btn-primary"
+                                            onClick={() => openActivity()}
+                                            disabled={props.SharewerbTaskType == 'Task'?ActivityDisable:false}>
+
+                                            <MdAdd />
+                                            Add Activity-Task
+                                        </button>
                         <button type="button"
                             className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
                             disabled={true}>
@@ -715,13 +783,15 @@ function TasksTable(props:any){
 
                                                                     </td>
                                                                     <td style={{ width: "6%" }}>
+                                                                    {
+                                                                    item?.SharewebTaskType?.Title != 'Task' &&
                                                                         <div className="d-flex">
                                                                             <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(item)} />
                                                                                 <a className="hreflink" data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
                                                                             </span>
-                                                                        </div>
+                                                                        </div>}
                                                                     </td>
                                                                     <td style={{ width: "7%" }}><span className="ml-2">{item.Shareweb_x0020_ID}</span></td>
                                                                     <td style={{ width: "23%" }}>
@@ -832,11 +902,14 @@ function TasksTable(props:any){
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
+                                                                                            {
+                                                                                             childitem?.SharewebTaskType?.Title != 'Task' &&
                                                                                                 <span className='pe-2'><input type="checkbox" />
                                                                                                     <a className="hreflink" data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
                                                                                                     </a>
                                                                                                 </span>
+                                                                                                }
                                                                                             </td>
                                                                                             <td style={{ width: "7%" }}>  <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
                                                                                             </td>
@@ -951,11 +1024,13 @@ function TasksTable(props:any){
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
+                                                                                                                        {childinew.SharewebTaskType?.Title != 'Task' &&
                                                                                                                         <span className='pe-2'><input type="checkbox" />
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
                                                                                                                         </span>
+                                                                                                                          }
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "7%" }}> <div className="d-flex">
 
@@ -1333,6 +1408,8 @@ function TasksTable(props:any){
             </div>
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0].props} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0].props} Call={Call} data={data}></CreateWS>}
           
             <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />

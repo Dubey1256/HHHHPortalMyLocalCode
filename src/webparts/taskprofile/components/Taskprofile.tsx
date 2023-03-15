@@ -8,7 +8,6 @@ import TaskFeedbackCard from './TaskFeedbackCard';
 import { Web } from "sp-pnp-js";
 // import { Modal } from 'office-ui-fabric-react';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
-
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 // import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
 import * as globalCommon from '../../../globalComponents/globalCommon'
@@ -20,7 +19,7 @@ import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import { Sync } from '@material-ui/icons';
 import TasksTable from './TaskfooterTable';
-// import EmailComponenet from './emailComponent';
+import EmailComponenet from './emailComponent';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
 // var smartTime: Number = 0                                   ;
@@ -164,6 +163,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
       // console.log(AllDataMatches);
       this.gAllDataMatches = AllDataMatches;
+      
       // console.log('All Component : ');
       // console.log(this.gAllDataMatches)
       if (AllDataMatches[0] != undefined && AllDataMatches[0].Item_x0020_Type != undefined && AllDataMatches[0].Item_x0020_Type == 'Component') {
@@ -194,6 +194,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getAll(4000);
 
     Data.forEach(function (Item: any) {
+    // Item['Shareweb_x0020_ID'] = globalCommon.getTaskId( Item)
       AllDataMatches.push(Item);
     });
 
@@ -219,8 +220,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("Team_x0020_Members", "Approver", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title","ParentTask/Id","ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("Team_x0020_Members", "Approver","ParentTask", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
 
     taskDetails["listName"] = this.state.listName;
@@ -322,6 +323,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       AttachmentFiles: taskDetails["AttachmentFiles"],
       SmartInformationId: taskDetails["SmartInformation"],
       Approver: taskDetails.Approver != undefined ? taskDetails.Approver[0] : "",
+      ParentTask:taskDetails?.ParentTask,
     };
 
     // console.log(tempTask);
@@ -656,6 +658,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     })
     this.GetResult();
   }
+  private approvalcallback(){
+    this.GetResult();
+  }
   // private CallBackSumSmartTime(item: any) {
 
   //   smartTime = item
@@ -765,7 +770,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
           if (item.Id == value.Id) {
 
-            if (value.Parent.Id != undefined) {
+            if (value.Parent != undefined && value.Parent.Id != undefined) {
               gAllDataMatches.forEach(function (component: any) {
                 if (component.Id == value.Parent.Id) {
                   flag = true;
@@ -789,7 +794,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   }
                 }
               })
-            } else if (value.Parent.Id == undefined) {
+            } else if (value.Parent !=undefined && value.Parent.Id == undefined) {
               if (value.Item_x0020_Type == 'Component') {
                 flag = true;
                 breadcrumbitem.Parentitem = value;
@@ -1008,10 +1013,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
               {this.state.Result['Title']}
               {/* {this.props.Context._pageContext.web.title=="SH"} */}
               <a className="hreflink ng-scope ps-2" onClick={() => this.OpenEditPopUp()}>
-                <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"/></svg>
+                {/* <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
               </a>
               {/* {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined&&this.currentUser[0].Title==this.state.Result["Approver"].Title &&<span><button>Approve</button><span><button>Reject</button></span></span>} */}
-              {/* {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet  siteUrl={this.props.siteUrl} Context={this.props.Context} Approver={this.state.Result["Approver"]} currentUser={this.currentUser} items={this.state.Result}/>} */}
+              {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet  siteUrl={this.props.siteUrl} Context={this.props.Context} Approver={this.state.Result["Approver"]} currentUser={this.currentUser} items={this.state.Result}/>}
             </span>
             {this.state.Result.sitePage == "SP" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
             {this.state.Result.sitePage == "SH" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
@@ -1086,7 +1092,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                           <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
                             <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
                               <div>
-                                {this.state.Result["TeamMembers"].slice(2).map((rcData: any, i: any) => {
+                                {this.state.Result["TeamMembers"].slice(1).map((rcData: any, i: any) => {
 
                                   return <div className="team_Members_Item" style={{ padding: '2px' }}>
                                     <a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
@@ -1131,7 +1137,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-fxdark'>Created</dt>
                     <dd className='bg-light'>
-                      {moment(this.state.Result["Created"]).format("DD/MM/YYYY")} | <span className='ms-1'>
+                      {moment(this.state.Result["Created"]).format("DD/MM/YYYY")}  <span className='ms-1'>
                         {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                           <a title={this.state.Result["Author"][0].Title} >
                             {this.state.Result["Author"][0].userImage !== "" && <img className="imgAuthor" src={this.state.Result["Author"][0].userImage} ></img>}
@@ -1260,6 +1266,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                 </span>
                               </div>
                               <div>
+                              <a className='images' target="_blank" data-interception="off" href={imgData.ImageUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
                                 <span >
                                   {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
                                 </span>
@@ -1290,6 +1297,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               fullfeedback={this.state.Result["FeedBack"]}
                               CurrentUser={this.currentUser}
                               ApprovalStatus={this.state.ApprovalStatus}
+                              Approver={this.state.Result["Approver"]}
                             >
                             </TaskFeedbackCard>
                           })}
@@ -1321,6 +1329,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                   <span >
                                     {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
                                   </span>
+                                  
 
                                 </span>
                               </div>
@@ -1331,6 +1340,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                     <img className='align-self-start' title={imgData.UserName} src={imgData.UserImage} />
                                   }
                                 </span>
+                               
                               </div>
                               {/* <div>
                                 <span >
@@ -1377,6 +1387,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 </div>
 
                 <div className='row'>
+                {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
                   {this.state.Result != undefined &&
                     <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
                       <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
