@@ -2692,7 +2692,7 @@ let isOpenPopup =false;
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
-                                                                                                <span className='pe-2'><input type="checkbox" />
+                                                                                                <span className='pe-2'><input type="checkbox" checked={childitem.chekBox} onChange={(e) => onChangeHandler(childitem, 'Parent', e)}/>
                                                                                                     <a className="hreflink" data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
                                                                                                     </a>
@@ -2816,7 +2816,7 @@ let isOpenPopup =false;
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
-                                                                                                                        <span className='pe-2'><input type="checkbox"  onChange={(e) => onChangeHandler(childinew, item, e)}/>
+                                                                                                                        <span className='pe-2'><input type="checkbox"  checked={childitem.chekBox}  onChange={(e) => onChangeHandler(childinew, item, e)}/>
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
@@ -3280,7 +3280,7 @@ let isOpenPopup =false;
                                          
                                     } */}
                                     {
-                                        (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
+                                        // (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
                                         <ul className="quick-actions">
 
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
@@ -3326,37 +3326,37 @@ let isOpenPopup =false;
                                                     Task
                                                 </div>
                                             </li>
-                                        </ul>:
-                                         <ul className="quick-actions">
+                                        </ul>
+                                    //      <ul className="quick-actions">
 
-                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                             <div onClick={(e) => CreateMeetingPopups('Implementation')}>
-                                                 <span className="icon-sites">
-                                                     <img className="icon-sites"
-                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+                                    //      <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                    //          <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                    //              <span className="icon-sites">
+                                    //                  <img className="icon-sites"
+                                    //                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
 
-                                                 </span>
-                                                 Implmentation
-                                             </div>
-                                         </li>
-                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                             <div onClick={() => CreateMeetingPopups('Development')}>
-                                                 <span className="icon-sites">
-                                                     <img className="icon-sites"
-                                                         src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+                                    //              </span>
+                                    //              Implmentation
+                                    //          </div>
+                                    //      </li>
+                                    //      <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                    //          <div onClick={() => CreateMeetingPopups('Development')}>
+                                    //              <span className="icon-sites">
+                                    //                  <img className="icon-sites"
+                                    //                      src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
 
-                                                 </span>
-                                                 Development
-                                             </div>
-                                         </li>
-                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                             <div onClick={() => CreateMeetingPopups('Activities')}>
-                                                 <span className="icon-sites">
-                                                 </span>
-                                                 Activity
-                                             </div>
-                                         </li>
-                                     </ul>
+                                    //              </span>
+                                    //              Development
+                                    //          </div>
+                                    //      </li>
+                                    //      <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                    //          <div onClick={() => CreateMeetingPopups('Activities')}>
+                                    //              <span className="icon-sites">
+                                    //              </span>
+                                    //              Activity
+                                    //          </div>
+                                    //      </li>
+                                    //  </ul>
 
                                     }
                                 </div>
