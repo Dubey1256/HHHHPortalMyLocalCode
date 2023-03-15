@@ -51,7 +51,7 @@ var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
-var ChangeTaskUserStatus: any = false;
+var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
 var ApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
@@ -4515,7 +4515,7 @@ const EditTaskPopup = (Items: any) => {
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="">
                         <div className='col-sm-12 categScroll' style={{ height: "auto" }}>
-                            <input className="form-control my-2" type='text' placeholder="Search Name Here!" />
+                            <input className="form-control my-2" type='text' placeholder="Search Name Here!"  />
                             <div className="border full-width my-2 p-2">
                                 {ApproverData?.map((val: any) => {
                                     return (
