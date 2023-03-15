@@ -2212,7 +2212,7 @@ const EditTaskPopup = (Items: any) => {
                 )
             },
             {
-                internalHeader: 'Percent Complete',
+                internalHeader: 'Status',
                 accessor: 'PercentComplete',
                 showSortIcon: true,
             },
@@ -3479,7 +3479,7 @@ const EditTaskPopup = (Items: any) => {
 
                     {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}>
                     </ComponentPortPolioPopup>}
-                    {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" CallBack={SelectCategoryCallBack} closePopupCallBack={smartCategoryPopup}></Picker>}
+                    {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
                     {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
                 </div>
             </Panel>
@@ -3581,7 +3581,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="100%"
                 onDismiss={ImageCustomizeFunctionClosePopup}
-                isBlocking={false}
+                isBlocking={ImageCustomizePopup}
                 onRenderFooter={onRenderCustomFooterOther}
             >
                 <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
@@ -4390,7 +4390,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="700px"
                 onDismiss={closeCopyAndMovePopup}
-                isBlocking={false}
+                isBlocking={CopyAndMoveTaskPopup}
             >
                 <div className="modal-body">
                     <div className={ServicesTaskCheck ? " serviepannelgreena" : ""} >
@@ -4438,7 +4438,7 @@ const EditTaskPopup = (Items: any) => {
                 onRenderHeader={onRenderCustomReplaceImageHeader}
                 isOpen={replaceImagePopup}
                 onDismiss={closeReplaceImagePopup}
-                isBlocking={false}
+                isBlocking={replaceImagePopup}
                 type={PanelType.custom}
                 customWidth="500px"
 
@@ -4463,11 +4463,11 @@ const EditTaskPopup = (Items: any) => {
                 onRenderHeader={onRenderCustomProjectManagementHeader}
                 isOpen={ProjectManagementPopup}
                 onDismiss={closeProjectManagementPopup}
-                isBlocking={false}
+                isBlocking={ProjectManagementPopup}
                 type={PanelType.custom}
                 customWidth="1100px"
             >
-                <div className={ServicesTaskCheck ? "serviepannelgreena" : ''}>
+                <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
                     <div className="modal-body p-0 mt-2">
                         <Table className="SortingTable" bordered hover {...getTableProps()}>
                             <thead>
@@ -4517,7 +4517,7 @@ const EditTaskPopup = (Items: any) => {
                 onRenderHeader={onRenderCustomApproverHeader}
                 isOpen={ApproverPopupStatus}
                 onDismiss={closeApproverPopup}
-                isBlocking={false}
+                isBlocking={ApproverPopupStatus}
                 type={PanelType.medium}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
@@ -4606,8 +4606,6 @@ const EditTaskPopup = (Items: any) => {
                     </footer>
                 </div>
             </Panel>
-
-
         </div>
     )
 }
