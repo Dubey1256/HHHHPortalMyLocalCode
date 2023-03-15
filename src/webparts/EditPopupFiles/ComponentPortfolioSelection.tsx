@@ -60,10 +60,6 @@ const ComponentPortPolioPopup = (item: any) => {
 
     }
 
-
-
-
-
     const handleOpen = (item: any) => {
         item.show = item.show = item.show == true ? false : true;
         setComponentsData(componentsData => ([...componentsData]));
@@ -654,11 +650,11 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 <th style={{ width: "4%" }}>
                                                     <div></div>
                                                 </th>
-                                                <th style={{ width: "2%" }}>
+                                                {/* <th style={{ width: "2%" }}>
                                                     <div></div>
-                                                </th>
-                                                <th style={{ width: "22%" }}>
-                                                    <div style={{ width: "21%" }} className="smart-relative ">
+                                                </th> */}
+                                                <th style={{ width: "24%" }}>
+                                                    <div style={{ width: "23%" }} className="smart-relative ">
                                                         <input type="search" placeholder="Title" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Title')} />
 
                                                         <span className="sorticon">
@@ -774,7 +770,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                 </span>
                                                                             </div>
                                                                         </td>
-                                                                        <td style={{ width: "2%" }}>
+                                                                        {/* <td style={{ width: "2%" }}>
                                                                             <div className="">
                                                                                 <span>
                                                                                     <div className="accordian-header" onClick={() => handleOpen(item)}>
@@ -790,8 +786,8 @@ const ComponentPortPolioPopup = (item: any) => {
 
                                                                                 </span>
                                                                             </div>
-                                                                        </td>
-                                                                        <td style={{ width: "22%" }}>
+                                                                        </td> */}
+                                                                        <td style={{ width: "24%" }}>
                                                                             {/* <a className="hreflink serviceColor_Active" target="_blank"
                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                             >{item.Title}
@@ -854,7 +850,8 @@ const ComponentPortPolioPopup = (item: any) => {
 
                                                                                     </span>
                                                                                 )
-                                                                            })}</div></td>
+                                                                            })}</div>
+                                                                        </td>
                                                                         <td style={{ width: "10%" }}>{item.PercentComplete}</td>
                                                                         <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                         <td style={{ width: "10%" }}>{item.DueDate}</td>
@@ -903,7 +900,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                                 </span>
                                                                                             </div>
                                                                                             </td>
-                                                                                            <td style={{ width: "2%" }}>
+                                                                                            {/* <td style={{ width: "2%" }}>
                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childitem)}>
                                                                                                     {childitem.childs.length > 0 &&
                                                                                                         <a className='hreflink'
@@ -916,8 +913,8 @@ const ComponentPortPolioPopup = (item: any) => {
 
                                                                                                 </div>
 
-                                                                                            </td>
-                                                                                            <td style={{ width: "22%" }}>
+                                                                                            </td> */}
+                                                                                            <td style={{ width: "24%" }}>
                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                 >
@@ -995,8 +992,8 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                                                 </span>
                                                                                                             </div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "2%" }}></td>
-                                                                                                            <td style={{ width: "22%" }}>
+                                                                                                            {/* <td style={{ width: "2%" }}></td> */}
+                                                                                                            <td style={{ width: "24%" }}>
 
                                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}

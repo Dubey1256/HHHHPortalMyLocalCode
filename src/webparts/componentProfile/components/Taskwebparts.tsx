@@ -25,7 +25,7 @@ import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import CreateActivity from '../../servicePortfolio/components/CreateActivity';
 import CreateWS from '../../servicePortfolio/components/CreateWS';
-import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
+// import Edit from '../../../Assets/ICON/edit_page.svg';
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
@@ -1376,6 +1376,8 @@ export default function ComponentTable({ props }: any) {
         setIsTask(false);
         setMeetingPopup(false);
         setWSPopup(false);
+        selectedCategory=[];
+        setLgShow(false);
         var MainId: any = ''
         if (childItem != undefined) {
             childItem.data['flag'] = true;
@@ -1556,12 +1558,14 @@ let isOpenPopup =false;
         }
         else{
             if(MeetingItems[0] != undefined){
+               
+               
             if (MeetingItems[0].SharewebTaskType != undefined) {
                 if (MeetingItems[0].SharewebTaskType.Title == 'Activities') {
                     setWSPopup(true)
                 }
             }
-          
+            
             if (MeetingItems != undefined && MeetingItems[0].SharewebTaskType?.Title == 'Workstream') {
                 setActivityPopup(true)
             }
@@ -2670,8 +2674,8 @@ let isOpenPopup =false;
                                                                     </td>
 
                                                                     <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                    <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />}
-                                                                        {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
+                                                                    <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(item)} />}
+                                                                        {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -2785,8 +2789,8 @@ let isOpenPopup =false;
                                                                                             </td>
 
                                                                                             <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                                            <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
-                                                                                                {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
+                                                                                            <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(childitem)} />}
+                                                                                                {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                         </tr>
                                                                                     </table>
                                                                                 </td>
@@ -2923,8 +2927,8 @@ let isOpenPopup =false;
                                                                                                                     </td>
 
                                                                                                                     <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                                                                    <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} />}
-                                                                                                                        {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
+                                                                                                                    <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(childinew)} />}
+                                                                                                                        {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
                                                                                                                 </tr>
                                                                                                             </table>
                                                                                                         </td>
@@ -3051,8 +3055,8 @@ let isOpenPopup =false;
                                                                                                                                         
 
                                                                                                                                         <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                        <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(subchilditem)} />}
-                                                                                                                                            {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
+                                                                                                                                        <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(subchilditem)} />}
+                                                                                                                                            {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
                                                                                                                                     </tr>
                                                                                                                                 </table>
                                                                                                                             </td>
@@ -3174,8 +3178,8 @@ let isOpenPopup =false;
                                                                                                                                                             </td>
 
                                                                                                                                                             <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                                            <td style={{ width: "3%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
-                                                                                                                                                                {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td>
+                                                                                                                                                            <td style={{ width: "3%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
+                                                                                                                                                                {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td>
                                                                                                                                                         </tr>
                                                                                                                                                     </table>
                                                                                                                                                 </td>
@@ -3282,7 +3286,27 @@ let isOpenPopup =false;
                                     {
                                         // (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
                                         <ul className="quick-actions">
+                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Development')}>
+                                                <span className="icon-sites">
+                                                    <img className="icon-sites"
+                                                       src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
 
+                                                </span>
+                                               Development
+                                            </div>
+                                       </li>
+ <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                <span className="icon-sites">
+                                                   <img className="icon-sites"
+                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                 </span>
+                                                  Implmentation
+                                          </div>
+                                         </li>
+                                        
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                                                 <div onClick={(e) => CreateMeetingPopups('Task')}>
                                                     <span className="icon-sites">
@@ -3320,6 +3344,13 @@ let isOpenPopup =false;
                                                 </div>
                                             </li>
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                 <span className="icon-sites">
+                                                 </span>
+                                                 Activity
+                                             </div>
+                                         </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                                                 <div onClick={() => CreateMeetingPopups('Task')}>
                                                     <span className="icon-sites">
                                                     </span>
@@ -3349,13 +3380,13 @@ let isOpenPopup =false;
                                     //              Development
                                     //          </div>
                                     //      </li>
-                                    //      <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                    //          <div onClick={() => CreateMeetingPopups('Activities')}>
-                                    //              <span className="icon-sites">
-                                    //              </span>
-                                    //              Activity
-                                    //          </div>
-                                    //      </li>
+                                        //  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                        //      <div onClick={() => CreateMeetingPopups('Activities')}>
+                                        //          <span className="icon-sites">
+                                        //          </span>
+                                        //          Activity
+                                        //      </div>
+                                        //  </li>
                                     //  </ul>
 
                                     }
