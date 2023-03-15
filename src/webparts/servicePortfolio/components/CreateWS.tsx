@@ -31,6 +31,7 @@ const CreateWS = (props: any) => {
         console.log(props)
     }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
+   
     const [isDropItem, setisDropItem] = React.useState(false);
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
@@ -274,6 +275,16 @@ const CreateWS = (props: any) => {
         if (AllItems.Portfolio_x0020_Type == 'Service') {
             RelevantPortfolioIds.push(AllItems.PortfolioId)
         }
+        if (AllItems.Portfolio_x0020_Type == undefined) {
+            if(AllItems.Component != undefined && AllItems.Component.length>0){
+           smartComponentData.push(AllItems.Component);
+            }
+ 
+            if (AllItems.Services != undefined && AllItems.Services.length>0) {
+                linkedComponentData.push(AllItems);
+            }
+       
+       }
 
         var categoriesItem = '';
         CategoriesData.map((category) => {
@@ -335,7 +346,7 @@ const CreateWS = (props: any) => {
             ServicesId: { "results": RelevantPortfolioIds },
             Priority: AllItems.Priority,
             Body: AllItems.Description,
-            DueDate: NewDate != undefined ? NewDate : null,
+            DueDate: NewDate != '' &&   NewDate != undefined ? NewDate : undefined,
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
@@ -403,6 +414,7 @@ const CreateWS = (props: any) => {
 
     }
     const createChildAsTask = async (item: any, Type: any, index: any) => {
+        var NewDate =''
         var RelevantPortfolioIds: any = []
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let componentDetails: any = [];
@@ -421,6 +433,7 @@ const CreateWS = (props: any) => {
         if (TaskprofileId == '' || SelectedTasks.length > 0) {
             TaskprofileId = SelectedTasks[0].Id;
         }
+
         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
             var SharewebID = '';
             if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component') {
@@ -432,6 +445,25 @@ const CreateWS = (props: any) => {
             if (Task.Events != undefined && Task.Portfolio_x0020_Type == 'Events') {
                 SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
+            if (AllItems.Portfolio_x0020_Type == undefined) {
+                if(AllItems.Component != undefined && AllItems.Component.length>0){
+               smartComponentData.push(AllItems.Component);
+                }
+     
+                if (AllItems.Services != undefined && AllItems.Services.length>0) {
+                    linkedComponentData.push(AllItems);
+                }
+           
+           }
+           if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+            linkedComponentData?.map((com: any) => {
+                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                    $.each(linkedComponentData, function (index: any, smart: any) {
+                        RelevantPortfolioIds.push(smart.Id)
+                    })
+                }
+            })
+        }
             var Component: any = []
             smartComponentData.forEach((com: any) => {
                 if (com != undefined) {
@@ -454,6 +486,13 @@ const CreateWS = (props: any) => {
             //         }
             //     })
             // }
+           
+            if(myDate != undefined && myDate != null){
+                var dateValue = myDate.split("/");
+                var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+                var Dateet = new Date(dp)
+                NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
+             }
             if (AllItems.Portfolio_x0020_Type == 'Component') {
                 Component.push(AllItems.PortfolioId)
             }
@@ -504,7 +543,7 @@ const CreateWS = (props: any) => {
                 ServicesId: { "results": RelevantPortfolioIds },
                 SharewebTaskTypeId: SharewebTasknewTypeId,
                 Body: AllItems.Description,
-                DueDate: date != undefined ? new Date(date).toDateString() : date,
+                DueDate: NewDate != '' &&   NewDate != undefined ? NewDate : undefined,
                 Shareweb_x0020_ID: SharewebID,
                 Priority: AllItems.Priority,
                 SharewebTaskLevel2No: WorstreamLatestId,
