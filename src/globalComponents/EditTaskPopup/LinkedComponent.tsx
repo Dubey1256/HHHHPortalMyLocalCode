@@ -218,7 +218,7 @@ const LinkedServices = (item: any) => {
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
-            isBlocking={false}
+            isBlocking={modalIsOpen}
             onRenderFooter={CustomFooter}
         >
             <div className="serviepannelgreena">

@@ -622,7 +622,7 @@ const ComponentPortPolioPopup = (item: any) => {
             type={PanelType.large}
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
-            isBlocking={false}
+            isBlocking={modalIsOpen}
             onRenderFooter={CustomFooter}
         >
             <div>
