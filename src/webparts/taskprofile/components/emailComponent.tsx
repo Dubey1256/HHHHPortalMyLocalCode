@@ -5,6 +5,7 @@ import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
  import { Web } from 'sp-pnp-js';
  let count=0;
+ let percentage=1;
  const EmailComponenet=( props:any)=>{
   // const [taskdetails,setTaskDetails]=useState(null);
    const [taskpermission,settaskpermission]=useState(null);
@@ -13,6 +14,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
     // getResult();
    },[])
     console.log(props);
+    percentage= props.items["PercentComplete"]
   // const getResult= async()=>{
   //   let web = new Web(props.siteUrl);
   //   let taskDetails = [];
@@ -247,7 +249,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["PercentComplete"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{percentage}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                       </tr>
                       <tr>
