@@ -1508,13 +1508,14 @@ function TimeEntryPopup(item: any) {
 
         });
         var Dateee =''
-        if(editeddata != undefined){
-           var a =  Moment(editeddata).format()
-            Dateee = Moment(a).format('DD/MM/YYYY')
-        }
-        else{
-            Dateee = Moment(changeEdited).format('DD/MM/YYYY')
-        }
+        // if(editeddata != undefined){
+        //    var a =  Moment(editeddata).format()
+        //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
+        // }
+        // else{
+        //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
+        // }
+        
        // var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
         //var DateFormate = new Date(Eyd)
 
@@ -1531,11 +1532,12 @@ function TimeEntryPopup(item: any) {
                     update['AuthorName'] = CurrentUser.AuthorName;
                     update['AuthorImage'] = CurrentUser.AuthorImage;
                     update['ID'] = timeSpentId.ID + 1;
+                    update['AuthorId'] = CurntUserId
                     update['MainParentId'] = AddMainParent;
                     update['ParentID'] = AddParent;
                     update['TaskTime'] = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
                     update['TaskTimeInMin'] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
-                    update['TaskDate'] = Dateee != 'Invalid date' && Dateee != "" && Dateee != undefined ? Dateee : child.TaskDate;
+                    update['TaskDate'] = Moment(changeDates).format('DD/MM/YYYY');
                     update['Description'] = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
                     subItem.AdditionalTime.push(update)
                     UpdatedData = subItem.AdditionalTime
@@ -2553,17 +2555,17 @@ function TimeEntryPopup(item: any) {
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'firstdate','Edit')}>1st</span>
+                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'firstdate','Add')}>1st</span>
                                                     | <span className="href"
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '15thdate','Edit')}>15th</span>
+                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '15thdate','Add')}>15th</span>
                                                     | <span className="href"
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '1Jandate','Edit')}>
+                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '1Jandate','Add')}>
                                                         1
                                                         Jan
                                                     </span>
@@ -2572,7 +2574,7 @@ function TimeEntryPopup(item: any) {
 
                                                         id="selectedToday"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'Today','Edit')}>Today</span>
+                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'Today','Add')}>Today</span>
                                                 </div>
                                                 <label className="full_width">
                                                     Date
@@ -2585,7 +2587,7 @@ function TimeEntryPopup(item: any) {
                                                     ng-required="true"
                                                     placeholder="DD/MM/YYYY"
                                                     ng-model="AdditionalnewDate"
-                                                    value={editeddata}
+                                                    value={Moment(changeDates).format('ddd, DD MMM yyyy')}
                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
 
                                                        </div>
