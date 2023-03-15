@@ -17,7 +17,9 @@ import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { getSP } from '../../spservices/pnpjsConfig';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
-
+let color:any=false;
+let Title:any="";
+let commentlength:any=0
 export interface ICommentCardProps {
   siteUrl?: string;
   userDisplayName?: string;
@@ -91,14 +93,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "DueDate", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+      .select("ID", "Title", "DueDate","Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
       .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
       .get()
 
     await this.GetTaskUsers();
 
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
-
+    Title=taskDetails["Title"];
     let tempTask = {
       ID: 'T' + taskDetails["ID"],
       Title: taskDetails["Title"],
@@ -121,9 +123,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
       Component: taskDetails["Component"],
       Services: taskDetails["Services"],
+      Portfolio_x0020_Type:taskDetails["Portfolio_x0020_Type"],
       TaskUrl: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + this.state.itemID + "&Site=" + this.state.listName
     };
-
+    if(tempTask["Portfolio_x0020_Type"]!=undefined&&tempTask["Portfolio_x0020_Type"]=="Service"){
+      color=true;
+    }
+    if(tempTask["Comments"]!=undefined&&tempTask["Comments"].length>0){
+      commentlength=tempTask.Comments.length;
+    }
+    
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
       tempTask["Comments"].map((item: any) => {
         if (item.AuthorImage != undefined && item.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
@@ -222,6 +231,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private async PostComment(txtCommentControlId: any) {
+    commentlength=0;
     let txtComment = this.state.CommenttoPost;
     if (txtComment != '') {
       let temp = {
@@ -282,7 +292,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       let temp = {
         AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
         AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
-        Created: (new Date().toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',', ''),
+        Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Description: txtComment,
         Header: updateCommentPost.Header,
         ID: updateCommentPost.ID,
@@ -536,14 +546,39 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private customHeaderforEditCommentpopup() {
     return (
-      <div className=  "d-flex full-width pb-1">
+      // <div className={(this.state?.Result?.Portfolio_x0020_Type!=undefined&&this.state?.Result?.Portfolio_x0020_Type=="Service")?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"}>
+      //   <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+          
+      //     <span className="siteColor">
+      //       Update Comment
+      //     </span>
+      //   </div>
+      //   <Tooltip ComponentId="588" />
+      // </div>
+      <>
+   <div className={color?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"}>
         <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
           
           <span className="siteColor">
             Update Comment
           </span>
         </div>
-        <Tooltip ComponentId="1683" />
+        <Tooltip ComponentId="588" />
+      </div>
+      </>
+
+    )
+  }
+  private customHeaderforALLcomments(){
+    return (
+      <div className={color?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1 "}>
+        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+          
+          <span className="siteColor">
+          Comment:{Title}{commentlength}
+          </span>
+        </div>
+        <Tooltip ComponentId="588" />
       </div>
     )
   }
@@ -565,7 +600,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   public render(): React.ReactElement<ICommentCardProps> {
     //const { editorState } = this.state;
     return (
-      <div>
+      <div >
         <div className='mb-3 card commentsection'>
           <div className='card-header'>
             {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
@@ -676,12 +711,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
               <span><Tooltip /> </span> <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.CloseModal(e)}></button>
             </div> */}
+            <div className={color?"serviepannelgreena":""}>
             <div className='modal-body'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
             <div className='modal-footer text-end'>
               <button type="button" className="btn btn-primary" onClick={(e) => this.updateComment()} >Save</button>
               <button type="button" className="btn btn-default ms-2" onClick={(e) => this.CloseModal(e)}>Cancel</button>
+            </div>
             </div>
           {/* </div> */}
 
@@ -690,20 +727,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
 
         <Panel
-          headerText={`Comment:${this.state.Result["Title"]}(${this.state.Result["Comments"]?.length})`}
+          // headerText={`Comment:${this.state.Result["Title"]}(${this.state.Result["Comments"]?.length})`}
+          onRenderHeader={this.customHeaderforALLcomments}
           type={PanelType.custom}
           customWidth="500px"
           onDismiss={(e) => this.closeAllCommentModal(e)}
           isOpen={this.state.AllCommentModal}
           isBlocking={false}>
 
-          <div id='ShowAllCommentsId'>
+          <div id='ShowAllCommentsId'className={color?"serviepannelgreena":""}>
 
             {/* <div className='modal-header mb-2'>
               {this.state.Result["Comments"] != undefined && this.state.Result["Comments"].length > 0 &&
                 <h3 className='modal-title'></h3>
               }
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.closeAllCommentModal(e)}></button>
+             <span><Tooltip /> </span> <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.closeAllCommentModal(e)}></button>
 
             </div> */}
             <div className='modal-body mt-2'>

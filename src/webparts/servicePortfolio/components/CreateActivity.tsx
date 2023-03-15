@@ -29,7 +29,7 @@ const CreateActivity = (props: any) => {
         var AllItems = props.props
         SelectedTasks.push(AllItems)
 
-        //portfolioId=AllItems.Id
+        portfolioId=AllItems.Id
         console.log(props)
     }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
@@ -64,31 +64,34 @@ const CreateActivity = (props: any) => {
     CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Approval", "Id": 227, "ParentId": 225 },
         { "TaxType": "Categories", "Title": "Immediate", "Id": 228, "parentId": 225 });
 
-    React.useEffect(() => {
+   
         if (AllItems.Portfolio_x0020_Type != undefined) {
             if (AllItems.Portfolio_x0020_Type == 'Component') {
                 smartComponentData.push(AllItems);
             }
-            // if(AllItems.SharewebTaskType.Title == 'Workstream' && AllItems.Portfolio_x0020_Type == 'Component'){
-            //     if(AllItems.Component != undefined && AllItems.Component.length > 0){
-            //         smartComponentData.push(AllItems.Component[0].Id)
-            //     }
-            // }
-
+           
+ 
             if (AllItems.Portfolio_x0020_Type == 'Service') {
                 linkedComponentData.push(AllItems);
             }
-            // if(AllItems.SharewebTaskType.Title == 'Workstream' && AllItems.Portfolio_x0020_Type == 'Service'){
-            //     if(AllItems.Services != undefined && AllItems.Services.length > 0){
-            //         linkedComponentData.push(AllItems.Services[0].Id)
-            //     }
-            // }
+           
 
         }
-
-        GetSmartMetadata()
-
-    }, [])
+        if (AllItems.Portfolio_x0020_Type == undefined) {
+            if(AllItems.Component != undefined && AllItems.Component.length>0){
+           smartComponentData.push(AllItems);
+            }
+ 
+            if (AllItems.Services != undefined && AllItems.Services.length>0) {
+                linkedComponentData.push(AllItems);
+            }
+       
+       }
+       React.useEffect(()=>{
+        GetSmartMetadata();
+       },[])
+       
+   
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
         var siteConfig = []
@@ -107,15 +110,16 @@ const CreateActivity = (props: any) => {
         siteConfig?.forEach((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
                 site.IscreateTask = false;
-
                 SitesTypes.push(site);
             }
         })
         if (AllItems.NoteCall == 'Task') {
             SitesTypes?.forEach((type: any) => {
-                if (type.listId == AllItems.listId) {
+                 if(type.listId != null){
+                if (type.listId.toLowerCase() == AllItems.listId) {
                     type.IscreateTask = true;
-                }
+                } 
+            }
             })
 
             let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -139,6 +143,7 @@ const CreateActivity = (props: any) => {
         }
 
         setSiteType(SitesTypes)
+
         //setModalIsOpenToTrue();
     }
     const getTasktype = async () => {
@@ -411,7 +416,7 @@ const CreateActivity = (props: any) => {
         if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
             linkedComponentData?.map((com: any) => {
                 if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                    if (linkedComponentData[0] != undefined && linkedComponentData[0].SharewebTaskType != undefined && linkedComponentData[0].SharewebTaskType.Title == 'Workstream') {
+                    if (linkedComponentData[0] != undefined && linkedComponentData[0].SharewebTaskType != undefined && linkedComponentData[0].SharewebTaskType.Title == 'Workstream' || linkedComponentData[0].SharewebTaskType == 'Workstream') {
                         $.each(com.Services, function (index: any, smart: any) {
                             RelevantPortfolioIds.push(smart.Id)
                         })
@@ -523,10 +528,10 @@ const CreateActivity = (props: any) => {
                     }
                     if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
                         var SharewebID = '';
-                        if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component') {
+                        if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component' || Task.Component != undefined && Task.Component.length > 0) {
                             SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
-                        if (Task.Services != undefined && Task.Portfolio_x0020_Type == 'Service') {
+                        if (Task.Services != undefined && Task.Portfolio_x0020_Type == 'Service' || Task.Services != undefined && Task.Services.length > 0) {
                             SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
                         if (Task.Events != undefined && Task.Portfolio_x0020_Type == 'Events') {
@@ -749,7 +754,7 @@ const CreateActivity = (props: any) => {
                         </div>
                         <div className='row'>
                             <div className='col-sm-10'>
-                                <div className="row">
+                                <div className="row"> 
                                     <div className="col-sm-10 mb-10 mt-2">
                                         <label className="full_width">
                                             Task Name <a id='siteName'
@@ -763,7 +768,7 @@ const CreateActivity = (props: any) => {
                                         <label>Due Date</label>
                                         <DatePicker className="form-control"
                                             selected={date}
-                                            value={AllItems.DueDate}
+                                            value={date}
                                             onChange={handleDatedue}
                                             dateFormat="dd/MM/yyyy"
 
@@ -866,7 +871,7 @@ const CreateActivity = (props: any) => {
                                                 {linkedComponentData?.map((com: any) => {
                                                     return (
                                                         <>
-                                                            <div className="d-flex Component-container-edit-task">
+                                                            <div className="d-flex block full-width p-2">
                                                                 <div>
                                                                     <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
