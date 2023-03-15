@@ -7,21 +7,26 @@ import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import * as moment from 'moment';
 import { MdAdd } from 'react-icons/Md';
-// import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-// import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
 import PortfolioStructureCreationCard from '../../../globalComponents/tableControls/PortfolioStructureCreation';
+import CreateActivity from '../../servicePortfolio/components/CreateActivity';
+import CreateWS from '../../servicePortfolio/components/CreateWS';
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { Web } from 'sp-pnp-js';
 var AllTasks: any = [];
 let siteConfig :any =[];
 var IsUpdated: any = '';
+var MeetingItems:any=[]
 let AllWSTasks = [];
+var allworkstreamTasks:any=[]
 var filter: any = '';
+var Array:any=[]
 let taskUsers :any =[];
-let IsShowRestru :any =false;
 function TasksTable(props:any){
     const [data, setData] = React.useState([]);
      const [Isshow, setIsshow] = React.useState(false);
+     const [count, setCount] = React.useState(0);
+     const [ActivityDisable, setActivityDisable] = React.useState(true);
      const [checkedList, setCheckedList] = React.useState([]);
      const [AllUsers, setTaskUser] = React.useState([]); 
      const [IsTask, setIsTask] = React.useState(false);
@@ -30,13 +35,15 @@ function TasksTable(props:any){
      const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
      const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
+    const [MeetingPopup, setMeetingPopup] = React.useState(false);
+    const [WSPopup, setWSPopup] = React.useState(false);
+    const [ActivityPopup, setActivityPopup] = React.useState(false);
     const [lgShow, setLgShow] = React.useState(false);
-    const [maidataBackup, setmaidataBackup] = React.useState([])
-    const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
-    const [NewArrayBackup, setNewArrayBackup] = React.useState([]);
-    const [ResturuningOpen, setResturuningOpen] = React.useState(false);
-    const [RestructureChecked, setRestructureChecked] = React.useState([]);
      IsUpdated = props.Portfolio_x0020_Type;
+
+
+
+     
 
       const GetSmartmetadata = async () => {
         //  var metadatItem: any = []
@@ -86,12 +93,12 @@ function TasksTable(props:any){
                 var Response: any = []
                 var Counter = 0;
                // filterarray.forEach((filter: any) => {
-                    // siteConfig.forEach(async (config: any) => {
-                    //     if (config.Title != 'Master Tasks' && config.Title != 'SDC Sites') {
+                    siteConfig.forEach(async (config: any) => {
+                        if (config.Title != 'Master Tasks' && config.Title != 'SDC Sites') {
                             try {
                                 let AllTasksMatches = [];
                                 var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" + filter + ""
-                                AllTasksMatches = await globalCommon.getData(GlobalConstants.SP_SITE_URL, props.props.listId, select)
+                                AllTasksMatches = await globalCommon.getData(GlobalConstants.SP_SITE_URL, config.listId, select)
                                 console.log(AllTasksMatches);
                                 Counter++;
                                 console.log(AllTasksMatches.length);
@@ -100,9 +107,9 @@ function TasksTable(props:any){
                                     $.each(AllTasksMatches, function (index: any, item: any) {
                                         item.isDrafted = false;
                                         item.flag = true;
-                                        item.siteType = props.props.siteType;
+                                        item.siteType = config.Title;
                                         item.childs = [];
-                                        item.listId = props.props.listId;
+                                        item.listId = config.listId;
                                         item.siteUrl = GlobalConstants.SP_SITE_URL;
                                         if (item.SharewebCategories != undefined) {
                                             if (item.SharewebCategories.length > 0) {
@@ -114,12 +121,12 @@ function TasksTable(props:any){
                                             }
                                         }
                                     })
-                               
+                                }
                                 AllTasks = AllTasks.concat(AllTasksMatches);
                                 AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
         
         
-                              //  if (Counter === siteConfig.length ) {
+                                if (Counter === siteConfig.length ) {
                                      AllTasks.forEach((result: any) => {
                                         //   result.TeamLeader = []
                                         result.CreatedDateImg = []
@@ -165,7 +172,7 @@ function TasksTable(props:any){
                                     })
                                     let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask !=undefined && type.ParentTask.Id === props.props.Id) && (type.SharewebTaskType !=undefined && type.SharewebTaskType.Title != 'Workstream') });
                                     if(props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType ==='Activities')
-                                    var allworkstreamTasks =  $.grep(AllTasks, function (task: any) { return (task.SharewebTaskType !=undefined && task.SharewebTaskType.Title === 'Workstream')});
+                                     allworkstreamTasks =  $.grep(AllTasks, function (task: any) { return (task.SharewebTaskType !=undefined && task.SharewebTaskType.Title === 'Workstream')});
                                     if(allworkstreamTasks !=undefined && allworkstreamTasks.length >0){
                                         allworkstreamTasks.forEach((obj:any) =>{
                                             if(obj.Id !=undefined){
@@ -180,39 +187,26 @@ function TasksTable(props:any){
                                             }
                                               })
                                             }
-                                            obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
                                             obj.childsLength =obj.childs !=undefined && obj.childs.length >0 ?obj.childs.length :0;
                                         })
                                     }
-                                    
-                                    var temp: any = {};
-                                    temp.Title = 'Tasks';
-                                    temp.childs = allParentTasks;
-                                    temp.childsLength = allParentTasks.length;
-                                    temp.flag = true;
-                                    temp.show =true;
-                                    temp.PercentComplete = '';
-                                    temp.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                                    temp.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-                                    temp.ItemRank = '';
-                                    temp.DueDate = '';
                                     if(allworkstreamTasks ===undefined)
                                     allworkstreamTasks =[];
-                                    if(temp.childs.length >0)
-                                    allworkstreamTasks =allworkstreamTasks.concat(temp);
+                                    allworkstreamTasks =allworkstreamTasks.concat(allParentTasks);
                                     setData(allworkstreamTasks);
-                                    setmaidataBackup(allworkstreamTasks)
-                              //  }
-                            }
+                                    Array.push()
+                                }
+        
                             } catch (error) {
                                 console.log(error)
                             }
-                        // } else Counter++;
+                        } else Counter++;
         
-                    //})
+                    })
                // })
             }
             React.useEffect(() => {
+                MeetingItems.push(props)
                 getTaskUsers(); 
                 GetSmartmetadata();
                
@@ -276,8 +270,6 @@ function TasksTable(props:any){
                 
                 console.log(list);
                 setCheckedList(checkedList => ([...list]));
-                if(list.length ===0)
-                clearreacture();
             };
             const EditItemTaskPopup = (item: any) => {
                 // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
@@ -295,8 +287,46 @@ function TasksTable(props:any){
             const setModalIsOpenToTrue = () => {
                 setModalIsOpen(true)
             }
-            const Call = React.useCallback((item1) => {
+            const Call = React.useCallback((childItem: any) => {
                 setIsTask(false);
+                setMeetingPopup(false);
+                setWSPopup(false);
+                var MainId: any = ''
+                if (childItem != undefined) {
+                    childItem.data['flag'] = true;
+                    childItem.data['TitleNew'] = childItem.data.Title;
+                    childItem.data['SharewebTaskType'] = { Title: 'Workstream' }
+                    if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
+                        MainId = childItem.data.ServicesId[0]
+                    }
+                    if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+                        MainId = childItem.data.ComponentId[0]
+                    }
+                    allworkstreamTasks.push(childItem.data)
+                    
+                    
+                    // if (allworkstreamTasks != undefined) {
+                    //     allworkstreamTasks.forEach((val: any) => {
+                    //         if (val.Id == MainId) {
+                    //             if(val.childs == undefined){
+                    //                 val.childs=[]
+                    //                 val.childs.push(childItem.data)
+                    //             }
+                    //             else{
+                    //                 val.childs.push(childItem.data)
+                    //             }
+                               
+                    //         }
+          
+                    //     })
+                        setData(allworkstreamTasks)
+                        setCount(count+1)
+                       
+                       
+                        
+                    
+        
+                }
             }, []);
             const TimeEntryCallBack = React.useCallback((item1) => {
                 setIsTimeEntry(false);
@@ -352,28 +382,6 @@ function TasksTable(props:any){
                 }
                 setAddModalOpen(false)
             }, []);
-            function clearreacture (){
-            
-                    data.forEach((obj) => {
-                        obj.isRestructureActive = false;
-                        if (obj.childs != undefined && obj.childs.length > 0) {
-                            obj.childs.forEach((sub: any) => {
-                                obj.isRestructureActive = false;
-                                if (sub.childs != undefined && sub.childs.length > 0) {
-                                    sub.childs.forEach((subchild: any) => {
-                                        obj.isRestructureActive = false;
-                                    })
-                                }
-
-                            })
-                        }
-
-
-                    })
-            
-                setData((data) => [...data]);
-            }
-
             const CreateOpenCall = React.useCallback((item) => {
                 isOpenPopup = true;
                 item.data.childs = [];
@@ -391,257 +399,18 @@ function TasksTable(props:any){
                 // setData((data) => [...ComponentsData]);
                 // setSharewebComponent(item);
             }, []);
-            const buttonRestructuring = () => {
-                var ArrayTest: any = [];
-                //  if (checkedList != undefined && checkedList.length === 1) {
-                // if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length > 0 && checkedList[0].Item_x0020_Type === 'Workstream')
-                //     alert('You are not allowed to Restructure this item.')
-               
-                if (checkedList.length > 0) {
-                    data.forEach((obj) => {
-                        if(obj.SharewebTaskType != undefined && obj.SharewebTaskType.Title !=undefined  && obj.SharewebTaskType.Title =='Workstream')
-                        obj.isRestructureActive = true;
-                        if (obj.Id === checkedList[0].Id) {
-                            obj.isRestructureActive = false;
-                            ArrayTest.push(...[obj])
-                        }
-                        if (obj.childs != undefined && obj.childs.length > 0) {
-                            obj.childs.forEach((sub: any) => {
-                                if (sub.Id === checkedList[0].Id) {
-                                    obj.isRestructureActive = false;
-                                    ArrayTest.push(...[obj])
-                                    ArrayTest.push(...[sub])
-                                    // ArrayTest.push(sub)
-                                }
-                                if (sub.childs != undefined && sub.childs.length > 0) {
-                                    sub.childs.forEach((subchild: any) => {
-                                        if (subchild.Item_x0020_Type === 'Feature')
-                                            subchild.isRestructureActive = true;
-                                        if (subchild.Id === checkedList[0].Id) {
-                                            ArrayTest.push(...[obj])
-                                            ArrayTest.push(...[sub])
-                                            ArrayTest.push(...[subchild])
-                                            // ArrayTest.push(sub)
-                                        }
-                                        if (subchild.childs != undefined && subchild.childs.length > 0) {
-                                            subchild.childs.forEach((listsubchild: any) => {
-                                                if (listsubchild.Id === checkedList[0].Id) {
-                                                    ArrayTest.push(...[obj])
-                                                    ArrayTest.push(...[sub])
-                                                    ArrayTest.push(...[subchild])
-                                                    ArrayTest.push(...[listsubchild])
-                                                }
-                                                if (listsubchild.childs != undefined && listsubchild.childs.length > 0) {
-                                                    listsubchild.childs.forEach((sublistsubchild: any) => {
-                                                        if (sublistsubchild.Id === checkedList[0].Id) {
-                                                            ArrayTest.push(...[obj])
-                                                            ArrayTest.push(...[sub])
-                                                            ArrayTest.push(...[subchild])
-                                                            ArrayTest.push(...[listsubchild])
-                                                            ArrayTest.push(...[sublistsubchild])
-                                                        }
-        
-                                                    })
-                                                }
-                                            })
-                                        }
-        
-                                    })
-                                }
-        
-                            })
-                        }
-        
-        
-                    })
+            const openActivity=()=>{
+                if(props.props.SharewebTaskType == 'Workstream'){
+                    MeetingItems[0].props['NoteCall']='Task'
+                    setMeetingPopup(true)
+                 }
+                 if(props.props.SharewebTaskType == 'Activities'){
+                    setWSPopup(true)
+                   
                 }
-                setOldArrayBackup(ArrayTest)
-                IsShowRestru =true;
-                //setData((data) => [...maidataBackup]);
-        
-                //  }
-                // setAddModalOpen(true)
-            }
-            const RestruringCloseCall = () => {
-                IsShowRestru =false;
-                clearreacture();
-                setResturuningOpen(false)
-            };
-            const OpenModal = (item: any) => {
-                var TestArray: any = [];
-                setResturuningOpen(true);
-                data.forEach((obj) => {
-                    if (obj.Id === item.Id)
-                        TestArray.push(obj)
-                    if (obj.childs != undefined && obj.childs.length > 0) {
-                        obj.childs.forEach((sub: any) => {
-                            if (sub.Id === item.Id) {
-                                //TestArray.push(obj)
-                                TestArray.push(...[obj]);
-                                TestArray.push(...[sub])
-                            }
-                            if (sub.childs != undefined && sub.childs.length > 0) {
-                                sub.childs.forEach((newsub: any) => {
-                                    if (newsub.Id === item.Id) {
-                                        TestArray.push(...[obj])
-                                        TestArray.push(...[sub])
-                                        TestArray.push(...[newsub])
-                                    }
-        
-                                })
-                            }
-        
-                        })
-                    }
-        
-                })
-               let Items: any = []; Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
-               setRestructureChecked(Items);
-               setNewArrayBackup(NewArrayBackup => ([...TestArray]));
-        
-            }
-        
-            const setRestructure = (item: any, title: any) => {
-                let array: any = [];
-                item.Item_x0020_Type = title;
-                // if (item != undefined && title === 'SubComponent') {
-                //     item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
-        
-                //     ChengedTitle = 'Component';
-        
-                // }
-                // if (item != undefined && title === 'Feature') {
-                //     item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-                //     ChengedTitle = 'SubComponent';
-        
-                // }
-              //  setChengedItemTitle(title);
-                array.push(item)
-                setRestructureChecked((RestructureChecked: any) => [...array]);
-                // maidataBackup.forEach((obj) => {
-                //     if (obj.Id === item.Id) {
-                //         PortfolioLevelNum = obj.childs.length + 1;
-                //     }
-                //     if (obj.childs != undefined && obj.childs.length > 0) {
-                //         obj.childs.forEach((sub: any) => {
-                //             if (sub.Id === item.Id) {
-                //                 PortfolioLevelNum = sub.childs.length + 1;
-                //             }
-                //             if (sub.childs != undefined && sub.childs.length > 0) {
-                //                 sub.childs.forEach((newsub: any) => {
-                //                     if (newsub.Id === item.Id) {
-                //                         PortfolioLevelNum = newsub.childs.length + 1;
-                //                     }
-        
-                //                 })
-                //             }
-        
-                //         })
-                //     }
-        
-                // })
-                // setRestructureChecked(item);
-            }
-            const UpdateTaskRestructure = async function () {
-                var Ids: any = [];
-                if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
-                    NewArrayBackup.forEach((obj, index) => {
-                        if ((NewArrayBackup.length - 1) === index)
-                            Ids.push(obj.Id);
-                    })
-        
-                }
-        
-                let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-                await web.lists.getById(checkedList[0].listId).items.getById(checkedList[0].Id).update({
-                    // EventsId: checkedList[0].Portfolio_x0020_Type === 'Event' ? { "results": Ids } : [],
-                    //    '__metadata': { 'type': 'SP.Data.'+checkedList[0].siteType+'ListItem' },
-                    ParentTaskId: NewArrayBackup[0].Id,
-                }).then((res: any) => {
-                    maidataBackup.forEach((obj, index) => {
-                        obj.isRestructureActive = false;
-                        if (obj.Id === checkedList[0].Id) {
-                            if (obj.childs.length === 0) {
-                                obj.downArrowIcon = '';
-                                obj.RightArrowIcon = '';
-                            }
-                        }
-                        if (obj.childs != undefined && obj.childs.length > 0) {
-                            obj.childs.forEach((sub: any, indexsub: any) => {
-                                sub.isRestructureActive = false;
-                                if (sub.Id === checkedList[0].Id) {
-                                    obj.childs.splice(indexsub, 1)
-                                    if (sub.childs.length === 0) {
-                                        sub.downArrowIcon = '';
-                                        sub.RightArrowIcon = '';
-                                    }
-        
-                                }
-                                if (sub.childs != undefined && sub.childs.length > 0) {
-                                    sub.childs.forEach((newsub: any, lastIndex: any) => {
-                                        newsub.isRestructureActive = false;
-                                        if (newsub.Id === checkedList[0].Id) {
-                                            sub.childs.splice(lastIndex, 1)
-                                            if (newsub.childs.length === 0) {
-                                                newsub.downArrowIcon = '';
-                                                newsub.RightArrowIcon = '';
-                                            }
-                                        }
-        
-                                    })
-                                }
-        
-                            })
-                        }
-        
-                    })
-                    maidataBackup.forEach((obj, index) => {
-                        if (obj.Id === Ids[0]) {
-                            obj.flag = true;
-                            obj.show = true;
-                            obj.downArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                            obj.RightArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-        
-                            obj.childs.push(checkedList[0]);
-                            obj.childsLength = obj.childs.length;
-                        }
-                        if (obj.childs != undefined && obj.childs.length > 0) {
-                            obj.childs.forEach((sub: any, indexsub: any) => {
-                                sub.isRestructureActive = false;
-                                if (sub.Id === Ids[0]) {
-                                    sub.flag = true;
-                                    sub.show = true;
-                                    sub.downArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                                    sub.RightArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-        
-                                    sub.childs.push(checkedList[0]);
-                                    sub.childsLength = sub.childs.length
-                                }
-                                if (sub.childs != undefined && sub.childs.length > 0) {
-                                    sub.childs.forEach((newsub: any, lastIndex: any) => {
-                                        if (newsub.Id === Ids[0]) {
-                                            newsub.flag = true;
-                                            newsub.show = true;
-                                            newsub.downArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
-                                            newsub.RightArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-        
-                                            newsub.childs.push(checkedList[0]);
-                                            newsub.childsLength = newsub.childs.length
-        
-        
-        
-                                        }
-        
-                                    })
-                                }
-        
-                            })
-                        }
-        
-                    })
-                    setData(data => ([...maidataBackup]));
-                    RestruringCloseCall()
-                })
+                // if(props.SharewebTaskType == 'Task'){
+                    
+                // } 
             }
     return (
       
@@ -726,22 +495,23 @@ function TasksTable(props:any){
                             Add Structure
                         </button> */}
                         <button type="button"
-                            className="btn btn-primary"
-                         disabled={true}>
-                              {/* //    onClick={() => setLgShow(true)} */}
-                            <MdAdd />
-                            Add Activity-Task
-                        </button>
+                                            className="btn btn-primary"
+                                            onClick={() => openActivity()}
+                                            disabled={props.SharewerbTaskType == 'Task'?ActivityDisable:false}>
+
+                                            <MdAdd />
+                                            Add Activity-Task
+                                        </button>
                         <button type="button"
-                             className="btn btn-primary" disabled={checkedList.length ==0}
-                             onClick={buttonRestructuring}>
+                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
+                            disabled={true}>
                             Restructure
                         </button>
-                        {/* <button type="button"
+                        <button type="button"
                             className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
                             disabled={true}>
                             Compare
-                        </button> */}
+                        </button>
                         <a className='expand'>
                                             {/* <ExpndTable prop={expndpopup} prop1={tablecontiner} /> */}
                                         </a>
@@ -977,10 +747,7 @@ function TasksTable(props:any){
                                             </div>
                                         </th>
                                         <th style={{ width: "3%" }}>
-                                            <div style={{ width: "2%" }}>
-                                                {/* {IsShowRestru ? 
-                                                <img onClick={(e) => OpenModal(props.props)} src={IsShowRestru && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"} ></img> :''} */}
-                                            </div>
+                                            <div style={{ width: "2%" }}></div>
                                         </th>
                                         <th style={{ width: "3%" }}>
                                             <div style={{ width: "2%" }}></div>
@@ -1016,13 +783,15 @@ function TasksTable(props:any){
 
                                                                     </td>
                                                                     <td style={{ width: "6%" }}>
+                                                                    {
+                                                                    item?.SharewebTaskType?.Title != 'Task' &&
                                                                         <div className="d-flex">
                                                                             <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(item)} />
                                                                                 <a className="hreflink" data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
                                                                             </span>
-                                                                        </div>
+                                                                        </div>}
                                                                     </td>
                                                                     <td style={{ width: "7%" }}><span className="ml-2">{item.Shareweb_x0020_ID}</span></td>
                                                                     <td style={{ width: "23%" }}>
@@ -1111,7 +880,7 @@ function TasksTable(props:any){
                                                                     </td>
 
                                                                     <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                    <td style={{ width: "3%" }}>{item.siteType !== "Master Tasks" && item.Title !== 'Tasks' && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}<a>
+                                                                    <td style={{ width: "3%" }}><a>
                                                                         {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
                                                                 </tr>
                                                             </table>
@@ -1133,11 +902,14 @@ function TasksTable(props:any){
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
-                                                                                                <span className='pe-2'><input type="checkbox"  onChange={(e) => onChangeHandler(childitem)}  />
+                                                                                            {
+                                                                                             childitem?.SharewebTaskType?.Title != 'Task' &&
+                                                                                                <span className='pe-2'><input type="checkbox" />
                                                                                                     <a className="hreflink" data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
                                                                                                     </a>
                                                                                                 </span>
+                                                                                                }
                                                                                             </td>
                                                                                             <td style={{ width: "7%" }}>  <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
                                                                                             </td>
@@ -1252,11 +1024,13 @@ function TasksTable(props:any){
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
+                                                                                                                        {childinew.SharewebTaskType?.Title != 'Task' &&
                                                                                                                         <span className='pe-2'><input type="checkbox" />
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
                                                                                                                         </span>
+                                                                                                                          }
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "7%" }}> <div className="d-flex">
 
@@ -1632,69 +1406,13 @@ function TasksTable(props:any){
                     </div>
                 </div>
             </div>
-            {/* {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>} */}
+            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0].props} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0].props} Call={Call} data={data}></CreateWS>}
           
-            {/* <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+            <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
-            </Panel> */}
-               <Panel headerText={` Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
-                <div>
-                    {ResturuningOpen ?
-                        <div className='bg-ee p-2 restructurebox'>
-                            <div>
-                                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 " src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
-                                ><span>{NewArrayBackup[0].Title}</span>
-                                </a>  please click Submit to continue.</span> : ''}
-                            </div>
-                            <div>
-                                <span>  Old: </span>
-                                {OldArrayBackup.map(function (obj: any, index) {
-                                    if(obj.Title !=='Tasks'){
-                                    return (
-                                        <span> <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
-                                        ><span>{obj.Title}  </span>
-                                        </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
-                                    )
-                                    }
-                                })}
-
-                            </div>
-                            <div>
-                                <span>  New:   </span> {NewArrayBackup.map(function (newobj: any, indexnew) {
-                                    return (
-                                        <>
-                                            <span> <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
-                                            ><span>{newobj.Title}  </span>
-                                            </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
-                                    )
-                                })}
-                                <span> <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
-                                ><span>{RestructureChecked[0].Title}  </span>
-                                </a></span>
-                            </div>
-                            {console.log("restructure functio test in div===================================")}
-                            {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type != 'Task' ?
-                                <div>
-                                    <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
-                                    <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
-                                </div>
-                                : ''}
-                        </div>
-                        : ''}
-                </div>
-                <footer className="mt-2 text-end">
-                    {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Task' ?
-                        <button type="button" className="btn btn-primary " onClick={(e) => UpdateTaskRestructure()}>Save</button>
-                        :''}
-                    <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
-
-
-                </footer>
             </Panel>
             </div>
     )

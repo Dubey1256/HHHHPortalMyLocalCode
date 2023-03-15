@@ -139,8 +139,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       })
 
       tempTask["Comments"].sort(function (a: any, b: any) {
-        let keyA = a.ID,
-          keyB = b.ID;
+        // let keyA = a.ID,
+        //   keyB = b.ID;
+        let keyA =new Date(a.Created) ,
+          keyB = new Date(b.Created);
         // Compare the 2 dates
         if (keyA < keyB) return 1;
         if (keyA > keyB) return -1;

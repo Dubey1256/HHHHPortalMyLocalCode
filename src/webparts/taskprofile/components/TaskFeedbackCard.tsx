@@ -13,6 +13,7 @@ export interface ITaskFeedbackProps {
   onPost: () => void;
   CurrentUser: any;
   ApprovalStatus: boolean;
+  Approver:any
 }
 
 export interface ITaskFeedbackState {
@@ -204,33 +205,46 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     let doc = parser.parseFromString(str, 'text/html');
     return doc.body;
   }
-private changeTrafficLigth(item:any){
-  this.setState({
-    
-  })
+private changeTrafficLigth(index:any,item:any){
+  console.log(index);
+  console.log(item);
+  if(  this.props.Approver.Id==this.props.CurrentUser[0].Id){
+    let tempData:any=this.state.fbData;
+    tempData.isShowLight = item;
+    console.log(tempData);
+    this.setState({
+      fbData: tempData,
+        index: index,
+    });
+    this.props.onPost();
+  }
+
+  
+
+ 
 }
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
       <div>
         <div className="col mb-2">
           <div className='justify-content-between d-flex'>
-            <div>
+            <div className="pt-2">
               {this.props.ApprovalStatus ?
                 <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
-                  <span title="Rejected" onClick={()=> this.changeTrafficLigth("Reject")}
+                  <span title="Rejected" onClick={()=> this.changeTrafficLigth(this.state.index,"Reject")}
                     className={this.state.fbData['isShowLight'] == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                   >
                   </span>
-                  <span onClick={()=> this.changeTrafficLigth("Maybe")} title="Maybe" className={this.state.fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                  <span onClick={()=> this.changeTrafficLigth(this.state.index,"Maybe")} title="Maybe" className={this.state.fbData['isShowLight'] == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                   </span>
-                  <span title="Approved" onClick={()=> this.changeTrafficLigth("Approve")} className={this.state.fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+                  <span title="Approved" onClick={()=> this.changeTrafficLigth(this.state.index,"Approve")} className={this.state.fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                   </span>
                 </span>
                 : null
               }
             </div>
-            <div>
+            <div className='pb-1'>
               <span className="d-block">
                 <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox()}>Add Comment</a>
               </span>
