@@ -15,7 +15,7 @@ const SmartTimeTotalFunction=(item:any)=>{
     const [smartTimeTotal,setsmartTimeTotal] = React.useState(0);
     const [additionalTime, setAdditionalTime] = React.useState([]);
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
-
+    const [showBlock, setShowBlock] = React.useState(false);
  
     
     console.log(item.props);
@@ -36,6 +36,14 @@ const SmartTimeTotalFunction=(item:any)=>{
         AllMetadata = MetaData;
         await GetTaskUsers();
 
+    }
+    function handleSuffixHover() {
+        setShowBlock(true)
+    }
+
+    function handleuffixLeave() {
+
+        setShowBlock(false)
     }
     
     const GetTaskUsers = async () => {
@@ -337,14 +345,14 @@ const SmartTimeTotalFunction=(item:any)=>{
        {console.log(AllAvailableTitle)} 
         {console.log(additionalTime)}
            {smartTimeTotal.toFixed(1)}
-           <span className='openhoverpopup'>
+           <span className='position-relative user_Member_img_suffix2 multimember'>
         
-            <a className='hoverimg' onClick={OpenTimeEntry}><img className='ms-1' src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}/>
+            <a className='' onClick={OpenTimeEntry}><img className='ms-1'  onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }}/>
             </a>
-            
-          <div className='hoverpopup' style={{overflow:"scroll", height:"300px"}}>
+            {showBlock &&
+          <div className='tooltiptext'>
            <div className='hoverpopuptitle'>{item.props.Title}</div>
-           <div className='hoverpopupbody'>
+           <div className='hoverpopupbody Scrolling'>
            <table className='table mb-0'>
                   <tbody>
               {additionalTime.length>0 && additionalTime.map((items:any)=>{
@@ -372,7 +380,8 @@ const SmartTimeTotalFunction=(item:any)=>{
               )}  
                </tbody>
               </table>
-              </div> </div>
+              </div> 
+              </div>}
               </span>
             {isTimeEntry ? <TimeEntry data={item.props} isopen={isTimeEntry} CallBackTimesheet={() => {CallBackTimesheet() }} /> : ''}
             </>
