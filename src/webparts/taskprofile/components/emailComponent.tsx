@@ -176,7 +176,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
   }
    return(
       <>
-     {props?.items?.Approver!=undefined &&props?.items?.Categories?.includes("Approval")&& props?.currentUser!=undefined&&props.Approver?.Title==props.currentUser[0]?.Title&&count==0
+     {props?.items?.Approver!=undefined &&props?.items?.Categories?.includes("Approval")&& props?.currentUser!=undefined && props?.items?.Approver?.Title==props.currentUser[0]?.Title&&count==0
       &&<span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>
      }
    
