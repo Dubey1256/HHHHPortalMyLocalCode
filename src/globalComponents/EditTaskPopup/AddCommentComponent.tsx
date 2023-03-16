@@ -144,7 +144,7 @@ const AddCommentComponent = (FbData: any) => {
                 <Panel headerText={`Update Comment`}
                     isOpen={editPostPanel}
                     onDismiss={editPostCloseFunction}
-                    isBlocking={false}
+                    isBlocking={editPostPanel}
                     type={PanelType.custom}
                     customWidth="500px"
                 >

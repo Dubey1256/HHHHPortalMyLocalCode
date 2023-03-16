@@ -10,6 +10,7 @@ import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedCompo
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
 import Tooltip from '../../../globalComponents/Tooltip';
+import "react-datepicker/dist/react-datepicker.css";
 //import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -26,10 +27,11 @@ var FeedBackItemArray: any = [];
 var feedbackArray: any = []
 const CreateActivity = (props: any) => {
     if (props != undefined) {
+        props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY')
         var AllItems = props.props
         SelectedTasks.push(AllItems)
 
-        //portfolioId=AllItems.Id
+        portfolioId=AllItems.Id
         console.log(props)
     }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
@@ -43,8 +45,8 @@ const CreateActivity = (props: any) => {
     const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [isDropItem, setisDropItem] = React.useState(false);
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
-    const [smartComponentData, setSmartComponentData] = React.useState([]);
-    const [linkedComponentData, setLinkedComponentData] = React.useState<any>([]);
+    var [smartComponentData, setSmartComponentData] = React.useState([]);
+    var [linkedComponentData, setLinkedComponentData] = React.useState<any>([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
@@ -64,31 +66,50 @@ const CreateActivity = (props: any) => {
     CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Approval", "Id": 227, "ParentId": 225 },
         { "TaxType": "Categories", "Title": "Immediate", "Id": 228, "parentId": 225 });
 
-    React.useEffect(() => {
+   
         if (AllItems.Portfolio_x0020_Type != undefined) {
             if (AllItems.Portfolio_x0020_Type == 'Component') {
                 smartComponentData.push(AllItems);
             }
-            // if(AllItems.SharewebTaskType.Title == 'Workstream' && AllItems.Portfolio_x0020_Type == 'Component'){
-            //     if(AllItems.Component != undefined && AllItems.Component.length > 0){
-            //         smartComponentData.push(AllItems.Component[0].Id)
-            //     }
-            // }
-
+             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+ 
             if (AllItems.Portfolio_x0020_Type == 'Service') {
                 linkedComponentData.push(AllItems);
             }
-            // if(AllItems.SharewebTaskType.Title == 'Workstream' && AllItems.Portfolio_x0020_Type == 'Service'){
-            //     if(AllItems.Services != undefined && AllItems.Services.length > 0){
-            //         linkedComponentData.push(AllItems.Services[0].Id)
-            //     }
-            // }
-
+            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+           
+             linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
         }
-
-        GetSmartMetadata()
-
-    }, [])
+        if (AllItems.Portfolio_x0020_Type == undefined) {
+            if(AllItems.Component != undefined && AllItems.Component.length>0){
+           smartComponentData.push(AllItems);
+            }
+ 
+            if (AllItems.Services != undefined && AllItems.Services.length>0) {
+                linkedComponentData.push(AllItems);
+            }
+             linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+       
+       }
+       React.useEffect(()=>{
+        GetSmartMetadata();
+       },[])
+       
+   
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
         var siteConfig = []
@@ -107,15 +128,16 @@ const CreateActivity = (props: any) => {
         siteConfig?.forEach((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
                 site.IscreateTask = false;
-
                 SitesTypes.push(site);
             }
         })
         if (AllItems.NoteCall == 'Task') {
             SitesTypes?.forEach((type: any) => {
-                if (type.listId == AllItems.listId) {
+                 if(type.listId != null){
+                if (type.listId.toLowerCase() == AllItems.listId) {
                     type.IscreateTask = true;
-                }
+                } 
+            }
             })
 
             let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -139,6 +161,7 @@ const CreateActivity = (props: any) => {
         }
 
         setSiteType(SitesTypes)
+
         //setModalIsOpenToTrue();
     }
     const getTasktype = async () => {
@@ -411,7 +434,7 @@ const CreateActivity = (props: any) => {
         if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
             linkedComponentData?.map((com: any) => {
                 if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                    if (linkedComponentData[0] != undefined && linkedComponentData[0].SharewebTaskType != undefined && linkedComponentData[0].SharewebTaskType.Title == 'Workstream') {
+                    if (linkedComponentData[0] != undefined && linkedComponentData[0].SharewebTaskType != undefined && linkedComponentData[0].SharewebTaskType.Title == 'Workstream' || linkedComponentData[0].SharewebTaskType == 'Workstream') {
                         $.each(com.Services, function (index: any, smart: any) {
                             RelevantPortfolioIds.push(smart.Id)
                         })
@@ -523,10 +546,10 @@ const CreateActivity = (props: any) => {
                     }
                     if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
                         var SharewebID = '';
-                        if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component') {
+                        if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component' || Task.Component != undefined && Task.Component.length > 0) {
                             SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
-                        if (Task.Services != undefined && Task.Portfolio_x0020_Type == 'Service') {
+                        if (Task.Services != undefined && Task.Portfolio_x0020_Type == 'Service' || Task.Services != undefined && Task.Services.length > 0) {
                             SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
                         if (Task.Events != undefined && Task.Portfolio_x0020_Type == 'Events') {
@@ -749,7 +772,7 @@ const CreateActivity = (props: any) => {
                         </div>
                         <div className='row'>
                             <div className='col-sm-10'>
-                                <div className="row">
+                                <div className="row"> 
                                     <div className="col-sm-10 mb-10 mt-2">
                                         <label className="full_width">
                                             Task Name <a id='siteName'
@@ -763,7 +786,6 @@ const CreateActivity = (props: any) => {
                                         <label>Due Date</label>
                                         <DatePicker className="form-control"
                                             selected={date}
-                                            value={AllItems.DueDate}
                                             onChange={handleDatedue}
                                             dateFormat="dd/MM/yyyy"
 
@@ -866,7 +888,7 @@ const CreateActivity = (props: any) => {
                                                 {linkedComponentData?.map((com: any) => {
                                                     return (
                                                         <>
-                                                            <div className="d-flex Component-container-edit-task">
+                                                            <div className="d-flex block full-width p-2">
                                                                 <div>
                                                                     <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
@@ -981,7 +1003,7 @@ const CreateActivity = (props: any) => {
                                                 <>
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
-                                                        <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                        <div className="d-flex block full-width p-2">
                                                             <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
                                                                 {type.Title}
                                                             </a>

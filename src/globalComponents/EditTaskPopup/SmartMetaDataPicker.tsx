@@ -11,7 +11,7 @@ var AutoCompleteItems: any = [];
 var AutoCompleteItemsArray: any = [];
 const Picker = (item: any) => {
     const usedFor = item.usedFor;
-
+    const isServiceTask:any = item.isServiceTask;
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
@@ -229,7 +229,7 @@ const Picker = (item: any) => {
 
     const customFooter = () => {
         return (
-            <footer>
+            <footer  className={isServiceTask?"serviepannelgreena":""}>
                 <button type="button" className="btn btn-primary float-end me-5" onClick={saveCategories}>
                     OK
                 </button>
@@ -239,7 +239,7 @@ const Picker = (item: any) => {
 
     const customHeader = () => {
         return (
-            <div className="d-flex full-width pb-1" >
+            <div className={isServiceTask? "d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span>
                         Select Category
@@ -259,11 +259,11 @@ const Picker = (item: any) => {
                 type={PanelType.custom}
                 customWidth="850px"
                 onDismiss={closePopupSmartTaxanomy}
-                isBlocking={false}
+                isBlocking={PopupSmartTaxanomy}
                 onRenderFooter={customFooter}
             >
                 <div id="SmartTaxonomyPopup">
-                    <div className="modal-body">
+                    <div className={isServiceTask? "modal-body serviepannelgreena":"modal-body"}>
                         {/* <table className="ms-dialogHeaderDescription">
                             <tbody>
                                 <tr id="addNewTermDescription" className="">
