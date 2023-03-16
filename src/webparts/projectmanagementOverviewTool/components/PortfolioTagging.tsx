@@ -115,37 +115,16 @@ const PortfolioTagging = (item: any) => {
         });
         return isExists;
     }
-    let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
+    var AllFilteredTagNews: any = [];
+    var finalOthersData: any = []
+    var ALllTAsk: any = []
+    var childData: any = [];
+    var subChild: any = [];
+    var subChild2: any = [];
+    let handleChange1 = (e: { target: { value: string; }; }, Title: any) => {
         setSearch(e.target.value.toLowerCase());
         serachTitle = e.target.value.toLowerCase();
-        var Title = titleName;
-
-        var AllFilteredTagNews: any = [];
-        var finalOthersData: any = []
-        var ALllTAsk: any = []
-        var childData: any = [];
-        var subChild: any = [];
-        var subChild2: any = [];
-        AllFilteredTagNews.forEach(function (val: any) {
-            val.Child = []
-            if (val.childs != undefined) {
-                val.childs.forEach(function (type: any) {
-                    type.Child = []
-                    if (type.childs != undefined) {
-                        type.childs.forEach(function (value: any) {
-                            value.Child = []
-                            if (value.childs != undefined) {
-                                value.childs.forEach(function (last: any) {
-                                    last.Child = []
-
-                                })
-                            }
-                        })
-                    }
-                })
-            }
-        })
-        var filterglobal = e.target.value.toLowerCase();
+    var filterglobal = e.target.value.toLowerCase();
         if (filterglobal != undefined && filterglobal.length >= 1) {
             var searchTerms = stringToArray(filterglobal);
             $.each(maidataBackup, function (pareIndex: any, item: any) {
@@ -157,15 +136,16 @@ const PortfolioTagging = (item: any) => {
                     AllFilteredTagNews.push(item)
                 }
 
-                if (item.childs != undefined && item.childs.length > 0) {
-                    $.each(item.childs, function (parentIndex: any, child1: any) {
+                if (item.Child != undefined && item.Child.length > 0) {
+                    $.each(item.Child, function (parentIndex: any, child1: any) {
                         child1.flag = false;
+                        child1.show = false;
                         child1.isSearch = true;
                         child1.flag = (getSearchTermAvialable1(searchTerms, child1, Title));
                         if (child1.flag) {
-                            item.childs[parentIndex].flag = true;
+                            item.Child[parentIndex].flag = true;
                             maidataBackup[pareIndex].flag = true;
-                            item.childs[parentIndex].show = true;
+                            item.Child[parentIndex].show = true;
                             maidataBackup[pareIndex].show = true;
                             if (!isItemExistsNew(AllFilteredTagNews, item)) {
                                 AllFilteredTagNews.push(item)
@@ -174,16 +154,17 @@ const PortfolioTagging = (item: any) => {
                             ALllTAsk.push(item)
 
                         }
-                        if (child1.childs != undefined && child1.childs.length > 0) {
-                            $.each(child1.childs, function (index: any, subchild: any) {
+                        if (child1.Child != undefined && child1.Child.length > 0) {
+                            $.each(child1.Child, function (index: any, subchild: any) {
                                 subchild.flag = false;
+                                subchild.show = false;
                                 subchild.flag = (getSearchTermAvialable1(searchTerms, subchild, Title));
                                 if (subchild.flag) {
-                                    item.childs[parentIndex].flag = true;
+                                    item.Child[parentIndex].flag = true;
                                     child1.flag = true;
-                                    child1.childs[index].flag = true;
-                                    child1.childs[index].show = true;
-                                    item.childs[parentIndex].show = true;
+                                    child1.Child[index].flag = true;
+                                    child1.Child[index].show = true;
+                                    item.Child[parentIndex].show = true;
                                     maidataBackup[pareIndex].flag = true;
                                     maidataBackup[pareIndex].show = true;
                                     if (!isItemExistsNew(AllFilteredTagNews, item)) {
@@ -194,19 +175,19 @@ const PortfolioTagging = (item: any) => {
                                     subChild.push(subchild)
 
                                 }
-                                if (subchild.childs != undefined && subchild.childs.length > 0) {
-                                    $.each(subchild.childs, function (childindex: any, subchilds: any) {
+                                if (subchild.Child != undefined && subchild.Child.length > 0) {
+                                    $.each(subchild.Child, function (childindex: any, subchilds: any) {
                                         subchilds.flag = false;
                                         // subchilds.Title = subchilds.newTitle;
                                         subchilds.flag = (getSearchTermAvialable1(searchTerms, subchilds, Title));
                                         if (subchilds.flag) {
-                                            item.childs[parentIndex].flag = true;
+                                            item.Child[parentIndex].flag = true;
                                             child1.flag = true;
                                             subchild.flag = true;
-                                            subchild.childs[childindex].flag = true;
-                                            child1.childs[index].flag = true;
-                                            child1.childs[index].show = true;
-                                            item.childs[parentIndex].show = true;
+                                            subchild.Child[childindex].flag = true;
+                                            child1.Child[index].flag = true;
+                                            child1.Child[index].show = true;
+                                            item.Child[parentIndex].show = true;
                                             maidataBackup[pareIndex].flag = true;
                                             maidataBackup[pareIndex].show = true;
                                             if (!isItemExistsNew(AllFilteredTagNews, item)) {
@@ -242,7 +223,7 @@ const PortfolioTagging = (item: any) => {
             })
             if (AllDataTaskk != undefined) {
                 AllDataTaskk.forEach((newval: any) => {
-                    if (newval.Title == 'Others' && newval.childs != undefined) {
+                    if (newval.Title == 'Others' && newval.Child != undefined) {
                         newval.forEach((valllA: any) => {
                             finalOthersData.push(valllA)
                         })
@@ -261,9 +242,7 @@ const PortfolioTagging = (item: any) => {
             setComponentsData(maidataBackup);
             //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
         }
-        // console.log($scope.ComponetsData['allComponentItemWithStructure']);
-
-    };
+        }
     const handleOpen = (item: any) => {
 
         item.show = item.show = item.show == true ? false : true;
@@ -731,7 +710,8 @@ const PortfolioTagging = (item: any) => {
                                                                                             <td style={{ width: "22%" }}>
                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                >{childitem.Title}
+                                                                                                >
+                                                                                                      <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
                                                                                                 </a>
                                                                                                 {childitem.Child.length > 0 &&
                                                                                                     <span className="ms-1 siteColor">({childitem.Child.length})</span>
@@ -810,7 +790,8 @@ const PortfolioTagging = (item: any) => {
 
                                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                >{childinew.Title}
+                                                                                                                >
+                                                                                                                    <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
                                                                                                                 </a>
                                                                                                                 {childinew.Child.length > 0 &&
                                                                                                                     <span className="ms-1 siteColor">({childinew.Child.length})</span>

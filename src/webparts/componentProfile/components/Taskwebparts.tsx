@@ -23,9 +23,17 @@ import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import CreateActivity from '../../servicePortfolio/components/CreateActivity';
+import CreateWS from '../../servicePortfolio/components/CreateWS';
+import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
+let serachTitle: any = '';
+var MeetingItems:any=[]
+var childsData:any=[]
+var array: any = [];
+var selectedCategory:any = [];
 export default function ComponentTable({ props }: any) {
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -53,11 +61,50 @@ export default function ComponentTable({ props }: any) {
     const [checkedList, setCheckedList] = React.useState([]);
     const [Isshow, setIsshow] = React.useState(false);
      const [tablecontiner, settablecontiner]: any = React.useState("hundred");
-   
+     const [MeetingPopup, setMeetingPopup] = React.useState(false);
+     const [WSPopup, setWSPopup] = React.useState(false);
+     const [ActivityPopup, setActivityPopup] = React.useState(false);
+     const [ActivityDisable, setActivityDisable] = React.useState(true);
+     const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
+    //  For selected client category
+    const [items, setItems] = React.useState([]);
+
+  function handleClick(item:any) {
+    const index = items.indexOf(item);
+    if (index !== -1) {
+      // Item already exists, remove it
+      const newItems = [...items];
+      newItems.splice(index, 1);
+      setItems(newItems);
+    } else {
+      // Item doesn't exist, add it
+      setItems([...items, item]);
+    }
+  }
+
+
+  
+
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
-    IsUpdated = props.Portfolio_x0020_Type;
+    IsUpdated = props?.Portfolio_x0020_Type;
     // for smarttime
     
+
+    //Open activity popup
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Create Activity ${MeetingItems[0]?.Title}`}
+                    </span>
+                </div>
+                <Tooltip ComponentId={MeetingItems[0]?.Id} />
+            </div>
+        );
+    }; 
+
+
     var IsExitSmartfilter = function (array: any, Item: any) {
         var isExists = false;
         var count = 0;
@@ -94,6 +141,7 @@ export default function ComponentTable({ props }: any) {
         // const { checked } = e.target;
 
     }
+
 
     const groupbyTasks = function (TaskArray: any, item: any) {
         item.childs = item.childs != undefined ? item.childs : [];
@@ -152,6 +200,7 @@ export default function ComponentTable({ props }: any) {
                                 item.flag = true;
                                 item.siteType = config.Title;
                                 item.childs = [];
+                                item.TitleNew = item.Title;
                                 item.listId = config.listId;
                                 // item.Item_x0020_Type = 'Task';
                                 item.siteUrl = GlobalConstants.SP_SITE_URL;
@@ -351,6 +400,43 @@ export default function ComponentTable({ props }: any) {
         setTable(copy)
 
     }
+
+
+
+    // Global Search 
+    var getRegexPattern = function (keywordArray: any) {
+        var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
+        return new RegExp(pattern, "gi");
+    };
+    var getHighlightdata = function (item: any, searchTerms: any) {
+        var keywordList = [];
+        if (serachTitle != undefined && serachTitle != '') {
+            keywordList = stringToArray(serachTitle);
+        } else {
+            keywordList = stringToArray(serachTitle);
+        }
+        var pattern: any = getRegexPattern(keywordList);
+        //let Title :any =(...item.Title)
+        item.TitleNew = item.Title;
+        item.TitleNew = item.Title.replace(pattern, '<span class="highlighted">$2</span>');
+        // item.Title = item.Title;
+        keywordList = [];
+        pattern = '';
+    }
+    var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
+        var isSearchTermAvailable = true;
+        $.each(searchTerms, function (index: any, val: any) {
+            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+                isSearchTermAvailable = true;
+                getHighlightdata(item, val.toLowerCase());
+
+            } else
+                isSearchTermAvailable = false;
+        })
+        return isSearchTermAvailable;
+    }
+    
+
     var stringToArray = function (input: any) {
         if (input) {
             return input.match(/\S+/g);
@@ -358,16 +444,17 @@ export default function ComponentTable({ props }: any) {
             return [];
         }
     };
-    var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
-        var isSearchTermAvailable = true;
-        $.each(searchTerms, function (index: any, val: any) {
-            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
-                isSearchTermAvailable = true;
 
-            } else
-                isSearchTermAvailable = false;
-        })
-        return isSearchTermAvailable;
+
+    var isItemExistsNew = function (array: any, items: any) {
+        var isExists = false;
+        $.each(array, function (index: any, item: any) {
+            if (item.Id === items.Id && items.siteType === item.siteType) {
+                isExists = true;
+                return false;
+            }
+        });
+        return isExists;
     }
     let handleChange1 = (e: { target: { value: string; }; }, titleName: any) => {
         setSearch(e.target.value.toLowerCase());
@@ -744,6 +831,7 @@ export default function ComponentTable({ props }: any) {
             // result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
             result.CreatedDateImg = []
             result.childsLength = 0;
+            result.TitleNew = result.Title;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
             if (result.DueDate == 'Invalid date' || '') {
@@ -1013,7 +1101,7 @@ export default function ComponentTable({ props }: any) {
 
         //maidataBackup.push(ComponentsData)
         var temp: any = {};
-        temp.Title = 'Tasks';
+        temp.TitleNew = 'Tasks';
         temp.childs = [];
         //  temp.AllTeamMembers = [];
         //  temp.AllTeamMembers = [];
@@ -1074,7 +1162,7 @@ export default function ComponentTable({ props }: any) {
             }
         })
         var temp: any = {};
-        temp.Title = 'Tasks';
+        temp.TitleNew = 'Tasks';
         temp.childs = [];
         temp.flag = true;
         ComponetsData['allComponets'].push(temp);
@@ -1129,7 +1217,72 @@ export default function ComponentTable({ props }: any) {
 
     //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
-    const onChangeHandler = (itrm: any) => {
+    // const onChangeHandler = (itrm: any) => {
+    //     const list = [...checkedList];
+    //     var flag = true;
+    //     list.forEach((obj: any, index: any) => {
+    //         if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+    //             flag = false;
+    //             list.splice(index, 1);
+    //         }
+    //     })
+    //     if (flag)
+    //         list.push(itrm);
+        
+    //     console.log(list);
+    //     setCheckedList(checkedList => ([...list]));
+    // };
+
+
+
+    const onChangeHandler = (itrm: any, child: any, e: any) => {
+        var Arrays: any = []
+       
+
+        const { checked } = e.target;
+        if (checked == true) {
+            itrm.chekBox = true;
+            if(itrm.ClientCategory != undefined && itrm.ClientCategory.length > 0){ 
+                 itrm.ClientCategory.map((clientcategory:any)=>{
+                    selectedCategory.push(clientcategory)           
+                 })
+                
+            
+            }
+            
+            if (itrm.SharewebTaskType == undefined) {
+                setActivityDisable(false)
+                itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                itrm['listName'] = 'Master Tasks';
+                MeetingItems.push(itrm)
+                //setMeetingItems(itrm);
+
+            }
+            if (itrm.SharewebTaskType != undefined) {
+                if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+                    setActivityDisable(false)
+                    itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                    itrm['listName'] = 'Master Tasks';
+                    Arrays.push(itrm)
+                    itrm['PortfolioId'] = child.Id;
+                    childsData.push(itrm)
+                }
+            }
+        }
+        if (checked == false) {
+            itrm.chekBox = false;
+            MeetingItems?.forEach((val:any,index:any)=>{
+                if(val.Id == itrm.Id){
+                    MeetingItems.splice(index,1)
+                }
+            })
+            if(MeetingItems.length == 0){
+           setActivityDisable(true)
+            }
+
+            $('#ClientCategoryPopup').hide();
+        }
+
         const list = [...checkedList];
         var flag = true;
         list.forEach((obj: any, index: any) => {
@@ -1140,11 +1293,25 @@ export default function ComponentTable({ props }: any) {
         })
         if (flag)
             list.push(itrm);
-        
-        console.log(list);
+        maidataBackup.forEach((obj, index) => {
+            obj.isRestructureActive = false;
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                obj.childs.forEach((sub: any, indexsub: any) => {
+                    sub.isRestructureActive = false;
+                    if (sub.childs != undefined && sub.childs.length > 0) {
+                        sub.childs.forEach((newsub: any, lastIndex: any) => {
+                            newsub.isRestructureActive = false;
+
+                        })
+                    }
+
+                })
+            }
+
+        })
+        setData(data => ([...maidataBackup]));
         setCheckedList(checkedList => ([...list]));
     };
-
     var TaskTimeSheetCategoriesGrouping: any = [];
     var TaskTimeSheetCategories: any = [];
     var AllTimeSpentDetails: any = [];
@@ -1197,9 +1364,47 @@ export default function ComponentTable({ props }: any) {
     }
     function AddItem() {
     }
-    const Call = React.useCallback((item1) => {
-        setIsComponent(false);
+  
+
+
+    const Call = React.useCallback((childItem: any) => {
+        MeetingItems?.forEach((val:any):any=>{
+            val.chekBox =false;
+        })
+        closeTaskStatusUpdatePoup2();
+        setIsComponent(false);; 
         setIsTask(false);
+        setMeetingPopup(false);
+        setWSPopup(false);
+        var MainId: any = ''
+        if (childItem != undefined) {
+            childItem.data['flag'] = true;
+            childItem.data['TitleNew'] = childItem.data.Title;
+            childItem.data['SharewebTaskType'] = { Title: 'Activities' }
+            if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
+                MainId = childItem.data.ServicesId[0]
+            }
+            if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
+                MainId = childItem.data.ComponentId[0]
+            }
+            
+            if (array != undefined) {
+                array.forEach((val: any) => {
+                    val.flag = true;
+                    val.show = false;
+                    if (val.Id == MainId) {
+                        val.childs.push(childItem.data)
+                    }
+
+                })
+                setData(array => ([...array]))
+                
+            }
+
+        }
+
+
+
     }, []);
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
@@ -1308,7 +1513,10 @@ let isOpenPopup =false;
         // myarray.push();
     }
     const [lgShow, setLgShow] = React.useState(false);
-    const handleClose = () => setLgShow(false);
+    function handleClose () { 
+        selectedCategory=[];
+        setLgShow(false);
+    }
     const [lgNextShow, setLgNextShow] = React.useState(false);
     const handleCloseNext = () => setLgNextShow(false);
     const [CreateacShow, setCreateacShow] = React.useState(false);
@@ -1324,6 +1532,189 @@ let isOpenPopup =false;
         setData(data => ([...data]));
     }
     // Add activity popup array
+    const closeTaskStatusUpdatePoup2 = () => {
+        MeetingItems?.forEach((val:any):any=>{
+            val.chekBox =false;
+        })
+        setActivityPopup(false)
+       // childsData =[]
+        MeetingItems =[]
+        childsData =[]
+        // setMeetingItems([])
+
+
+    }
+    const CreateMeetingPopups = (item: any) => {
+        setMeetingPopup(true);
+        MeetingItems[0]['NoteCall'] = item;
+        
+
+    }
+    const openActivity = () => {
+        if(MeetingItems.length > 1){
+            alert('More than 1 Parents selected, Select only 1 Parent to create a child item')
+        }
+        else{
+            if(MeetingItems[0] != undefined){
+            if (MeetingItems[0].SharewebTaskType != undefined) {
+                if (MeetingItems[0].SharewebTaskType.Title == 'Activities') {
+                    setWSPopup(true)
+                }
+            }
+          
+            if (MeetingItems != undefined && MeetingItems[0].SharewebTaskType?.Title == 'Workstream') {
+                setActivityPopup(true)
+            }
+            // if(MeetingItems[0].Portfolio_x0020_Type == 'Service'&& MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined){
+            //     MeetingItems[0]['NoteCall'] = 'Activities';
+            //     setMeetingPopup(true)
+            // }
+            if (MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined) {
+                setActivityPopup(true)
+            }
+        }
+        }
+      
+        if (childsData[0] != undefined && childsData[0].SharewebTaskType != undefined) {
+            if (childsData[0].SharewebTaskType.Title == 'Activities') {
+                setWSPopup(true)
+                MeetingItems.push(childsData[0])
+                //setMeetingItems(childsData)
+            }
+        }
+      
+        if (childsData[0] != undefined && childsData[0].SharewebTaskType.Title == 'Workstream') {
+            setActivityPopup(true)
+            MeetingItems.push(childsData[0])
+        }
+     
+
+
+
+
+    }
+    const buttonRestructuring = () => {
+        var ArrayTest: any = [];
+        //  if (checkedList != undefined && checkedList.length === 1) {
+        if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length > 0 && checkedList[0].Item_x0020_Type === 'Component')
+            alert('You are not allowed to Restructure this item.')
+        if (checkedList.length > 0 && checkedList[0].childs != undefined && checkedList[0].childs.length === 0 && checkedList[0].Item_x0020_Type === 'Component') {
+
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.Id === checkedList[0].Id)
+                obj.isRestructureActive = false;
+                ArrayTest.push(...[obj])
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Item_x0020_Type === 'SubComponent') {
+                            sub.isRestructureActive = true;
+                            // ArrayTest.push(sub)
+                        }
+
+                    })
+                }
+            })
+        }
+        if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'SubComponent') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj])
+                            ArrayTest.push(...[sub])
+                            // ArrayTest.push(sub)
+                        }
+
+                    })
+                }
+
+
+            })
+        }
+        if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Feature') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        sub.isRestructureActive = true;
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj]);
+                            ArrayTest.push(...[sub]);
+                        }
+                        if (sub.childs != undefined && sub.childs.length > 0) {
+                            sub.childs.forEach((newsub: any) => {
+                                if (newsub.Id === checkedList[0].Id) {
+                                    ArrayTest.push(...[obj]);
+                                    ArrayTest.push(...[sub]);
+                                    ArrayTest.push(...[newsub]);
+                                }
+
+
+                            })
+                        }
+
+                    })
+                }
+
+            })
+        }
+        else if (checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Task') {
+            maidataBackup.forEach((obj) => {
+                obj.isRestructureActive = true;
+                if (obj.Id === checkedList[0].Id) {
+                    ArrayTest.push(...[obj])
+                }
+                if (obj.childs != undefined && obj.childs.length > 0) {
+                    obj.childs.forEach((sub: any) => {
+                        if (sub.Item_x0020_Type === 'SubComponent')
+                            sub.isRestructureActive = true;
+                        if (sub.Id === checkedList[0].Id) {
+                            ArrayTest.push(...[obj])
+                            ArrayTest.push(...[sub])
+                            // ArrayTest.push(sub)
+                        }
+                        if (sub.childs != undefined && sub.childs.length > 0) {
+                            sub.childs.forEach((subchild: any) => {
+                                if (subchild.Item_x0020_Type === 'SubComponent')
+                                    subchild.isRestructureActive = true;
+                                if (subchild.Id === checkedList[0].Id) {
+                                    ArrayTest.push(...[obj])
+                                    ArrayTest.push(...[sub])
+                                    ArrayTest.push(...[subchild])
+                                    // ArrayTest.push(sub)
+                                }
+                                if (subchild.childs != undefined && subchild.childs.length > 0) {
+                                    subchild.childs.forEach((listsubchild: any) => {
+                                        if (listsubchild.Id === checkedList[0].Id) {
+                                            ArrayTest.push(...[obj])
+                                            ArrayTest.push(...[sub])
+                                            ArrayTest.push(...[subchild])
+                                            ArrayTest.push(...[listsubchild])
+                                        }
+
+                                    })
+                                }
+
+                            })
+                        }
+
+                    })
+                }
+
+
+            })
+        }
+        setOldArrayBackup(ArrayTest)
+        setData((data) => [...maidataBackup]);
+
+        //  }
+        // setAddModalOpen(true)
+    }
+
+
+
     var SomeMetaData1 = [{ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 15, "Title": "MileStone", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": [] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 15 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)", "etag": "\"4\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 105, "Title": "Development", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" }, "SmartFilters": null, "SortOrder": 3, "TaxType": "Category", "Selectable": true, "ParentID": 0, "SmartSuggestions": null, "ID": 105 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 282, "Title": "Implementation", "siteName": null, "siteUrl": null, "listId": null, "Description1": "This should be tagged if a task is for applying an already developed component/subcomponent/feature.", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "/SiteCollectionImages/ICONS/Shareweb/Implementation.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" }, "SmartFilters": null, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 282 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 11, "Title": "Bug", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 2, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": null, "ID": 11 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)", "etag": "\"5\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 96, "Title": "Feedback", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" }, "SmartFilters": null, "SortOrder": 2, "TaxType": null, "Selectable": true, "ParentID": 0, "SmartSuggestions": false, "ID": 96 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)", "etag": "\"3\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 191, "Title": "Improvement", "siteName": null, "siteUrl": null, "listId": null, "Description1": "Use this task category for any improvements of EXISTING features", "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" }, "SmartFilters": null, "SortOrder": 12, "TaxType": "Categories", "Selectable": true, "ParentID": 24, "SmartSuggestions": false, "ID": 191 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 12, "Title": "Design", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": { "__metadata": { "type": "SP.FieldUrlValue" }, "Description": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png", "Url": "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" }, "SmartFilters": { "__metadata": { "type": "Collection(Edm.String)" }, "results": ["MetaSearch", "Dashboard"] }, "SortOrder": 4, "TaxType": "Categories", "Selectable": true, "ParentID": 165, "SmartSuggestions": null, "ID": 12 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 100, "Title": "Activity", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 100 }, { "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists;(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)", "etag": "\"13\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 281, "Title": "Task", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": 4, "TaxType": null, "Selectable": true, "ParentID": null, "SmartSuggestions": null, "ID": 281 }] as unknown as { siteName: any, siteUrl: any, listId: any, Description1: any, results: any[], SmartSuggestions: any, SmartFilters: any }[];
     console.log(siteConfig)
     return (
@@ -1336,22 +1727,23 @@ let isOpenPopup =false;
                     <Modal.Title>
                         <h6>Select Client Category</h6>
                     </Modal.Title>
-                    <button type="button" className='Close-button' onClick={handleClose}></button>
+                    <button type="button" className='Close-button' onClick={handleClose}>X</button>
                 </Modal.Header>
                 <Modal.Body className='p-2'>
                     <span className="bold">
-                        Please select any one Client Category.
+                        <b>Please select any one Client Category.</b>
                     </span>
                     <div>
-                        {myarray2.map((item: any) => {
+                        {selectedCategory.map((item: any) => {
                             return (
-                                <div>  {item.Title}</div>
+                                <li onClick={() => handleClick(item.Title)}>{item.Title}</li>
+                                
                             )
                         })}
                     </div>
                 </Modal.Body >
                 <Modal.Footer>
-                    <Button variant="primary" onClick={() => setLgNextShow(true)}>
+                    <Button variant="primary" onClick={() =>  openActivity()}>
                         Ok
                     </Button>
                     <Button variant="secondary" onClick={handleClose}>
@@ -1875,24 +2267,32 @@ let isOpenPopup =false;
                         </span>
                         <span className="g-search">
                             <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all"
-                                ng-model="SearchComponent.GlobalSearch" />
+                                onChange={(e) => handleChange1(e, "Title")} />
                             <span className="gsearch-btn" ng-click="SearchAll_Item()"><i className="fa fa-search"></i></span>
                         </span>
                     </span>
                     <span className="toolbox mx-auto">
-                         <button type="button" className="btn btn-primary"
-                            onClick={addModal} title=" Add Structure" disabled={false}>
-                            Add Structure
-                        </button>
-                        <button type="button"
-                            className="btn btn-primary"
-                            onClick={() => setLgShow(true)} disabled={true}>
-                            <MdAdd />
-                            Add Activity-Task
-                        </button>
-                        <button type="button"
-                            className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
-                            disabled={true}>
+                    {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Feature' ?
+                                            <button type="button" disabled={true} className="btn btn-primary" onClick={addModal} title=" Add Structure">
+                                                Add Structure
+                                            </button>
+                                            : <button type="button" disabled={checkedList.length >= 2} className="btn btn-primary" onClick={addModal} title=" Add Structure">
+                                                Add Structure
+                                            </button>}
+                        
+                        
+                                            {(selectedCategory != undefined && selectedCategory.length > 0) ?
+                                            <button type="button"  onClick={() => setLgShow(true)}
+                                            disabled={ActivityDisable} className="btn btn-primary"  title=" Add Activity-Task">
+                                                Add Activity-Task
+                                            </button>
+                                            : <button type="button"  onClick={() => openActivity()}
+                                            disabled={ActivityDisable} className="btn btn-primary"  title=" Add Activity-Task">
+                                                Add Activity-Task
+                                            </button>}
+                
+                        <button type="button" className="btn btn-primary"
+                            onClick={buttonRestructuring}>
                             Restructure
                         </button>
                         <button type="button"
@@ -1928,7 +2328,7 @@ let isOpenPopup =false;
                                         <th style={{ width: "7%" }}>
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input type="search" placeholder="TaskId" className="full_width searchbox_height"
-                                                // onChange={(e)=>SearchVale(e,"TaskId")} 
+                                                 onChange={(e) => handleChange1(e, "Shareweb_x0020_ID")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -1939,7 +2339,7 @@ let isOpenPopup =false;
                                         <th style={{ width: "23%" }}>
                                             <div style={{ width: "22%" }} className="smart-relative">
                                                 <input type="search" placeholder="Title" className="full_width searchbox_height"
-                                                //  onChange={(e)=>SearchAll(e)}
+                                                 onChange={(e) => handleChange1(e, "Title")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -1963,7 +2363,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "4%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="%"
                                                     title="Percentage Complete" className="full_width searchbox_height"
-                                                // onChange={(e) => handleChange1(e, "ClientCategory")} 
+                                                onChange={(e) => handleChange1(e, "PercentComplete")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -1991,7 +2391,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "6%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="ItemRank"
                                                     title="Item Rank" className="full_width searchbox_height"
-                                                // onChange={(e) => handleChange1(e, "ClientCategory")}
+                                                // onChange={(e) => handleChange1(e, "ItemRank")}
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2049,7 +2449,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "8%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Due Date"
                                                     title="Due Date" className="full_width searchbox_height"
-                                                // onChange={(e) => handleChange1(e, "Status")}
+                                                onChange={(e) => handleChange1(e, "DueDate")}
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2078,7 +2478,7 @@ let isOpenPopup =false;
                                             <div style={{ width: "10%" }} className="smart-relative">
                                                 <input id="searchClientCategory" type="search" placeholder="Created Date"
                                                     title="Created Date" className="full_width searchbox_height"
-                                                // onChange={(e) => handleChange1(e, "ItemRank")} 
+                                                // onChange={(e) => handleChange1(e, "Created")} 
                                                 />
                                                 <span className="sorticon">
                                                     <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -2172,7 +2572,8 @@ let isOpenPopup =false;
                                                                     </td>
                                                                     <td style={{ width: "6%" }}>
                                                                         <div className="d-flex">
-                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(item)} />
+                                                                            <span className='pe-2'><input type="checkbox" checked={item.chekBox}
+                                                                                                onChange={(e) => onChangeHandler(item, 'Parent', e)} />
                                                                                 <a className="hreflink" data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
@@ -2185,11 +2586,14 @@ let isOpenPopup =false;
                                                                         {item.siteType === "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                         >
-                                                                            {item.Title}
+                                                                              <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                              {/* {item.TitleNew} */}
+                                                                         
                                                                         </a>}
                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
-                                                                        >{item.Title}
+                                                                        >
+                                                                              <span dangerouslySetInnerHTML={{ __html: item?.TitleNew }}></span>
                                                                         </a>}
                                                                         {item.childs != undefined && item.childs.length > 0 &&
                                                                             <span>{item.childs.length == 0 ? "" : <span className='ms-1'>({item.childsLength})</span>}</span>
@@ -2299,11 +2703,16 @@ let isOpenPopup =false;
                                                                                             <td style={{ width: "23%" }}>
                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                >{childitem.Title}
+                                                                                                >
+                                                                                                      <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                              
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
-                                                                                                >{childitem.Title}
+                                                                                                >
+                                                                                                    
+                                                                                                    <span dangerouslySetInnerHTML={{ __html: childitem?.TitleNew }}></span>
+                                                                                              
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined && childitem.childs.length > 0 &&
                                                                                                     <span className='ms-1'>({childitem.childsLength})</span>
@@ -2407,7 +2816,7 @@ let isOpenPopup =false;
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
-                                                                                                                        <span className='pe-2'><input type="checkbox" />
+                                                                                                                        <span className='pe-2'><input type="checkbox"  onChange={(e) => onChangeHandler(childinew, item, e)}/>
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
@@ -2421,11 +2830,15 @@ let isOpenPopup =false;
                                                                                                                     <td style={{ width: "23%" }}>
                                                                                                                         {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
-                                                                                                                        >{childinew.Title}
+                                                                                                                        >
+                                                                                                                            
+                                                                                                      <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
+                                                                                              
+                                                                                                                            
                                                                                                                         </a>}
                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                             href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
-                                                                                                                        >{childinew.Title}
+                                                                                                                        > <span dangerouslySetInnerHTML={{ __html: childinew?.TitleNew }}></span>
                                                                                                                         </a>}
                                                                                                                         {childinew.childs != undefined && childinew.childs.length > 0 &&
                                                                                                                             <span className='ms-1'>({childinew.childs.length})</span>
@@ -2538,7 +2951,7 @@ let isOpenPopup =false;
                                                                                                                                             </div>
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "6%" }}>
-                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(subchilditem, item, e)}/></span>
                                                                                                                                             <span>
                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                     <img className="icon-sites-img ml20" src={subchilditem.SiteIcon}></img>
@@ -2553,11 +2966,14 @@ let isOpenPopup =false;
                                                                                                                                         <td style={{ width: "23%" }}>
                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                 href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                            >
+                                                                                                                                                 <span dangerouslySetInnerHTML={{ __html: subchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                 href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
-                                                                                                                                            >{subchilditem.Title}
+                                                                                                                                            >  <span dangerouslySetInnerHTML={{ __html: subchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined && subchilditem.childs.length > 0 &&
                                                                                                                                                 <span className='ms-1'>({subchilditem.childs.length})</span>
@@ -2663,7 +3079,7 @@ let isOpenPopup =false;
                                                                                                                                                                 </div>
                                                                                                                                                             </td>
                                                                                                                                                             <td style={{ width: "6%" }}>
-                                                                                                                                                                <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                                                <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(nextsubchilditem, item, e)}/></span>
                                                                                                                                                                 <span>
                                                                                                                                                                     <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                                         <img className="icon-sites-img ml20" src={nextsubchilditem.SiteIcon}></img>
@@ -2678,11 +3094,13 @@ let isOpenPopup =false;
                                                                                                                                                             <td style={{ width: "23%" }}>
                                                                                                                                                                 {nextsubchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
-                                                                                                                                                                >{nextsubchilditem.Title}
+                                                                                                                                                                >  <span dangerouslySetInnerHTML={{ __html: nextsubchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
                                                                                                                                                                     href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + nextsubchilditem.Id + '&Site=' + nextsubchilditem.siteType}
-                                                                                                                                                                >{nextsubchilditem.Title}
+                                                                                                                                                                > <span dangerouslySetInnerHTML={{ __html: nextsubchilditem?.TitleNew }}></span>
+                                                                                                                                                
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.childs != undefined && nextsubchilditem.childs.length > 0 &&
                                                                                                                                                                     <span className='ms-1'>({nextsubchilditem.childs.length})</span>
@@ -2797,10 +3215,159 @@ let isOpenPopup =false;
             {IsComponent && <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
             
             <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
+            <Panel
+               onRenderHeader={onRenderCustomHeaderMain}
+               type={PanelType.custom}
+               customWidth="600px"
+                isOpen={ActivityPopup}
+                onDismiss={closeTaskStatusUpdatePoup2}
+                isBlocking={false}
+            >
+
+               
+                 
+
+                        {/* <div className="modal-header  mt-1 px-3">
+                            <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
+                            <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div> */}
+                       
+
+
+                        <div className="modal-body bg-f5f5 clearfix">
+                            <div className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+                                <div id="portfolio" className="section-event pt-0">
+                                
+                                    {/* {
+                                    
+                                    MeetingItems.SharewebTaskType == undefined  &&
+                                        <ul className="quick-actions">
+
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                    </span>
+                                                    Implmentation
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Development')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                    </span>
+                                                    Development
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                    <span className="icon-sites">
+                                                    </span>
+                                                    Activity
+                                                </div>
+                                            </li>
+                                        </ul>
+                                         
+                                    } */}
+                                    {
+                                        (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
+                                        <ul className="quick-actions">
+
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={(e) => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" />
+
+                                                    </span>
+                                                    Bug
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" />
+
+                                                    </span>
+                                                    Feedback
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                        <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
+                                                    </span>
+                                                    Improvement
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
+                                                    </span>
+                                                    Design
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Task')}>
+                                                    <span className="icon-sites">
+                                                    </span>
+                                                    Task
+                                                </div>
+                                            </li>
+                                        </ul>:
+                                         <ul className="quick-actions">
+
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                 <span className="icon-sites">
+                                                     <img className="icon-sites"
+                                                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                 </span>
+                                                 Implmentation
+                                             </div>
+                                         </li>
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Development')}>
+                                                 <span className="icon-sites">
+                                                     <img className="icon-sites"
+                                                         src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                 </span>
+                                                 Development
+                                             </div>
+                                         </li>
+                                         <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                             <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                 <span className="icon-sites">
+                                                 </span>
+                                                 Activity
+                                             </div>
+                                         </li>
+                                     </ul>
+
+                                    }
+                                </div>
+                            </div>
+                            <button type="button" className="btn btn-default btn-default ms-1 pull-right" onClick={closeTaskStatusUpdatePoup2}>Cancel</button>
+                        </div>
+                    
+               
+
+
+            </Panel >
             
         </div>
     );

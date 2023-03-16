@@ -23,6 +23,7 @@ let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
 function CreateTaskComponent(props: any) {
+    let base_Url=props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
         passdata: null
@@ -70,7 +71,7 @@ function CreateTaskComponent(props: any) {
     }, [relevantTasks])
 
     const GetComponents = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(base_Url);
         let componentDetails = [];
         componentDetails = await web.lists
             //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
@@ -204,7 +205,7 @@ function CreateTaskComponent(props: any) {
             if (paramSiteUrl != undefined) {
                 let baseUrl = window.location.href;
                 if (baseUrl.indexOf('CreateTaskSpfx') > -1) {
-                    let QueryString = baseUrl.split("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTaskSpfx.aspx")[1]
+                    let QueryString = baseUrl.split(base_Url+"/SitePages/CreateTaskSpfx.aspx")[1]
                     oldTaskIrl = oldTaskIrl + QueryString
                 }
                 PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
@@ -410,7 +411,7 @@ function CreateTaskComponent(props: any) {
         var Priority: any = []
         var Timing: any = []
         var Task: any = []
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(base_Url);
         let MetaData = [];
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
@@ -1069,7 +1070,7 @@ function CreateTaskComponent(props: any) {
             field: 'Title', headerName: 'Title', width: 300, renderCell: (params) => {
                 return (
                     <div>
-                        <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
+                        <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Task-Profile.aspx?taskId=${params?.row?.Id}&Site=${params?.row?.siteType}`}>{params?.row?.Title}</a></span>
                     </div>
                 )
             }
@@ -1078,7 +1079,7 @@ function CreateTaskComponent(props: any) {
             field: 'ComponentTitle', headerName: 'Component', width: 150, renderCell: (params) => {
                 return (
                     <div>
-                        <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${params?.row?.newComponentId}`}>{params?.row?.ComponentTitle}</a></span>
+                        <span><a data-interception="off" target="blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${params?.row?.newComponentId}`}>{params?.row?.ComponentTitle}</a></span>
                     </div>
                 )
             }
@@ -1122,7 +1123,8 @@ function CreateTaskComponent(props: any) {
             field: '', headerName: '', width: 40, renderCell: (params) => {
                 return (
                     <div>
-                        <img onClick={() => EditPopup(params?.row)} src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img>
+                        <span onClick={() => EditPopup(params?.row)} className="svg__iconbox svg__icon--edit"></span>
+                        {/* <img onClick={() => EditPopup(params?.row)} src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"></img> */}
                     </div>
                 )
             }
@@ -1134,7 +1136,7 @@ function CreateTaskComponent(props: any) {
             passdata: null
         })
         if (taskCreated) {
-            window.open("https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
+            window.open(base_Url+"/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
         }
         createdTask={};
     }, [])
@@ -1185,18 +1187,20 @@ function CreateTaskComponent(props: any) {
                                     return (
                                         <>
                                             <div className="d-flex Component-container-edit-task" style={{ width: "89%" }}>
-                                                <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                 <a>
-                                                    <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
+                                                    <img className="mx-2" src={`${base_Url}/_layouts/images/delete.gif`} onClick={() => setSmartComponentData([])} />
                                                 </a>
                                             </div>
                                         </>
                                     )
                                 }) : null}
 
+                              
                                 <span className="input-group-text">
-                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                        onClick={(e) => EditComponent(save, 'Component')} />
+                                <span onClick={(e) => EditComponent(save, 'Component')} className="svg__iconbox svg__icon--edit"></span>
+                                    {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                        onClick={(e) => EditComponent(save, 'Component')} /> */}
                                 </span>
                             </div> : ''
                     }
@@ -1212,10 +1216,10 @@ function CreateTaskComponent(props: any) {
                                                 <>
                                                     <div className="d-flex Component-container-edit-task">
                                                         <div>
-                                                            <a className="hreflink " target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                            <a className="hreflink " target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                 {com.Title}
                                                             </a>
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
+                                                            <img src={`${base_Url}/_layouts/images/delete.gif`} onClick={() => setLinkedComponentData([])} />
                                                         </div>
                                                     </div>
                                                 </>
@@ -1227,8 +1231,9 @@ function CreateTaskComponent(props: any) {
                                         />
                                 }
                                 <span className="input-group-text">
-                                    <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                        onClick={(e) => EditLinkedServices(save, 'Component')} />
+                                <span onClick={(e) => EditLinkedServices(save, 'Component')} className="svg__iconbox svg__icon--edit"></span>
+                                    {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                        onClick={(e) => EditLinkedServices(save, 'Component')} /> */}
                                 </span>
                             </div> : ''
                         }

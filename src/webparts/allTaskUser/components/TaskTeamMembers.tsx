@@ -757,7 +757,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             <Link href="#" onClick={this.onDeleteTask}><Icon iconName="Delete"/><Text>Delete this user</Text></Link>
         </div>);
 
-        const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
+        const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} >Save</PrimaryButton>);
+        // disabled={!this.state.enableSave}
         const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
         
         const elemOOTBFormLink = (<Link href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" style={{marginRight:"8px"}}>Open out-of-the-box form</Link>);

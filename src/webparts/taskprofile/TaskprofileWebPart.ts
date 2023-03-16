@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
+import * as $ from 'jquery';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
@@ -13,6 +14,9 @@ import Taskprofile from './components/Taskprofile';
 import { ITaskprofileProps } from './components/ITaskprofileProps';
 
 import * as pnp from 'sp-pnp-js';
+import { SPComponentLoader } from '@microsoft/sp-loader'
+SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/SPFx/CSS/site_color.css");
+SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/SPFx/CSS/Style.css");
 
 export interface ITaskprofileWebPartProps {
   description: string;

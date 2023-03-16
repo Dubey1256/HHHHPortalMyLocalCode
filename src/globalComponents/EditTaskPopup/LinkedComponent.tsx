@@ -1,10 +1,10 @@
 import * as React from "react";
-import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
+import {Panel, PanelType } from 'office-ui-fabric-react';
+import pnp, { Web} from "sp-pnp-js";
 
 import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp} from 'react-icons/fa';
 import * as moment from "moment";
 var LinkedServicesBackupArray: any = [];
 const LinkedServices = (item: any) => {
@@ -13,6 +13,7 @@ const LinkedServices = (item: any) => {
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [table, setTable] = React.useState(data);
     const [selectedComponent, setSelectedComponent] = React.useState('');
+    const PopupType:any = item.PopupType;
     React.useEffect(() => {
         if (item.smartComponent != undefined && item.smartComponent.length > 0)
             setSelectedComponent(item.smartComponent[0]);
@@ -23,7 +24,7 @@ const LinkedServices = (item: any) => {
         item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
-        Example(item, "LinkedComponent");
+        Example(item, "LinkedServices");
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
@@ -33,7 +34,7 @@ const LinkedServices = (item: any) => {
             item.props.linkedComponent = [];
             item.props.linkedComponent = CheckBoxData;
         }
-        Example(item, "LinkedComponent");
+        Example(item, "LinkedServices");
         setModalIsOpen(false);
     }
     const handleOpen = (item: any) => {
@@ -187,15 +188,7 @@ const LinkedServices = (item: any) => {
         if (columnName == "Title") {
             data?.map((dataItem: any) => {
                 if (dataItem.Title.toLowerCase() == searchKey) {
-                    if (dataItem.Child?.length > 0 && dataItem.Child != null) {
-                        dataItem.Child?.map((childItem: any) => {
-                            if (childItem.Title.toLoserCase() == searchKey) {
-                                tempArray.push(dataItem);
-                            }
-                        })
-                    } else {
-                        tempArray.push(dataItem);
-                    }
+                    tempArray.push(dataItem);
                 }
             })
             setData(tempArray);

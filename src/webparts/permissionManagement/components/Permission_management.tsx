@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as $ from 'jquery';
+import './IPermissionManagementProps';
 // import pnp,{Web} from "sp-pnp-js";
 import pnp from "sp-pnp-js";
 import '@pnp/sp/webs';
@@ -14,24 +15,32 @@ import { Table } from "react-bootstrap";
 // import {ReactSnackBar} from "react-js-snackbar";
 // import ReactSnackBar from "react-js-snackbar";
 
+
 var Sitegroup: any = [];
 export default function Permission_management(props: any) {
 
     // const [data, setdata]: any = React.useState([]);
     const [readPanel, setreadPanel]: any = React.useState(false);
     const [readPanel2, setreadPanel2]: any = React.useState(false);
+    const [readPanel3, setreadPanel3]: any = React.useState(false);
     const [SPGroups, setSPGroups]: any = React.useState([]);
     const [UsersArrByGroup, setUsersArrByGroup]: any = React.useState([]);
     const [refreshState, setRefreshState] = React.useState(false);
     const [Visitors, setVisitors] = React.useState()
     const [newUsersArrByGroupp, setnewUsersArrByGroupp] = React.useState([])
-    var SPROOTGroups: any = [], Groups: any = [], newGroup: any = [], arr: any = [], SpGroups: any = [], SearchGroup: any = [], temp: any = [], userNameArray: any = [], UsersArrByGroupp: any = [];
+    var SPROOTGroups: any = [], Groups: any = [], newGroup: any = [], arr: any = [], SpGroups: any = [], SearchGroup: any = [], temp: any = [], userNameArray: any = [], UsersArrByGroupp: any = [], addUsers: any = [];
     // const [selectedOptions, setSelectedOptions] = React.useState();
     const [tempr, settempr] = React.useState([])
     const [search, setsearch]: any = React.useState(false);
+    // const [addSearch, setAddSearch]: any = React.useState(false);
     const [dGroups, setdGroups]: any = React.useState([]);
     const [value, setValue] = React.useState("");
+    const [addValue, setaddValue] = React.useState("");
     const [ValueNew, setValueNew] = React.useState("");
+    const [addUser, setaddUser] = React.useState([]);
+    const [addUserTemp, setaddUserTemp] = React.useState([]);
+
+
 
 
 
@@ -278,6 +287,10 @@ export default function Permission_management(props: any) {
     const closereadPanel = () => {
         setreadPanel(false);
     }
+
+    const closereadPanel3 = () => {
+        setreadPanel3(false);
+    }
     const closereadPanel2 = () => {
         setreadPanel2(false);
         setsearch(false);
@@ -293,8 +306,6 @@ export default function Permission_management(props: any) {
                     SpGroups.push(Sitegroup[i]);
                 }
             }
-
-
         }
 
         $.each(SpGroups, function (index: any, group: any) {
@@ -315,7 +326,6 @@ export default function Permission_management(props: any) {
     }
 
     // var IsLoadSiteOwner:any, IsAddSiteOwner:any;
-
     // const SiteOwnerChangeView = async (IsLoad: any, IsAdd:any) => {
     //     IsLoadSiteOwner = IsLoad;
     //     IsAddSiteOwner = IsAdd;
@@ -353,13 +363,17 @@ export default function Permission_management(props: any) {
                             // pictureUrl:''
                         };
 
+
                         userObj.userLoginName = userLoginName;
                         userObj.id = userId;
                         userObj.title = userTitle;
                         userObj.email = userEmail;
+
+
                         // userObj.userUrl = _spPageContextInfo.ProfileUrl + "?accountname=" + userLoginName;
                         // userObj.pictureUrl = _spPageContextInfo.siteAbsoluteUrl + "/_layouts/15/userphoto.aspx?size=l&accountname=" + userEmail;
                         UsersArrByGroupp.push(userObj);
+
 
 
 
@@ -367,7 +381,9 @@ export default function Permission_management(props: any) {
                 }
                 );
                 setUsersArrByGroup(UsersArrByGroupp);
+
                 setnewUsersArrByGroupp(UsersArrByGroupp);
+                console.log(addUser);
                 //
             },
             error: function (data) {
@@ -397,6 +413,7 @@ export default function Permission_management(props: any) {
         valuess = event.target.value;
         setVisitors(valuess)
         DisplaySiteOwners(valuess)
+        openreadPanel3(valuess)
         console.log(event.target.value)
     }
 
@@ -407,6 +424,10 @@ export default function Permission_management(props: any) {
         //    cName=dataa;
         setreadPanel(true);
         DisplaySiteOwners(dataa);
+    }
+
+    const openreadPanel3 = (gg: any) => {
+        setreadPanel3(true);
     }
 
 
@@ -642,28 +663,9 @@ export default function Permission_management(props: any) {
         }
         settempr(tempp);
     }
-    // const optionList: any = tempr;
 
 
     console.log(tempp);
-
-    // const autosuggestion = (key: any) => {
-
-    //     var keyy = key;
-    //     if (keyy.length > 0) {
-    //         setsearch(true);
-    //         const filterAll: any = tempr.filter((items: any) =>
-    //             items?.toLowerCase().includes(key)
-    //         )
-    //         settempr(filterAll);
-    //     }
-    //     else if (key.length == 0) {
-    //         setsearch(false)
-    //         settempr(tempr);
-    //     }
-
-
-    // }
 
 
     const onChange = (event: any) => {
@@ -724,9 +726,7 @@ export default function Permission_management(props: any) {
     };
 
 
-    // const onSearchh = (searchTerm: any) => {
-    //     setValue(searchTerm);
-    // }
+
 
     const change = () => {
         setValue("");
@@ -736,15 +736,207 @@ export default function Permission_management(props: any) {
     const changes = () => {
         setValueNew("");
     }
-    
 
-const Rtitle :any = () =>{
-    console.log(UsersArrByGroup)
-    var y = [...UsersArrByGroup].reverse();
-    console.log(y);
-    setUsersArrByGroup(y);
-    
-} 
+
+    const Rtitle: any = () => {
+        console.log(UsersArrByGroup)
+        var y = [...UsersArrByGroup].reverse();
+        console.log(y);
+        setUsersArrByGroup(y);
+
+    }
+
+
+
+    const Insert = async () => {
+
+        let localU = userHierarchy, userEmail, userTitle;
+        var newArr: any = [], ntmp = [];
+
+
+        if (BaseURL.indexOf('SP') > -1) {
+            for (let i = 0; i < Sitegroup.length; i++) {
+
+                if (!(Sitegroup[i].OwnerTitle.indexOf('KSL') > -1) && !(Sitegroup[i].LoginName.indexOf('KSL') > -1) && !(Sitegroup[i].LoginName.indexOf('Test') > -1) && !(Sitegroup[i].LoginName.indexOf('test')! > -1)) {
+                    SpGroups.push(Sitegroup[i]);
+                }
+            }
+
+
+        }
+        $.each(SpGroups, function (index: any, group: any) {
+            $.each(localU, function (i: any, groups: any) {
+                var localvar: any = [];
+                if (groups.Title == group.Title) {
+
+                    var query = "/_api/web/SiteGroups/GetById(" + group.Id + ")/Users";
+                    $.ajax({
+                        url: BaseURL1[0] + query,
+                        method: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application/json;odata=verbose",
+                            "content-Type": "application/json;odata=verbose"
+                        },
+                        success: function (data) {
+
+                            newArr = data.d.results;
+                            $.each(newArr, function (i: any, value: any) {
+                                if (newArr[i].Title != "System Account" && newArr[i].Title != group.Title) {
+                                    userId = newArr[i].Id;
+                                    userEmail = newArr[i].Email;
+                                    userTitle = newArr[i].Title;
+                                    var userLoginAddName = newArr[i].LoginName;
+
+                                    var userObj: any = {
+                                        Name: userTitle,
+                                        id: userId,
+                                        email: userEmail,
+                                        // userUrl:'',
+                                        // pictureUrl:''
+                                    };
+
+                                    var userAdd: any = {
+                                        userLoginName: userLoginAddName,
+                                        id: userId,
+                                        title: userTitle,
+                                        email: userEmail,
+                                        // userUrl:'',
+                                        // pictureUrl:''
+                                    };
+                                    // userAdd.userLoginName = userLoginAddName;
+                                    // userAdd.id = userId;
+                                    // userAdd.title = userTitle;
+                                    // userAdd.email = userEmail;
+                                    
+                                   
+
+                                    // tempp.Name= userTitle;
+                                    // tempp.email= userEmail;
+
+
+
+                                } // end of IF system account
+                                temp.push(userObj?.Name)
+                                // console.log(temp);
+                                // groups.Ugroups.push(userObj);
+                                localvar.push(userObj);
+                                groups.Ugroups = localvar;
+                                addUsers.push(userAdd);
+                            }
+                            );
+
+                        },
+                        error: function () {
+                            console.log("error");
+
+                        }
+
+                    });
+
+                }
+
+            }
+            )
+            // userNameArray=[...new Set(temp)]
+            setuserHierarchy(localU);
+             setaddUser(addUsers)
+            // if()
+            // seperate(group.Id, group.Title)
+
+        })
+
+        for (let i = 0; i < temp.length; i++) {
+            if (ntmp.indexOf(temp[i]) === -1) {
+                ntmp.push(temp[i]);
+            }
+        }
+
+        setaddUserTemp(ntmp)
+        setreadPanel3(true)
+
+
+    }
+
+    const onChangeAdd = (event: any) => {
+
+        setaddValue(event.target.value);
+
+        // if (addValue.length == 0) {
+        //     setsearch(false);
+        // }
+
+    };
+
+    const onSearchh = (searchTerm: any) => {
+        let v = searchTerm, s: any;
+        setaddValue(v);
+
+        $.each(addUser, function (i: any, user: any) {
+            if (v == user.title) {
+                s = user.userLoginName
+                InsertUserByLoginNameInGroupById(user.userLoginName, SearchGroup.Id);
+            }
+
+            console.log(s);
+
+        })
+
+
+
+
+        // $('#btnSubmitUser').prop('disabled', true);
+        // if (Item.siteOwnerUser.results.length == 0) {
+        //     alert("Please add Users to add in selected group");
+        //     $('#btnSubmitUser').prop('disabled', false);
+        //     return false;
+        // }
+        // angular.forEach($scope.Item.siteOwnerUser.results, function (value, i) {
+        //     $scope.InsertUserByLoginNameInGroupById(value.Name, $scope.SearchGroup.Id);
+        //     if ($scope.SearchGroup.Title =='TeamK4Bundestag Members' && $scope.SPROOTGroups.Title == 'KathaBeck42 Visitors') {
+        //         $scope.InsertUserByLoginNameInGroupByIdSite(value.Name,$scope.SPROOTGroups.Id)
+        //     }
+        // });
+
+    };
+
+
+    const InsertUserByLoginNameInGroupById = async (userLoginName: any, groupId: any) => {
+        var url = "https://hhhhteams.sharepoint.com/sites/HHHH/admin/_api/web/sitegroups(" + groupId + ")/users";
+        var data = {
+            "__metadata": {
+                "type": "SP.User"
+            },
+            "LoginName": userLoginName,
+        };
+
+            postRequest(data, url);
+    };
+
+   const postRequest = (data:any, url:any) => {
+        $.ajax({
+            url: url,
+            method: "POST",
+            headers: {
+                "accept": "application/json;odata=verbose",
+                "content-Type": "application/json;odata=verbose"
+            },
+            data: JSON.stringify(data),
+            success: function (result) {
+                 BindUsersByGroup();
+               
+            },
+            error: function (result, status) {
+                alert('You do not have the necessary rights to access this section');
+                BindUsersByGroup();
+                setreadPanel3(false);
+            }
+        });
+    };
+
+
+
+
 
 
 
@@ -771,8 +963,13 @@ const Rtitle :any = () =>{
                     isOpen={readPanel}
                     onDismiss={closereadPanel}
                     isFooterAtBottom={true}
-                // isBlocking={}
+                    isBlocking={!readPanel3 && !openreadPanel3}
                 >
+
+                    <a className="pull-right " onClick={() => Insert()}>
+                        <span className="glyphicon glyphicon-plus" ></span>
+                        Add User
+                    </a>
                     <Container>
                         <Row>
                             <Col sm={6}>
@@ -801,15 +998,15 @@ const Rtitle :any = () =>{
                         <thead>
                             <tr>
                                 <th onClick={() => Rtitle()} >
-                                    
+
                                     <span className="ptr">
                                         {/* <img className="ms-sortarrowup-icon" src="/_layouts/15/images/spcommon.png?rev=23" alt="" data-themekey="#"/> */}
                                         Title
-                                        
+
                                     </span>
                                 </th>
                                 <th onClick={() => Rtitle()} className="ptr">
-                                    
+
                                     <span className="ptr">
                                         {/* <img className="ms-sortarrowup-icon" src="/_layouts/15/images/spcommon.png?rev=23" alt="" data-themekey="#"/> */}
                                         Email
@@ -840,6 +1037,95 @@ const Rtitle :any = () =>{
                 </Panel>
             </div>
 
+
+
+
+
+
+            <div>
+                <Panel headerText={`Add User in ${Visitors}`}
+
+                    isOpen={readPanel3}
+                    onDismiss={closereadPanel3}
+                    isFooterAtBottom={true}
+                // isBlocking={}
+                >
+
+                    {/* <div >
+                    <input type="text" value={addValue} onChange={onChangeAdd} />
+
+                    <p>{addValue}</p>
+
+                        {addUser?.map((op: any, i: any) => {
+                            return (<tr>
+                                <td><span>{op.title}</span></td>
+                            </tr>)
+                        })}
+
+
+                    </div> */}
+
+                    <div >
+                        <div className="search-container ">
+                            <div className="search-inner ">
+                                <input type="text" value={addValue} onChange={onChangeAdd} />
+                                <button id="btn" onClick={() => change()} ><img src="/_layouts/images/delete.gif" /></button>
+                                <button onClick={() => onSearchh(addValue)}></button>
+
+                            </div>
+                            <div className="dropdown">
+                                {addUserTemp?.filter((item) => {
+                                    // item?.toLowerCase().includes(item);
+
+
+                                    const searchTerm = addValue?.toLowerCase();
+                                    const fullName = item?.toLowerCase();
+
+                                    return (
+                                        searchTerm &&
+                                        fullName?.startsWith(searchTerm) &&
+                                        fullName !== searchTerm
+                                    );
+
+                                })
+                                    .slice(0, 10)
+                                    .map((item) => (
+                                        <div
+                                            onClick={() => onSearchh(item)}
+                                            className="dropdown-row"
+                                            key={item}
+                                        >
+                                            {item}
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+
+
+                        {/* <div className='grp'>
+
+                            {search && <div >
+
+                                {dGroups?.map((op: any, i: any) => {
+                                    return (<tr>
+                                        <td><span>{op}</span></td>
+                                    </tr>)
+                                })}
+
+
+                            </div>}
+                        </div> */}
+
+
+
+
+
+
+                    </div>
+
+                </Panel>
+            </div>
+
             <div>
                 <Panel
                     headerText="Check User Permissions"
@@ -849,36 +1135,12 @@ const Rtitle :any = () =>{
                     isFooterAtBottom={true}
                 // isBlocking={}
                 >
-
-
                     <div >
-
-                        {/* <div className="app">
-                                            <h2></h2>
-                                            <div className="dropdown-container">
-                                                <Select
-                                                    options={optionList}
-                                                    placeholder="Select User"
-                                                    value={selectedOptions}
-                                                    onChange={handleSelect}
-                                                    isSearchable={true}
-                                                    isMulti={true}
-                                                />
-
-                                            </div>
-                                        </div> */}
-                        {/* <div>
-                                            <input type="text" value={value} onChange={onChange} />
-                                            <button onClick={() => onSearch(value)}> Search </button>
-                                        </div> */}
-
-
-
                         <div className="search-container ">
                             <div className="search-inner ">
                                 <input type="text" value={value} onChange={onChange} />
                                 <button id="btn" onClick={() => change()} ><img src="/_layouts/images/delete.gif" /></button>
-                                <button onClick={() => onSearch(value)}> Check Permission</button>
+                                {/* <button onClick={() => onSearch(value)}> Check Permission</button> */}
 
                             </div>
                             <div className="dropdown">
@@ -926,18 +1188,8 @@ const Rtitle :any = () =>{
 
 
 
-                        <div>
-                            {/* <button type="button" class="btn btn-primary" ng-click="CheckPermission()" title="User Permission">Check Permission</button> */}
-                        </div>
+
                     </div>
-
-                    {/* <div class="col-sm-12 padL-0 PadR0">
-                                        <!-- ngIf: Groups.length>0 -->
-
-                                        <!-- ngIf: Groups.length ==0 -->
-                                    </div> */}
-
-
                 </Panel>
             </div>
 

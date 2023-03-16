@@ -139,8 +139,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       })
 
       tempTask["Comments"].sort(function (a: any, b: any) {
-        let keyA = a.ID,
-          keyB = b.ID;
+        // let keyA = a.ID,
+        //   keyB = b.ID;
+        let keyA = new Date(a.Created),
+          keyB = new Date(b.Created);
         // Compare the 2 dates
         if (keyA < keyB) return 1;
         if (keyA > keyB) return -1;
@@ -509,6 +511,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private SendEmail(emailprops: any) {
+    let sp = spfi().using(spSPFx(this.props.Context))
     sp.utility.sendEmail({
       //Body of Email  
       Body: this.BindHtmlBody(),
@@ -531,6 +534,20 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });  
   }*/
 
+  private customHeaderforEditCommentpopup() {
+    return (
+      <div className=  "d-flex full-width pb-1">
+        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+          
+          <span className="siteColor">
+            Update Comment
+          </span>
+        </div>
+        <Tooltip ComponentId="1683" />
+      </div>
+    )
+  }
+
   HtmlEditorStateChange = (value: any) => {
     this.setState({
       editorChangeValue: value,
@@ -552,7 +569,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         <div className='mb-3 card commentsection'>
           <div className='card-header'>
             {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
-            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip ComponentId='586'/></span></div>
+            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip ComponentId='586' /></span></div>
 
           </div>
           <div className='card-body'>
@@ -570,16 +587,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </div>
 
               <span className='clintlist'>
-                <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue?this.state.mentionValue:""} onChange={(e) => this.setMentionValue(e)}
+                <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue ? this.state.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
                   className="form-control"
                   classNames={mentionClass}>
-                  <Mention trigger="@" data={this.mentionUsers} />
+                  <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
                 </MentionsInput>
               </span>
 
             </div>
             <div>
-              <textarea id='txtComment' value={ this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
+              <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
               {/* <p className="ng-hide">
                                             <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
                                             Comment shouldn't be empty
@@ -643,16 +660,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         </div>
 
 
-        <Panel  isOpen={this.state.isModalOpen} isBlocking={false}
-          
+        <Panel isOpen={this.state.isModalOpen} isBlocking={false}
+
           type={PanelType.custom}
           customWidth="500px"
-          headerText='Update Comment'
+          // headerText='Update Comment'
+          onRenderHeader={this.customHeaderforEditCommentpopup }
           onDismiss={(e) => this.CloseModal(e)}
         >
 
 
-          <div>
+          {/* <div> */}
             {/* <div className='modal-header mb-2'>
               <h3 className='modal-title'>Update Comment</h3>
 
@@ -661,11 +679,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             <div className='modal-body'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
-            <footer className='mt-2 text-end'>
+            <div className='modal-footer text-end'>
               <button type="button" className="btn btn-primary" onClick={(e) => this.updateComment()} >Save</button>
               <button type="button" className="btn btn-default ms-2" onClick={(e) => this.CloseModal(e)}>Cancel</button>
-            </footer>
-          </div>
+            </div>
+          {/* </div> */}
 
         </Panel>
 

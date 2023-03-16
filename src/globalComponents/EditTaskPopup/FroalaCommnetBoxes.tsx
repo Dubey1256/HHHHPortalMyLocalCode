@@ -68,13 +68,13 @@ export default function FroalaCommnetBoxes(textItems: any) {
 
         if (tempArray?.length == 0) {
             setBtnStatus(false)
-            setTimeout(() => {
-                callBack("delete");
-            }, 1000);
+
+            callBack("delete");
+
         } else {
-            setTimeout(() => {
-                callBack(tempArray);
-            }, 1000);
+
+            callBack(tempArray);
+
         }
         setState(tempArray);
     }
@@ -98,9 +98,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
             setState(copy);
             Array = copy
         }
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+
+        callBack(Array);
+
     }
 
     const subTextCallBack = useCallback((subTextData: any, commentId: any) => {
@@ -113,9 +113,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
         if (arrayIndex != undefined) {
             Array[arrayIndex].Subtext = subTextData;
         }
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+
+        callBack(Array);
+
     }, [])
 
     const postBtnHandle = (index: any) => {
@@ -133,9 +133,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
             setPostBtnStatus(true)
         }
         Array[Index].Comments = dataPost;
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+
+        callBack(Array);
+
     }, [])
 
     const SmartLightUpdateSubComment = (index: any, value: any) => {
@@ -144,10 +144,19 @@ export default function FroalaCommnetBoxes(textItems: any) {
         copy[index] = obj;
         setState(copy);
         Array = copy;
-        setTimeout(() => {
-            callBack(Array);
-        }, 1000);
+
+        callBack(Array);
+
     }
+
+    const postBtnHandleCallBackCancel =useCallback((status:any)=>{
+        if (status) {
+            setPostBtnStatus(false)
+        } else {
+            setPostBtnStatus(true)
+        }
+    },[])
+
     function createRows(state: any[]) {
         return (
             <div className="add-text-box">
@@ -218,7 +227,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
-                                            <span className="hreflink commentSectionLabel" style={{ color: "#000066" }} onClick={() => postBtnHandle(i)}> Add Comment </span>
+                                            <span className="hreflink siteColor commentSectionLabel" onClick={() => postBtnHandle(i)}> Add Comment </span>
                                         </span>
                                         <span> | </span>
                                         <span className="mx-1">
@@ -260,6 +269,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         postStatus={postBtnStatus}
                                         allUsers={textItems.allUsers}
                                         callBack={postBtnHandleCallBack}
+                                        CancelCallback={postBtnHandleCallBackCancel}
                                     />
                                 </div>
                                 <div>
