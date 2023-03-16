@@ -279,11 +279,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     await this.GetSmartMetaData(taskDetails.ClientCategory, taskDetails.ClientTime);
 
     this.currentUser = this.GetUserObject(this.props.userDisplayName);
-
+     let comment:any;
+    if(taskDetails["Comments"] != null &&taskDetails["Comments"] != undefined ){
+      try{ comment=  JSON.parse(taskDetails["Comments"])}
+      catch(e:any){
+       console.log(e)
+      }
+    }
+   
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state.listName),
       sitePage: this.props.Context?._pageContext?._web?.title,
-      Comments: taskDetails["Comments"] != null ? JSON.parse(taskDetails["Comments"]) : "",
+      Comments: comment != null && comment!=undefined? comment : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
@@ -1020,7 +1027,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 {/* <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
               </a>
               {/* {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined&&this.currentUser[0].Title==this.state.Result["Approver"].Title &&<span><button>Approve</button><span><button>Reject</button></span></span>} */}
-              {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet  siteUrl={this.props.siteUrl} Context={this.props.Context} Approver={this.state.Result["Approver"]} currentUser={this.currentUser} items={this.state.Result}/>}
+              {this.currentUser!=undefined && this.state.Result["Approver"]!=undefined &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }} siteUrl={this.props.siteUrl} Context={this.props.Context} Approver={this.state.Result["Approver"]} currentUser={this.currentUser} items={this.state.Result}/>}
             </span>
             {this.state.Result.sitePage == "SP" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
             {this.state.Result.sitePage == "SH" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SH/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
@@ -1037,7 +1044,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Due Date</dt>
-                    <dd className='bg-light'>{this.state.Result["DueDate"] != null ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
+                    <dd className='bg-light'>{this.state.Result["DueDate"] != null&&this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Start Date</dt>
@@ -1301,6 +1308,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               CurrentUser={this.currentUser}
                               ApprovalStatus={this.state.ApprovalStatus}
                               Approver={this.state.Result["Approver"]}
+                              Result={this.state.Result}
+                              Context={this.props.Context}
                             >
                             </TaskFeedbackCard>
                           })}
@@ -1385,7 +1394,24 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 </div> : null}
 
 
-                <div className="row">
+            
+
+              </section>
+
+            </div>
+            <div className="col-3">
+              <div>
+                <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
+              </div>
+              <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context._pageContext._web} />}</div>
+              <div>  <RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments></div>
+
+            </div>
+
+          </div>
+        </section>
+        <section>
+        <div className="row">
                   {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType !="" && this.state.Result.SharewebTaskType !=undefined &&  this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} /> : ''}
                 </div>
 
@@ -1406,20 +1432,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
 
                 </div>
-
-              </section>
-
-            </div>
-            <div className="col-3">
-              <div>
-                <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
-              </div>
-              <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context._pageContext._web} />}</div>
-              <div>  <RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments></div>
-
-            </div>
-
-          </div>
         </section>
 
         <div className='imghover' style={{ display: this.state.showPopup }}>
