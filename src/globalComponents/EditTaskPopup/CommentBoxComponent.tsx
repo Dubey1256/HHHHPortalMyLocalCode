@@ -204,6 +204,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         index={1}
                                         commentId={obj.Id}
                                         callBack={subTextCallBack}
+                                        currentIndex={0}
                                         allUsers={commentData.allUsers}
                                         ApprovalStatus={ApprovalStatus}
                                         SmartLightStatus={SmartLightStatus}
