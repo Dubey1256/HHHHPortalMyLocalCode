@@ -72,9 +72,19 @@ function TasksTable(props:any){
         }
         else  if(props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType ==='Workstream'){
             filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
-        LoadAllSiteTasks(filter);
+            loadActivityTasks(props.props);
+        
         }
     }
+
+    const loadActivityTasks = async (task: any) =>{
+        let activity :any =[];
+         var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=Id eq " + task.ParentTask.Id + ""
+         activity = await globalCommon.getData(GlobalConstants.SP_SITE_URL, task.listId, select)
+         if(activity.length >0)
+         GetComponents(activity[0])
+         LoadAllSiteTasks(filter);
+     }
         const loadWSTasks = async (task: any) =>{
        
         var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=ParentTask/Id eq " + task.Id + ""
@@ -97,8 +107,8 @@ function TasksTable(props:any){
         console.log(Response);
 
     }
-     const handleClose = () => setLgShow(false);
-    const LoadAllSiteTasks =async (filter: any) => {
+           const handleClose = () => setLgShow(false);
+           const LoadAllSiteTasks =async (filter: any) => {
                 var Response: any = []
                 var Counter = 0;
                // filterarray.forEach((filter: any) => {
@@ -228,8 +238,8 @@ function TasksTable(props:any){
                     //})
                // })
             }
-            const GetComponents = async () => {
-                   var filt = "Id eq "+(props.props.Component.length >0 ? props.props.Component[0].Id :props.props.Service[0].Id)+"";
+            const GetComponents = async (Item:any) => {
+                   var filt = "Id eq "+(Item.Component.length >0 ? Item.Component[0].Id :Item.Services[0].Id)+"";
                 let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
               let compo =[];
               compo = await web.lists
@@ -248,13 +258,15 @@ function TasksTable(props:any){
                     componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
                     if(componentDetails.ItemType ==='Feature')
                     componentDetails.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
-                console.log(componentDetails);
+                  //  setData(data =>[...allworkstreamTasks])
+
+                    console.log(componentDetails);
             }
             React.useEffect(() => {
                 MeetingItems.push(props)
                 getTaskUsers(); 
                 if((props.props.Component !=undefined && props.props.Component.length >0) || (props.props.Service !=undefined && props.props.Service[0].Id))
-                GetComponents()
+                GetComponents(props.props)
                 if(props.props.ParentTask !=undefined && props.props.ParentTask.Title !=undefined )
                 props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
                else if(props.props.SharewebTaskType !=undefined && props.props.SharewebTaskType ==='Activities')
