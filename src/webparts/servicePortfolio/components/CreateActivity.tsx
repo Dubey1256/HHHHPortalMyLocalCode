@@ -10,6 +10,7 @@ import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedCompo
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
 import Tooltip from '../../../globalComponents/Tooltip';
+import "react-datepicker/dist/react-datepicker.css";
 //import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -26,6 +27,7 @@ var FeedBackItemArray: any = [];
 var feedbackArray: any = []
 const CreateActivity = (props: any) => {
     if (props != undefined) {
+        props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY')
         var AllItems = props.props
         SelectedTasks.push(AllItems)
 
@@ -43,8 +45,8 @@ const CreateActivity = (props: any) => {
     const [SharewebCategory, setSharewebCategory] = React.useState('');
     const [isDropItem, setisDropItem] = React.useState(false);
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
-    const [smartComponentData, setSmartComponentData] = React.useState([]);
-    const [linkedComponentData, setLinkedComponentData] = React.useState<any>([]);
+    var [smartComponentData, setSmartComponentData] = React.useState([]);
+    var [linkedComponentData, setLinkedComponentData] = React.useState<any>([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
@@ -69,13 +71,23 @@ const CreateActivity = (props: any) => {
             if (AllItems.Portfolio_x0020_Type == 'Component') {
                 smartComponentData.push(AllItems);
             }
-           
+             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
  
             if (AllItems.Portfolio_x0020_Type == 'Service') {
                 linkedComponentData.push(AllItems);
             }
+            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
            
-
+             linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
         }
         if (AllItems.Portfolio_x0020_Type == undefined) {
             if(AllItems.Component != undefined && AllItems.Component.length>0){
@@ -85,6 +97,12 @@ const CreateActivity = (props: any) => {
             if (AllItems.Services != undefined && AllItems.Services.length>0) {
                 linkedComponentData.push(AllItems);
             }
+             linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
        
        }
        React.useEffect(()=>{
@@ -768,7 +786,6 @@ const CreateActivity = (props: any) => {
                                         <label>Due Date</label>
                                         <DatePicker className="form-control"
                                             selected={date}
-                                            value={date}
                                             onChange={handleDatedue}
                                             dateFormat="dd/MM/yyyy"
 
@@ -986,7 +1003,7 @@ const CreateActivity = (props: any) => {
                                                 <>
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
-                                                        <div className="Component-container-edit-task d-flex my-1 justify-content-between">
+                                                        <div className="d-flex block full-width p-2">
                                                             <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
                                                                 {type.Title}
                                                             </a>

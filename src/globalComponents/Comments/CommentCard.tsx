@@ -17,7 +17,9 @@ import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { getSP } from '../../spservices/pnpjsConfig';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
-
+let color:any=false;
+let Title:any="";
+let commentlength:any=0
 export interface ICommentCardProps {
   siteUrl?: string;
   userDisplayName?: string;
@@ -91,14 +93,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
-      .select("ID", "Title", "DueDate", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+      .select("ID", "Title", "DueDate","Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
       .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
       .get()
 
     await this.GetTaskUsers();
 
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
-
+    Title=taskDetails["Title"];
     let tempTask = {
       ID: 'T' + taskDetails["ID"],
       Title: taskDetails["Title"],
@@ -121,9 +123,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
       Component: taskDetails["Component"],
       Services: taskDetails["Services"],
+      Portfolio_x0020_Type:taskDetails["Portfolio_x0020_Type"],
       TaskUrl: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + this.state.itemID + "&Site=" + this.state.listName
     };
-
+    if(tempTask["Portfolio_x0020_Type"]!=undefined&&tempTask["Portfolio_x0020_Type"]=="Service"){
+      color=true;
+    }
+    if(tempTask["Comments"]!=undefined&&tempTask["Comments"].length>0){
+      commentlength=tempTask.Comments.length;
+    }
+    
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
       tempTask["Comments"].map((item: any) => {
         if (item.AuthorImage != undefined && item.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
@@ -199,7 +208,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         display: this.taskUsers[index].Title
       });
 
-      if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn") {
+      if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Ksenia Kozhukhar"||this.taskUsers[index].Title=="Mayank Pal") {
         this.topCommenters.push({
           id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
           display: this.taskUsers[index].Title,
@@ -222,6 +231,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private async PostComment(txtCommentControlId: any) {
+    commentlength=commentlength+1;
     let txtComment = this.state.CommenttoPost;
     if (txtComment != '') {
       let temp = {
@@ -282,7 +292,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       let temp = {
         AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
         AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
-        Created: (new Date().toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })).replace(',', ''),
+        Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Description: txtComment,
         Header: updateCommentPost.Header,
         ID: updateCommentPost.ID,
@@ -536,14 +546,39 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private customHeaderforEditCommentpopup() {
     return (
-      <div className=  "d-flex full-width pb-1">
+      // <div className={(this.state?.Result?.Portfolio_x0020_Type!=undefined&&this.state?.Result?.Portfolio_x0020_Type=="Service")?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"}>
+      //   <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+          
+      //     <span className="siteColor">
+      //       Update Comment
+      //     </span>
+      //   </div>
+      //   <Tooltip ComponentId="588" />
+      // </div>
+      <>
+   <div className={color?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"}>
         <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
           
           <span className="siteColor">
             Update Comment
           </span>
         </div>
-        <Tooltip ComponentId="1683" />
+        <Tooltip ComponentId="588" />
+      </div>
+      </>
+
+    )
+  }
+  private customHeaderforALLcomments(){
+    return (
+      <div className={color?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1 "}>
+        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+          
+          <span className="siteColor">
+          Comment:{Title}{commentlength}
+          </span>
+        </div>
+        <Tooltip ComponentId="588" />
       </div>
     )
   }
@@ -565,7 +600,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   public render(): React.ReactElement<ICommentCardProps> {
     //const { editorState } = this.state;
     return (
-      <div>
+      <div >
         <div className='mb-3 card commentsection'>
           <div className='card-header'>
             {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
@@ -628,7 +663,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               {cmtData.Created}</span>
                             <div className="ml-auto media-icons ">
                               <a className="mx-1" onClick={() => this.openEditModal(cmtData, i)}>
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg>
                               </a>
                               <a title="Delete" onClick={() => this.clearComment(i)}>
                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
@@ -676,12 +712,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
               <span><Tooltip /> </span> <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.CloseModal(e)}></button>
             </div> */}
+            <div className={color?"serviepannelgreena":""}>
             <div className='modal-body'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
             <div className='modal-footer text-end'>
               <button type="button" className="btn btn-primary" onClick={(e) => this.updateComment()} >Save</button>
               <button type="button" className="btn btn-default ms-2" onClick={(e) => this.CloseModal(e)}>Cancel</button>
+            </div>
             </div>
           {/* </div> */}
 
@@ -690,20 +728,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
 
         <Panel
-          headerText={`Comment:${this.state.Result["Title"]}(${this.state.Result["Comments"]?.length})`}
+          // headerText={`Comment:${this.state.Result["Title"]}(${this.state.Result["Comments"]?.length})`}
+          onRenderHeader={this.customHeaderforALLcomments}
           type={PanelType.custom}
           customWidth="500px"
           onDismiss={(e) => this.closeAllCommentModal(e)}
           isOpen={this.state.AllCommentModal}
           isBlocking={false}>
 
-          <div id='ShowAllCommentsId'>
+          <div id='ShowAllCommentsId'className={color?"serviepannelgreena":""}>
 
             {/* <div className='modal-header mb-2'>
               {this.state.Result["Comments"] != undefined && this.state.Result["Comments"].length > 0 &&
                 <h3 className='modal-title'></h3>
               }
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.closeAllCommentModal(e)}></button>
+             <span><Tooltip /> </span> <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.closeAllCommentModal(e)}></button>
 
             </div> */}
             <div className='modal-body mt-2'>
@@ -733,10 +772,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </span>
                           <div className='ml-auto media-icons '>
                             <a className="hreflink me-1" onClick={() => this.openEditModal(cmtData, i)}>
-                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg>
                             </a>
                             <a className="hreflink" title="Delete" onClick={() => this.clearComment(i)}>
                               <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" />
+                             
                             </a>
 
                           </div>
