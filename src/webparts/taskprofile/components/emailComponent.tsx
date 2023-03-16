@@ -296,9 +296,9 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 
 
                       {props.items["FeedBack"] != null &&
-                       props.items["FeedBack"][0].FeedBackDescriptions.length > 0 &&
-                       props.items["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
-                       props.items["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
+                       props.items["FeedBack"][0]?.FeedBackDescriptions.length > 0 &&
+                       props.items["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
+                       props.items["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
                           return <>
                             <tr>
                               <td>
