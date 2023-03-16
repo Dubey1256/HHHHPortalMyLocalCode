@@ -209,6 +209,7 @@ private changeTrafficLigth(index:any,item:any){
   console.log(index);
   console.log(item);
   if(  this.props.Approver.Id==this.props.CurrentUser[0].Id){
+   
     let tempData:any=this.state.fbData;
     tempData.isShowLight = item;
     console.log(tempData);
@@ -216,12 +217,14 @@ private changeTrafficLigth(index:any,item:any){
       fbData: tempData,
         index: index,
     });
+  
     this.props.onPost();
   }
-
-  
-
- 
+}
+private changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status:any){
+console.log(parentindex);
+console.log(subchileindex);
+console.log(status);
 }
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
@@ -322,13 +325,13 @@ private changeTrafficLigth(index:any,item:any){
               <div>
                 {this.props.ApprovalStatus ?
                   <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
-                    <span title="Rejected"
+                    <span title="Rejected"onClick={()=> this.changeTrafficLigthsubtext(this.state.index,j,"Reject")}
                       className={fbSubData.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
                     >
                     </span>
-                    <span title="Maybe" className={fbSubData.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
+                    <span title="Maybe"onClick={()=> this.changeTrafficLigthsubtext(this.state.index,j,"Maybe")} className={fbSubData.isShowLight == "Maybe" ? "circlelight br_yellow pull-left yellow" : "circlelight br_yellow pull-left"}>
                     </span>
-                    <span title="Approved" className={fbSubData.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
+                    <span title="Approved" onClick={()=> this.changeTrafficLigthsubtext(this.state.index,j,"Approve")} className={fbSubData.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                     </span>
                   </span>
