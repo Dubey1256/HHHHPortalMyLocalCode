@@ -1639,6 +1639,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
         SubCommentBoxData = feedBackData;
+        console.log("Sub text callback array ====================",feedBackData)
         BuildFeedBackArray();
     }, [])
 
@@ -1651,11 +1652,11 @@ const EditTaskPopup = (Items: any) => {
             let message = JSON.parse(FeedBackBackupArray);
             let feedbackArray: any = [];
             if (message != null) {
-                feedbackArray = message[0]?.FeedBackDescriptions
+                feedbackArray = message[0]
             }
             let tempArray: any = [];
-            if (feedbackArray[0] != undefined) {
-                tempArray.push(feedbackArray[0])
+            if (feedbackArray != undefined) {
+                tempArray.push(feedbackArray)
             } else {
                 let tempObject: any =
                 {
@@ -2086,14 +2087,16 @@ const EditTaskPopup = (Items: any) => {
     const UpdateImage = () => {
         if (ReplaceImageData != undefined && ReplaceImageIndex != undefined) {
             ReplaceImageFunction(ReplaceImageData, ReplaceImageIndex);
+            const copy = [...TaskImages];
+            const obj = {...TaskImages[ReplaceImageIndex], ImageUrl : ReplaceImageData.data_url};
+            copy[ReplaceImageIndex] = obj;
+            setTaskImages(copy);
             setReplaceImagePopup(false);
-            GetEditData();
         }
     }
     const closeReplaceImagePopup = () => {
         setReplaceImagePopup(false)
     }
-
 
     // ***************** this is for the Copy and Move Task Functions ***************
 
