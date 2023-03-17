@@ -2564,6 +2564,12 @@ function ComponentTable(SelectedProp: any) {
                     childsData.push(itrm)
                 }
             }
+            if (itrm.SharewebTaskType != undefined) {
+                if (itrm.SharewebTaskType.Title == 'Task') {
+                    setActivityDisable(true)
+                   
+                }
+            }
         }
         if (checked == false) {
             itrm.chekBox = false;
@@ -3968,15 +3974,15 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                 </div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "2%" }}>{
-                                                                                                                childitem.SharewebTaskType?.Title != 'Task' &&
+                                                                                                            <td style={{ width: "2%" }}>
+                                                                                                               
                                                                                                             
                                                                                                                 <div className="accordian-header">
 
                                                                                                                     <span className='pe-2'><input type="checkbox" checked={childitem.chekBox}
                                                                                                                         onChange={(e) => onChangeHandler(childitem, item, e)} /></span>
                                                                                                                 </div>
-                                                                                }
+                                                                                
 
                                                                                                             </td>
                                                                                                             {/* <td style={{ width: "2%" }}></td> */}
@@ -4099,15 +4105,14 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                    
                                                                                                                                     <td style={{ width: "2%" }}>
                                                                                                                                        
-                                                                                                                                            {
-                                                                                                                                                  childinew.SharewebTaskType?.Title != 'Task' &&
+                                                                                                                                            
                                                                                                                                                   <div className="accordian-header" >
                                                                                                                                         
                                                                                                                                             <span className='pe-2'><input type="checkbox"  checked={childinew.chekBox}
                                                                                                                                                 onChange={(e) => onChangeHandler(childinew, item, e)} /></span>
                                                                                                                                            
                                                                                                                                         </div>
-                                                                                                                                         }
+                                                                                                                                         
 
                                                                                                                                     </td>
 
@@ -4231,12 +4236,12 @@ function ComponentTable(SelectedProp: any) {
 
                                                                                                                                                                 </div>
                                                                                                                                                             </td>
-                                                                                                                                                            <td style={{ width: "2%" }}>{
-                                                                                                                                                            subchilditem.SharewebTaskType?.Title != 'Task' &&
+                                                                                                                                                            <td style={{ width: "2%" }}>
+                                                                                                                                                           
                                                                                                                                                                 <div className="accordian-header" >
                                                                                                                                                                     <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(subchilditem, item, e)} /></span>
                                                                                                                                                                 </div>
-                                                                                                                                }
+                                                                                                                                
 
                                                                                                                                                             </td>
                                                                                                                                                             {/* <td style={{ width: "2%" }}></td> */}
