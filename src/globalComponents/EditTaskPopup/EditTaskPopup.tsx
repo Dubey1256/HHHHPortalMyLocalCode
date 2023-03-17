@@ -1292,7 +1292,7 @@ const EditTaskPopup = (Items: any) => {
                     }
                     else {
                         if (tempArray?.length == 0) {
-                            setWorkingMember(156);
+                            setWorkingMember(143);
                         }
                     }
                 }
@@ -3266,7 +3266,7 @@ const EditTaskPopup = (Items: any) => {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col">
+                                        <div className="col mt-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
                                                 <input type="text" placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
@@ -4263,7 +4263,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
 
-                                                    <div className="col">
+                                                    <div className="col mt-2">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">Status</label>
                                                             <input type="text" placeholder="% Complete" className="form-control px-2" disabled={InputFieldDisable}
