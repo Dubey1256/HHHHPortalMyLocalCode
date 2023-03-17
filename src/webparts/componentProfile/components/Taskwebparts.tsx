@@ -26,11 +26,13 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import CreateActivity from '../../servicePortfolio/components/CreateActivity';
 import CreateWS from '../../servicePortfolio/components/CreateWS';
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
+import { Item } from '@pnp/sp/items';
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
 let serachTitle: any = '';
 var MeetingItems: any = []
+var MainMeetingItems: any = []
 var childsData: any = []
 var array: any = [];
 var selectedCategory: any = [];
@@ -65,10 +67,10 @@ export default function ComponentTable({ props }: any) {
     const [MeetingPopup, setMeetingPopup] = React.useState(false);
     const [WSPopup, setWSPopup] = React.useState(false);
     const [ActivityPopup, setActivityPopup] = React.useState(false);
-    const [ActivityDisable, setActivityDisable] = React.useState(true);
+    const [ActivityDisable, setActivityDisable] = React.useState(false);
     const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
     //  For selected client category
-    const [items, setItems] = React.useState([]);
+    const [items, setItems] = React.useState<any>([]);
 
     function handleClick(item: any) {
         const index = items.indexOf(item);
@@ -79,6 +81,8 @@ export default function ComponentTable({ props }: any) {
             setItems(newItems);
         } else {
             // Item doesn't exist, add it
+            items.Title=item.Title
+            items.Id=item.Id
             setItems([...items, item]);
         }
     }
@@ -671,6 +675,7 @@ export default function ComponentTable({ props }: any) {
 
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
     React.useEffect(() => {
+        //MainMeetingItems.push(props) 
         showProgressBar();
         getTaskUsers();
         GetSmartmetadata();
@@ -1261,8 +1266,8 @@ export default function ComponentTable({ props }: any) {
             if (itrm.SharewebTaskType != undefined) {
                 if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
-                    itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                    itrm['listName'] = 'Master Tasks';
+                    // itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                    // itrm['listName'] = 'Master Tasks';
                     Arrays.push(itrm)
                     itrm['PortfolioId'] = child.Id;
                     childsData.push(itrm)
@@ -1388,8 +1393,8 @@ export default function ComponentTable({ props }: any) {
                 MainId = childItem.data.ComponentId[0]
             }
 
-            if (array != undefined) {
-                array.forEach((val: any) => {
+            if (AllItems != undefined) {
+                AllItems.forEach((val: any) => {
                     val.flag = true;
                     val.show = false;
                     if (val.Id == MainId) {
@@ -1397,7 +1402,7 @@ export default function ComponentTable({ props }: any) {
                     }
 
                 })
-                setData(array => ([...array]))
+                setData(AllItems => ([...AllItems]))
 
             }
 
@@ -1571,11 +1576,21 @@ export default function ComponentTable({ props }: any) {
 
     }
     const openActivity = () => {
+        if(MeetingItems.length==0){
+            MeetingItems.push(props)
+        }
         if (MeetingItems.length > 1) {
             alert('More than 1 Parents selected, Select only 1 Parent to create a child item')
         }
         else {
+           
             if (MeetingItems[0] != undefined) {
+               if(items != undefined && items.length > 0){
+                MeetingItems[0].ClientCategory=[]
+                  items.forEach((val:any)=>{ 
+                    MeetingItems[0].ClientCategory.push(val)
+                  })
+               }
                 if (MeetingItems[0].SharewebTaskType != undefined) {
                     if (MeetingItems[0].SharewebTaskType.Title == 'Activities') {
                         setWSPopup(true)
@@ -1592,6 +1607,9 @@ export default function ComponentTable({ props }: any) {
                 if (MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined) {
                     setActivityPopup(true)
                 }
+            }
+            else{
+                setActivityPopup(true)
             }
         }
 
@@ -1756,7 +1774,7 @@ export default function ComponentTable({ props }: any) {
                     <div>
                         {selectedCategory.map((item: any) => {
                             return (
-                                <li onClick={() => handleClick(item.Title)}>{item.Title}</li>
+                                <li onClick={() => handleClick(item)}>{item.Title}</li>
 
                             )
                         })}
@@ -2301,15 +2319,16 @@ export default function ComponentTable({ props }: any) {
                             </button>}
 
 
-                        {(selectedCategory != undefined && selectedCategory.length > 0) ?
+                        {/* {(selectedCategory != undefined && selectedCategory.length > 0) ?
                             <button type="button" onClick={() => setLgShow(true)}
                                 disabled={ActivityDisable} className="btn btn-primary" title=" Add Activity-Task">
                                 Add Activity-Task
                             </button>
-                            : <button type="button" onClick={() => openActivity()}
+                            :*/}
+                             <button type="button" onClick={() => openActivity()} 
                                 disabled={ActivityDisable} className="btn btn-primary" title=" Add Activity-Task">
                                 Add Activity-Task
-                            </button>}
+                            </button>
 
                         <button type="button" className="btn btn-primary"
                             onClick={buttonRestructuring}>
@@ -2707,12 +2726,12 @@ export default function ComponentTable({ props }: any) {
                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                         <tr className="for-c02">
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <div onClick={() => handleOpen(childitem)} className="sign">{childitem.childs.length > 0 && childitem.show ? <img src={childitem.downArrowIcon} />
+                                                                                                <div onClick={() => handleOpen(childitem)} className="sign">{childitem.childs?.length > 0 && childitem.show ? <img src={childitem.downArrowIcon} />
                                                                                                     : <img src={childitem.RightArrowIcon} />}
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
-                                                                                                <span className='pe-2'><input type="checkbox" />
+                                                                                                <span className='pe-2'><input type="checkbox"   onChange={(e) => onChangeHandler(childitem, item, e)} />
                                                                                                     <a className="hreflink" data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
                                                                                                     </a>

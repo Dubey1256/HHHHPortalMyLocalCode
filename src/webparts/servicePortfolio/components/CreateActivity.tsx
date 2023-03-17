@@ -28,7 +28,7 @@ var feedbackArray: any = [];
 var SiteTypeBackupArray:any =[];
 const CreateActivity = (props: any) => {
     if (props != undefined) {
-        props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY')
+        //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         var AllItems = props.props
         SelectedTasks.push(AllItems)
 
@@ -52,6 +52,7 @@ const CreateActivity = (props: any) => {
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState([]);
+    const [ClientCategory, setClientCategory] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [site, setSite] = React.useState('');
     var [isActive, setIsActive] = React.useState({ siteType: false,});
@@ -337,6 +338,15 @@ const CreateActivity = (props: any) => {
         setCategoriesData(CategoriesData => ([...CategoriesData]));
 
     }
+    const deleteClientCategories = (id: any) => {
+        CategoriesData.map((catId, index) => {
+            if (id == catId.Id) {
+                CategoriesData.splice(index, 1)
+            }
+        })
+        setCategoriesData(CategoriesData => ([...CategoriesData]));
+
+    }
     var isItemExists = function (arr: any, Id: any) {
         var isExists = false;
         $.each(arr, function (index: any, items: any) {
@@ -484,6 +494,13 @@ const CreateActivity = (props: any) => {
                 CategoryID.push(category.Id)
             }
         })
+        var ClientCategory: any = []
+        // if(AllItems.)
+        // AllItems.ClientCategory?.map((val:any) => {
+        //     if (val.Id != undefined) {
+        //         ClientCategory.push(val.Id)
+        //     }
+        // })
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
@@ -529,6 +546,7 @@ const CreateActivity = (props: any) => {
                         Categories: categoriesItem ? categoriesItem : null,
                         DueDate: date != undefined ? new Date(date).toDateString() : date,
                         SharewebCategoriesId: { "results": CategoryID },
+                       // ClientCategoryId:{ "results": ClientCategory},
                         ServicesId: { "results": RelevantPortfolioIds },
                         SharewebTaskTypeId: 1,
                         Body: AllItems.Body,
@@ -630,6 +648,7 @@ const CreateActivity = (props: any) => {
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
                             ParentTaskId: AllItems.Id,
+                            //ClientCategoryId:{ "results": ClientCategory},
                             SharewebTaskTypeId: SharewebTasknewTypeId,
                             Body: AllItems.Description,
                             Shareweb_x0020_ID: SharewebID,
@@ -1034,6 +1053,45 @@ const CreateActivity = (props: any) => {
                                                                 {type.Title}
                                                             </a>
                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type.Id)} className="p-1" />
+                                                        </div>
+                                                    }
+                                                </>
+                                            )
+                                        })}
+                                    </div> : null
+                                }
+                                 <div className="row mt-2">
+                                    <div className="col-sm-12">
+                                        <div className="col-sm-12 padding-0 input-group">
+                                            <label className="full_width">Client Category</label>
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" />
+
+                                            <span className="input-group-text">
+
+                                                <a className="hreflink" title="Edit Categories">
+
+                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                                        />
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                                {(AllItems.ClientCategory != undefined && AllItems.ClientCategory.results?.length > 0) ?
+                                    <div>
+                                        {AllItems.ClientCategory?.map((type: any, index: number) => {
+                                            return (
+                                                <>
+                                                    {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
+
+                                                        <div className="d-flex block full-width p-2 mb-1">
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
+                                                                {type.Title}
+                                                            </a>
+                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
                                                         </div>
                                                     }
                                                 </>
