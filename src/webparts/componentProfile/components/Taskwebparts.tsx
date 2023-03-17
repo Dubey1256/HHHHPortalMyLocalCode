@@ -1376,8 +1376,7 @@ export default function ComponentTable({ props }: any) {
         setIsTask(false);
         setMeetingPopup(false);
         setWSPopup(false);
-        selectedCategory=[];
-        setLgShow(false);
+     
         var MainId: any = ''
         if (childItem != undefined) {
             childItem.data['flag'] = true;
