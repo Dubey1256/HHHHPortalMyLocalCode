@@ -307,7 +307,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       siteUrl: taskDetails["siteUrl"],
       TaskId: taskDetails["TaskId"],
       Title: taskDetails["Title"],
-      DueDate:taskDetails["DueDate"],
+      DueDate: taskDetails["DueDate"] ,
       Categories: taskDetails["Categories"],
       Status: taskDetails["Status"],
       StartDate: taskDetails["StartDate"] != null ? moment(taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
@@ -1116,7 +1116,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Start Date</dt>
-                    <dd className='bg-light'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
+                    <dd className='bg-light'>{this.state.Result["StartDate"] != undefined  ? this.state.Result["StartDate"] : ""}</dd>
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Completion Date</dt>
