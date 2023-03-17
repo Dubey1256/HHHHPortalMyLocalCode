@@ -60,10 +60,6 @@ const ComponentPortPolioPopup = (item: any) => {
 
     }
 
-
-
-
-
     const handleOpen = (item: any) => {
         item.show = item.show = item.show == true ? false : true;
         setComponentsData(componentsData => ([...componentsData]));
@@ -430,7 +426,29 @@ const ComponentPortPolioPopup = (item: any) => {
     var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
         var isSearchTermAvailable = true;
         $.each(searchTerms, function (index: any, val: any) {
-            if (isSearchTermAvailable && (item[Title] != undefined && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
+            if(isSearchTermAvailable &&(item[Title]!=undefined  && Title == "ItemRank" && item[Title] == parseInt(val))){
+                   
+                   isSearchTermAvailable = true;
+                   getHighlightdata(item, val);
+                }
+                else if(isSearchTermAvailable &&(item.ClientCategory!=undefined  && Title == "ClientCategory" && item.ClientCategory.length>0)){
+                    item.ClientCategory.map((Client:any)=>{
+                        if(Client.Title.toLowerCase().includes(val.toLowerCase())){
+                            isSearchTermAvailable = true;
+                            getHighlightdata(item, val.toLowerCase());
+                        }
+                    })
+                 }
+                 else if(isSearchTermAvailable &&(item.TeamLeaderUser!=undefined  && Title == "TeamLeaderUser" && item.TeamLeaderUser.length>0)){
+                    item.TeamLeaderUser.map((Teamleader:any)=>{
+                        if(Teamleader.Title.toLowerCase().includes(val.toLowerCase())){
+                            isSearchTermAvailable = true;
+                            getHighlightdata(item, val.toLowerCase());
+                        }
+                    })
+                 }
+
+           else if (isSearchTermAvailable && (item[Title] != undefined && Title != "ItemRank" && Title != "ClientCategory" && Title != "TeamLeaderUser" && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
                 isSearchTermAvailable = true;
                 getHighlightdata(item, val.toLowerCase());
 
@@ -469,9 +487,16 @@ const ComponentPortPolioPopup = (item: any) => {
 
 
     let handleChange1 = (e: { target: { value: string; }; }, Title: any) => {
+        if(Title=="ItemRank"){
+            setSearch(e.target.value)
+            serachTitle = e.target.value
+            var filterglobal = e.target.value;
+        }else{
         setSearch(e.target.value.toLowerCase());
         serachTitle = e.target.value.toLowerCase();
-    var filterglobal = e.target.value.toLowerCase();
+        var filterglobal = e.target.value.toLowerCase();
+       }
+   
         if (filterglobal != undefined && filterglobal.length >= 1) {
             var searchTerms = stringToArray(filterglobal);
             $.each(MainDataBackup, function (pareIndex: any, item: any) {
@@ -622,7 +647,7 @@ const ComponentPortPolioPopup = (item: any) => {
             type={PanelType.large}
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
-            isBlocking={modalIsOpen}
+            isBlocking={false}
             onRenderFooter={CustomFooter}
         >
             <div>
@@ -654,11 +679,11 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 <th style={{ width: "4%" }}>
                                                     <div></div>
                                                 </th>
-                                                <th style={{ width: "2%" }}>
+                                                {/* <th style={{ width: "2%" }}>
                                                     <div></div>
-                                                </th>
-                                                <th style={{ width: "22%" }}>
-                                                    <div style={{ width: "21%" }} className="smart-relative ">
+                                                </th> */}
+                                                <th style={{ width: "24%" }}>
+                                                    <div style={{ width: "23%" }} className="smart-relative ">
                                                         <input type="search" placeholder="Title" className="full_width searchbox_height" onChange={event => handleChange1(event, 'Title')} />
 
                                                         <span className="sorticon">
@@ -672,7 +697,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                 <th style={{ width: "18%" }}>
                                                     <div style={{ width: "17%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" 
-                                                        // onChange={event => handleChange1(event, 'ClientCategory')}
+                                                        onChange={event => handleChange1(event, 'ClientCategory')}
                                                          type="search" placeholder="Client Category" title="Client Category" className="full_width searchbox_height" />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -684,7 +709,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     <div style={{ width: "19%" }} className="smart-relative ">
                                                         <input id="searchClientCategory" type="search" placeholder="Team"
                                                             title="Team Member" className="full_width searchbox_height"
-                                                            // onChange={event => handleChange1(event, 'TeamLeaderUser')}
+                                                            onChange={event => handleChange1(event, 'TeamLeaderUser')}
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -697,7 +722,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                     <div style={{ width: "9%" }} className="smart-relative">
                                                         <input id="searchClientCategory" type="search" placeholder="Status"
                                                             title="Client Category" className="full_width searchbox_height" 
-                                                            onChange={event => handleChange1(event, 'PercentComplete')}
+                                                            // onChange={event => handleChange1(event, 'PercentComplete')}
                                                         />
                                                         <span className="sorticon">
                                                             <span className="up" onClick={sortBy}>< FaAngleUp /></span>
@@ -774,7 +799,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                 </span>
                                                                             </div>
                                                                         </td>
-                                                                        <td style={{ width: "2%" }}>
+                                                                        {/* <td style={{ width: "2%" }}>
                                                                             <div className="">
                                                                                 <span>
                                                                                     <div className="accordian-header" onClick={() => handleOpen(item)}>
@@ -790,8 +815,8 @@ const ComponentPortPolioPopup = (item: any) => {
 
                                                                                 </span>
                                                                             </div>
-                                                                        </td>
-                                                                        <td style={{ width: "22%" }}>
+                                                                        </td> */}
+                                                                        <td style={{ width: "24%" }}>
                                                                             {/* <a className="hreflink serviceColor_Active" target="_blank"
                                                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
                                                                             >{item.Title}
@@ -854,7 +879,8 @@ const ComponentPortPolioPopup = (item: any) => {
 
                                                                                     </span>
                                                                                 )
-                                                                            })}</div></td>
+                                                                            })}</div>
+                                                                        </td>
                                                                         <td style={{ width: "10%" }}>{item.PercentComplete}</td>
                                                                         <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                         <td style={{ width: "10%" }}>{item.DueDate}</td>
@@ -903,7 +929,7 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                                 </span>
                                                                                             </div>
                                                                                             </td>
-                                                                                            <td style={{ width: "2%" }}>
+                                                                                            {/* <td style={{ width: "2%" }}>
                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childitem)}>
                                                                                                     {childitem.childs.length > 0 &&
                                                                                                         <a className='hreflink'
@@ -916,8 +942,8 @@ const ComponentPortPolioPopup = (item: any) => {
 
                                                                                                 </div>
 
-                                                                                            </td>
-                                                                                            <td style={{ width: "22%" }}>
+                                                                                            </td> */}
+                                                                                            <td style={{ width: "24%" }}>
                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                 >
@@ -995,8 +1021,8 @@ const ComponentPortPolioPopup = (item: any) => {
                                                                                                                 </span>
                                                                                                             </div>
                                                                                                             </td>
-                                                                                                            <td style={{ width: "2%" }}></td>
-                                                                                                            <td style={{ width: "22%" }}>
+                                                                                                            {/* <td style={{ width: "2%" }}></td> */}
+                                                                                                            <td style={{ width: "24%" }}>
 
                                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
                                                                                                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}

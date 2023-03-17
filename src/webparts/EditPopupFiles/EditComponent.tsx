@@ -1246,6 +1246,8 @@ function EditInstitution(item: any) {
       });
       setTaskAssignedTo(tempArray);
       console.log("Team Config  assigadf=====", tempArray);
+    }else {
+      setTaskAssignedTo([]);
     }
     if (dt?.TeamMemberUsers?.length > 0) {
       let tempArray: any = [];
@@ -1258,6 +1260,8 @@ function EditInstitution(item: any) {
       });
       setTaskTeamMembers(tempArray);
       console.log("Team Config member=====", tempArray);
+    }else {
+      setTaskTeamMembers([]);
     }
     if (dt.ResponsibleTeam != undefined && dt.ResponsibleTeam.length > 0) {
       let tempArray: any = [];
