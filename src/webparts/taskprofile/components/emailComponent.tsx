@@ -180,7 +180,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
       &&<span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>
      }
    
-   {props.items != null  &&props.Approver!=undefined&&
+   {props.items != null  &&props.items.Approver!=undefined&&
         <div id='htmlMailBodyemail' style={{ display: 'none' }}>
           <div style={{marginTop:"2pt"}}>Hi,</div>
         {taskpermission!=null&&taskpermission=="Approve"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props.items?.Approver?.Title}, team will process it further. Refer {taskpermission} Comments.</div>}
