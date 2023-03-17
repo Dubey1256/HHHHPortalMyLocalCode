@@ -28,18 +28,44 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
   //     console.log(taskDetails);
   //     setTaskDetails(taskDetails)
   // }
-  if( props.items.FeedBack!=null||props.items.FeedBack!=undefined){
+  if( props?.items?.FeedBack!=null||props?.items?.FeedBack!=undefined){
+    let isShowLight=0;
+    let NotisShowLight=0
     props.items.FeedBack.map((item:any)=>{
       if(item.FeedBackDescriptions!=undefined){
         item.FeedBackDescriptions.map((feedback:any)=>{
+          if(feedback.subtext!=undefined&&feedback.subtext.length>0){
+            feedback?.subtext.map((subtextitem:any)=>{
+              if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
+                // count=1
+                isShowLight=isShowLight+1;
+            
+              }
+              
+              else{
+                // count=0;
+                NotisShowLight=0;
+              }
+            })
+            
+          }
           if(feedback.isShowLight!=""&&feedback.isShowLight!=undefined ){
-            count=1;
-          }else{
-            count=0;
+            // count=1
+            isShowLight=isShowLight+1;
+        
+          }
+          
+          else{
+            // count=0;
+            NotisShowLight=0;
           }
         })
       }
     })
+
+    if(isShowLight>NotisShowLight){
+      count=1;
+    }
   }
 
   const updateData=async( permission:any)=>{
@@ -49,6 +75,17 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
       feedback?.map((items:any)=>{
        if( items.FeedBackDescriptions!=undefined&&items.FeedBackDescriptions.length>0){
         items.FeedBackDescriptions.map((feedback:any)=>{
+          if(feedback.Subtext!=undefined){
+            feedback.Subtext.map((subtext:any)=>{
+              if(subtext.isShowLight===""){
+            
+                subtext.isShowLight=permission
+              }else{
+               
+                subtext.isShowLight=permission
+              }
+            })
+          }
           if(feedback.isShowLight===""){
             
             feedback.isShowLight=permission
@@ -91,12 +128,12 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
   
   console.log(props);
   let mention_To: any = [];
-  mention_To.push(props.items.Author[0].Name.replace('{', '').replace('}', '').trim());
+  mention_To.push(props?.items?.Author[0]?.Name.replace('{', '').replace('}', '').trim());
   console.log(mention_To);
   if (mention_To.length > 0) {
     let emailprops = {
       To: mention_To,
-      Subject: "["+props.items.siteType+"-"+send+"]"+props.items.Title,
+      Subject: "["+props?.items?.siteType+"-"+send+"]"+props?.items?.Title,
       Body: props.items.Title
     }
     console.log(emailprops);
@@ -139,15 +176,15 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
   }
    return(
       <>
-     {props.Approver!=undefined &&props.items.Categories.includes("Approval")&& props.currentUser!=undefined&&props.Approver.Title==props.currentUser[0].Title&&count==0
+     {props.items.Approver!=undefined && props.items.Categories.includes("Approval") && props.currentUser!=undefined && props.currentUser.length>0 && props.items.Approver.Title==props.currentUser[0].Title && count==0
       &&<span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>
      }
-    {/* {props.items.FeedBack!=null&&props.items.FeedBack[0].FeedBackDescriptions[0]&&<span><button  onClick={()=>sendEmail("Approved")}className="btn btn-success">Approve</button><span><button className="btn btn-danger"onClick={()=>sendEmail("Rejected")}>Reject</button></span></span>} */}
-   {props.items != null  &&props.Approver!=undefined&&
+   
+   {props.items != null  &&props.items.Approver!=undefined&&
         <div id='htmlMailBodyemail' style={{ display: 'none' }}>
           <div style={{marginTop:"2pt"}}>Hi,</div>
-        {taskpermission!=null&&taskpermission=="Approve"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props.items.Approver.Title}, team will process it further. Refer {taskpermission} Comments.</div>}
-        {taskpermission!=null&&taskpermission=="Reject"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props.items.Approver.Title}. Refer {taskpermission} Comments.</div>}
+        {taskpermission!=null&&taskpermission=="Approve"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props.items?.Approver?.Title}, team will process it further. Refer {taskpermission} Comments.</div>}
+        {taskpermission!=null&&taskpermission=="Reject"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props?.items?.Approver?.Title}. Refer {taskpermission} Comments.</div>}
          
           <div style={{ marginTop: "11.25pt" }}>
             <a href={props.items["TaskUrl"]} target="_blank">{props.items["Title"]}</a><u></u><u></u></div>
@@ -296,9 +333,9 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 
 
                       {props.items["FeedBack"] != null &&
-                       props.items["FeedBack"][0].FeedBackDescriptions.length > 0 &&
-                       props.items["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
-                       props.items["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
+                       props.items["FeedBack"][0]?.FeedBackDescriptions.length > 0 &&
+                       props.items["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
+                       props.items["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
                           return <>
                             <tr>
                               <td>
@@ -323,7 +360,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                                     <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.<u></u><u></u></span></p>
                                   </td>
                                   <td><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
-                                    {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments'].map((fbSubComment: any) => {
+                                    {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
                                       return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                         <div style={{ marginBottom: '3.75pt' }}>
                                           <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
@@ -356,7 +393,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                       <tr>
                       
                         <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
-                        {props.items["Comments"]!=undefined && props.items["Comments"].length>0&&props.items["Comments"]?.map((cmtData: any, i: any) => {
+                        {props?.items["Comments"]!=undefined && props?.items["Comments"]?.length>0&&props.items["Comments"]?.map((cmtData: any, i: any) => {
                             return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                               <div style={{ marginBottom: "3.75pt" }}>
                                 <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
