@@ -38,6 +38,8 @@ import {
 } from 'react-table';
 import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
+import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+// import SiteComposition from "../SiteComposition";
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -92,7 +94,7 @@ const EditTaskPopup = (Items: any) => {
     const [replaceImagePopup, setReplaceImagePopup] = React.useState(false);
     const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false);
     const [compareImageArray, setCompareImageArray] = React.useState([]);
-    const [composition, setComposition] = React.useState(false);
+    const [composition, setComposition] = React.useState(true);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [taskStatus, setTaskStatus] = React.useState('');
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
@@ -528,9 +530,7 @@ const EditTaskPopup = (Items: any) => {
     const openTaskStatusUpdatePopup = (itemData: any) => {
         setTaskStatusPopup(true);
     }
-    const ExpandSiteComposition = () => {
-        setComposition(!composition)
-    }
+
     var count = 0;
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
@@ -629,7 +629,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -639,7 +639,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -691,6 +691,43 @@ const EditTaskPopup = (Items: any) => {
                     }
 
                 }
+                if (item.ClientTime != null && item.ClientTime != undefined) {
+                    let tempData: any = JSON.parse(item.ClientTime);
+                    let tempData2: any = [];
+                    if (tempData != undefined && tempData.length > 0) {
+                        tempData.map((siteData: any) => {
+                            let siteName = siteData.SiteName.toLowerCase();
+                            if (siteName == "migration" || siteName == "health" || siteName == "eps" || siteName == "qa" || siteName == "ei" || siteName == "gender" || siteName == "education" || siteName == "cep" || siteName == "shareweb" || siteName == "small projects" || siteName == 'offshore tasks') {
+                                siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`
+                            }
+                            if (siteName == 'alakdigital' || siteName == 'da e+e') {
+                                siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`
+                            }
+                            if (siteName == 'development-effectiveness' || siteName == 'de') {
+                                siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`
+                            }
+                            if (siteName == "kathabeck") {
+                                siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`
+                            }
+                            if (siteName == "gruene") {
+                                siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`
+                            }
+                            if (siteName == "hhhh") {
+                                siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`
+                            }
+                            tempData2.push(siteData);
+                        })
+                    }
+                    item.siteCompositionData = tempData2;
+                } else {
+                    const object: any = {
+                        SiteName: Items.Items.siteType,
+                        ClienTimeDescription: 100,
+                        localSiteComposition: true
+                    }
+                    item.siteCompositionData = [object];
+                }
+
                 if (item.PercentComplete != undefined) {
                     statusValue = item.PercentComplete * 100;
                     item.PercentComplete = statusValue;
@@ -736,25 +773,34 @@ const EditTaskPopup = (Items: any) => {
                 // }
                 item.TaskId = globalCommon.getTaskId(item);
                 let AssignedUsers: any = [];
-                let ApproverData: any = [];
+                let ApproverDataTemp: any = [];
+                let TeamMemberTemp: any = [];
                 if (item.Author != undefined && item.Author != null) {
                     taskUsers.map((userData: any) => {
                         if (item.Author.Id == userData?.AssingedToUserId) {
                             userData.Approver?.map((AData: any) => {
-                                ApproverData.push(AData);
+                                ApproverDataTemp.push(AData);
                                 ApproverBackupArray.push(AData);
                             })
                         }
                     })
                     if ((statusValue == 1 || statusValue == 2) && ApprovalStatusGlobal) {
-                        if (ApproverData?.length > 0) {
-                            taskUsers.map((userData1: any) => {
-                                ApproverData?.map((itemData: any) => {
-                                    if (itemData.Id == userData1?.AssingedToUserId) {
-                                        AssignedUsers.push(userData1);
-                                    }
-                                })
+                        if (ApproverData != undefined && ApproverData.length > 0) {
+                            ApproverData.map((itemData: any) => {
+                                AssignedUsers.push(itemData);
+                                TeamMemberTemp.push(itemData);
                             })
+                        } else {
+                            if (ApproverDataTemp?.length > 0) {
+                                taskUsers.map((userData1: any) => {
+                                    ApproverDataTemp?.map((itemData: any) => {
+                                        if (itemData.Id == userData1?.AssingedToUserId) {
+                                            AssignedUsers.push(userData1);
+                                            TeamMemberTemp.push(userData1);
+                                        }
+                                    })
+                                })
+                            }
                         }
                     } else {
                         taskUsers?.map((userData: any) => {
@@ -766,8 +812,8 @@ const EditTaskPopup = (Items: any) => {
                         })
                     }
                 }
-                if (ApproverData?.length > 0) {
-                    ApproverData?.map((Approver: any) => {
+                if (ApproverDataTemp?.length > 0) {
+                    ApproverDataTemp?.map((Approver: any) => {
                         currentUserBackupArray?.map((current: any) => {
                             if (Approver.Id == current.AssingedToUserId) {
                                 setSmartLightStatus(true);
@@ -778,18 +824,18 @@ const EditTaskPopup = (Items: any) => {
                 if (item.component_x0020_link != null) {
                     item.Relevant_Url = item.component_x0020_link.Url
                 }
-
                 setTaskAssignedTo(item.AssignedTo ? item.AssignedTo : []);
                 setTaskResponsibleTeam(item.Responsible_x0020_Team ? item.Responsible_x0020_Team : []);
-                setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
 
-                item.TaskAssignedUsers = AssignedUsers;
-
-                if (ApproverData != undefined && ApproverData.length > 0) {
-
-                    item.TaskApprovers = ApproverData;
+                if (TeamMemberTemp != undefined && TeamMemberTemp.length > 0) {
+                    setTaskTeamMembers(TeamMemberTemp);
                 } else {
-
+                    setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
+                }
+                item.TaskAssignedUsers = AssignedUsers;
+                if (ApproverDataTemp != undefined && ApproverDataTemp.length > 0) {
+                    item.TaskApprovers = ApproverDataTemp;
+                } else {
                     item.TaskApprovers = [];
                 }
 
@@ -1116,10 +1162,10 @@ const EditTaskPopup = (Items: any) => {
                 setTaskTeamMembers(tempArray);
                 setApproverData(tempArray);
             }
-        }else{
-                setTaskStatus('');
-                setPercentCompleteStatus('');
-                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
+        } else {
+            setTaskStatus('');
+            setPercentCompleteStatus('');
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
         }
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
     }
@@ -1559,7 +1605,7 @@ const EditTaskPopup = (Items: any) => {
                 })
                 setTaskAssignedTo(tempArray);
                 EditData.AssignedTo = tempArray;
-            }else{
+            } else {
                 setTaskAssignedTo([]);
                 EditData.AssignedTo = [];
             }
@@ -1574,7 +1620,7 @@ const EditTaskPopup = (Items: any) => {
                 })
                 setTaskTeamMembers(tempArray);
                 EditData.Team_x0020_Members = tempArray;
-            }else{
+            } else {
                 setTaskTeamMembers([]);
                 EditData.Team_x0020_Members = [];
             }
@@ -1589,7 +1635,7 @@ const EditTaskPopup = (Items: any) => {
                 })
                 setTaskResponsibleTeam(tempArray);
                 EditData.Responsible_x0020_Team = tempArray;
-            }else{
+            } else {
                 setTaskResponsibleTeam([]);
                 EditData.Responsible_x0020_Team = [];
             }
@@ -1639,7 +1685,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
         SubCommentBoxData = feedBackData;
-        console.log("Sub text callback array ====================",feedBackData)
+        console.log("Sub text callback array ====================", feedBackData)
         BuildFeedBackArray();
     }, [])
 
@@ -2088,7 +2134,7 @@ const EditTaskPopup = (Items: any) => {
         if (ReplaceImageData != undefined && ReplaceImageIndex != undefined) {
             ReplaceImageFunction(ReplaceImageData, ReplaceImageIndex);
             const copy = [...TaskImages];
-            const obj = {...TaskImages[ReplaceImageIndex], ImageUrl : ReplaceImageData.data_url};
+            const obj = { ...TaskImages[ReplaceImageIndex], ImageUrl: ReplaceImageData.data_url };
             copy[ReplaceImageIndex] = obj;
             setTaskImages(copy);
             setReplaceImagePopup(false);
@@ -2368,6 +2414,15 @@ const EditTaskPopup = (Items: any) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
         setApproverSearchKey('');
+        setTaskAssignedTo([ApproverData]);
+        setTaskTeamMembers([ApproverData]);
+        StatusArray?.map((item: any) => {
+            if (item.value == 1) {
+                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
+                setPercentCompleteStatus(item.status);
+                setTaskStatus(item.taskStatusComment);
+            }
+        })
     }
 
     // ************** this is custom header and custom Footers section functions for panel *************
@@ -3180,27 +3235,35 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                     <div className="col-md-3">
-                                        <div className="">
-                                            <div className="">
-                                                <div className="panel panel-primary-head blocks"
-                                                    id="t_draggable1">
-                                                    <div className="panel-heading profileboxclr"
-                                                    >
-                                                        <h3 className="panel-title" style={{ textAlign: "inherit" }}>
-                                                            <span className="lbltitleclr">Site
-                                                                Composition</span>
-                                                            <span className="pull-left">
-                                                                <span
-                                                                    style={{ backgroundColor: "#f5f5f5" }}
-                                                                    onClick={() => ExpandSiteComposition()}>
-                                                                    <img style={{ width: "10px" }}
-                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />
-                                                                </span>
-                                                            </span>
-                                                        </h3>
-                                                    </div>
+                                        <div className="Sitecomposition">
+                                            <div className='dropdown'>
+                                                <a className="sitebutton bg-fxdark"  style={{cursor:"pointer"}} onClick={() => setComposition(composition ? false : true)}>
+                                                    <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                                                </a>
+                                                {composition ?
+                                                    <div className="mt-1 spxdropdown-menu">
+                                                        <ul>
+                                                            {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                <>
+                                                                    {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
+                                                                        return <li className="Sitelist">
+                                                                            <span>
+                                                                                <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
+                                                                            </span>
 
-                                                </div>
+                                                                            {SiteDtls.ClienTimeDescription != undefined &&
+                                                                                <span className="mx-2">
+                                                                                    {SiteDtls.ClienTimeDescription}%
+                                                                                </span>
+                                                                            }
+                                                                        </li>
+                                                                    })}
+                                                                </> : null
+                                                            }
+
+                                                        </ul>
+                                                    </div> : null
+                                                }
                                             </div>
                                         </div>
                                         <div className="col">
@@ -4167,29 +4230,39 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-md-3">
-                                                    <div className="">
-                                                        <div className="">
-                                                            <div className="panel panel-primary-head blocks"
-                                                                id="t_draggable1">
-                                                                <div className="panel-heading profileboxclr"
-                                                                >
-                                                                    <h3 className="panel-title" style={{ textAlign: "inherit" }}>
-                                                                        <span className="lbltitleclr">Site
-                                                                            Composition</span>
-                                                                        <span className="pull-left">
-                                                                            <span
-                                                                                style={{ backgroundColor: "#f5f5f5" }}
-                                                                                onClick={() => ExpandSiteComposition()}>
-                                                                                <img style={{ width: "10px" }}
-                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />
-                                                                            </span>
-                                                                        </span>
-                                                                    </h3>
-                                                                </div>
 
-                                                            </div>
+                                                    <div className="Sitecomposition">
+                                                        <div className='dropdown'>
+                                                            <a className="sitebutton bg-fxdark" style={{cursor:"pointer"}} onClick={() => setComposition(composition ? false : true)}>
+                                                                <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                                                            </a>
+                                                            {composition ?
+                                                                <div className="mt-1 spxdropdown-menu">
+                                                                    <ul>
+                                                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                            <>
+                                                                                {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
+                                                                                    return( <li className="Sitelist">
+                                                                                        <span>
+                                                                                            <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
+                                                                                        </span>
+
+                                                                                        {SiteDtls.ClienTimeDescription != undefined &&
+                                                                                            <span className="mx-2">
+                                                                                                {SiteDtls.ClienTimeDescription}%
+                                                                                            </span>
+                                                                                        }
+                                                                                    </li>)
+                                                                                })}
+                                                                            </> : null
+                                                                        }
+
+                                                                    </ul>
+                                                                </div> : null
+                                                            }
                                                         </div>
                                                     </div>
+
                                                     <div className="col">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">Status</label>
