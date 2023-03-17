@@ -30,7 +30,8 @@ export interface ITaskFeedbackState {
   isModalOpen: boolean;
   updateCommentText: any;
   CommenttoUpdate: string;
-  emailcomponentStatus:boolean;
+  emailcomponentopen:boolean;
+  emailComponentstatus:String;
 }
 
 export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskFeedbackState> {
@@ -46,7 +47,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       index: this.props.index,
       CommenttoPost: '',
       isModalOpen: false,
-      emailcomponentStatus:false,
+      emailcomponentopen:false,
+      emailComponentstatus:"",
       updateCommentText: {},
       CommenttoUpdate: ''
     };
@@ -223,10 +225,11 @@ private changeTrafficLigth(index:any,item:any){
     this.setState({
       fbData: tempData,
         index: index,
-        emailcomponentStatus:true
+        emailcomponentopen:true,
+        emailComponentstatus:item
     });
   
-    this.props.onPost();
+    // this.props.onPost();
   }
 }
 private changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status:any){
@@ -241,15 +244,22 @@ console.log(tempData);
 this.setState({
   fbData: tempData,
     index: parentindex,
-    emailcomponentStatus:true
+    emailcomponentopen:true,
+    emailComponentstatus:status
 });
-this.props.onPost();
+// this.props.onPost();
 }
 }
+private approvalcallback(){
+  this.props.onPost();
+  this.setState({
+    emailcomponentopen:false,
+     });
+    }
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
       <div>
-        {/* { this.state.emailcomponentStatus&&<EmailComponenet />} */}
+        { this.state.emailcomponentopen&&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props.Context} emailStatus={this.state.emailComponentstatus}  currentUser={this.props.CurrentUser} items={this.props.Result} />}
         <div className="col mb-2">
           <div className='justify-content-between d-flex'>
             <div className="pt-2">

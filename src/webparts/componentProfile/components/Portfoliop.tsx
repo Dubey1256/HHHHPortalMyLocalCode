@@ -188,7 +188,15 @@ function Portfolio({ ID }: any) {
           if (data.d.__next) {
             url = data.d.__next;
             GetListItems();
-          } else setTaskData(response);
+          } else
+          response?.forEach((itrm:any)=>{
+            if(itrm.Item_x0020_Type == 'Component' || itrm.Item_x0020_Type == "SubComponent" || itrm.Item_x0020_Type == "Feature"){
+            itrm.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
+            itrm.listId = "EC34B38F-0669-480A-910C-F84E92E58ADF"
+            }
+          })
+           setTaskData(response);
+        
           console.log(response);
         },
         error: function (error) {
