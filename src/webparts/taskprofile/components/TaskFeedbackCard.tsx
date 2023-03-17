@@ -4,8 +4,10 @@ import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 // import * as moment from 'moment';
 import { Modal } from '@fluentui/react';
 import * as moment from "moment-timezone";
+import EmailComponenet from './emailComponent';
 // import * as moment from "moment-timezone";
 var sunchildcomment: any;
+
 export interface ITaskFeedbackProps {
   fullfeedback: any;
   feedback: any;
@@ -13,7 +15,10 @@ export interface ITaskFeedbackProps {
   onPost: () => void;
   CurrentUser: any;
   ApprovalStatus: boolean;
-  Approver:any
+ 
+  Approver:any;
+  Result:any;
+  Context:any;
 }
 
 export interface ITaskFeedbackState {
@@ -25,6 +30,7 @@ export interface ITaskFeedbackState {
   isModalOpen: boolean;
   updateCommentText: any;
   CommenttoUpdate: string;
+  emailcomponentStatus:boolean;
 }
 
 export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskFeedbackState> {
@@ -40,6 +46,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       index: this.props.index,
       CommenttoPost: '',
       isModalOpen: false,
+      emailcomponentStatus:false,
       updateCommentText: {},
       CommenttoUpdate: ''
     };
@@ -209,13 +216,14 @@ private changeTrafficLigth(index:any,item:any){
   console.log(index);
   console.log(item);
   if(  this.props.Approver.Id==this.props.CurrentUser[0].Id){
-   
+      
     let tempData:any=this.state.fbData;
     tempData.isShowLight = item;
     console.log(tempData);
     this.setState({
       fbData: tempData,
         index: index,
+        emailcomponentStatus:true
     });
   
     this.props.onPost();
@@ -225,10 +233,23 @@ private changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status:any){
 console.log(parentindex);
 console.log(subchileindex);
 console.log(status);
+if(  this.props.Approver.Id==this.props.CurrentUser[0].Id){
+ 
+let tempData:any=this.state.fbData;
+tempData.Subtext[subchileindex].isShowLight = status;
+console.log(tempData);
+this.setState({
+  fbData: tempData,
+    index: parentindex,
+    emailcomponentStatus:true
+});
+this.props.onPost();
+}
 }
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
       <div>
+        {/* { this.state.emailcomponentStatus&&<EmailComponenet />} */}
         <div className="col mb-2">
           <div className='justify-content-between d-flex'>
             <div className="pt-2">

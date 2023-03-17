@@ -190,7 +190,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     private _onRenderActionButtons(item: any, index: number, column: IColumn) {
         return (
             <div>
-                <Link href="#"><Icon iconName="Edit" style={{color:"black", paddingLeft:"10px"}} onClick={() => this.OpenEditPopUp(item) }/></Link>
+                <Link href="#"><img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" style={{color:"black", paddingLeft:"10px"}} onClick={() => this.OpenEditPopUp(item) }/></Link>
                 <Link href="#"><Icon iconName="Delete" style={{color:"black", paddingLeft:"10px"}} onClick={
                     ()=>this.props.OnDelete(item.Id)
                 } /></Link>

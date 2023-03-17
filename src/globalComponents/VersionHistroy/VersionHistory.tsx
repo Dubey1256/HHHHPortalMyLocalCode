@@ -11,13 +11,13 @@ export default function VersionHistoryPopup(props: any) {
   var tableCode
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
+  var siteType = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+  let listId = props.listId
+  var itemId = props.taskId;
+  var url = `${siteType}/_layouts/15/Versions.aspx?list=` + listId + "&ID=" + itemId; //list=${listId}&ID=${itemId}
   //------------------------jquery call--------------------------------
   const GetItemsVersionHistory = async () => {
-    var siteType = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
-    let listId = props.listId
-    var itemId = props.taskId;
-    var url = `${siteType}/_layouts/15/Versions.aspx?list=` + listId + "&ID=" + itemId; //list=${listId}&ID=${itemId}
+   
     await $.ajax({
       url: url,
       method: "GET",
@@ -62,9 +62,12 @@ export default function VersionHistoryPopup(props: any) {
         customWidth="1091px"
         onDismiss={handleClose}>
         <div dangerouslySetInnerHTML={{ __html: data }}></div>
-        <button className="float-end mb-2 btn btn-default" onClick={handleClose}>
-          Cancel
-        </button>
+      <div className='float-end'>
+        <span className='mx-4'><a href= {url}  target="_blank" data-interception="off"> Out of the box </a></span>
+      <button className="float-end mb-2 btn btn-default" onClick={handleClose}>  Cancel </button>
+      </div>
+        
+        
       </Panel>
 
     </>
