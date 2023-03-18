@@ -43,8 +43,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     this.state = {
       showcomment: 'none',
       showcomment_subtext: 'none',
-      fbData: this.props.feedback,
-      index: this.props.index,
+      fbData: this.props?.feedback,
+      index: this.props?.index,
       CommenttoPost: '',
       isModalOpen: false,
       emailcomponentopen:false,
