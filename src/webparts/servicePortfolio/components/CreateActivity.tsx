@@ -24,10 +24,11 @@ var portfolioId: any = ''
 var WorstreamLatestId: any = ''
 var newIndex: any = ''
 var FeedBackItemArray: any = [];
-var feedbackArray: any = []
+var feedbackArray: any = [];
+var SiteTypeBackupArray:any =[];
 const CreateActivity = (props: any) => {
     if (props != undefined) {
-        props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY')
+        //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         var AllItems = props.props
         SelectedTasks.push(AllItems)
 
@@ -51,16 +52,11 @@ const CreateActivity = (props: any) => {
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState([]);
+    const [ClientCategory, setClientCategory] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [site, setSite] = React.useState('');
-    const [isActive, setIsActive] = React.useState({
-        siteType: false,
-        time: false,
-        rank: false,
-        dueDate: false,
-
-    });
-    const [save, setSave] = React.useState({ Title: '', siteType: '', linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
+    var [isActive, setIsActive] = React.useState({ siteType: false,});
+    const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
 
     var CheckCategory: any = []
     CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Approval", "Id": 227, "ParentId": 225 },
@@ -128,13 +124,14 @@ const CreateActivity = (props: any) => {
         siteConfig?.forEach((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== 'Health' && site.Title !== 'Gender') {
                 site.IscreateTask = false;
+                site.isSiteSelect = false;
                 SitesTypes.push(site);
             }
         })
         if (AllItems.NoteCall == 'Task') {
             SitesTypes?.forEach((type: any) => {
                  if(type.listId != null){
-                if (type.listId.toLowerCase() == AllItems.listId) {
+                if (type.listId.toLowerCase() == AllItems.listId.toLowerCase()) {
                     type.IscreateTask = true;
                 } 
             }
@@ -161,6 +158,7 @@ const CreateActivity = (props: any) => {
         }
 
         setSiteType(SitesTypes)
+        SiteTypeBackupArray = SitesTypes;
 
         //setModalIsOpenToTrue();
     }
@@ -198,10 +196,37 @@ const CreateActivity = (props: any) => {
     const setActiveTile = async (item: keyof typeof save, isActiveItem: keyof typeof isActive, value: any) => {
         AllItems['SiteListItem'] = value.Title
         let saveItem = save;
-        let isActiveData = isActive;
-        if (value.IscreateTask == false || value.IscreateTask == undefined) {
-            value.IscreateTask = true
-        }
+        
+        // if(value.isSiteSelect == true){
+        //     value.isSiteSelect=false;
+        // }else{
+        //     value.isSiteSelect = true;
+        //     var isActiveData = isActive;
+        // }
+        
+        let tempArray:any = [];
+        SiteTypeBackupArray.forEach((val:any)=>{
+            if(val.Id == value.Id){
+                if(val.IscreateTask){
+                    val.IscreateTask = false;
+                }else{
+                    val.IscreateTask = true;
+
+                }
+                if( val.isSiteSelect){
+                    val.isSiteSelect= false;
+                }else{
+                    val.isSiteSelect = true;
+                }
+                tempArray.push(val);
+            }else{
+                tempArray.push(val);
+            }
+        })
+        setSiteType(tempArray);
+        // if (value.isSiteSelect == true) {
+        //     value.IscreateTask = true
+        // }
         getActivitiesDetails(value)
         // if(AllItems.NoteCall == 'Task'){
         //     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -222,19 +247,20 @@ const CreateActivity = (props: any) => {
         //         WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
         //     }
         // }
-        if (save[item] !== value.Title) {
-            saveItem[item] = value.Title;
-            setSave(saveItem);
-            if (isActive[isActiveItem] !== true) {
-                isActiveData[isActiveItem] = true;
-                setIsActive(isActiveData);
-            }
-        } else if (save[item] === value.Title) {
-            saveItem[item] = '';
-            setSave(saveItem);
-            isActiveData[isActiveItem] = false;
-            setIsActive(isActiveData);
-        }
+        // save[item]=''
+        // if (save[item] !== value.Title) {
+        //     saveItem[item] = value.Title;
+        //     setSave(saveItem);
+        //     if (isActive[isActiveItem] !== true) {
+        //         isActiveData[isActiveItem] = true;
+        //         setIsActive(isActiveData);
+        //     }
+        // } else if (save[item] === value.Title) {
+        //     saveItem[item] = '';
+        //     setSave(saveItem);
+        //     isActiveData[isActiveItem] = false;
+        //     setIsActive(isActiveData);
+        // }
         // if (item === "dueDate") {
         //     DueDate(title)
         // }
@@ -304,6 +330,15 @@ const CreateActivity = (props: any) => {
         console.log('Worrking')
     }
     const deleteCategories = (id: any) => {
+        CategoriesData.map((catId, index) => {
+            if (id == catId.Id) {
+                CategoriesData.splice(index, 1)
+            }
+        })
+        setCategoriesData(CategoriesData => ([...CategoriesData]));
+
+    }
+    const deleteClientCategories = (id: any) => {
         CategoriesData.map((catId, index) => {
             if (id == catId.Id) {
                 CategoriesData.splice(index, 1)
@@ -459,6 +494,13 @@ const CreateActivity = (props: any) => {
                 CategoryID.push(category.Id)
             }
         })
+        var ClientCategory: any = []
+        // if(AllItems.)
+        // AllItems.ClientCategory?.map((val:any) => {
+        //     if (val.Id != undefined) {
+        //         ClientCategory.push(val.Id)
+        //     }
+        // })
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
@@ -504,6 +546,7 @@ const CreateActivity = (props: any) => {
                         Categories: categoriesItem ? categoriesItem : null,
                         DueDate: date != undefined ? new Date(date).toDateString() : date,
                         SharewebCategoriesId: { "results": CategoryID },
+                       // ClientCategoryId:{ "results": ClientCategory},
                         ServicesId: { "results": RelevantPortfolioIds },
                         SharewebTaskTypeId: 1,
                         Body: AllItems.Body,
@@ -605,6 +648,7 @@ const CreateActivity = (props: any) => {
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
                             ParentTaskId: AllItems.Id,
+                            //ClientCategoryId:{ "results": ClientCategory},
                             SharewebTaskTypeId: SharewebTasknewTypeId,
                             Body: AllItems.Description,
                             Shareweb_x0020_ID: SharewebID,
@@ -753,7 +797,7 @@ const CreateActivity = (props: any) => {
                                                     {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
                                                         <>
                                                             <li
-                                                                className={isActive.siteType && save.siteType === item.Title ? 'mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item)} >
+                                                                 id={"subcategorytasks" + item.Id} className={item.isSiteSelect? 'mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item)} >
                                                                 {/*  */}
                                                                 <a className='text-white text-decoration-none' >
                                                                     <span className="icon-sites">
@@ -792,6 +836,7 @@ const CreateActivity = (props: any) => {
 
                                         />
                                     </div>
+                                    </div>
                                     <div className='row mt-2'>
 
                                         <TeamConfigurationCard ItemInfo={AllItems} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
@@ -809,7 +854,7 @@ const CreateActivity = (props: any) => {
                                             </FroalaCommentBox>
                                         </div>
                                     </div>
-                                </div>
+                                
                             </div>
 
                             <div className='col-sm-2'>
@@ -1015,6 +1060,45 @@ const CreateActivity = (props: any) => {
                                         })}
                                     </div> : null
                                 }
+                                 <div className="row mt-2">
+                                    <div className="col-sm-12">
+                                        <div className="col-sm-12 padding-0 input-group">
+                                            <label className="full_width">Client Category</label>
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" />
+
+                                            <span className="input-group-text">
+
+                                                <a className="hreflink" title="Edit Categories">
+
+                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                                        />
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                                {(AllItems.ClientCategory != undefined && AllItems.ClientCategory.results?.length > 0) ?
+                                    <div>
+                                        {AllItems.ClientCategory?.map((type: any, index: number) => {
+                                            return (
+                                                <>
+                                                    {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
+
+                                                        <div className="d-flex block full-width p-2 mb-1">
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
+                                                                {type.Title}
+                                                            </a>
+                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
+                                                        </div>
+                                                    }
+                                                </>
+                                            )
+                                        })}
+                                    </div> : null
+                                }
                             </div>
 
                         </div>
@@ -1039,6 +1123,9 @@ const CreateActivity = (props: any) => {
                     }
                     <button type="button" className="btn btn-primary m-2" onClick={() => saveNoteCall()}>
                         Submit
+                    </button>
+                    <button type="button" className="btn btn-default m-2" onClick={() => closeTaskStatusUpdatePoup('item')}>
+                        Cancel
                     </button>
 
                 </div>

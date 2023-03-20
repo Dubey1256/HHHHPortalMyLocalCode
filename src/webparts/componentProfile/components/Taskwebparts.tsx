@@ -31,6 +31,7 @@ var siteConfig: any = [];
 var IsUpdated: any = '';
 let serachTitle: any = '';
 var MeetingItems: any = []
+var MainMeetingItems: any = []
 var childsData: any = []
 var array: any = [];
 var selectedCategory: any = [];
@@ -69,6 +70,7 @@ export default function ComponentTable({ props }: any) {
     const [ActivityPopup, setActivityPopup] = React.useState(false);
     const [ActivityDisable, setActivityDisable] = React.useState(true);
     //const [ResturuningOpen, setResturuningOpen] = React.useState(false);
+    // const [ActivityDisable, setActivityDisable] = React.useState(false);
     const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
     const [NewArrayBackup, setNewArrayBackup] = React.useState([]);
     const [ResturuningOpen, setResturuningOpen] = React.useState(false);
@@ -76,7 +78,7 @@ export default function ComponentTable({ props }: any) {
     const [ChengedItemTitl, setChengedItemTitle] = React.useState('');
 
     //  For selected client category
-    const [items, setItems] = React.useState([]);
+    const [items, setItems] = React.useState<any>([]);
 
     function handleClick(item: any) {
         const index = items.indexOf(item);
@@ -87,6 +89,8 @@ export default function ComponentTable({ props }: any) {
             setItems(newItems);
         } else {
             // Item doesn't exist, add it
+            items.Title=item.Title
+            items.Id=item.Id
             setItems([...items, item]);
         }
     }
@@ -315,7 +319,7 @@ export default function ComponentTable({ props }: any) {
                                     result['Shareweb_x0020_ID'] = "";
                                 }
                                 result['Item_x0020_Type'] = 'Task';
-                                result.Restructuring = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
+                                result.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
                                 result.Portfolio_x0020_Type = 'Component';
                                 TasksItem.push(result);
                             })
@@ -616,7 +620,7 @@ export default function ComponentTable({ props }: any) {
             let temp: any = $.grep(componentDetails, function (compo: any) { return compo.Parent?.Id === props.Id })
             array = [...array, ...temp];
             temp.forEach((obj: any) => {
-                obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
+                obj.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
                 if (obj.Id != undefined) {
                     var temp1: any = $.grep(componentDetails, function (compo: any) { return compo.Parent?.Id === obj.Id })
                     if (temp1 != undefined && temp1.length > 0)
@@ -685,6 +689,7 @@ export default function ComponentTable({ props }: any) {
 
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
     React.useEffect(() => {
+        //MainMeetingItems.push(props) 
         showProgressBar();
         getTaskUsers();
         GetSmartmetadata();
@@ -846,7 +851,7 @@ export default function ComponentTable({ props }: any) {
             // result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
             result.CreatedDateImg = []
             result.childsLength = 0;
-            result.Restructuring = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
+            result.Restructuring = IsUpdated != undefined && IsUpdated == 'Service' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
             result.TitleNew = result.Title;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
@@ -1277,8 +1282,8 @@ export default function ComponentTable({ props }: any) {
             if (itrm.SharewebTaskType != undefined) {
                 if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
-                    itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                    itrm['listName'] = 'Master Tasks';
+                    // itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                    // itrm['listName'] = 'Master Tasks';
                     Arrays.push(itrm)
                     itrm['PortfolioId'] = child.Id;
                     childsData.push(itrm)
@@ -1392,6 +1397,7 @@ export default function ComponentTable({ props }: any) {
         setIsTask(false);
         setMeetingPopup(false);
         setWSPopup(false);
+     
         var MainId: any = ''
         if (childItem != undefined) {
             childItem.data['flag'] = true;
@@ -1404,8 +1410,8 @@ export default function ComponentTable({ props }: any) {
                 MainId = childItem.data.ComponentId[0]
             }
 
-            if (array != undefined) {
-                array.forEach((val: any) => {
+            if (AllItems != undefined) {
+                AllItems.forEach((val: any) => {
                     val.flag = true;
                     val.show = false;
                     if (val.Id == MainId) {
@@ -1413,7 +1419,7 @@ export default function ComponentTable({ props }: any) {
                     }
 
                 })
-                setData(array => ([...array]))
+                setData(AllItems => ([...AllItems]))
 
             }
 
@@ -1588,11 +1594,21 @@ export default function ComponentTable({ props }: any) {
 
     }
     const openActivity = () => {
+        if(MeetingItems.length==0 && childsData.length==0){
+            MeetingItems.push(props)
+        }
         if (MeetingItems.length > 1) {
             alert('More than 1 Parents selected, Select only 1 Parent to create a child item')
         }
         else {
+           
             if (MeetingItems[0] != undefined) {
+               if(items != undefined && items.length > 0){
+                MeetingItems[0].ClientCategory=[]
+                  items.forEach((val:any)=>{ 
+                    MeetingItems[0].ClientCategory.push(val)
+                  })
+               }
                 if (MeetingItems[0].SharewebTaskType != undefined) {
                     if (MeetingItems[0].SharewebTaskType.Title == 'Activities') {
                         setWSPopup(true)
@@ -1610,6 +1626,7 @@ export default function ComponentTable({ props }: any) {
                     setActivityPopup(true)
                 }
             }
+          
         }
 
         if (childsData[0] != undefined && childsData[0].SharewebTaskType != undefined) {
@@ -1618,14 +1635,15 @@ export default function ComponentTable({ props }: any) {
                 MeetingItems.push(childsData[0])
                 //setMeetingItems(childsData)
             }
+            if (childsData[0] != undefined && childsData[0].SharewebTaskType.Title == 'Workstream') {
+                setActivityPopup(true)
+                MeetingItems.push(childsData[0])
+            }
         }
 
-        if (childsData[0] != undefined && childsData[0].SharewebTaskType.Title == 'Workstream') {
-            setActivityPopup(true)
-            MeetingItems.push(childsData[0])
-        }
+       
 
-
+ 
 
 
 
@@ -1847,13 +1865,13 @@ export default function ComponentTable({ props }: any) {
         let array: any = [];
         item.Item_x0020_Type = title;
         if (item != undefined && title === 'SubComponent') {
-            item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
+            item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png'
 
             ChengedTitle = 'Component';
 
         }
         if (item != undefined && title === 'Feature') {
-            item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
+            item.SiteIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/feature_icon.png';
             ChengedTitle = 'SubComponent';
 
         }
@@ -2219,7 +2237,7 @@ export default function ComponentTable({ props }: any) {
                     <div>
                         {selectedCategory.map((item: any) => {
                             return (
-                                <li onClick={() => handleClick(item.Title)}>{item.Title}</li>
+                                <li onClick={() => handleClick(item)}>{item.Title}</li>
 
                             )
                         })}
@@ -2755,7 +2773,7 @@ export default function ComponentTable({ props }: any) {
                         </span>
                     </span>
                     <span className="toolbox mx-auto">
-                        {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Feature' ?
+                        {checkedList != undefined && checkedList.length > 0 && (checkedList[0].Item_x0020_Type === 'Feature' || checkedList[0].Item_x0020_Type === 'Task') ?
                             <button type="button" disabled={true} className="btn btn-primary" onClick={addModal} title=" Add Structure">
                                 Add Structure
                             </button>
@@ -2764,15 +2782,16 @@ export default function ComponentTable({ props }: any) {
                             </button>}
 
 
-                        {(selectedCategory != undefined && selectedCategory.length > 0) ?
+                        {/* {(selectedCategory != undefined && selectedCategory.length > 0) ?
                             <button type="button" onClick={() => setLgShow(true)}
                                 disabled={ActivityDisable} className="btn btn-primary" title=" Add Activity-Task">
                                 Add Activity-Task
                             </button>
-                            : <button type="button" onClick={() => openActivity()}
+                            :*/}
+                             <button type="button" onClick={() => openActivity()} 
                                 disabled={ActivityDisable} className="btn btn-primary" title=" Add Activity-Task">
                                 Add Activity-Task
-                            </button>}
+                            </button>
 
                         <button type="button" className="btn btn-primary"
                             onClick={buttonRestructuring}>
@@ -3162,6 +3181,9 @@ export default function ComponentTable({ props }: any) {
                                                                     <td style={{ width: "2%" }}>{item.siteType === "Master Tasks" && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}</td>
                                                                     <td style={{ width: "2%" }}><a>{item.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(item)} />}
                                                                         {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
+                                                                    {/* <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                    <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(item)} />}
+                                                                        {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(item)} />}</a></td> */}
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -3177,7 +3199,7 @@ export default function ComponentTable({ props }: any) {
                                                                                     <table className="table m-0" style={{ width: "100%" }}>
                                                                                         <tr className="for-c02">
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <div onClick={() => handleOpen(childitem)} className="sign">{childitem.childs.length > 0 && childitem.show ? <img src={childitem.downArrowIcon} />
+                                                                                                <div onClick={() => handleOpen(childitem)} className="sign">{childitem.childs?.length > 0 && childitem.show ? <img src={childitem.downArrowIcon} />
                                                                                                     : <img src={childitem.RightArrowIcon} />}
                                                                                                 </div>
                                                                                             </td>
@@ -3278,6 +3300,9 @@ export default function ComponentTable({ props }: any) {
                                                                                             <td style={{ width: "2%" }}>{childitem.siteType === "Master Tasks" && childitem.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={childitem.Restructuring} onClick={(e) => OpenModal(childitem)} /></a>}</td>
                                                                                             <td style={{ width: "2%" }}><a>{childitem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childitem)} />}
                                                                                                 {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
+                                                                                            {/* <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                                            <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(childitem)} />}
+                                                                                                {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td> */}
                                                                                         </tr>
                                                                                     </table>
                                                                                 </td>
@@ -3417,6 +3442,9 @@ export default function ComponentTable({ props }: any) {
                                                                                                                     <td style={{ width: "2%" }}>{childinew.siteType === "Master Tasks" && childinew.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={childinew.Restructuring} onClick={(e) => OpenModal(childinew)} /></a>}</td>
                                                                                                                     <td style={{ width: "2%" }}><a>{childinew.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(childinew)} />}
                                                                                                                         {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
+                                                                                                                    {/* <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                                                                    <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(childinew)} />}
+                                                                                                                        {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td> */}
                                                                                                                 </tr>
                                                                                                             </table>
                                                                                                         </td>
@@ -3546,6 +3574,9 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                         <td style={{ width: "2%" }}>{childitem.siteType === "Master Tasks" && subchilditem.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={childitem.Restructuring} onClick={(e) => OpenModal(childitem)} /></a>}</td>
                                                                                                                                         <td style={{ width: "2%" }}><a>{subchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(subchilditem)} />}
                                                                                                                                             {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
+                                                                                                                                        {/* <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                        <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(subchilditem)} />}
+                                                                                                                                            {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td> */}
                                                                                                                                     </tr>
                                                                                                                                 </table>
                                                                                                                             </td>
@@ -3670,6 +3701,9 @@ export default function ComponentTable({ props }: any) {
                                                                                                                                                             <td style={{ width: "2%" }}></td>
                                                                                                                                                             <td style={{ width: "2%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
                                                                                                                                                                 {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td>
+                                                                                                                                                            {/* <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                                            <td style={{ width: "3%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
+                                                                                                                                                                {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td> */}
                                                                                                                                                         </tr>
                                                                                                                                                     </table>
                                                                                                                                                 </td>
@@ -3735,7 +3769,7 @@ export default function ComponentTable({ props }: any) {
 
 
                 <div className="modal-body bg-f5f5 clearfix">
-                    <div className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+                    <div className={IsUpdated == 'Events' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                         <div id="portfolio" className="section-event pt-0">
 
                             {/* {

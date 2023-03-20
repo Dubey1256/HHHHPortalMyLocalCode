@@ -12,10 +12,11 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     const [postBtnStatus, setPostBtnStatus] = useState(false);
     const [currentIndex, setCurrentIndex] = useState('');
     const [isDisabled, setIsDisabled] = useState(false);
+    const currentArrayIndex = SubTextItemsArray.currentIndex
     let ApprovalStatus: any = SubTextItemsArray.ApprovalStatus;
     let SmartLightPercentStatus: any = SubTextItemsArray.SmartLightPercentStatus;
     let SmartLightStatus: any = SubTextItemsArray.SmartLightStatus;
-    var Array: any = [];
+    let ChildArray: any = [];
     const addSubRow = () => {
         const object = {
             Completed: "",
@@ -27,7 +28,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         };
         subCommentsData.push(object);
         setTexts(!Texts)
-        Array.push(object)
+        ChildArray.push(object)
         setBtnStatus(true);
     }
 
@@ -35,14 +36,13 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         if (SubTextItems != undefined && SubTextItems.length > 0) {
             setSubCommentsData(SubTextItems);
             SubTextItems.map((subItem: any) => {
-                Array.push(subItem);
+                ChildArray.push(subItem);
             })
-            Array = SubTextItems
             setBtnStatus(true)
         } else {
             setBtnStatus(false)
         }
-        if (Array?.length == 0) {
+        if (ChildArray?.length == 0) {
             setBtnStatus(false)
         }
         if (SmartLightStatus) {
@@ -58,7 +58,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             }
         });
         tempArray?.map((tempData: any) => {
-            Array.push(tempData);
+            ChildArray.push(tempData);
         })
         callBack(tempArray, SubTextItemsArray.commentId);
         setSubCommentsData(tempArray);
@@ -72,7 +72,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const obj = { ...subCommentsData[id], [name]: value };
             copy[id] = obj;
             setSubCommentsData(copy);
-            Array = copy;
+            ChildArray = copy;
         }
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
@@ -81,9 +81,9 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const obj = { ...subCommentsData[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setSubCommentsData(copy);
-            Array = copy;
+            ChildArray = copy;
         }
-        callBack(Array, SubTextItemsArray.commentId);
+        callBack(ChildArray, currentArrayIndex);
     }
 
     const postBtnHandle = (index: any) => {
@@ -100,16 +100,16 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         } else {
             setPostBtnStatus(true)
         }
-        Array[Index].Comments = dataPost;
-        callBack(Array, SubTextItemsArray.commentId);
+        ChildArray[Index].Comments = dataPost;
+        callBack(ChildArray, currentArrayIndex);
     }, [])
     const SmartLightUpdateSubChildComment = (index: any, value: any) => {
         const copy = [...subCommentsData];
         const obj = { ...subCommentsData[index], isShowLight: value };
         copy[index] = obj;
         setSubCommentsData(copy);
-        Array = copy;
-        callBack(Array);
+        ChildArray = copy;
+        callBack(ChildArray);
     }
     const postBtnHandleCallBackCancel =useCallback((status:any)=>{
         if (status) {

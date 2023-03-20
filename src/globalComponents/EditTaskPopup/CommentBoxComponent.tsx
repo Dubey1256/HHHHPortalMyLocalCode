@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from 'react';
-// import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
+import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
 import AddCommentComponent from './AddCommentComponent';
 import Example from "./SubCommentComponent";
-import FroalaCommentBox from '../FlorarComponents/FroalaCommentBoxComponent'
+// import FroalaCommentBox from '../FlorarComponents/FroalaCommentBoxComponent'
 
 const CommentBoxComponent = (commentData: any) => {
     const [commentArray, setCommentArray] = useState([])
@@ -173,16 +173,16 @@ const CommentBoxComponent = (commentData: any) => {
                                 </div>
                                 <div className="d-flex">
                                     <span className="SubTestBorder p-1 me-1">{i + 1}</span>
-                                    {/* <HtmlEditorCard
+                                    <HtmlEditorCard
                                         editorValue={obj.Title != undefined ? obj.Title : ''}
                                         HtmlEditorStateChange={HtmlEditorCallBack}
                                     >
-                                    </HtmlEditorCard> */}
-                                    <FroalaCommentBox
+                                    </HtmlEditorCard>
+                                    {/* <FroalaCommentBox
                                         EditorValue={obj.Title != undefined ? obj.Title : ''}
                                         callBack={HtmlEditorCallBack}
                                     >
-                                    </FroalaCommentBox>
+                                    </FroalaCommentBox> */}
 
                                 </div>
                             </div>
@@ -204,6 +204,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         index={1}
                                         commentId={obj.Id}
                                         callBack={subTextCallBack}
+                                        currentIndex={0}
                                         allUsers={commentData.allUsers}
                                         ApprovalStatus={ApprovalStatus}
                                         SmartLightStatus={SmartLightStatus}

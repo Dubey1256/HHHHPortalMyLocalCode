@@ -15,10 +15,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
     const [postBtnStatus, setPostBtnStatus] = useState(false);
     const [currentIndex, setCurrentIndex] = useState('');
     const [isDisabled, setIsDisabled] = useState(false);
+    const [TitleValue, setTitleValue] = useState("")
     let ApprovalStatus: any = textItems.ApprovalStatus;
     let SmartLightPercentStatus: any = textItems.SmartLightPercentStatus;
     let SmartLightStatus: any = textItems.SmartLightStatus;
-    var Array: any = [];
+    var ParentArray: any = [];
+    
     const addRow = () => {
         let testTaskIndex = State?.length + 1
         const object = {
@@ -32,7 +34,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
             HighImportance: ''
         };
         State.push(object);
-        Array.push(object);
+        ParentArray.push(object);
         setTexts(!Texts);
         setBtnStatus(true);
     }
@@ -44,7 +46,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     item.taskIndex = index;
                     State.push(item);
                     setTexts(!Texts);
-                    Array.push(item)
+                    ParentArray.push(item)
                 }
             })
         } else {
@@ -61,20 +63,16 @@ export default function FroalaCommnetBoxes(textItems: any) {
                 tempArray.push(array);
             }
         })
-        Array = [];
+        ParentArray = [];
         tempArray?.map((tempDataItem: any) => {
-            Array.push(tempDataItem);
+            ParentArray.push(tempDataItem);
         })
 
         if (tempArray?.length == 0) {
             setBtnStatus(false)
-
             callBack("delete");
-
         } else {
-
             callBack(tempArray);
-
         }
         setState(tempArray);
     }
@@ -83,11 +81,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
         if (e.target.matches("textarea")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
+            setTitleValue(value);
             const copy = [...State];
             const obj = { ...State[id], [name]: value };
             copy[id] = obj;
             setState(copy);
-            Array = copy;
+            ParentArray = copy;
         }
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
@@ -96,26 +95,22 @@ export default function FroalaCommnetBoxes(textItems: any) {
             const obj = { ...State[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setState(copy);
-            Array = copy
+            ParentArray = copy
         }
-
-        callBack(Array);
-
+        callBack(ParentArray);
     }
 
-    const subTextCallBack = useCallback((subTextData: any, commentId: any) => {
-        let arrayIndex: number;
-        Array?.map((data: any, index: any) => {
-            if (data.Id == commentId) {
-                arrayIndex = index;
-            }
-        })
-        if (arrayIndex != undefined) {
-            Array[arrayIndex].Subtext = subTextData;
-        }
-
-        callBack(Array);
-
+    const subTextCallBack = useCallback((subTextData: any, subTextIndex: any) => {
+        const copy = [...State];
+        const obj = { ...State[subTextIndex], Subtext: subTextData, Title: TitleValue };    
+        copy[subTextIndex] = obj;
+        setState(copy);
+        ParentArray = copy;
+        callBack(ParentArray);
+        // if (subTextIndex != undefined) {
+        //     ParentArray[subTextIndex].Subtext = subTextData;
+        // }
+        // callBack(ParentArray);
     }, [])
 
     const postBtnHandle = (index: any) => {
@@ -132,9 +127,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
         } else {
             setPostBtnStatus(true)
         }
-        Array[Index].Comments = dataPost;
+        ParentArray[Index].Comments = dataPost;
 
-        callBack(Array);
+        callBack(ParentArray);
 
     }, [])
 
@@ -143,10 +138,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
         const obj = { ...State[index], isShowLight: value };
         copy[index] = obj;
         setState(copy);
-        Array = copy;
-
-        callBack(Array);
-
+        ParentArray = copy;
+        callBack(ParentArray);
     }
 
     const postBtnHandleCallBackCancel =useCallback((status:any)=>{
@@ -277,6 +270,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         SubTextItemsArray={obj.Subtext ? obj.Subtext : []}
                                         index={obj.taskIndex + 1}
                                         commentId={obj.Id}
+                                        currentIndex={i}
                                         callBack={subTextCallBack}
                                         allUsers={textItems.allUsers}
                                         ApprovalStatus={ApprovalStatus}
