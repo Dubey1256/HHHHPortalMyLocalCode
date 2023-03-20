@@ -947,31 +947,34 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       this.state.Result.FeedBack.map((item:any)=>{
         if(item.FeedBackDescriptions!=undefined){
           item.FeedBackDescriptions.map((feedback:any)=>{
-            if(feedback.subtext!=undefined&&feedback.subtext.length>0){
-              feedback?.subtext.map((subtextitem:any)=>{
-                if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
-                  // count=1
-                  isShowLight=isShowLight+1;
-              
-                }
+            if(feedback!=null && feedback!=undefined){
+              if(feedback.subtext!=undefined&&feedback.subtext.length>0){
+                feedback?.subtext.map((subtextitem:any)=>{
+                  if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
+                    // count=1
+                    isShowLight=isShowLight+1;
                 
-                else{
-                  // count=0;
-                  NotisShowLight=0;
-                }
-              })
+                  }
+                  
+                  else{
+                    // count=0;
+                    NotisShowLight=0;
+                  }
+                })
+                
+              }
+              if(feedback.isShowLight!=""&&feedback.isShowLight!=undefined ){
+                // count=1
+                isShowLight=isShowLight+1;
+            
+              }
               
-            }
-            if(feedback.isShowLight!=""&&feedback.isShowLight!=undefined ){
-              // count=1
-              isShowLight=isShowLight+1;
-          
+              else{
+                // count=0;
+                NotisShowLight=0;
+              }
             }
             
-            else{
-              // count=0;
-              NotisShowLight=0;
-            }
           })
         }
       })
@@ -1364,13 +1367,15 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
                         <div className={"Addcomment " + "manage_gap"}>
                           {this.state.Result["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
-                            try {
-                              if (fbData.Title != undefined) {
-                                fbData.Title = fbData.Title.replace(/\n/g, '<br/>');
+                             if(fbData!=null && fbData!=undefined){
+                              try {
+                                if (fbData.Title != undefined) {
+                                  fbData.Title = fbData.Title.replace(/\n/g, '<br/>');
+                                }
+                              } catch (e) {
                               }
-                            } catch (e) {
-                            }
-                            return <TaskFeedbackCard feedback={fbData} index={i + 1}
+
+                              return <TaskFeedbackCard feedback={fbData} index={i + 1}
                               onPost={() => { this.onPost() }}
                               fullfeedback={this.state.Result["FeedBack"]}
                               CurrentUser={this.currentUser}
@@ -1380,6 +1385,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               Context={this.props.Context}
                             >
                             </TaskFeedbackCard>
+                             }
+                            
+                           
+                           
                           })}
                         </div>
                       }
