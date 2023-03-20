@@ -1923,7 +1923,7 @@ export default function ComponentTable({ props }: any) {
             maidataBackup.forEach((obj, index) => {
                 obj.isRestructureActive = false;
                 if (obj.Id === checkedList[0].Id) {
-                      obj.splice(index, 1)
+                    maidataBackup.splice(index, 1)
                     if (obj.childs.length === 0) {
                         obj.downArrowIcon = '';
                         obj.RightArrowIcon = '';
@@ -1971,13 +1971,14 @@ export default function ComponentTable({ props }: any) {
                 }
 
             })
+            let flag =true;
             maidataBackup.forEach((obj, index) => {
                 if (obj.Id === Ids[0]) {
                     obj.flag = true;
                     obj.show = true;
                     obj.downArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                     obj.RightArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-
+                    flag =false;
                     obj.childs.push(checkedList[0]);
                     obj.childsLength = obj.childs.length;
                 }
@@ -1989,7 +1990,7 @@ export default function ComponentTable({ props }: any) {
                             sub.show = true;
                             sub.downArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                             sub.RightArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-
+                            flag =false;
                             sub.childs.push(checkedList[0]);
                             sub.childsLength = sub.childs.length
                         }
@@ -2000,7 +2001,7 @@ export default function ComponentTable({ props }: any) {
                                     newsub.show = true;
                                     newsub.downArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                                     newsub.RightArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-
+                                    flag =false;
                                     newsub.childs.push(checkedList[0]);
                                     newsub.childsLength = newsub.childs.length
 
@@ -2015,6 +2016,8 @@ export default function ComponentTable({ props }: any) {
                 }
 
             })
+            if(flag)
+            maidataBackup.push(checkedList[0]);
             setData(data => ([...maidataBackup]));
             RestruringCloseCall()
         })
