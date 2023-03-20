@@ -425,36 +425,49 @@ const ComponentPortPolioPopup = (item: any) => {
     }
     var getSearchTermAvialable1 = function (searchTerms: any, item: any, Title: any) {
         var isSearchTermAvailable = true;
-        $.each(searchTerms, function (index: any, val: any) {
-            if(isSearchTermAvailable &&(item[Title]!=undefined  && Title == "ItemRank" && item[Title] == parseInt(val))){
-                   
-                   isSearchTermAvailable = true;
-                   getHighlightdata(item, val);
-                }
-                else if(isSearchTermAvailable &&(item.ClientCategory!=undefined  && Title == "ClientCategory" && item.ClientCategory.length>0)){
-                    item.ClientCategory.map((Client:any)=>{
-                        if(Client.Title.toLowerCase().includes(val.toLowerCase())){
-                            isSearchTermAvailable = true;
-                            getHighlightdata(item, val.toLowerCase());
-                        }
-                    })
-                 }
-                 else if(isSearchTermAvailable &&(item.TeamLeaderUser!=undefined  && Title == "TeamLeaderUser" && item.TeamLeaderUser.length>0)){
-                    item.TeamLeaderUser.map((Teamleader:any)=>{
-                        if(Teamleader.Title.toLowerCase().includes(val.toLowerCase())){
-                            isSearchTermAvailable = true;
-                            getHighlightdata(item, val.toLowerCase());
-                        }
-                    })
-                 }
-
-           else if (isSearchTermAvailable && (item[Title] != undefined && Title != "ItemRank" && Title != "ClientCategory" && Title != "TeamLeaderUser" && item[Title].toLowerCase().indexOf(val.toLowerCase()) > -1)) {
-                isSearchTermAvailable = true;
-                getHighlightdata(item, val.toLowerCase());
-
-            } else
-                isSearchTermAvailable = false;
-        })
+        if(searchTerms!=undefined && searchTerms.length>0){
+            $.each(searchTerms, function (index: any, val: any) {
+                if(isSearchTermAvailable &&(item[Title]!=undefined  && Title == "ItemRank" )){
+                       if(item[Title] == parseInt(val)){
+                       isSearchTermAvailable = true;
+                    }
+                       else{
+                        isSearchTermAvailable = false;
+                    }
+                    }
+                    else if(isSearchTermAvailable &&(item.ClientCategory!=undefined  && Title == "ClientCategory" && item.ClientCategory.length>0)){
+                        item.ClientCategory.map((Client:any)=>{
+                            if(Client.Title.toLowerCase().includes(val.toLowerCase())){
+                                isSearchTermAvailable = true;
+                                
+                            }else{
+                                isSearchTermAvailable = false;
+                            }
+                        })
+                     }
+                     else if(isSearchTermAvailable &&(item.TeamLeaderUser!=undefined  && Title == "TeamLeaderUser" && item.TeamLeaderUser.length>0)){
+                        item.TeamLeaderUser.map((Teamleader:any)=>{
+                            if(Teamleader.Title.toLowerCase().includes(val.toLowerCase())){
+                                isSearchTermAvailable = true;
+                               
+                            }else{
+                                isSearchTermAvailable = false;
+                            }
+                        })
+                     }
+    
+               else if (isSearchTermAvailable && (item[Title] != undefined && Title != "ItemRank" && Title != "ClientCategory" && Title != "TeamLeaderUser" )) {
+                 if(item[Title].toLowerCase().includes(val.toLowerCase())){
+                    isSearchTermAvailable = true;
+                    getHighlightdata(item, val.toLowerCase());
+                 }   
+                } else
+                    isSearchTermAvailable = false;
+            })
+        }else{
+            isSearchTermAvailable = false;
+        }
+      
         return isSearchTermAvailable;
     }
     
