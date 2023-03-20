@@ -270,10 +270,10 @@ const CreateWS = (props: any) => {
             NewDate = new Date(date).toDateString() ;
         }
         if (AllItems.Portfolio_x0020_Type == 'Component') {
-            Component.push(AllItems.PortfolioId)
+            Component.push(AllItems.Component[0].Id)
         }
         if (AllItems.Portfolio_x0020_Type == 'Service') {
-            RelevantPortfolioIds.push(AllItems.PortfolioId)
+            RelevantPortfolioIds.push(AllItems.Services[0].Id)
         }
         if (AllItems.Portfolio_x0020_Type == undefined) {
             if(AllItems.Component != undefined && AllItems.Component.length>0){
@@ -294,7 +294,7 @@ const CreateWS = (props: any) => {
         })
         smartComponentData.forEach((com: any) => {
             if (com != undefined) {
-                Component.push(com.Id)
+                Component.push(com[0].Id)
             }
 
         })
@@ -467,7 +467,7 @@ const CreateWS = (props: any) => {
             var Component: any = []
             smartComponentData.forEach((com: any) => {
                 if (com != undefined) {
-                    Component.push(com.Id)
+                    Component.push(com[0].Id)
                 }
 
             })
@@ -494,10 +494,10 @@ const CreateWS = (props: any) => {
                 NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
              }
             if (AllItems.Portfolio_x0020_Type == 'Component') {
-                Component.push(AllItems.PortfolioId)
+                Component.push(AllItems.Component[0].Id)
             }
             if (AllItems.Portfolio_x0020_Type == 'Service') {
-                RelevantPortfolioIds.push(AllItems.PortfolioId)
+                RelevantPortfolioIds.push(AllItems.Services[0].Id)
             }
             var categoriesItem = '';
             CategoriesData.map((category) => {

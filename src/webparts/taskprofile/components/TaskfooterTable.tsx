@@ -50,6 +50,7 @@ function TasksTable(props:any){
     const [NewArrayBackup, setNewArrayBackup] = React.useState([]);
     const [ResturuningOpen, setResturuningOpen] = React.useState(false);
     const [RestructureChecked, setRestructureChecked] = React.useState([]);
+    const[selectedItem,setSelectedItem] = React.useState([]);
      IsUpdated = props.props.Portfolio_x0020_Type;
 
       const GetSmartmetadata = async () => {
@@ -325,6 +326,7 @@ function TasksTable(props:any){
         
             };
             const onChangeHandler = (itrm: any) => {
+                setSelectedItem(itrm)
                 const list = [...checkedList];
                 var flag = true;
                 list.forEach((obj: any, index: any) => {
@@ -333,6 +335,9 @@ function TasksTable(props:any){
                         list.splice(index, 1);
                     }
                 })
+                if(itrm.SharewebTaskType?.Title == 'Task'){
+                    setActivityDisable(true)
+                }
                 if (flag)
                     list.push(itrm);
                 
@@ -340,6 +345,7 @@ function TasksTable(props:any){
                 setCheckedList(checkedList => ([...list]));
                 if(list.length ===0)
                 clearreacture();
+                
             };
             const EditItemTaskPopup = (item: any) => {
                 // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
@@ -361,6 +367,9 @@ function TasksTable(props:any){
                 setIsTask(false);
                 setMeetingPopup(false);
                 setWSPopup(false);
+                  MeetingItems?.forEach((val:any):any=>{
+            val.chekBox =false;
+        })
                 var MainId: any = ''
                 if (childItem != undefined) {
                     childItem.data['flag'] = true;
@@ -391,11 +400,7 @@ function TasksTable(props:any){
                     //     })
                         setData(allworkstreamTasks)
                         setCount(count+1)
-                       
-                       
-                        
-                    
-        
+                 
                 }
             }, []);
             const TimeEntryCallBack = React.useCallback((item1) => {
@@ -747,6 +752,13 @@ function TasksTable(props:any){
                 })
             }
             const openActivity=()=>{
+                if(selectedItem != undefined && selectedItem.length > 0){
+                    if(selectedItem[0].SharewebTaskType.Title == 'Workstream'){
+                        MeetingItems[0].props['NoteCall']='Task'
+                        setMeetingPopup(true)
+                    }
+                }
+              else{
                 if(props.props.SharewebTaskType == 'Workstream'){
                     MeetingItems[0].props['NoteCall']='Task'
                     setMeetingPopup(true)
@@ -755,6 +767,7 @@ function TasksTable(props:any){
                     setWSPopup(true)
                    
                 }
+            }
                
             }
     return (
@@ -1090,10 +1103,10 @@ function TasksTable(props:any){
                                                                     <td style={{ width: "6%" }}>
                                                                     
                                                                         <div className="d-flex">
-                                                                        {
-                                                                     item.SharewebTaskType?.Title != 'Task' &&
+                                                                        
+                                                                   
                                                                             <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(item)} /></span>
-                                                                            }
+                                                                            
                                                                               <span>  <a className="hreflink" data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
@@ -1210,8 +1223,8 @@ function TasksTable(props:any){
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
-                                                                                                {childitem.SharewebTaskType?.Title != 'Task' && 
-                                                                                                <span className='pe-2'><input type="checkbox"  onChange={(e) => onChangeHandler(childitem)}  /></span>}
+                                                                                                 
+                                                                                                <span className='pe-2'><input type="checkbox"  onChange={(e) => onChangeHandler(childitem)}  /></span>
                                                                                                 <span>
                                                                                                     <a className="hreflink" data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
@@ -1332,8 +1345,8 @@ function TasksTable(props:any){
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
-                                                                                                                    {childinew.SharewebTaskType?.Title != 'Task' && 
-                                                                                                                        <span className='pe-2'><input type="checkbox" /></span>}
+                                                                                                                    
+                                                                                                                        <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(childinew)}/></span>
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
@@ -1459,7 +1472,7 @@ function TasksTable(props:any){
                                                                                                                                             </div>
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "6%" }}>
-                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(subchilditem)}/></span>
                                                                                                                                             <span>
                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                     <img className="icon-sites-img ml20" src={subchilditem.SiteIcon}></img>
