@@ -69,7 +69,7 @@ export default function ComponentTable({ props }: any) {
     const [MeetingPopup, setMeetingPopup] = React.useState(false);
     const [WSPopup, setWSPopup] = React.useState(false);
     const [ActivityPopup, setActivityPopup] = React.useState(false);
-    const [ActivityDisable, setActivityDisable] = React.useState(true);
+    const [ActivityDisable, setActivityDisable] = React.useState(false);
     //const [ResturuningOpen, setResturuningOpen] = React.useState(false);
     // const [ActivityDisable, setActivityDisable] = React.useState(false);
     const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
@@ -1278,6 +1278,10 @@ export default function ComponentTable({ props }: any) {
                 itrm['listName'] = 'Master Tasks';
                 MeetingItems.push(itrm)
                 //setMeetingItems(itrm);
+
+            }
+            if (itrm.SharewebTaskType != undefined && itrm.SharewebTaskType.Title == 'Task') {
+                setActivityDisable(false)
 
             }
             if (itrm.SharewebTaskType != undefined) {

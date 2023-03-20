@@ -39,7 +39,7 @@ function TasksTable(props:any){
      const [isShowTask, setIsShowTask] = React.useState(true);
      const [modalIsOpen, setModalIsOpen] = React.useState(false);
      const [count, setCount] = React.useState(0);
-     const [ActivityDisable, setActivityDisable] = React.useState(true);
+     const [ActivityDisable, setActivityDisable] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
     const [lgShow, setLgShow] = React.useState(false);
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -812,7 +812,7 @@ function TasksTable(props:any){
                         <button type="button"
                                             className="btn btn-primary"
                                             onClick={() => openActivity()}
-                                            disabled={props.SharewerbTaskType == 'Task'?ActivityDisable:false}>
+                                            disabled={ActivityDisable}>
 
                                             <MdAdd />
                                             Add Workstream-Task
