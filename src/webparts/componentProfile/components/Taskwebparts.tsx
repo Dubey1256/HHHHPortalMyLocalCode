@@ -26,6 +26,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import CreateActivity from '../../servicePortfolio/components/CreateActivity';
 import CreateWS from '../../servicePortfolio/components/CreateWS';
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
+import { Item } from '@pnp/sp/items';
 var filt: any = '';
 var siteConfig: any = [];
 var IsUpdated: any = '';
@@ -68,7 +69,7 @@ export default function ComponentTable({ props }: any) {
     const [MeetingPopup, setMeetingPopup] = React.useState(false);
     const [WSPopup, setWSPopup] = React.useState(false);
     const [ActivityPopup, setActivityPopup] = React.useState(false);
-    const [ActivityDisable, setActivityDisable] = React.useState(true);
+    const [ActivityDisable, setActivityDisable] = React.useState(false);
     //const [ResturuningOpen, setResturuningOpen] = React.useState(false);
     // const [ActivityDisable, setActivityDisable] = React.useState(false);
     const [OldArrayBackup, setOldArrayBackup] = React.useState([]);
@@ -1279,6 +1280,10 @@ export default function ComponentTable({ props }: any) {
                 //setMeetingItems(itrm);
 
             }
+            if (itrm.SharewebTaskType != undefined && itrm.SharewebTaskType.Title == 'Task') {
+                setActivityDisable(false)
+
+            }
             if (itrm.SharewebTaskType != undefined) {
                 if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
@@ -1297,11 +1302,6 @@ export default function ComponentTable({ props }: any) {
                     MeetingItems.splice(index, 1)
                 }
             })
-            if (MeetingItems.length == 0) {
-                setActivityDisable(true)
-            }
-
-            $('#ClientCategoryPopup').hide();
         }
 
         const list = [...checkedList];
@@ -1397,7 +1397,6 @@ export default function ComponentTable({ props }: any) {
         setIsTask(false);
         setMeetingPopup(false);
         setWSPopup(false);
-     
         var MainId: any = ''
         if (childItem != undefined) {
             childItem.data['flag'] = true;

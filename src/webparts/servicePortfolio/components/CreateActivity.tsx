@@ -9,6 +9,7 @@ import * as Moment from 'moment';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
+import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
 import Tooltip from '../../../globalComponents/Tooltip';
 import "react-datepicker/dist/react-datepicker.css";
 //import "bootstrap/dist/css/bootstrap.min.css";
@@ -23,7 +24,9 @@ var TeamMemberIds: any = [];
 var portfolioId: any = ''
 var WorstreamLatestId: any = ''
 var newIndex: any = ''
+var BackupCat: any = "";
 var FeedBackItemArray: any = [];
+var NewArray: any = [];
 var feedbackArray: any = [];
 var SiteTypeBackupArray:any =[];
 const CreateActivity = (props: any) => {
@@ -39,6 +42,7 @@ const CreateActivity = (props: any) => {
     const [date, setDate] = React.useState(undefined);
     const [siteTypess, setSiteType] = React.useState([]);
     const [Categories, setCategories] = React.useState([]);
+    const [checkedCat, setcheckedCat] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [selectPriority, setselectPriority] = React.useState('');
@@ -52,8 +56,10 @@ const CreateActivity = (props: any) => {
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [CategoriesData, setCategoriesData] = React.useState([]);
+    const [ClientCategoriesData, setClientCategoriesData] = React.useState([]);
     const [ClientCategory, setClientCategory] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
+    const [IsClientPopup, setIsClientPopup] = React.useState(false);
     const [site, setSite] = React.useState('');
     var [isActive, setIsActive] = React.useState({ siteType: false,});
     const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
@@ -102,6 +108,11 @@ const CreateActivity = (props: any) => {
        
        }
        React.useEffect(()=>{
+        if(AllItems.Clientcategories != undefined && AllItems.Clientcategories.length > 0){
+            AllItems.Clientcategories.forEach((value:any)=>{
+                ClientCategoriesData.push(value)
+            })
+        }
         GetSmartMetadata();
        },[])
        
@@ -297,6 +308,26 @@ const CreateActivity = (props: any) => {
 
             }
         }
+        if (type == "ClientCategory") {
+            var Data:any=[]
+            if (item1 != undefined && item1.Categories != "") {
+                var title: any = {};
+                title.Title = item1.Clientcategories;
+                item1.Clientcategories.map((itenn: any) => {
+                    if (!isItemExists(ClientCategoriesData, itenn.Id)) {
+                        Data.push(itenn);
+                    }
+
+                })
+                item1.SharewebCategories?.map((itenn: any) => {
+                    Data.push(itenn)
+                })
+
+                setClientCategoriesData(Data)
+
+
+            }
+        }
         if (type == "LinkedComponent") {
             if (item1?.linkedComponent?.length > 0) {
                 // Item.props.linkedComponent = item1.linkedComponent;
@@ -306,23 +337,28 @@ const CreateActivity = (props: any) => {
             }
         }
 
-        // if (CategoriesData != undefined){
-        //     CategoriesData.forEach(function(type:any){
-        //     CheckCategory.forEach(function(val:any){
-        //         if(type.Id == val.Id){
-        //         BackupCat = type.Id
-        //         setcheckedCat(true)
-        //         }
-        //       })
+        if (CategoriesData != undefined){
+            CategoriesData.forEach(function(type:any){
+            CheckCategory.forEach(function(val:any){
+                if(type.Id == val.Id){
+                BackupCat = type.Id
+                setcheckedCat(true)
+                }
+              })
 
-        //   })
+          })
         //   setUpdate(update+2)
-        // }
+        }
         setIsComponentPicker(false);
         setIsComponent(false);
     }, []);
     const EditComponentPicker = (item: any) => {
         setIsComponentPicker(true);
+        setSharewebCategory(item);
+
+    }
+    const EditClientCategory = (item: any) => {
+        setIsClientPopup(true);
         setSharewebCategory(item);
 
     }
@@ -411,7 +447,14 @@ const CreateActivity = (props: any) => {
         props.Call(res);
 
     }
-
+    
+    const checkCat = (type: any) => {
+      CheckCategory.map((catTitle: any) => {
+        if (type == catTitle.Title) {
+          NewArray.push(catTitle);
+        }
+      });
+    };
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 0) {
             AllItems.Body = EditorData;
@@ -431,7 +474,11 @@ const CreateActivity = (props: any) => {
     }, [])
     const saveNoteCall = () => {
         var TaskprofileId: any = ''
-
+        if (NewArray != undefined && NewArray.length > 0) {
+            NewArray.map((NeitemA: any) => {
+              CategoriesData.push(NeitemA);
+            });
+          }
         var RelevantPortfolioIds: any = []
         var Component: any = []
         smartComponentData.forEach((com: any) => {
@@ -1031,7 +1078,7 @@ const CreateActivity = (props: any) => {
                                                     <div
                                                         className="col-sm-12 padL-0 checkbox">
                                                         <input type="checkbox"
-                                                            ng-click="selectRootLevelTerm(item)" />
+                                                             onClick={() => checkCat(item.Title)} />
                                                         <span style={{ marginLeft: "20px" }}> {item.Title}</span>
                                                     </div>
                                                 </>
@@ -1071,7 +1118,7 @@ const CreateActivity = (props: any) => {
                                                 <a className="hreflink" title="Edit Categories">
 
                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                        />
+                                                       onClick={()=>EditClientCategory(AllItems)} />
                                                 </a>
                                             </span>
                                         </div>
@@ -1080,9 +1127,9 @@ const CreateActivity = (props: any) => {
 
 
                                 </div>
-                                {(AllItems.ClientCategory != undefined && AllItems.ClientCategory.results?.length > 0) ?
+                                {(ClientCategoriesData != undefined && ClientCategoriesData.length > 0) ?
                                     <div>
-                                        {AllItems.ClientCategory?.map((type: any, index: number) => {
+                                        {ClientCategoriesData?.map((type: any, index: number) => {
                                             return (
                                                 <>
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
@@ -1134,6 +1181,7 @@ const CreateActivity = (props: any) => {
             {(IsComponent && AllItems.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Call={Call}></LinkedComponent>}
             {(IsComponent && AllItems.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
             {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
+            {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
         </>
     )
 }
