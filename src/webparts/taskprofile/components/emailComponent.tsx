@@ -7,58 +7,17 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 
  let percentage=1;
  const EmailComponenet=( props:any)=>{
-  // const [taskdetails,setTaskDetails]=useState(null);
+ 
    const [taskpermission,settaskpermission]=useState(null);
 
    useEffect(()=>{
     sendEmail(props.emailStatus);
    },[])
     console.log(props);
-  
-  // if( props?.items?.FeedBack!=null||props?.items?.FeedBack!=undefined){
-  //   let isShowLight=0;
-  //   let NotisShowLight=0
-  //   props.items.FeedBack.map((item:any)=>{
-  //     if(item.FeedBackDescriptions!=undefined){
-  //       item.FeedBackDescriptions.map((feedback:any)=>{
-  //         if(feedback.subtext!=undefined&&feedback.subtext.length>0){
-  //           feedback?.subtext.map((subtextitem:any)=>{
-  //             if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
-  //               // count=1
-  //               isShowLight=isShowLight+1;
-            
-  //             }
-              
-  //             else{
-  //               // count=0;
-  //               NotisShowLight=0;
-  //             }
-  //           })
-            
-  //         }
-  //         if(feedback.isShowLight!=""&&feedback.isShowLight!=undefined ){
-  //           // count=1
-  //           isShowLight=isShowLight+1;
-        
-  //         }
-          
-  //         else{
-  //           // count=0;
-  //           NotisShowLight=0;
-  //         }
-  //       })
-  //     }
-  //   })
-
-  //   if(isShowLight>NotisShowLight){
-  //     count=1;
-  //   }
-  // }
+ 
 
   const updateData=async( permission:any)=>{
-  
-    // const web = new Web(props.items?.siteUrl );
-      const feedback:any=props.items?.FeedBack!=null?props.items.FeedBack:null;
+   const feedback:any=props.items?.FeedBack!=null?props.items.FeedBack:null;
       feedback?.map((items:any)=>{
        if( items.FeedBackDescriptions!=undefined&&items.FeedBackDescriptions.length>0){
         items.FeedBackDescriptions.map((feedback:any)=>{
@@ -84,26 +43,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
        }
       })
       console.log(feedback);
-    //   let percentageComplete;
-    //   if(permission=="Approve"){
-    //     percentageComplete=0.03;
-    //     percentage=3;
-    //   }
-    //   else{
-    //     percentageComplete=0.02;
-    //     percentage=2;
-    //   }
-    //   await web.lists.getByTitle(props.items.listName).items.getById(props.items.Id).update({
-    //     PercentComplete: percentageComplete,
-    //     FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
-    //   }).then((res:any)=>{
-    //    console.log(res);
-       
-       
-    //  })
-    //  .catch((err) => {
-    //    console.log(err.message);
-    // });
+  
    };
   
  const sendEmail=async(send:any)=>{
@@ -272,13 +212,13 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Author"] != null && props.items["Author"].length > 0 && props.items["Author"][0].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Author"] != null && props.items["Author"].length > 0 && props.items["Author"][0].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                       </tr>
                       <tr>
