@@ -35,7 +35,7 @@ const CreateActivity = (props: any) => {
         var AllItems = props.props
         SelectedTasks.push(AllItems)
 
-        portfolioId=AllItems.Id
+        portfolioId=AllItems.Services[0].Id
         console.log(props)
     }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
@@ -310,7 +310,7 @@ const CreateActivity = (props: any) => {
         }
         if (type == "ClientCategory") {
             var Data:any=[]
-            if (item1 != undefined && item1.Categories != "") {
+            if (item1 != undefined && item1.Clientcategories != "") {
                 var title: any = {};
                 title.Title = item1.Clientcategories;
                 item1.Clientcategories.map((itenn: any) => {
@@ -319,10 +319,6 @@ const CreateActivity = (props: any) => {
                     }
 
                 })
-                item1.SharewebCategories?.map((itenn: any) => {
-                    Data.push(itenn)
-                })
-
                 setClientCategoriesData(Data)
 
 
@@ -351,6 +347,7 @@ const CreateActivity = (props: any) => {
         }
         setIsComponentPicker(false);
         setIsComponent(false);
+        setIsClientPopup(false);
     }, []);
     const EditComponentPicker = (item: any) => {
         setIsComponentPicker(true);
@@ -510,7 +507,7 @@ const CreateActivity = (props: any) => {
         //     }
 
         // })
-        if (linkedComponentData == undefined && linkedComponentData.length == 0) {
+        if (linkedComponentData.length == 0) {
             RelevantPortfolioIds.push(portfolioId)
         }
         if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
@@ -542,12 +539,12 @@ const CreateActivity = (props: any) => {
             }
         })
         var ClientCategory: any = []
-        // if(AllItems.)
-        // AllItems.ClientCategory?.map((val:any) => {
-        //     if (val.Id != undefined) {
-        //         ClientCategory.push(val.Id)
-        //     }
-        // })
+        if(ClientCategoriesData != undefined && ClientCategoriesData.length>0)
+        ClientCategoriesData.map((val:any) => {
+            if (val.Id != undefined) {
+                ClientCategory.push(val.Id)
+            }
+        })
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
@@ -593,7 +590,7 @@ const CreateActivity = (props: any) => {
                         Categories: categoriesItem ? categoriesItem : null,
                         DueDate: date != undefined ? new Date(date).toDateString() : date,
                         SharewebCategoriesId: { "results": CategoryID },
-                       // ClientCategoryId:{ "results": ClientCategory},
+                       ClientCategoryId:{ "results": ClientCategory},
                         ServicesId: { "results": RelevantPortfolioIds },
                         SharewebTaskTypeId: 1,
                         Body: AllItems.Body,
@@ -695,7 +692,7 @@ const CreateActivity = (props: any) => {
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
                             ParentTaskId: AllItems.Id,
-                            //ClientCategoryId:{ "results": ClientCategory},
+                            ClientCategoryId:{ "results": ClientCategory},
                             SharewebTaskTypeId: SharewebTasknewTypeId,
                             Body: AllItems.Description,
                             Shareweb_x0020_ID: SharewebID,
