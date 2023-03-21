@@ -39,7 +39,7 @@ function TasksTable(props:any){
      const [isShowTask, setIsShowTask] = React.useState(true);
      const [modalIsOpen, setModalIsOpen] = React.useState(false);
      const [count, setCount] = React.useState(0);
-     const [ActivityDisable, setActivityDisable] = React.useState(true);
+     const [ActivityDisable, setActivityDisable] = React.useState(false);
     const [addModalOpen, setAddModalOpen] = React.useState(false);
     const [lgShow, setLgShow] = React.useState(false);
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -49,7 +49,10 @@ function TasksTable(props:any){
     const [ActivityPopup, setActivityPopup] = React.useState(false);
     const [NewArrayBackup, setNewArrayBackup] = React.useState([]);
     const [ResturuningOpen, setResturuningOpen] = React.useState(false);
+    const [closeAll, setCloseAll] = React.useState(true);
+
     const [RestructureChecked, setRestructureChecked] = React.useState([]);
+    const[selectedItem,setSelectedItem] = React.useState([]);
      IsUpdated = props.props.Portfolio_x0020_Type;
 
       const GetSmartmetadata = async () => {
@@ -270,7 +273,7 @@ function TasksTable(props:any){
                     console.log(componentDetails);
             }
             React.useEffect(() => {
-                MeetingItems.push(props)
+                //MeetingItems.push(props)
                 getTaskUsers(); 
                 if((props.props.Component !=undefined && props.props.Component.length >0) || (props.props.Service !=undefined && props.props.Service[0].Id))
                 GetComponents(props.props)
@@ -297,25 +300,26 @@ function TasksTable(props:any){
         
             }
             const handleOpenAll = () => {
-                var Isshow1: any = Isshow == true ? false : true;
-                data.forEach((obj) => {
-                    obj.show = Isshow1;
-                    if (obj.childs != undefined && obj.childs.length > 0) {
-                        obj.childs.forEach( (subchild:any) => {
-                            subchild.show = Isshow1;
-                            if (subchild.childs != undefined && subchild.childs.length > 0) {
-                                subchild.childs.forEach((child:any) => {
-                                    child.show = Isshow1;
-                                })
+                setCloseAll(!closeAll)
+                // var Isshow1: any = Isshow == true ? false : true;
+                // data.forEach((obj) => {
+                //     obj.show = Isshow1;
+                //     if (obj.childs != undefined && obj.childs.length > 0) {
+                //         obj.childs.forEach( (subchild:any) => {
+                //             subchild.show = Isshow1;
+                //             if (subchild.childs != undefined && subchild.childs.length > 0) {
+                //                 subchild.childs.forEach((child:any) => {
+                //                     child.show = Isshow1;
+                //                 })
         
-                            }
-                        })
+                //             }
+                //         })
         
-                    }
+                //     }
         
-                })
-                setIsshow(Isshow1);
-                setData(data => ([...data]));
+                // })
+                // setIsshow(Isshow1);
+                // setData(data => ([...data]));
             };
             const handleOpen = (item: any) => {
               setIsShowTask(!isShowTask)
@@ -324,22 +328,108 @@ function TasksTable(props:any){
                
         
             };
-            const onChangeHandler = (itrm: any) => {
-                const list = [...checkedList];
-                var flag = true;
-                list.forEach((obj: any, index: any) => {
-                    if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-                        flag = false;
-                        list.splice(index, 1);
-                    }
-                })
-                if (flag)
-                    list.push(itrm);
+            // const onChangeHandler = (itrm: any) => {
+            //     setSelectedItem(itrm)
+            //     const list = [...checkedList];
+            //     var flag = true;
+            //     list.forEach((obj: any, index: any) => {
+            //         if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+            //             flag = false;
+            //             list.splice(index, 1);
+            //         }
+            //     })
+            //     if(itrm.SharewebTaskType?.Title == 'Task'){
+            //         setActivityDisable(false)
+            //     }
+            //     if (flag)
+            //         list.push(itrm);
                 
-                console.log(list);
-                setCheckedList(checkedList => ([...list]));
-                if(list.length ===0)
-                clearreacture();
+            //     console.log(list);
+            //     setCheckedList(checkedList => ([...list]));
+            //     if(list.length ===0)
+            //     clearreacture();
+                
+            // };
+            const onChangeHandler2 = (itrm: any, child: any, e: any) => {
+                var Arrays: any = []
+        
+        
+                const { checked } = e.target;
+                if (checked == true) {
+                    itrm.chekBox = true
+        
+                    if (itrm.SharewebTaskType == undefined) {
+                        setActivityDisable(false)
+                        itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                        itrm['listName'] = 'Master Tasks';
+                        MeetingItems.push(itrm)
+                        //setMeetingItems(itrm);
+        
+                    }
+                    if (itrm.SharewebTaskType != undefined) {
+                        if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+                            setActivityDisable(false)
+                            Arrays.push(itrm)
+                            itrm['PortfolioId'] = child.Id;
+                            MeetingItems.push(itrm)
+                            setCount(count+2)
+                        }
+                        if (itrm.SharewebTaskType.Title == 'Task') {
+                            setActivityDisable(true) 
+                            MeetingItems.push(itrm)
+                          
+                        }
+                    }
+                }
+                if (checked == false) {
+                    itrm.chekBox = false;
+                    MeetingItems?.forEach((val: any, index: any) => {
+                        if (val.Id == itrm.Id) {
+                            MeetingItems.splice(index, 1)
+                        }
+                    })
+                    if (itrm.SharewebTaskType != undefined) {
+                        if (itrm.SharewebTaskType.Title == 'Task') {
+                            setActivityDisable(false)
+                          
+                        }
+                    }
+                    setCount(count+2)
+                }
+        // if(MeetingItems.length == 0){
+        //     clearreacture()
+        // }
+                // cons.let list = [...checkedList];
+                // var flag = true;
+                // list.forEach((obj: any, index: any) => {
+                //     if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+                //         flag = false;
+                //         list.splice(index, 1);
+                //     }
+                // })
+                // setCheckedList(checkedList => ([...list]));
+                // if(list.length ===0)
+                // clearreacture();
+                // if (flag)
+                //     list.push(itrm);
+                // maidataBackup.forEach((obj, index) => {
+                //     obj.isRestructureActive = false;
+                //     if (obj.childs != undefined && obj.childs.length > 0) {
+                //         obj.childs.forEach((sub: any, indexsub: any) => {
+                //             sub.isRestructureActive = false;
+                //             if (sub.childs != undefined && sub.childs.length > 0) {
+                //                 sub.childs.forEach((newsub: any, lastIndex: any) => {
+                //                     newsub.isRestructureActive = false;
+        
+                //                 })
+                //             }
+        
+                //         })
+                //     }
+        
+                // })
+               // setData(data => ([...maidataBackup]));
+               // setCheckedList(checkedList => ([...list]));
             };
             const EditItemTaskPopup = (item: any) => {
                 // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
@@ -361,6 +451,10 @@ function TasksTable(props:any){
                 setIsTask(false);
                 setMeetingPopup(false);
                 setWSPopup(false);
+                  MeetingItems?.forEach((val:any):any=>{
+                  val.chekBox =false;
+                  })
+                  MeetingItems=[]
                 var MainId: any = ''
                 if (childItem != undefined) {
                     childItem.data['flag'] = true;
@@ -391,11 +485,7 @@ function TasksTable(props:any){
                     //     })
                         setData(allworkstreamTasks)
                         setCount(count+1)
-                       
-                       
-                        
-                    
-        
+                 
                 }
             }, []);
             const TimeEntryCallBack = React.useCallback((item1) => {
@@ -747,14 +837,23 @@ function TasksTable(props:any){
                 })
             }
             const openActivity=()=>{
+                if(MeetingItems != undefined && MeetingItems.length > 0){
+                    if(MeetingItems[0].SharewebTaskType.Title == 'Workstream'){
+                        MeetingItems[0]['NoteCall']='Task'
+                        setMeetingPopup(true)
+                    }
+                }
+              else{
                 if(props.props.SharewebTaskType == 'Workstream'){
                     MeetingItems[0].props['NoteCall']='Task'
                     setMeetingPopup(true)
                  }
                  if(props.props.SharewebTaskType == 'Activities'){
+                    MeetingItems.push(props.props)
                     setWSPopup(true)
                    
                 }
+            }
                
             }
     return (
@@ -799,13 +898,13 @@ function TasksTable(props:any){
                         <button type="button"
                                             className="btn btn-primary"
                                             onClick={() => openActivity()}
-                                            disabled={props.SharewerbTaskType == 'Task'?ActivityDisable:false}>
+                                            disabled={ActivityDisable}>
 
                                             <MdAdd />
                                             Add Workstream-Task
                                         </button>
                         <button type="button"
-                             className="btn btn-primary" disabled={checkedList.length ==0}
+                             className="btn btn-primary" disabled={MeetingItems.length==0}
                              onClick={buttonRestructuring}>
                             Restructure
                         </button>
@@ -831,7 +930,7 @@ function TasksTable(props:any){
                                     <tr>
                                         <th style={{ width: "2%" }}>
                                             <div style={{ width: "2%" }}>
-                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png'} />
+                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{closeAll ? <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png'} />
                                                                 : <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"} />}
                                                             </div>
                                             </div>
@@ -1065,7 +1164,7 @@ function TasksTable(props:any){
                                     </div>
                                     {data?.length > 0 && data && data.map(function (item, index) {
 
-                                        if (item.flag == true) {
+                                        if (item.flag == true && closeAll == true) {
                                             return (
                                                 <>
                                                     <tr >
@@ -1090,10 +1189,10 @@ function TasksTable(props:any){
                                                                     <td style={{ width: "6%" }}>
                                                                     
                                                                         <div className="d-flex">
-                                                                        {
-                                                                     item.SharewebTaskType?.Title != 'Task' &&
-                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(item)} /></span>
-                                                                            }
+                                                                        
+                                                                   
+                                                                            <span className='pe-2'><input type="checkbox" checked={item.chekBox} onChange={(e) => onChangeHandler2(item,'Parent',e)} /></span>
+                                                                            
                                                                               <span>  <a className="hreflink" data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                                 </a>
@@ -1189,7 +1288,7 @@ function TasksTable(props:any){
 
                                                                     <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                     <td style={{ width: "3%" }}>{item.siteType !== "Master Tasks" && item.Title !== 'Tasks' && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}<a>
-                                                                        {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
+                                                                        {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
                                                                 </tr>
                                                             </table>
                                                         </td>
@@ -1210,8 +1309,8 @@ function TasksTable(props:any){
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
-                                                                                                {childitem.SharewebTaskType?.Title != 'Task' && 
-                                                                                                <span className='pe-2'><input type="checkbox"  onChange={(e) => onChangeHandler(childitem)}  /></span>}
+                                                                                                 
+                                                                                                <span className='pe-2'><input type="checkbox"   checked={childitem.chekBox} onChange={(e) => onChangeHandler2(childitem,item,e)}  /></span>
                                                                                                 <span>
                                                                                                     <a className="hreflink" data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
@@ -1302,7 +1401,7 @@ function TasksTable(props:any){
 
                                                                                             <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                             <td style={{ width: "3%" }}><a>
-                                                                                                {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
+                                                                                                {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                         </tr>
                                                                                     </table>
                                                                                 </td>
@@ -1332,8 +1431,8 @@ function TasksTable(props:any){
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
-                                                                                                                    {childinew.SharewebTaskType?.Title != 'Task' && 
-                                                                                                                        <span className='pe-2'><input type="checkbox" /></span>}
+                                                                                                                    
+                                                                                                                        <span className='pe-2'><input type="checkbox" checked={childinew.chekBox} onChange={(e) => onChangeHandler2(childinew,item,e)}/></span>
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
@@ -1432,7 +1531,7 @@ function TasksTable(props:any){
 
                                                                                                                     <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>
-                                                                                                                        {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
+                                                                                                                        {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
                                                                                                                 </tr>
                                                                                                             </table>
                                                                                                         </td>
@@ -1459,7 +1558,7 @@ function TasksTable(props:any){
                                                                                                                                             </div>
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "6%" }}>
-                                                                                                                                            <span className='pe-2'><input type="checkbox" /></span>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler2(subchilditem,item,e)}/></span>
                                                                                                                                             <span>
                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                     <img className="icon-sites-img ml20" src={subchilditem.SiteIcon}></img>
@@ -1781,8 +1880,8 @@ function TasksTable(props:any){
             </Panel>
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            {MeetingPopup && <CreateActivity props={MeetingItems[0].props} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
-            {WSPopup && <CreateWS props={MeetingItems[0].props} Call={Call} data={data}></CreateWS>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
            <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>

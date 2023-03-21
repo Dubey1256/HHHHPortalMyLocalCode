@@ -26,8 +26,8 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from '../FlorarComponents/FlorarImageUploadComponent';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { Table } from "reactstrap";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import {
     useTable,
     useSortBy,
@@ -55,12 +55,13 @@ let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
-var ApproverBackupArray: any = [];
+var sendEmailStatusCount:any = false;
+var TaskApproverBackupArray: any = [];
+var TaskCreatorApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
 var ReplaceImageData: any;
 var AllProjectBackupArray: any = [];
-
-
+var EditDataBackup: any;
 const EditTaskPopup = (Items: any) => {
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -158,12 +159,11 @@ const EditTaskPopup = (Items: any) => {
     React.useEffect(() => {
         loadTaskUsers();
         getCurrentUserDetails();
-        GetEditData();
+        GetExtraLookupColumnData();
         getCurrentUserDetails();
         getSmartMetaData();
         loadAllCategoryData();
         GetMasterData();
-        GetExtraLookupColumnData();
         // getInformationForSmartLight();
         // Descriptions();
     }, [])
@@ -618,7 +618,82 @@ const EditTaskPopup = (Items: any) => {
         }
         setAllEmployeeData(Groups);
     }
-
+    const GetExtraLookupColumnData = async () => {
+        try {
+            let web = new Web(siteUrls);
+            let extraLookupColumnData: any;
+            if (Items.Items.listId != undefined) {
+                extraLookupColumnData = await web.lists
+                    .getById(Items.Items.listId)
+                    .items
+                    .select("Project/Id, Project/Title, Approver/Id, Approver/Title")
+                    .top(5000)
+                    .filter(`Id eq ${Items.Items.Id}`)
+                    .expand('Project, Approver')
+                    .get();
+                if (extraLookupColumnData.length > 0) {
+                    let Data: any;
+                    let ApproverData: any
+                    Data = extraLookupColumnData[0]?.Project;
+                    ApproverData = extraLookupColumnData[0]?.Approver;
+                    if (Data != undefined && Data != null) {
+                        // let TempArray: any = [];
+                        // AllProjectBackupArray.map((ProjectData: any) => {
+                        //     if (ProjectData.Id == Data.Id) {
+                        //         ProjectData.Checked = true;
+                        //         setSelectedProject([ProjectData]);
+                        //         TempArray.push(ProjectData);
+                        //     } else {
+                        //         ProjectData.Checked = false;
+                        //         TempArray.push(ProjectData);
+                        //     }
+                        // })
+                        setSelectedProject([Data]);
+                    }
+                    if (ApproverData != undefined && ApproverData.length > 0) {
+                        setApproverData(ApproverData);
+                        TaskApproverBackupArray = ApproverData;
+                    }
+                }
+                GetEditData();
+            } else {
+                extraLookupColumnData = await web.lists
+                    .getByTitle(Items.Items.listName)
+                    .items
+                    .select("Project/Id, Project/Title, Approver/Id, Approver/Title")
+                    .top(5000)
+                    .filter(`Id eq ${Items.Items.Id}`)
+                    .expand('Project, Approver')
+                    .get();
+                if (extraLookupColumnData.length > 0) {
+                    let Data: any;
+                    Data = extraLookupColumnData[0]?.Project;
+                    if (Data != undefined && Data != null) {
+                        // let TempArray: any = [];
+                        // AllProjectBackupArray.map((ProjectData: any) => {
+                        //     if (ProjectData.Id == Data.Id) {
+                        //         ProjectData.Checked = true;
+                        //         setSelectedProject([ProjectData]);
+                        //         TempArray.push(ProjectData);
+                        //     } else {
+                        //         ProjectData.Checked = false;
+                        //         TempArray.push(ProjectData);
+                        //     }
+                        // })
+                        // SetAllProjectData(Data);
+                        setSelectedProject([Data])
+                    }
+                    if (ApproverData != undefined && ApproverData.length > 0) {
+                        setApproverData(ApproverData);
+                        TaskApproverBackupArray = ApproverData;
+                    }
+                }
+                GetEditData();
+            }
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
+    }
 
     const GetEditData = async () => {
         try {
@@ -723,7 +798,8 @@ const EditTaskPopup = (Items: any) => {
                     const object: any = {
                         SiteName: Items.Items.siteType,
                         ClienTimeDescription: 100,
-                        localSiteComposition: true
+                        localSiteComposition: true,
+                        siteIcons: Items.Items.SiteIcon
                     }
                     item.siteCompositionData = [object];
                 }
@@ -773,27 +849,31 @@ const EditTaskPopup = (Items: any) => {
                 // }
                 item.TaskId = globalCommon.getTaskId(item);
                 let AssignedUsers: any = [];
-                let ApproverDataTemp: any = [];
+                // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
                 if (item.Author != undefined && item.Author != null) {
                     taskUsers.map((userData: any) => {
                         if (item.Author.Id == userData?.AssingedToUserId) {
                             userData.Approver?.map((AData: any) => {
-                                ApproverDataTemp.push(AData);
-                                ApproverBackupArray.push(AData);
+                                // ApproverDataTemp.push(AData);
+                                TaskCreatorApproverBackupArray.push(AData);
                             })
                         }
                     })
-                    if ((statusValue == 1 || statusValue == 2) && ApprovalStatusGlobal) {
-                        if (ApproverData != undefined && ApproverData.length > 0) {
-                            ApproverData.map((itemData: any) => {
-                                AssignedUsers.push(itemData);
-                                TeamMemberTemp.push(itemData);
+                    if ((statusValue <= 2) && ApprovalStatusGlobal) {
+                        if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                            taskUsers.map((userData1: any) => {
+                                TaskApproverBackupArray.map((itemData: any) => {
+                                    if (itemData.Id == userData1?.AssingedToUserId) {
+                                        AssignedUsers.push(userData1);
+                                        TeamMemberTemp.push(userData1);
+                                    }
+                                })
                             })
                         } else {
-                            if (ApproverDataTemp?.length > 0) {
+                            if (TaskCreatorApproverBackupArray?.length > 0) {
                                 taskUsers.map((userData1: any) => {
-                                    ApproverDataTemp?.map((itemData: any) => {
+                                    TaskCreatorApproverBackupArray?.map((itemData: any) => {
                                         if (itemData.Id == userData1?.AssingedToUserId) {
                                             AssignedUsers.push(userData1);
                                             TeamMemberTemp.push(userData1);
@@ -812,14 +892,24 @@ const EditTaskPopup = (Items: any) => {
                         })
                     }
                 }
-                if (ApproverDataTemp?.length > 0) {
-                    ApproverDataTemp?.map((Approver: any) => {
-                        currentUserBackupArray?.map((current: any) => {
-                            if (Approver.Id == current.AssingedToUserId) {
+                if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                    TaskApproverBackupArray.map((itemData: any) => {
+                        currentUserBackupArray?.map((currentUser: any) => {
+                            if (itemData.Id == currentUser.AssingedToUserId) {
                                 setSmartLightStatus(true);
                             }
                         })
                     })
+                } else {
+                    if (TaskCreatorApproverBackupArray?.length > 0) {
+                        TaskCreatorApproverBackupArray?.map((Approver: any) => {
+                            currentUserBackupArray?.map((current: any) => {
+                                if (Approver.Id == current.AssingedToUserId) {
+                                    setSmartLightStatus(true);
+                                }
+                            })
+                        })
+                    }
                 }
                 if (item.component_x0020_link != null) {
                     item.Relevant_Url = item.component_x0020_link.Url
@@ -833,19 +923,17 @@ const EditTaskPopup = (Items: any) => {
                     setTaskTeamMembers(item.Team_x0020_Members ? item.Team_x0020_Members : []);
                 }
                 item.TaskAssignedUsers = AssignedUsers;
-                if (ApproverDataTemp != undefined && ApproverDataTemp.length > 0) {
-                    item.TaskApprovers = ApproverDataTemp;
+                if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                    item.TaskApprovers = TaskCreatorApproverBackupArray;
                 } else {
                     item.TaskApprovers = [];
                 }
-
                 if (item.Attachments) {
                     let tempData = []
                     tempData = saveImage[0];
                     item.UploadedImage = saveImage ? saveImage[0] : '';
                     onUploadImageFunction(tempData, tempData?.length);
                 }
-
                 if (item.SharewebCategories != undefined && item.SharewebCategories?.length > 0) {
                     let tempArray: any = [];
                     tempArray = item.SharewebCategories;
@@ -854,19 +942,36 @@ const EditTaskPopup = (Items: any) => {
                         tempShareWebTypeData.push(tempData);
                     })
                 }
-
                 if (item.RelevantPortfolio?.length > 0) {
                     setLinkedComponentData(item.RelevantPortfolio)
                 }
                 if (item.FeedBack != null) {
                     let message = JSON.parse(item.FeedBack);
                     updateFeedbackArray = message;
+                    let Count:any = 0;
                     let feedbackArray = message[0]?.FeedBackDescriptions
                     if (feedbackArray != undefined && feedbackArray.length > 0) {
                         let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
                         item.CommentBoxText = CommentBoxText;
+                        feedbackArray.map((FeedBackData:any)=>{
+                            if(FeedBackData.isShowLight == "Approved" || FeedBackData.isShowLight == "Maybe" || FeedBackData.isShowLight == "Reject"){
+                                Count++;
+                            }if(feedbackArray.Subtext != undefined && feedbackArray.Subtext.length > 0){
+                                feedbackArray.Subtext.map((ChildItem:any)=>{
+                                    if(ChildItem.isShowLight == "Approved" || ChildItem.isShowLight == "Maybe" || ChildItem.isShowLight == "Reject"){
+                                        Count++;     
+                                    }
+                                })
+                            }
+
+                        })
                     } else {
                         item.CommentBoxText = "<p></p>"
+                    }
+                    if(Count >= 1){
+                        sendEmailStatusCount = true
+                    }else{
+                        sendEmailStatusCount = false
                     }
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
@@ -895,6 +1000,7 @@ const EditTaskPopup = (Items: any) => {
                     setServicesTaskCheck(false)
                 }
                 setEditData(item)
+                EditDataBackup = item;
                 setPriorityStatus(item.Priority)
                 console.log("Task All Details ==================", item)
             })
@@ -903,80 +1009,6 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
-    const GetExtraLookupColumnData = async () => {
-        try {
-            let web = new Web(siteUrls);
-            let extraLookupColumnData: any;
-            if (Items.Items.listId != undefined) {
-                extraLookupColumnData = await web.lists
-                    .getById(Items.Items.listId)
-                    .items
-                    .select("Project/Id, Project/Title, Approver/Id, Approver/Title")
-                    .top(5000)
-                    .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('Project, Approver')
-                    .get();
-                if (extraLookupColumnData.length > 0) {
-                    let Data: any;
-                    let ApproverData: any
-                    Data = extraLookupColumnData[0]?.Project;
-                    ApproverData = extraLookupColumnData[0]?.Approver;
-                    if (Data != undefined && Data != null) {
-                        // let TempArray: any = [];
-                        // AllProjectBackupArray.map((ProjectData: any) => {
-                        //     if (ProjectData.Id == Data.Id) {
-                        //         ProjectData.Checked = true;
-                        //         setSelectedProject([ProjectData]);
-                        //         TempArray.push(ProjectData);
-                        //     } else {
-                        //         ProjectData.Checked = false;
-                        //         TempArray.push(ProjectData);
-                        //     }
-                        // })
-                        setSelectedProject([Data]);
-                    }
-                    if (ApproverData != undefined && ApproverData.length > 0) {
-                        setApproverData(ApproverData);
-                    }
-
-                }
-                console.log("Extra Lookup Data =======", extraLookupColumnData);
-            } else {
-                extraLookupColumnData = await web.lists
-                    .getByTitle(Items.Items.listName)
-                    .items
-                    .select("Project/Id, Project/Title, Approver/Id, Approver/Title")
-                    .top(5000)
-                    .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('Project, Approver')
-                    .get();
-                if (extraLookupColumnData.length > 0) {
-                    let Data: any;
-                    Data = extraLookupColumnData[0]?.Project;
-                    if (Data != undefined && Data != null) {
-                        // let TempArray: any = [];
-                        // AllProjectBackupArray.map((ProjectData: any) => {
-                        //     if (ProjectData.Id == Data.Id) {
-                        //         ProjectData.Checked = true;
-                        //         setSelectedProject([ProjectData]);
-                        //         TempArray.push(ProjectData);
-                        //     } else {
-                        //         ProjectData.Checked = false;
-                        //         TempArray.push(ProjectData);
-                        //     }
-                        // })
-                        // SetAllProjectData(Data);
-                        setSelectedProject([Data])
-                    }
-                }
-            }
-        } catch (error) {
-            console.log("Error:", error.message);
-        }
-
-
-
-    }
 
     const GetMasterData = async () => {
         try {
@@ -1147,10 +1179,18 @@ const EditTaskPopup = (Items: any) => {
             }
             if (StatusInput == 1) {
                 let tempArray: any = [];
-                if (ApproverBackupArray?.length > 0) {
-                    ApproverBackupArray.map((dataItem: any) => {
-                        tempArray.push(dataItem);
-                    })
+                if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                    if (TaskApproverBackupArray?.length > 0) {
+                        TaskApproverBackupArray.map((dataItem: any) => {
+                            tempArray.push(dataItem);
+                        })
+                    }
+                } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                    if (TaskCreatorApproverBackupArray?.length > 0) {
+                        TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                            tempArray.push(dataItem);
+                        })
+                    }
                 }
                 StatusArray?.map((item: any) => {
                     if (StatusInput == item.value) {
@@ -1177,8 +1217,12 @@ const EditTaskPopup = (Items: any) => {
         setPercentCompleteCheck(false);
         if (StatusData.value == 1) {
             let tempArray: any = [];
-            if (ApproverBackupArray?.length > 0) {
-                ApproverBackupArray.map((dataItem: any) => {
+            if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                TaskApproverBackupArray.map((dataItem: any) => {
+                    tempArray.push(dataItem);
+                })
+            } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                TaskCreatorApproverBackupArray.map((dataItem: any) => {
                     tempArray.push(dataItem);
                 })
             }
@@ -1314,6 +1358,21 @@ const EditTaskPopup = (Items: any) => {
     const setModalIsOpenToFalse = () => {
         let callBack = Items.Call
         callBack();
+        tempShareWebTypeData = [];
+        AllMetaData = []
+        taskUsers = []
+        CommentBoxData = []
+        SubCommentBoxData = []
+        updateFeedbackArray = []
+        tempShareWebTypeData = []
+        tempCategoryData = []
+        SiteTypeBackupArray = []
+        currentUserBackupArray = []
+        AutoCompleteItemsArray = []
+        FeedBackBackupArray = []
+        TaskCreatorApproverBackupArray = []
+        TaskApproverBackupArray = []
+        ApproverIds = []
     }
     let currentUsers = [
         { rankTitle: 'Select Item Rank', rank: null },
@@ -1573,7 +1632,8 @@ const EditTaskPopup = (Items: any) => {
                 currentUserBackupArray = []
                 AutoCompleteItemsArray = []
                 FeedBackBackupArray = []
-                ApproverBackupArray = []
+                TaskCreatorApproverBackupArray = []
+                TaskApproverBackupArray = []
                 ApproverIds = []
                 if (typeFunction != "TimeSheetPopup") {
                     Items.Call();
@@ -1733,44 +1793,44 @@ const EditTaskPopup = (Items: any) => {
             }
         }
         let ApprovedStatusCount: any = 0;
+        let Status: any;
+        if (EditDataBackup.PercentComplete != undefined) {
+            Status = EditDataBackup.PercentComplete;
+        } else {
+            Status = 0;
+        }
         if (TempFeedBackArray?.length > 0) {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Approve") {
                     ApprovedStatusCount++;
-                    if (EditData.PercentComplete <= 3) {
-                        let StatusInput: any = 3;
-                        if (StatusInput == 3) {
-                            setInputFieldDisable(false)
-                            setStatusOnChangeSmartLight(3);
-                            // setTaskAssignedTo([]);
-                            // EditData.TaskAssignedUsers = [];
-                            // setTaskTeamMembers([]);
-                            // EditData.Team_x0020_Members = [];
-                        }
+                    if (Status <= 3) {
+                        setInputFieldDisable(false)
+                        setStatusOnChangeSmartLight(3);
+                        // setTaskAssignedTo([]);
+                        // EditData.TaskAssignedUsers = [];
+                        // setTaskTeamMembers([]);
+                        // EditData.Team_x0020_Members = [];
                     }
                 }
                 if (item.Phone) {
                     // CategoryChange("Phone", 199);
-                    CategoryChangeUpdateFunction("false", "Phone", 199)
+                    // CategoryChangeUpdateFunction("false", "Phone", 199)
                 }
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Approve") {
                             ApprovedStatusCount++;
-                            if (EditData.PercentComplete <= 3) {
-                                let StatusInput: any = 3;
-                                if (StatusInput == 3) {
-                                    setInputFieldDisable(false)
-                                    setStatusOnChangeSmartLight(3);
-                                    // setTaskAssignedTo([]);
-                                    // EditData.TaskAssignedUsers = [];
-                                    // setTaskTeamMembers([]);
-                                    // EditData.Team_x0020_Members = [];
-                                }
+                            if (Status <= 3) {
+                                setInputFieldDisable(false)
+                                setStatusOnChangeSmartLight(3);
+                                // setTaskAssignedTo([]);
+                                // EditData.TaskAssignedUsers = [];
+                                // setTaskTeamMembers([]);
+                                // EditData.Team_x0020_Members = [];
                             }
                         }
                         if (item.Phone) {
-                            CategoryChangeUpdateFunction("false", "Phone", 199)
+                            // CategoryChangeUpdateFunction("false", "Phone", 199)
                         }
                     })
                 }
@@ -1778,12 +1838,9 @@ const EditTaskPopup = (Items: any) => {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Reject" || item.isShowLight == "Maybe") {
                     if (ApprovedStatusCount == 0) {
-                        if (EditData.PercentComplete >= 2) {
-                            let StatusInput: any = 2;
-                            if (StatusInput <= 2) {
-                                setInputFieldDisable(true)
-                                setStatusOnChangeSmartLight(2);
-                            }
+                        if (Status >= 2) {
+                            setInputFieldDisable(true)
+                            setStatusOnChangeSmartLight(2);
                         }
                     }
                 }
@@ -1791,12 +1848,9 @@ const EditTaskPopup = (Items: any) => {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Reject" || subItem.isShowLight == "Maybe") {
                             if (ApprovedStatusCount == 0) {
-                                if (EditData.PercentComplete <= 2) {
-                                    let StatusInput: any = 2;
-                                    if (StatusInput == 2) {
-                                        setInputFieldDisable(true)
-                                        setStatusOnChangeSmartLight(2);
-                                    }
+                                if (Status <= 2) {
+                                    setInputFieldDisable(true)
+                                    setStatusOnChangeSmartLight(2);
                                 }
                             }
                         }
@@ -2350,7 +2404,11 @@ const EditTaskPopup = (Items: any) => {
     }
     const closeApproverPopup = () => {
         setApproverPopupStatus(false);
-        setApproverData(ApproverBackupArray);
+        if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+            setApproverData(TaskApproverBackupArray);
+        } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+            setApproverData(TaskCreatorApproverBackupArray);
+        }
     }
 
     const UpdateApproverFunction = () => {
@@ -2557,7 +2615,7 @@ const EditTaskPopup = (Items: any) => {
                                     onClick={UpdateTaskInfoFunction}>
                                     Save
                                 </button>
-                                <button type="button" className="btn btn-default ms-1 px-3" onClick={Items.Call}>
+                                <button type="button" className="btn btn-default ms-1 px-3" onClick={setModalIsOpenToFalse}>
                                     Cancel
                                 </button>
                             </span>
@@ -2697,6 +2755,7 @@ const EditTaskPopup = (Items: any) => {
                 onRenderFooter={onRenderCustomFooterMain}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                    {console.log("Email Send Staus Data ===============================================", sendEmailStatusCount)}
                     <div className="modal-body">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
@@ -3237,7 +3296,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className="col-md-3">
                                         <div className="Sitecomposition">
                                             <div className='dropdown'>
-                                                <a className="sitebutton bg-fxdark"  style={{cursor:"pointer"}} onClick={() => setComposition(composition ? false : true)}>
+                                                <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
                                                     <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
                                                 </a>
                                                 {composition ?
@@ -4233,7 +4292,7 @@ const EditTaskPopup = (Items: any) => {
 
                                                     <div className="Sitecomposition">
                                                         <div className='dropdown'>
-                                                            <a className="sitebutton bg-fxdark" style={{cursor:"pointer"}} onClick={() => setComposition(composition ? false : true)}>
+                                                            <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
                                                                 <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
                                                             </a>
                                                             {composition ?
@@ -4242,7 +4301,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
                                                                             <>
                                                                                 {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
-                                                                                    return( <li className="Sitelist">
+                                                                                    return (<li className="Sitelist">
                                                                                         <span>
                                                                                             <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
                                                                                         </span>
@@ -4651,7 +4710,6 @@ const EditTaskPopup = (Items: any) => {
                                                         {item.Title}
                                                     </a>
                                                 </p>
-
                                                 <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
                                                     {item.Child?.map(function (child1: any) {
                                                         return (
@@ -4680,10 +4738,6 @@ const EditTaskPopup = (Items: any) => {
                                     )
                                 })}
                             </ul>
-                            {/* 
-                            <h5 className="p-3 m-2">
-                                We are working on it. This feature will be live soon .....
-                            </h5> */}
                         </div>
                     </div>
                     <footer className="float-end mt-1">
@@ -4705,7 +4759,6 @@ export default React.memo(EditTaskPopup);
 
 // step-1 : import this component where you need to use
 // step-2 : call this component and pass some parameters follow step:2A and step:2B
-
 
 // step-2A :
 // var Items = {
