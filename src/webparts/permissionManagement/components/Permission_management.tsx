@@ -1197,7 +1197,7 @@ export default function Permission_management(props: any) {
                 Permission-Management
                 <span>
                     <a href="#">
-                        <img className="img-focus" src="/_layouts/images/edititem.gif" data-themekey="#" />
+                        <img className="img-focus" src={require('../../../Assets/ICON/edit_page.svg')}  width="25" data-themekey="#" />
                     </a>
                 </span>
             </h2>

@@ -408,7 +408,8 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -425,7 +426,8 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -443,7 +445,8 @@ function Portfolio({ ID }: any) {
                             <span >
                               {" "}
                               <img
-                                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -460,7 +463,8 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -478,7 +482,8 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -496,7 +501,8 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
+                                src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -681,7 +687,8 @@ function Portfolio({ ID }: any) {
                                               data-interception="off"
                                               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${item.Parent.Id}`}
                                             >
-                                              <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />{" "}
+                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25" />{" "}
                                             </a>
                                           </>
                                         )}
@@ -694,7 +701,8 @@ function Portfolio({ ID }: any) {
                                               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${item.Parent.Id}`}
                                             >
                                               {" "}
-                                              <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" />{" "}
+                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25" />{" "}
                                             </a>
                                           </>
                                         )}
