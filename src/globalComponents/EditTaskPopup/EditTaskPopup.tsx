@@ -2382,7 +2382,7 @@ const EditTaskPopup = (Items: any) => {
             columns,
             data,
             defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 10 }
+            initialState: { pageIndex: 0, pageSize: 10000 }
         },
         useFilters,
         useSortBy,
