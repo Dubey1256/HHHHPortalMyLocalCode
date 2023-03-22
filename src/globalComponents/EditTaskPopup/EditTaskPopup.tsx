@@ -1740,10 +1740,10 @@ const EditTaskPopup = (Items: any) => {
         try {
             if (Items.Items.listId != undefined) {
                 let web = new Web(siteUrls);
-                await web.lists.getById(Items.Items.listId).items.getById(itemId).delete();
+                await web.lists.getById(Items.Items.listId).items.getById(itemId).recycle();
             } else {
                 let web = new Web(siteUrls);
-                await web.lists.getById(Items.Items.listName).items.getById(itemId).delete();
+                await web.lists.getById(Items.Items.listName).items.getById(itemId).recycle();
             }
             Items.Call();
             console.log("Your post has been deleted successfully");
