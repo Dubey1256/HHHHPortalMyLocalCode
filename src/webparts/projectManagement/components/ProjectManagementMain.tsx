@@ -45,6 +45,8 @@ import CreateTaskFromProject from "./CreateTaskFromProject";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import PortfolioTagging from "../../projectmanagementOverviewTool/components/PortfolioTagging";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
+import CommentCard from "../../../globalComponents/Comments/CommentCard";
+import SmartInformation from "../../taskprofile/components/SmartInformation";
 
 let linkedComponentData: any = [];
 let smartComponentData: any = [];
@@ -584,13 +586,14 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
+            {row?.original?.Priority_x0020_Rank}
             {
               row?.original?.Categories?.includes('Immediate') ?
                 <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a>
                 :
                 " "
             }
-            {row?.original?.Priority_x0020_Rank}
+            
           </span>
         ),
       },
@@ -612,7 +615,7 @@ const ProjectManagementMain = (props: any) => {
               parseInt(row.original.PercentComplete) >= 0 ? (
               <a title={row.original.PercentComplete}>
                 <img
-                  width="25px"
+                 
                   onMouseEnter={row.original.PercentComplete}
                   src={require("../../../Assets/ICON/Ellipse.svg")}
                 />
@@ -621,7 +624,7 @@ const ProjectManagementMain = (props: any) => {
               parseInt(row.original.PercentComplete) <= 98 ? (
               <a title={row.original.PercentComplete}>
                 <img
-                  width="25px"
+                
                   onMouseEnter={row.original.PercentComplete}
                   src={require("../../../Assets/ICON/Ellipse-haf.svg")}
                 />
@@ -629,7 +632,7 @@ const ProjectManagementMain = (props: any) => {
             ) : (
               <a title={row.original.PercentComplete}>
                 <img
-                  width="25px"
+                
                   onMouseEnter={row.original.PercentComplete}
                   src={require("../../../Assets/ICON/completed.svg")}
                 />
@@ -682,7 +685,7 @@ const ProjectManagementMain = (props: any) => {
       columns,
       data,
       defaultColumn: { Filter: DefaultColumnFilter },
-      initialState: { pageIndex: 0, pageSize: 10 },
+      initialState: { pageIndex: 0, pageSize: 100000 },
     },
     useFilters,
     useSortBy,
@@ -1359,6 +1362,15 @@ const ProjectManagementMain = (props: any) => {
               </div>
             </article>
           </div>
+          {/* <div>
+            <span>
+            <CommentCard  Context={props.Context}   siteUrl={props.siteUrl} listName={"Master Tasks"} itemID={QueryId}  />
+            </span>
+            <span>
+            <SmartInformation  listName={"Master Tasks"} Context={props.Context.pageContext.web} siteUrl={props.siteUrl}  Id={QueryId}    />
+            </span>
+          </div> */}
+          
         </div>
       </div>
 

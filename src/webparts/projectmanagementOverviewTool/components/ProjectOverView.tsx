@@ -126,7 +126,7 @@ export default function ProjectOverview() {
 
                 Cell: ({ row }: any) => (
                     <span>
-                        <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditComponentPopup(row?.original)}></img>
+                      <img src={require('../../../Assets/ICON/edit_page.svg')}  width="25"  onClick={(e) => EditComponentPopup(row?.original)}></img>
                     </span>
                 ),
             },
