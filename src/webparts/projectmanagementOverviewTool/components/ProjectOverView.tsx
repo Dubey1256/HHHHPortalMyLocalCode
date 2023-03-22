@@ -8,6 +8,7 @@ import {
     useExpanded,
     usePagination,
     HeaderGroup,
+    
 } from 'react-table';
 import { Filter, DefaultColumnFilter } from './filters';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
@@ -80,16 +81,19 @@ export default function ProjectOverview() {
                 internalHeader: 'Percent Complete',
                 accessor: 'PercentComplete',
                 showSortIcon:true,
+                size: 100,
             },
             {
                 internalHeader: 'Priority',
                 accessor: 'Priority_x0020_Rank',
                 showSortIcon:true,
+                size: 100,
             },
             {
                 internalHeader: 'Team Members',
                 accessor: 'TeamMembersSearch',
                 showSortIcon:true,
+                size: 100,
                 Cell: ({ row }: any) => (
                     <span>
                        <ShowTaskTeamMembers props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers>
@@ -100,11 +104,13 @@ export default function ProjectOverview() {
                 internalHeader: 'Due Date',
                 showSortIcon:true,
                 accessor: 'DisplayDueDate',
+                size: 100,
             },
             {   internalHeader:'',
                 id: 'Id', // 'id' is required
                 isSorted:false,
                 showSortIcon:false,
+                size: 100,
                 Cell: ({ row }: any) => (
                     <span>
                       <img src={require('../../../Assets/ICON/edit_page.svg')}  width="25"  onClick={(e) => EditComponentPopup(row?.original)}></img>
@@ -181,6 +187,7 @@ export default function ProjectOverview() {
         //     }
             Alltask.map((items: any) => {
                 items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                
                 items.AssignedUser = []
                 items.TeamMembersSearch='';
                 if (items.AssignedTo != undefined) {
@@ -229,7 +236,11 @@ export default function ProjectOverview() {
                         {headerGroups.map((headerGroup: any) => (
                             <tr  {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map((column: any) => (
-                                    <th  {...column.getHeaderProps()}>
+                                    <th  {...column.getHeaderProps()} 
+                                    style={{
+                                        width:'100px'
+                                      }}
+                                    >
                                         <span class="Table-SortingIcon" style={{marginTop:'-6px'}} {...column.getSortByToggleProps()} >
                                             {column.render('Header')}
                                             {generateSortingIndicator(column)}
@@ -255,7 +266,7 @@ export default function ProjectOverview() {
                         })}
                     </tbody>
                 </Table>
-                <nav>
+                {/* <nav>
                     <Pagination>
                         <PaginationItem>
                             <PaginationLink onClick={() => previousPage()} disabled={!canPreviousPage}>
@@ -295,7 +306,7 @@ export default function ProjectOverview() {
                             </Input>
                         </Col>
                     </Pagination>
-                </nav>
+                </nav> */}
             </div>
                     </div>
                 </div>

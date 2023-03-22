@@ -4,61 +4,20 @@ import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
  import { Web } from 'sp-pnp-js';
-let count=0;
+
  let percentage=1;
  const EmailComponenet=( props:any)=>{
-  // const [taskdetails,setTaskDetails]=useState(null);
+ 
    const [taskpermission,settaskpermission]=useState(null);
-  //  const [show, setshow]=useState(true);
+
    useEffect(()=>{
     sendEmail(props.emailStatus);
    },[])
     console.log(props);
-  
-  // if( props?.items?.FeedBack!=null||props?.items?.FeedBack!=undefined){
-  //   let isShowLight=0;
-  //   let NotisShowLight=0
-  //   props.items.FeedBack.map((item:any)=>{
-  //     if(item.FeedBackDescriptions!=undefined){
-  //       item.FeedBackDescriptions.map((feedback:any)=>{
-  //         if(feedback.subtext!=undefined&&feedback.subtext.length>0){
-  //           feedback?.subtext.map((subtextitem:any)=>{
-  //             if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
-  //               // count=1
-  //               isShowLight=isShowLight+1;
-            
-  //             }
-              
-  //             else{
-  //               // count=0;
-  //               NotisShowLight=0;
-  //             }
-  //           })
-            
-  //         }
-  //         if(feedback.isShowLight!=""&&feedback.isShowLight!=undefined ){
-  //           // count=1
-  //           isShowLight=isShowLight+1;
-        
-  //         }
-          
-  //         else{
-  //           // count=0;
-  //           NotisShowLight=0;
-  //         }
-  //       })
-  //     }
-  //   })
-
-  //   if(isShowLight>NotisShowLight){
-  //     count=1;
-  //   }
-  // }
+ 
 
   const updateData=async( permission:any)=>{
-    settaskpermission(permission)
-    const web = new Web(props.items?.siteUrl );
-      const feedback:any=props.items?.FeedBack!=null?props.items.FeedBack:null;
+   const feedback:any=props.items?.FeedBack!=null?props.items.FeedBack:null;
       feedback?.map((items:any)=>{
        if( items.FeedBackDescriptions!=undefined&&items.FeedBackDescriptions.length>0){
         items.FeedBackDescriptions.map((feedback:any)=>{
@@ -84,15 +43,30 @@ let count=0;
        }
       })
       console.log(feedback);
-      let percentageComplete;
-      if(permission=="Approve"){
+  
+   };
+  
+ const sendEmail=async(send:any)=>{
+ 
+  if(send=="Approved"){
+   await updateData("Approve");
+  }
+  else if(send=="Rejected"){
+    await updateData("Reject");
+  }
+  let percentageComplete;
+      if(send=="Approve"|| send=="Approved"){
+        settaskpermission("Approve");
         percentageComplete=0.03;
         percentage=3;
       }
-      else{
+      if(send=="Reject"|| send=="Maybe"){
+        settaskpermission("Reject");
         percentageComplete=0.02;
         percentage=2;
       }
+      const feedback:any=props.items?.FeedBack!=null?props.items.FeedBack:null;
+         const web = new Web(props.items?.siteUrl );
       await web.lists.getByTitle(props.items.listName).items.getById(props.items.Id).update({
         PercentComplete: percentageComplete,
         FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
@@ -104,58 +78,9 @@ let count=0;
      .catch((err) => {
        console.log(err.message);
     });
-   };
-  
- const sendEmail=async(send:any)=>{
-  if( props?.items?.FeedBack!=null||props?.items?.FeedBack!=undefined){
-    let isShowLight=0;
-    let NotisShowLight=0
-    props.items.FeedBack.map((item:any)=>{
-      if(item.FeedBackDescriptions!=undefined){
-        item.FeedBackDescriptions.map((feedback:any)=>{
-          if(feedback.subtext!=undefined&&feedback.subtext.length>0){
-            feedback?.subtext.map((subtextitem:any)=>{
-              if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
-                // count=1
-                isShowLight=isShowLight+1;
-            
-              }
-              
-              else{
-                // count=0;
-                NotisShowLight=0;
-              }
-            })
-            
-          }
-          if(feedback.isShowLight!=""&&feedback.isShowLight!=undefined ){
-            // count=1
-            isShowLight=isShowLight+1;
-        
-          }
-          
-          else{
-            // count=0;
-            NotisShowLight=0;
-          }
-        })
-      }
-    })
-
-    if(isShowLight>NotisShowLight){
-      count=1;
-    }
-  }
-  
-  if(send=="Approved"){
-   await updateData("Approve");
-  }
-  else if(send=="Rejected"){
-    await updateData("Reject");
-  }
   
   console.log(props);
-  if(count==0){
+  
     let mention_To: any = [];
     mention_To.push(props?.items?.Author[0]?.Name.replace('{', '').replace('}', '').trim());
     console.log(mention_To);
@@ -169,13 +94,6 @@ let count=0;
   
      await SendEmailFinal(emailprops);
       }
-  }
-  else{
-    props?.approvalcallback(); 
-  }
-  
- 
- 
    }
    const BindHtmlBody=()=> {
     let body = document.getElementById('htmlMailBodyemail')
@@ -294,13 +212,13 @@ let count=0;
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Author"] != null && props.items["Author"].length > 0 && props.items["Author"][0].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Author"] != null && props.items["Author"].length > 0 && props.items["Author"][0].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                       </tr>
                       <tr>
