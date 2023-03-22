@@ -328,32 +328,8 @@ function TasksTable(props:any){
                
         
             };
-            // const onChangeHandler = (itrm: any) => {
-            //     setSelectedItem(itrm)
-            //     const list = [...checkedList];
-            //     var flag = true;
-            //     list.forEach((obj: any, index: any) => {
-            //         if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-            //             flag = false;
-            //             list.splice(index, 1);
-            //         }
-            //     })
-            //     if(itrm.SharewebTaskType?.Title == 'Task'){
-            //         setActivityDisable(false)
-            //     }
-            //     if (flag)
-            //         list.push(itrm);
-                
-            //     console.log(list);
-            //     setCheckedList(checkedList => ([...list]));
-            //     if(list.length ===0)
-            //     clearreacture();
-                
-            // };
-            const onChangeHandler2 = (itrm: any, child: any, e: any) => {
-                var Arrays: any = []
-        
-        
+            const onChangeHandler = (itrm: any,child: any, e: any) => {
+                setSelectedItem(itrm)
                 const { checked } = e.target;
                 if (checked == true) {
                     itrm.chekBox = true
@@ -369,7 +345,7 @@ function TasksTable(props:any){
                     if (itrm.SharewebTaskType != undefined) {
                         if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                             setActivityDisable(false)
-                            Arrays.push(itrm)
+                           // Arrays.push(itrm)
                             itrm['PortfolioId'] = child.Id;
                             MeetingItems.push(itrm)
                             setCount(count+2)
@@ -396,41 +372,116 @@ function TasksTable(props:any){
                     }
                     setCount(count+2)
                 }
-        // if(MeetingItems.length == 0){
-        //     clearreacture()
-        // }
-                // cons.let list = [...checkedList];
-                // var flag = true;
-                // list.forEach((obj: any, index: any) => {
-                //     if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-                //         flag = false;
-                //         list.splice(index, 1);
-                //     }
-                // })
-                // setCheckedList(checkedList => ([...list]));
-                // if(list.length ===0)
-                // clearreacture();
-                // if (flag)
-                //     list.push(itrm);
-                // maidataBackup.forEach((obj, index) => {
-                //     obj.isRestructureActive = false;
-                //     if (obj.childs != undefined && obj.childs.length > 0) {
-                //         obj.childs.forEach((sub: any, indexsub: any) => {
-                //             sub.isRestructureActive = false;
-                //             if (sub.childs != undefined && sub.childs.length > 0) {
-                //                 sub.childs.forEach((newsub: any, lastIndex: any) => {
-                //                     newsub.isRestructureActive = false;
+                var list:any=[]
+                if(checkedList.length>0){
+                     list = [...checkedList];
+                }
+               
+                var flag = true;
+                list?.forEach((obj: any, index: any) => {
+                    if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+                        flag = false;
+                        list.splice(index, 1);
+                    }
+                })
+                if(itrm.SharewebTaskType?.Title == 'Task'){
+                    setActivityDisable(false)
+                }
+                if (flag)
+                    list.push(itrm);
+                
+                console.log(list);
+                list?.forEach((items:any)=>{
+                    checkedList.push(items)
+                })
+                setCheckedList(checkedList)
+                //setCheckedList(checkedList => ([...list]));
+                if(list.length ===0)
+                clearreacture();
+              
+                
+                 };
+        //     const onChangeHandler2 = (itrm: any, child: any, e: any) => {
+        //         var Arrays: any = []
         
-                //                 })
-                //             }
         
-                //         })
-                //     }
+        //         const { checked } = e.target;
+        //         if (checked == true) {
+        //             itrm.chekBox = true
         
-                // })
-               // setData(data => ([...maidataBackup]));
-               // setCheckedList(checkedList => ([...list]));
-            };
+        //             if (itrm.SharewebTaskType == undefined) {
+        //                 setActivityDisable(false)
+        //                 itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+        //                 itrm['listName'] = 'Master Tasks';
+        //                 MeetingItems.push(itrm)
+        //                 //setMeetingItems(itrm);
+        
+        //             }
+        //             if (itrm.SharewebTaskType != undefined) {
+        //                 if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
+        //                     setActivityDisable(false)
+        //                     Arrays.push(itrm)
+        //                     itrm['PortfolioId'] = child.Id;
+        //                     MeetingItems.push(itrm)
+        //                     setCount(count+2)
+        //                 }
+        //                 if (itrm.SharewebTaskType.Title == 'Task') {
+        //                     setActivityDisable(true) 
+        //                     MeetingItems.push(itrm)
+                          
+        //                 }
+        //             }
+        //         }
+        //         if (checked == false) {
+        //             itrm.chekBox = false;
+        //             MeetingItems?.forEach((val: any, index: any) => {
+        //                 if (val.Id == itrm.Id) {
+        //                     MeetingItems.splice(index, 1)
+        //                 }
+        //             })
+        //             if (itrm.SharewebTaskType != undefined) {
+        //                 if (itrm.SharewebTaskType.Title == 'Task') {
+        //                     setActivityDisable(false)
+                          
+        //                 }
+        //             }
+        //             setCount(count+2)
+        //         }
+        // // if(MeetingItems.length == 0){
+        // //     clearreacture()
+        // // }
+        //         // cons.let list = [...checkedList];
+        //         // var flag = true;
+        //         // list.forEach((obj: any, index: any) => {
+        //         //     if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+        //         //         flag = false;
+        //         //         list.splice(index, 1);
+        //         //     }
+        //         // })
+        //         // setCheckedList(checkedList => ([...list]));
+        //         // if(list.length ===0)
+        //         // clearreacture();
+        //         // if (flag)
+        //         //     list.push(itrm);
+        //         // maidataBackup.forEach((obj, index) => {
+        //         //     obj.isRestructureActive = false;
+        //         //     if (obj.childs != undefined && obj.childs.length > 0) {
+        //         //         obj.childs.forEach((sub: any, indexsub: any) => {
+        //         //             sub.isRestructureActive = false;
+        //         //             if (sub.childs != undefined && sub.childs.length > 0) {
+        //         //                 sub.childs.forEach((newsub: any, lastIndex: any) => {
+        //         //                     newsub.isRestructureActive = false;
+        
+        //         //                 })
+        //         //             }
+        
+        //         //         })
+        //         //     }
+        
+        //         // })
+        //        // setData(data => ([...maidataBackup]));
+        //        // setCheckedList(checkedList => ([...list]));
+        //     };
             const EditItemTaskPopup = (item: any) => {
                 // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
                 setIsTask(true);
@@ -1191,7 +1242,7 @@ function TasksTable(props:any){
                                                                         <div className="d-flex">
                                                                         
                                                                    
-                                                                            <span className='pe-2'><input type="checkbox" checked={item.chekBox} onChange={(e) => onChangeHandler2(item,'Parent',e)} /></span>
+                                                                            <span className='pe-2'><input type="checkbox" checked={item.chekBox} onChange={(e) => onChangeHandler(item,'Parent',e)} /></span>
                                                                             
                                                                               <span>  <a className="hreflink" data-toggle="modal">
                                                                                     <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
@@ -1310,7 +1361,7 @@ function TasksTable(props:any){
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
                                                                                                  
-                                                                                                <span className='pe-2'><input type="checkbox"   checked={childitem.chekBox} onChange={(e) => onChangeHandler2(childitem,item,e)}  /></span>
+                                                                                                <span className='pe-2'><input type="checkbox"   checked={childitem.chekBox} onChange={(e) => onChangeHandler(childitem,item,e)}  /></span>
                                                                                                 <span>
                                                                                                     <a className="hreflink" data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
@@ -1432,7 +1483,7 @@ function TasksTable(props:any){
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
                                                                                                                     
-                                                                                                                        <span className='pe-2'><input type="checkbox" checked={childinew.chekBox} onChange={(e) => onChangeHandler2(childinew,item,e)}/></span>
+                                                                                                                        <span className='pe-2'><input type="checkbox" checked={childinew.chekBox} onChange={(e) => onChangeHandler(childinew,item,e)}/></span>
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
@@ -1558,7 +1609,7 @@ function TasksTable(props:any){
                                                                                                                                             </div>
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "6%" }}>
-                                                                                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler2(subchilditem,item,e)}/></span>
+                                                                                                                                            <span className='pe-2'><input type="checkbox" onChange={(e) => onChangeHandler(subchilditem,item,e)}/></span>
                                                                                                                                             <span>
                                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                                     <img className="icon-sites-img ml20" src={subchilditem.SiteIcon}></img>
