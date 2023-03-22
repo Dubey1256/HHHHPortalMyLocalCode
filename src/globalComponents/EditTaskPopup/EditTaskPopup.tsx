@@ -39,6 +39,7 @@ import {
 import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import EmailComponent from "../EmailComponents";
 // import SiteComposition from "../SiteComposition";
 
 var AllMetaData: any = []
@@ -55,7 +56,6 @@ let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
-var sendEmailStatusCount:any = false;
 var TaskApproverBackupArray: any = [];
 var TaskCreatorApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
@@ -63,6 +63,7 @@ var ReplaceImageData: any;
 var AllProjectBackupArray: any = [];
 var EditDataBackup: any;
 const EditTaskPopup = (Items: any) => {
+    const Context = Items.context;
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -128,8 +129,10 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverSearchKey, setApproverSearchKey] = React.useState('');
     const [ApproverSearchedData, setApproverSearchedData] = React.useState([]);
     const [ApproverSearchedDataForPopup, setApproverSearchedDataForPopup] = React.useState([]);
-
+    const [sendEmailStatus, setSendEmailStatus] = React.useState(false);
+    const [sendEmailComponentStatus, setSendEmailComponentStatus] = React.useState(false);
     const [AllEmployeeData, setAllEmployeeData] = React.useState([]);
+    const [ApprovalTaskStatus, setApprovalTaskStatus] = React.useState(false);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -764,7 +767,6 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         setDesignStatus(false);
                     }
-
                 }
                 if (item.ClientTime != null && item.ClientTime != undefined) {
                     let tempData: any = JSON.parse(item.ClientTime);
@@ -848,12 +850,16 @@ const EditTaskPopup = (Items: any) => {
                 //     }
                 // }
                 item.TaskId = globalCommon.getTaskId(item);
+                item.siteUrl = siteUrls;
+                item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
+                let TaskCreatorData: any =[];
                 if (item.Author != undefined && item.Author != null) {
                     taskUsers.map((userData: any) => {
                         if (item.Author.Id == userData?.AssingedToUserId) {
+                            TaskCreatorData.push(userData);
                             userData.Approver?.map((AData: any) => {
                                 // ApproverDataTemp.push(AData);
                                 TaskCreatorApproverBackupArray.push(AData);
@@ -892,6 +898,7 @@ const EditTaskPopup = (Items: any) => {
                         })
                     }
                 }
+                item.TaskCreatorData = TaskCreatorData;
                 if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
                     TaskApproverBackupArray.map((itemData: any) => {
                         currentUserBackupArray?.map((currentUser: any) => {
@@ -947,31 +954,31 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (item.FeedBack != null) {
                     let message = JSON.parse(item.FeedBack);
+                    item.FeedBackBackup = message;
                     updateFeedbackArray = message;
-                    let Count:any = 0;
+                    let Count: any = 0;
                     let feedbackArray = message[0]?.FeedBackDescriptions
                     if (feedbackArray != undefined && feedbackArray.length > 0) {
                         let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
                         item.CommentBoxText = CommentBoxText;
-                        feedbackArray.map((FeedBackData:any)=>{
-                            if(FeedBackData.isShowLight == "Approved" || FeedBackData.isShowLight == "Maybe" || FeedBackData.isShowLight == "Reject"){
+                        feedbackArray.map((FeedBackData: any) => {
+                            if (FeedBackData.isShowLight == "Approve" || FeedBackData.isShowLight == "Maybe" || FeedBackData.isShowLight == "Reject") {
                                 Count++;
-                            }if(feedbackArray.Subtext != undefined && feedbackArray.Subtext.length > 0){
-                                feedbackArray.Subtext.map((ChildItem:any)=>{
-                                    if(ChildItem.isShowLight == "Approved" || ChildItem.isShowLight == "Maybe" || ChildItem.isShowLight == "Reject"){
-                                        Count++;     
+                            } if (FeedBackData.Subtext != undefined && FeedBackData.Subtext.length > 0) {
+                                FeedBackData.Subtext.map((ChildItem: any) => {
+                                    if (ChildItem.isShowLight == "Approve" || ChildItem.isShowLight == "Maybe" || ChildItem.isShowLight == "Reject") {
+                                        Count++;
                                     }
                                 })
                             }
-
                         })
                     } else {
                         item.CommentBoxText = "<p></p>"
                     }
-                    if(Count >= 1){
-                        sendEmailStatusCount = true
-                    }else{
-                        sendEmailStatusCount = false
+                    if (Count >= 1) {
+                        setSendEmailStatus(true)
+                    } else {
+                        setSendEmailStatus(false)
                     }
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
@@ -1042,6 +1049,7 @@ const EditTaskPopup = (Items: any) => {
             SetAllProjectData(AllProjects);
             AllProjectBackupArray = AllProjects;
             console.log("All Project Data ======", AllProjects);
+            console.clear()
         } catch (error) {
             console.log("Error:", error.message)
         }
@@ -1580,7 +1588,11 @@ const EditTaskPopup = (Items: any) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
         }
-
+        if(sendEmailStatus){
+            setSendEmailComponentStatus(false)
+        }else{
+            setSendEmailComponentStatus(true)
+        }
         // else {
         //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
         //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
@@ -1857,6 +1869,11 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
             })
+            if(ApprovedStatusCount == 0){
+                setApprovalTaskStatus(false)
+            }else{
+                setApprovalTaskStatus(true)
+            }
         }
     }
 
@@ -2382,7 +2399,7 @@ const EditTaskPopup = (Items: any) => {
             columns,
             data,
             defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 10 }
+            initialState: { pageIndex: 0, pageSize: 10000 }
         },
         useFilters,
         useSortBy,
@@ -2481,6 +2498,12 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus(item.taskStatusComment);
             }
         })
+    }
+
+    // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
+
+    const SendEmailNotificationCallBack = () => {
+
     }
 
     // ************** this is custom header and custom Footers section functions for panel *************
@@ -2695,6 +2718,20 @@ const EditTaskPopup = (Items: any) => {
             </footer>
         )
     }
+
+    const customFooterForProjectManagement = () => {
+        return (
+            <footer className={ServicesTaskCheck ? "serviepannelgreena text-end me-4" : "text-end me-4"}>
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
+                    Save
+                </button>
+                <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
+                    Cancel
+                </button>
+            </footer>
+        )
+    }
+
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {/* ***************** this is status panel *********** */}
@@ -2755,7 +2792,7 @@ const EditTaskPopup = (Items: any) => {
                 onRenderFooter={onRenderCustomFooterMain}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
-                    {console.log("Email Send Staus Data ===============================================", sendEmailStatusCount)}
+                    {console.log("Email Send Status In Div ===========================", sendEmailStatus)}
                     <div className="modal-body">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
@@ -3620,6 +3657,7 @@ const EditTaskPopup = (Items: any) => {
                     </ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
                     {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} items={EditData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -4615,10 +4653,11 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={ProjectManagementPopup}
                 type={PanelType.custom}
                 customWidth="1100px"
+                onRenderFooter={customFooterForProjectManagement}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
-                    <div className="modal-body p-0 mt-2">
-                        <Table className="SortingTable" bordered hover {...getTableProps()}>
+                    <div className="modal-body wrapper p-0 mt-2">
+                        <Table className="SortingTable table table-hover" bordered hover {...getTableProps()}>
                             <thead>
                                 {headerGroups.map((headerGroup: any) => (
                                     <tr  {...headerGroup.getHeaderGroupProps()}>
@@ -4650,14 +4689,7 @@ const EditTaskPopup = (Items: any) => {
                             </tbody>
                         </Table>
                     </div>
-                    <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
-                            Save
-                        </button>
-                        <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
-                            Cancel
-                        </button>
-                    </footer>
+
                 </div>
             </Panel>
 
