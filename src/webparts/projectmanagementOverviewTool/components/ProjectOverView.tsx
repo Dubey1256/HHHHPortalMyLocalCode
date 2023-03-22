@@ -81,19 +81,19 @@ export default function ProjectOverview() {
                 internalHeader: 'Percent Complete',
                 accessor: 'PercentComplete',
                 showSortIcon:true,
-                size: 100,
+               
             },
             {
                 internalHeader: 'Priority',
                 accessor: 'Priority_x0020_Rank',
                 showSortIcon:true,
-                size: 100,
+               
             },
             {
                 internalHeader: 'Team Members',
                 accessor: 'TeamMembersSearch',
                 showSortIcon:true,
-                size: 100,
+               
                 Cell: ({ row }: any) => (
                     <span>
                        <ShowTaskTeamMembers props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers>
@@ -104,13 +104,13 @@ export default function ProjectOverview() {
                 internalHeader: 'Due Date',
                 showSortIcon:true,
                 accessor: 'DisplayDueDate',
-                size: 100,
+                
             },
             {   internalHeader:'',
                 id: 'Id', // 'id' is required
                 isSorted:false,
                 showSortIcon:false,
-                size: 100,
+                
                 Cell: ({ row }: any) => (
                     <span>
                       <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"  onClick={(e) => EditComponentPopup(row?.original)}></img>
@@ -237,9 +237,7 @@ export default function ProjectOverview() {
                             <tr  {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map((column: any) => (
                                     <th  {...column.getHeaderProps()} 
-                                    style={{
-                                        width:'100px'
-                                      }}
+                                   
                                     >
                                         <span class="Table-SortingIcon" style={{marginTop:'-6px'}} {...column.getSortByToggleProps()} >
                                             {column.render('Header')}
