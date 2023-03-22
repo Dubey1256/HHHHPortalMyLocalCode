@@ -716,10 +716,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             <div className='modal-body'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
-            <div className='modal-footer text-end'>
-              <button type="button" className="btn btn-primary" onClick={(e) => this.updateComment()} >Save</button>
-              <button type="button" className="btn btn-default ms-2" onClick={(e) => this.CloseModal(e)}>Cancel</button>
-            </div>
+            <footer className='text-end'>
+              <button type="button" className="btn btn-primary mt-2" onClick={(e) => this.updateComment()} >Save</button>
+              <button type="button" className="btn btn-default ms-2 mt-2 " onClick={(e) => this.CloseModal(e)}>Cancel</button>
+            </footer>
             </div>
           {/* </div> */}
 

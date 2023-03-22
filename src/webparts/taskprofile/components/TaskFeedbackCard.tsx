@@ -15,7 +15,7 @@ export interface ITaskFeedbackProps {
   feedback: any;
   index: 0;
   onPost: () => void;
-  approvalcallbacktask:()=>void;
+  approvalcallbacktask: () => any;
   CurrentUser: any;
   ApprovalStatus: boolean;
  
@@ -288,8 +288,9 @@ private changeTrafficLigth(index:any,item:any){
         emailComponentstatus:item
     });
     console.log(this.state.emailcomponentopen);
-    this.changepercentageStatus(item);
     this.props.onPost();
+    this.changepercentageStatus(item);
+   
   }
 }
 
@@ -310,8 +311,9 @@ this.setState({
     emailComponentstatus:status
 });
 console.log(this.state.emailcomponentopen)
-this.changepercentageStatus(status);
 this.props.onPost();
+this.changepercentageStatus(status);
+
 }
 }
 private approvalcallback(){

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Modal } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
-import TeamConfigurationCard from '../TeamConfiguration/TeamConfiguration';
+import TeamConfigurationCard from '../../webparts/EditPopupFiles/TeamConfigurationPortfolio';
 import { arraysEqual, Panel, PanelType } from 'office-ui-fabric-react';
 import { GlobalConstants } from '../LocalCommon';
 import * as globalCommon from '../globalCommon';

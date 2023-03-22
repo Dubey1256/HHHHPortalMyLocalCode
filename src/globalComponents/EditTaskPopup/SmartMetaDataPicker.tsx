@@ -262,7 +262,7 @@ const Picker = (item: any) => {
                 isBlocking={PopupSmartTaxanomy}
                 onRenderFooter={customFooter}
             >
-                <div id="SmartTaxonomyPopup">
+                <div id="SmartTaxonomyPopup" className={(item.props.Portfolio_x0020_Type!=undefined&&item.props.Portfolio_x0020_Type == "Service" )? "serviepannelgreena" : ""}>
                     <div className={isServiceTask? "modal-body serviepannelgreena":"modal-body"}>
                         {/* <table className="ms-dialogHeaderDescription">
                             <tbody>
