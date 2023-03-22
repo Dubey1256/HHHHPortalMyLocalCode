@@ -341,12 +341,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     };
 
     // console.log(tempTask);
-
+  
     this.setState({
       Result: tempTask,
 
 
     }, () => {
+      this. showhideapproval();
       this.getSmartTime();
       this.loadOtherDetailsForComponents(this.taskResult);
 
@@ -674,15 +675,69 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     })
     this.GetResult();
   }
-  private async approvalcallback(){
+  private showhideapproval(){
+      
+    if( this.state.Result.FeedBack!=null||this.state.Result.FeedBack!=undefined){
+      let isShowLight=0;
+      let NotisShowLight=0
+      this.state.Result.FeedBack.map((item:any)=>{
+        if(item.FeedBackDescriptions!=undefined){
+          item.FeedBackDescriptions.map((feedback:any)=>{
+            if(feedback!=null && feedback!=undefined){
+              if(feedback.Subtext!=undefined&&feedback.Subtext.length>0){
+                feedback?.Subtext.map((subtextitem:any)=>{
+                  if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
+                    // count=1
+                    isShowLight=isShowLight+1;
+                
+                  }
+                  
+                  
+                })
+                
+              }
 
+              if(isShowLight==0){
+                if(feedback.isShowLight!=""&&feedback.isShowLight!=undefined){
+                  // count=1
+                  isShowLight=isShowLight+1;
+              
+                }
+                
+               
+              }
+             
+              
+            }
+            
+          })
+        }
+      })
+  
+      if(isShowLight>NotisShowLight){
+         this.countemailbutton=1;
+      }
+    }
+  }
+  private async approvalcallback(){
+ 
     this.setState({
       sendMail: false,
       emailStatus:""
     })
-   await this.GetResult();
+    this.GetResult();
     
   }
+  private async approvalcallbackfeedback(){
+    this.showhideapproval();
+    this.setState({
+      sendMail: false,
+      emailStatus:""
+    })
+   
+     // this.GetResult();
+     
+   }
   // private CallBackSumSmartTime(item: any) {
 
   //   smartTime = item
@@ -941,50 +996,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.setState({
       smarttimefunction: true
     })
-
-    if( this.state.Result.FeedBack!=null||this.state.Result.FeedBack!=undefined){
-      let isShowLight=0;
-      let NotisShowLight=0
-      this.state.Result.FeedBack.map((item:any)=>{
-        if(item.FeedBackDescriptions!=undefined){
-          item.FeedBackDescriptions.map((feedback:any)=>{
-            if(feedback!=null && feedback!=undefined){
-              if(feedback.Subtext!=undefined&&feedback.Subtext.length>0){
-                feedback?.Subtext.map((subtextitem:any)=>{
-                  if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
-                    // count=1
-                    isShowLight=isShowLight+1;
-                
-                  }
-                  
-                  
-                })
-                
-              }
-
-              if(isShowLight==0){
-                if(feedback.isShowLight!=""&&feedback.isShowLight!=undefined){
-                  // count=1
-                  isShowLight=isShowLight+1;
-              
-                }
-                
-               
-              }
-             
-              
-            }
-            
-          })
-        }
-      })
-  
-      if(isShowLight>NotisShowLight){
-         this.countemailbutton=1;
-      }
-    }
-  
-   
+     
   }
  
 
@@ -1378,7 +1390,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                               return <TaskFeedbackCard feedback={fbData} index={i + 1}
                               onPost={() => { this.onPost() }}
-                              approvalcallbacktask={()=>{this.approvalcallback()}}
+                              approvalcallbacktask={()=>{this.approvalcallbackfeedback()}}
                               fullfeedback={this.state.Result["FeedBack"]}
                               CurrentUser={this.currentUser}
                               ApprovalStatus={this.state.ApprovalStatus}
@@ -1388,10 +1400,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                             >
                             </TaskFeedbackCard>
                              }
-                            
-                           
-                           
-                          })}
+                            })}
                         </div>
                       }
                     </div>

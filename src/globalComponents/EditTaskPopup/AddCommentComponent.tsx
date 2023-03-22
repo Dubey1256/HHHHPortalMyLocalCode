@@ -111,7 +111,7 @@ const AddCommentComponent = (FbData: any) => {
                                                     {commentDtl.AuthorName} - {commentDtl.Created}
                                                 </span>
                                                 <span>
-                                                    <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
+                                                    <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src={require('../../Assets/ICON/edit_page.svg')}  width="25"/></a>
                                                     <a className="ps-1" onClick={() => clearComment(true, index, 0)}><img src='/_layouts/images/delete.gif'></img></a>
                                                 </span>
                                             </div>
