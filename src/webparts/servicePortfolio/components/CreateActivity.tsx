@@ -35,7 +35,9 @@ const CreateActivity = (props: any) => {
         var AllItems = props.props
         SelectedTasks.push(AllItems)
 
-        portfolioId=AllItems.Services[0].Id
+        if(AllItems.Services != undefined && AllItems.Services.length>0){
+            portfolioId=AllItems.Services[0].Id
+           }
         console.log(props)
     }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
