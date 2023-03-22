@@ -3,20 +3,12 @@ import { useState, useEffect } from 'react';
 import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
-let PercentCompleted: any;
-let TaskStatus: any;
+import * as Moment from 'moment';
+
+
 const EmailComponent = (props: any) => {
   useEffect(() => {
-    let TaskStatus: any;
     sendEmail(props.emailStatus);
-    if (props.ApprovalTaskStatus) {
-      PercentCompleted = 3;
-      TaskStatus = "Approved"
-    } else {
-      PercentCompleted = 2;
-      TaskStatus = "Rejected"
-
-    }
   }, [])
   console.log(props);
   const sendEmail = async (send: any) => {
@@ -27,7 +19,7 @@ const EmailComponent = (props: any) => {
     if (mention_To.length > 0) {
       let EmailProps = {
         To: mention_To,
-        Subject: "[" + props.items.siteType + TaskStatus + "]" + props.items.Title,
+        Subject: "[ " + props.items.siteType +" - " + (props.ApprovalTaskStatus?"Approved":"Rejected") + " ]" + props.items.Title,
         Body: props.items.Title
       }
       console.log(EmailProps);
@@ -67,8 +59,8 @@ const EmailComponent = (props: any) => {
 
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         <div style={{ marginTop: "2pt" }}>Hi,</div>
-        {TaskStatus != undefined && TaskStatus == "Approved" && <div style={{ marginTop: "2pt" }}>Your task has been {TaskStatus} by {props.CurrentUser[0].Title}, team will process it further. Refer {TaskStatus} Comments.</div>}
-        {TaskStatus != undefined && TaskStatus == "Rejected" && <div style={{ marginTop: "2pt" }}>Your task has been {TaskStatus} by {props.CurrentUser[0].Title}. Refer {TaskStatus} Comments.</div>}
+        {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>}
+        {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == false && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props.CurrentUser[0].Title}. Refer Reject Comments.</div>}
         <div style={{ marginTop: "11.25pt" }}>
           <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props.items.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u></div>
         <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
@@ -111,19 +103,19 @@ const EmailComponent = (props: any) => {
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["StartDate"]).format("DD-MMMM-YYYY")}</span><u></u><u></u></p>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["CompletedDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["CompletedDate"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["DueDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["DueDate"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                     </tr>
                     <tr>
@@ -143,13 +135,13 @@ const EmailComponent = (props: any) => {
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["Created"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Author"] != null && props.items["Author"].length > 0 && props.items["Author"][0].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Author"] != null && props.items["Author"] != undefined && props.items["Author"].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                     </tr>
                     <tr>
@@ -163,13 +155,13 @@ const EmailComponent = (props: any) => {
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Status"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? "For Approval" : "Follow up"}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{PercentCompleted}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? 3 : 2}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                     </tr>
                     <tr>
@@ -178,8 +170,8 @@ const EmailComponent = (props: any) => {
                       </td>
                       <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
-                          {props.items["component_url"] != null &&
-                            <a href={props.items["component_url"].Url} target="_blank">{props.items["component_url"].Url}</a>
+                          {props.items["component_x0020_link"] != null &&
+                            <a href={props.items["component_x0020_link"].Url} target="_blank">{props.items["component_x0020_link"].Url}</a>
                           }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                       <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
@@ -300,4 +292,4 @@ export default EmailComponent;
 //    allItems will be an object form .
 //currentUser will be an Array.
 // context will be an object
-//  approvalcallback will be a Function .
+//  approvalcallback will be a Function .  

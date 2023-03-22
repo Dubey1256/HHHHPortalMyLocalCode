@@ -62,7 +62,6 @@ var ReplaceImageIndex: any;
 var ReplaceImageData: any;
 var AllProjectBackupArray: any = [];
 var EditDataBackup: any;
-
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const [TaskImages, setTaskImages] = React.useState([]);
@@ -132,6 +131,7 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverSearchedDataForPopup, setApproverSearchedDataForPopup] = React.useState([]);
     const [sendEmailStatus, setSendEmailStatus] = React.useState(false);
     const [sendEmailComponentStatus, setSendEmailComponentStatus] = React.useState(false);
+    const [sendEmailGlobalCount, setSendEmailGlobalCount] = React.useState(0);
     const [AllEmployeeData, setAllEmployeeData] = React.useState([]);
     const [ApprovalTaskStatus, setApprovalTaskStatus] = React.useState(false);
     const StatusArray = [
@@ -856,7 +856,7 @@ const EditTaskPopup = (Items: any) => {
                 let AssignedUsers: any = [];
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
-                let TaskCreatorData: any =[];
+                let TaskCreatorData: any = [];
                 if (item.Author != undefined && item.Author != null) {
                     taskUsers.map((userData: any) => {
                         if (item.Author.Id == userData?.AssingedToUserId) {
@@ -1050,7 +1050,6 @@ const EditTaskPopup = (Items: any) => {
             SetAllProjectData(AllProjects);
             AllProjectBackupArray = AllProjects;
             console.log("All Project Data ======", AllProjects);
-            console.clear()
         } catch (error) {
             console.log("Error:", error.message)
         }
@@ -1589,11 +1588,14 @@ const EditTaskPopup = (Items: any) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
         }
-        if(sendEmailStatus){
-            setSendEmailComponentStatus(false)
-        }else{
-            setSendEmailComponentStatus(true)
+        if(sendEmailGlobalCount > 0){
+            if (sendEmailStatus) {
+                setSendEmailComponentStatus(false)
+            } else {
+                setSendEmailComponentStatus(true)
+            }
         }
+        
         // else {
         //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
         //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
@@ -1601,6 +1603,7 @@ const EditTaskPopup = (Items: any) => {
         //         })
         //     }
         // }
+
         try {
             let web = new Web(siteUrls);
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({
@@ -1806,6 +1809,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
         let ApprovedStatusCount: any = 0;
+        let ApprovedGlobalCount: any = 0;
         let Status: any;
         if (EditDataBackup.PercentComplete != undefined) {
             Status = EditDataBackup.PercentComplete;
@@ -1816,6 +1820,8 @@ const EditTaskPopup = (Items: any) => {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Approve") {
                     ApprovedStatusCount++;
+                    ApprovedGlobalCount++;
+                    setSendEmailGlobalCount( sendEmailGlobalCount+1 )
                     if (Status <= 3) {
                         setInputFieldDisable(false)
                         setStatusOnChangeSmartLight(3);
@@ -1833,6 +1839,8 @@ const EditTaskPopup = (Items: any) => {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Approve") {
                             ApprovedStatusCount++;
+                            ApprovedGlobalCount++;
+                            setSendEmailGlobalCount( sendEmailGlobalCount+1)
                             if (Status <= 3) {
                                 setInputFieldDisable(false)
                                 setStatusOnChangeSmartLight(3);
@@ -1850,6 +1858,8 @@ const EditTaskPopup = (Items: any) => {
             })
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Reject" || item.isShowLight == "Maybe") {
+                    ApprovedGlobalCount++;
+                    setSendEmailGlobalCount(sendEmailGlobalCount+1)
                     if (ApprovedStatusCount == 0) {
                         if (Status >= 2) {
                             setInputFieldDisable(true)
@@ -1860,6 +1870,8 @@ const EditTaskPopup = (Items: any) => {
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Reject" || subItem.isShowLight == "Maybe") {
+                            ApprovedGlobalCount++;
+                            setSendEmailGlobalCount( sendEmailGlobalCount+1)
                             if (ApprovedStatusCount == 0) {
                                 if (Status <= 2) {
                                     setInputFieldDisable(true)
@@ -1870,9 +1882,9 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
             })
-            if(ApprovedStatusCount == 0){
+            if (ApprovedStatusCount == 0) {
                 setApprovalTaskStatus(false)
-            }else{
+            } else {
                 setApprovalTaskStatus(true)
             }
         }
@@ -3075,7 +3087,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     value={ApproverSearchKey}
                                                                     onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
                                                                 />
-                                                                <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Project Items Popup">
+                                                                <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
 
                                                                 </span>
@@ -3276,9 +3288,12 @@ const EditTaskPopup = (Items: any) => {
                                                             value={ProjectSearchKey}
                                                             onChange={(e) => autoSuggestionsForProject(e)}
                                                         />
-                                                        <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+
+                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ? <span className="input-group-text" onClick={(e) => alert("Please select anyone from Portfolio/Services")}> <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> </span> : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                                                        </span>
+                                                        </span>}
+
+
                                                     </div>
                                                     {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
@@ -4273,10 +4288,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         value={ProjectSearchKey}
                                                                         onChange={(e) => autoSuggestionsForProject(e)}
                                                                     />
-                                                                    <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup">
+                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ? <span className="input-group-text" onClick={(e) => alert("Please select anyone from Portfolio/Services")}> <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg></span> : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-
-                                                                    </span>
+                                                                    </span>}
                                                                 </div>
                                                                 {SearchedProjectData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
