@@ -1,0 +1,346 @@
+import { Panel } from 'office-ui-fabric-react'
+import { Web } from "sp-pnp-js";
+import React from 'react'
+import * as Moment from 'moment';
+import * as globalCommon from "../../../globalComponents/globalCommon";
+var ChangeTaskUserStatus: any = true;
+let ApprovalStatusGlobal: any = false;
+let taskUsers: any;
+let TaskCreatorApproverBackupArray: any;
+let TaskApproverBackupArray: any;
+const inlineEditingcolumns = (props: any) => {
+    const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
+    const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
+    const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
+    const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
+    const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
+    const [ApproverData, setApproverData] = React.useState([]);
+    const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
+    const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
+        {
+            Title: '', PercentCompleteStatus: '', ComponentLink: ''
+        }
+    )
+    const [taskStatus, setTaskStatus] = React.useState('');
+    const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
+    const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
+    const StatusArray = [
+        { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
+        { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
+        { value: 3, status: "03% Approved", taskStatusComment: "Approved" },
+        { value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged" },
+        { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+        { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+        { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+        { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
+        { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
+        { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
+        { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
+        { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
+    ]
+    React.useEffect( () => {
+        if (props?.item?.Services?.length > 0) {
+            setServicesTaskCheck(true)
+        } else {
+            setServicesTaskCheck(false)
+        }
+taskUsers=  globalCommon.loadTaskUsers()
+    }, [])
+    const openTaskStatusUpdatePopup = () => {
+        let statusValue: any
+        let AssignedUsers: any = [];
+        let TeamMemberTemp: any = [];
+        TaskApproverBackupArray = props?.item?.Approver;
+        if (props?.item?.Author != undefined && props?.item?.Author != null) {
+            taskUsers?.map((userData: any) => {
+                if (props?.item?.Author.Id == userData?.AssingedToUserId) {
+                    userData.Approver?.map((AData: any) => {
+                        // ApproverDataTemp.push(AData);
+                        TaskCreatorApproverBackupArray.push(AData);
+                    })
+                }
+            })
+            if ((statusValue <= 2) && ApprovalStatusGlobal) {
+                if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                    taskUsers?.map((userData1: any) => {
+                        TaskApproverBackupArray.map((itemData: any) => {
+                            if (itemData.Id == userData1?.AssingedToUserId) {
+                                AssignedUsers.push(userData1);
+                                TeamMemberTemp.push(userData1);
+                            }
+                        })
+                    })
+                } else {
+                    if (TaskCreatorApproverBackupArray?.length > 0) {
+                        taskUsers?.map((userData1: any) => {
+                            TaskCreatorApproverBackupArray?.map((itemData: any) => {
+                                if (itemData.Id == userData1?.AssingedToUserId) {
+                                    AssignedUsers.push(userData1);
+                                    TeamMemberTemp.push(userData1);
+                                }
+                            })
+                        })
+                    }
+                }
+            } else {
+                taskUsers?.map((userData: any) => {
+                    props?.item?.AssignedTo?.map((AssignedUser: any) => {
+                        if (userData?.AssingedToUserId == AssignedUser.Id) {
+                            AssignedUsers.push(userData);
+                        }
+                    })
+                })
+            }
+        }
+        if (props?.item.PercentComplete != undefined) {
+            statusValue = props?.item.PercentComplete;
+            props.item.PercentComplete = statusValue;
+            if (statusValue < 70 && statusValue > 20) {
+                setTaskStatus("In Progress");
+                setPercentCompleteStatus(`${statusValue}% In Progress`);
+                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
+            } else {
+                StatusArray?.map((item: any) => {
+                    if (statusValue == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+            }
+
+            if (statusValue == 0) {
+                setTaskStatus('Not Started');
+                setPercentCompleteStatus('Not Started');
+                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
+            }
+
+            if (statusValue <= 3 && ApprovalStatusGlobal) {
+                ChangeTaskUserStatus = false;
+            } else {
+                ChangeTaskUserStatus = true;
+            }
+        }
+        setTaskStatusPopup(true);
+    }
+    const UpdateTaskStatus = async () => {
+        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (props?.item?.PercentComplete ? props?.item?.PercentComplete : null) })
+        StatusArray?.map((array: any) => {
+            if (props?.item?.PercentComplete == array.value) {
+                setPercentCompleteStatus(array.status);
+                setTaskStatus(array.taskStatusComment);
+            }
+        })
+        setPercentCompleteCheck(false);
+        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        await web.lists.getById('ec34b38f-0669-480a-910c-f84e92e58adf').items.getById(props?.item?.Id).update({
+            PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus)) : (props?.item?.PercentComplete ? (props?.item?.PercentComplete) : null),
+
+        })
+            .then((res: any) => {
+                console.log(res);
+                setTaskStatusPopup(false);
+            })
+
+    }
+    const setWorkingMember = (statusId: any) => {
+        taskUsers?.map((dataTask: any) => {
+            if (dataTask.AssingedToUserId == statusId) {
+                let tempArray: any = [];
+                tempArray.push(dataTask)
+                props.item.TaskAssignedUsers = tempArray;
+                let updateUserArray: any = [];
+                updateUserArray.push(tempArray[0].AssingedToUser)
+                setTaskAssignedTo(updateUserArray);
+            }
+        })
+    }
+    const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
+        let tempArray: any = [];
+        filterArray.map((TeamItems: any) => {
+            taskUsers?.map((TaskUserData: any) => {
+                if (TeamItems.Id == TaskUserData.AssingedToUserId) {
+                    if (TaskUserData.TimeCategory == filterType) {
+                        tempArray.push(TaskUserData)
+                        props.item.TaskAssignedUsers = tempArray;
+                        let updateUserArray1: any = [];
+                        updateUserArray1.push(tempArray[0].AssingedToUser)
+                        setTaskAssignedTo(updateUserArray1);
+                    }
+                    else {
+                        if (tempArray?.length == 0) {
+                            setWorkingMember(143);
+                        }
+                    }
+                }
+            })
+        })
+    }
+    const PercentCompleted = (StatusData: any) => {
+
+        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
+        setPercentCompleteStatus(StatusData.status);
+        setTaskStatus(StatusData.taskStatusComment);
+        setPercentCompleteCheck(false);
+        if (StatusData.value == 1) {
+            let tempArray: any = [];
+            if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                TaskApproverBackupArray.map((dataItem: any) => {
+                    tempArray.push(dataItem);
+                })
+            } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                    tempArray.push(dataItem);
+                })
+            }
+            setTaskAssignedTo(tempArray);
+            setTaskTeamMembers(tempArray);
+            setApproverData(tempArray);
+        }
+        if (StatusData.value == 2) {
+            setInputFieldDisable(true)
+        }
+        if (StatusData.value != 2) {
+            setInputFieldDisable(false)
+        }
+
+        if (StatusData.value == 80) {
+            // let tempArray: any = [];
+            if (props?.item?.Team_x0020_Members != undefined && props?.item?.Team_x0020_Members?.length > 0) {
+                setWorkingMemberFromTeam(props?.item?.Team_x0020_Members, "QA", 143);
+            } else {
+                setWorkingMember(143);
+            }
+            props.item.IsTodaysTask = false;
+            props.item.CompletedDate = undefined;
+        }
+
+        if (StatusData.value == 5) {
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+
+            // } else {
+            //     setWorkingMember(156);
+            // }
+            props.item.CompletedDate = undefined;
+            props.item.IsTodaysTask = false;
+        }
+        if (StatusData.value == 10) {
+            props.item.CompletedDate = undefined;
+            if (props?.item?.StartDate == undefined) {
+                props.item.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+            }
+            props.item.IsTodaysTask = true;
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else {
+            //     setWorkingMember(156);
+            // }
+        }
+        // if (StatusData.value == 70) {
+        // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+        //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+        // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+        //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+        // } else {
+        //     setWorkingMember(156);
+        // }
+        // }
+
+        if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
+            setWorkingMember(9);
+            StatusArray?.map((item: any) => {
+                if (StatusData.value == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+        }
+        if (StatusData.value == 90) {
+            if (props?.item?.siteType == 'Offshore Tasks') {
+                setWorkingMember(36);
+            } 
+            // else if (DesignStatus) {
+            //     setWorkingMember(172);
+            // }
+             else {
+                setWorkingMember(42);
+            }
+            props.item.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
+            StatusArray?.map((item: any) => {
+                if (StatusData.value == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+        }
+    }
+    const closeTaskStatusUpdatePopup = () => {
+        setTaskStatusPopup(false)
+
+    }
+    return (
+        <>
+            {
+                props?.columnName == 'Priority' ?
+                    <>
+                        <span style={{ display: "block", width: "100%" }} >
+                            &nbsp;
+                            {props?.item?.Priority_x0020_Rank}
+                            {props?.item?.Categories?.includes('Immediate') ?
+                                <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a> : " "}
+                        </span>
+                    </>
+                    : ''
+            }
+            {
+                props?.columnName == 'PercentComplete' ?
+                    <>
+                        <span style={{ display: "block", width: "100%" }} onClick={() => openTaskStatusUpdatePopup()}>
+                            {props?.item?.PercentComplete}
+                            {/* {props?.item?.Categories?.includes('Immediate') ?
+        <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a> : " "} */}
+                        </span>
+                    </>
+                    : ''
+            }
+            <Panel
+                headerText={`Update Task Status`}
+                isOpen={TaskStatusPopup}
+                onDismiss={closeTaskStatusUpdatePopup}
+                isBlocking={TaskStatusPopup}
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                    <div className="modal-body">
+                        <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
+                            <tbody>
+                                {StatusArray?.map((item: any, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>
+                                                <div className="form-check l-radio">
+                                                    <input className="form-check-input"
+                                                        type="radio" checked={(PercentCompleteCheck ? props?.item?.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
+                                                        onClick={() => PercentCompleted(item)} />
+                                                    <label className="form-check-label mx-2">{item.status}</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                    <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
+                            OK
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+        </>
+    )
+}
+export default inlineEditingcolumns

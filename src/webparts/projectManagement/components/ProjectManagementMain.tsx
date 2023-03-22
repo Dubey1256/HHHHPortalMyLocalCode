@@ -334,7 +334,7 @@ const ProjectManagementMain = (props: any) => {
             }
           });
         },
-        function (error) {}
+        function (error) { }
       );
   };
   const tagAndCreateCallBack = React.useCallback(() => {
@@ -407,8 +407,8 @@ const ProjectManagementMain = (props: any) => {
           }
           items.componentString =
             items.Component != undefined &&
-            items.Component != undefined &&
-            items.Component.length > 0
+              items.Component != undefined &&
+              items.Component.length > 0
               ? getComponentasString(items.Component)
               : "";
           items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
@@ -585,10 +585,10 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             {
-              row?.original?.Categories?.includes('Immediate') ? 
-              <a style={{marginRight:'5px'}} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")}  /> </a>
-               : 
-              " "
+              row?.original?.Categories?.includes('Immediate') ?
+                <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a>
+                :
+                " "
             }
             {row?.original?.Priority_x0020_Rank}
           </span>
@@ -609,7 +609,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             {parseInt(row.original.PercentComplete) <= 5 &&
-            parseInt(row.original.PercentComplete) >= 0 ? (
+              parseInt(row.original.PercentComplete) >= 0 ? (
               <a title={row.original.PercentComplete}>
                 <img
                   width="25px"
@@ -674,14 +674,7 @@ const ProjectManagementMain = (props: any) => {
     headerGroups,
     page,
     prepareRow,
-    visibleColumns,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
     gotoPage,
-    nextPage,
-    previousPage,
     setPageSize,
     state: { pageIndex, pageSize },
   }: any = useTable(
@@ -986,11 +979,11 @@ const ProjectManagementMain = (props: any) => {
                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                           />
                           <>
-                            
+
                             <a>{Masterdata?.Title} </a>
                           </>
                         </h2>
-                        <span onClick={()=>EditComponentPopup(Masterdata)}
+                        <span onClick={() => EditComponentPopup(Masterdata)}
                           className="mx-2 svg__iconbox svg__icon--edit"
                           title="Edit Project"
                         ></span>
@@ -1032,8 +1025,8 @@ const ProjectManagementMain = (props: any) => {
                                   <a>
                                     {Masterdata.DueDate != null
                                       ? Moment(Masterdata.Created).format(
-                                          "DD/MM/YYYY"
-                                        )
+                                        "DD/MM/YYYY"
+                                      )
                                       : ""}
                                   </a>
                                 </span>
