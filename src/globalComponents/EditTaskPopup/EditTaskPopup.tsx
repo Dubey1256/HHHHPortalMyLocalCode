@@ -62,6 +62,7 @@ var ReplaceImageIndex: any;
 var ReplaceImageData: any;
 var AllProjectBackupArray: any = [];
 var EditDataBackup: any;
+
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const [TaskImages, setTaskImages] = React.useState([]);
