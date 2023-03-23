@@ -10,10 +10,12 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
+let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
+    const [TaskPriorityPopup, setTaskPriorityPopup] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
@@ -21,12 +23,14 @@ const inlineEditingcolumns = (props: any) => {
     const [ApprovalStatus, setApprovalStatus] = React.useState(false);
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
+    const [priorityRank, setpriorityRank] = React.useState([])
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
     const [taskStatus, setTaskStatus] = React.useState('');
+    // const [taskPriority, setTaskPriority] = React.useState('');
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
     const StatusArray = [
@@ -49,19 +53,53 @@ const inlineEditingcolumns = (props: any) => {
         } else {
             setServicesTaskCheck(false)
         }
+
         loadTaskUsers();
+        GetSmartMetadata();
     }, [])
-    const getPercentCompleteTitle=(percent:any)=>{
-        let result='';
-        StatusArray?.map((status:any)=>{
-            if(status?.value==percent){
-                result=status?.status;
+    const getPercentCompleteTitle = (percent: any) => {
+        let result = '';
+        StatusArray?.map((status: any) => {
+            if (status?.value == percent) {
+                result = status?.status;
             }
         })
-        if(result.length<=0){
-            result=percent+"% Completed"
+        if (result.length <= 0) {
+            result = percent + "% Completed"
         }
         return result
+    }
+    const GetSmartMetadata = async () => {
+        var TaskTypes: any = []
+        var Priority: any = []
+        var Timing: any = []
+        var Task: any = []
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let MetaData = [];
+        MetaData = await web.lists
+            .getByTitle('SmartMetadata')
+            .items
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .top(4999)
+            .expand('Author,Editor')
+            .get();
+        AllMetadata = MetaData;
+        Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
+        setpriorityRank(Priority)
+
+
+    }
+    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        var Items: any = [];
+        metadataItems?.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
+
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
     }
     const loadTaskUsers = async () => {
         taskUsers = await globalCommon.loadTaskUsers()
@@ -175,6 +213,25 @@ const inlineEditingcolumns = (props: any) => {
                 setTaskStatus(array.taskStatusComment);
             }
         })
+        let priority: any;
+        let priorityRank = 4;
+        if (props?.item?.Priority_x0020_Rank === undefined || parseInt(props?.item?.Priority_x0020_Rank) <= 0) {
+            priorityRank = 4;
+            priority = '(2) Normal';
+        }
+        else {
+            priorityRank = parseInt(props?.item?.Priority_x0020_Rank);
+            if (priorityRank >= 8 && priorityRank <= 10) {
+                priority = '(1) High';
+            }
+            if (priorityRank >= 4 && priorityRank <= 7) {
+                priority = '(2) Normal';
+            }
+            if (priorityRank >= 1 && priorityRank <= 3) {
+                priority = '(3) Low';
+            }
+        }
+
         setPercentCompleteCheck(false);
         let web = new Web(props?.item?.siteUrl);
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
@@ -182,12 +239,15 @@ const inlineEditingcolumns = (props: any) => {
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
-            ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] }
+            ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
+            "Priority": priority,
+            "Priority_x0020_Rank": priorityRank
         })
             .then((res: any) => {
                 console.log(res);
                 props?.callBack();
                 setTaskStatusPopup(false);
+                setTaskPriorityPopup(false);
             })
 
     }
@@ -349,14 +409,18 @@ const inlineEditingcolumns = (props: any) => {
     }
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
-
+    }
+    const openPriotiyEdit = () => {
+        if (props?.type != undefined && props?.type == 'Task') {
+            setTaskPriorityPopup(true)
+        }
     }
     return (
         <>
             {
                 props?.columnName == 'Priority' ?
                     <>
-                        <span style={{ display: "block", width: "100%" }} >
+                        <span style={{ display: "block", width: "100%" }} onClick={() => openPriotiyEdit()} >
                             &nbsp;
                             {props?.item?.Priority_x0020_Rank}
                             {
@@ -431,8 +495,9 @@ const inlineEditingcolumns = (props: any) => {
                     </>
                     : ''
             }
+            {/* Pannel To select Status */}
             <Panel
-                headerText={`Update Task Status`}
+                headerText={`Update Status`}
                 isOpen={TaskStatusPopup}
                 onDismiss={closeTaskStatusUpdatePopup}
                 isBlocking={TaskStatusPopup}
@@ -450,6 +515,41 @@ const inlineEditingcolumns = (props: any) => {
                                                         type="radio" checked={(PercentCompleteCheck ? props?.item?.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
                                                         onClick={() => PercentCompleted(item)} />
                                                     <label className="form-check-label mx-2">{item.status}</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                    <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
+                            OK
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+            {/* Pannel To select Priority */}
+            <Panel
+                headerText={`Update Task Priority`}
+                isOpen={TaskPriorityPopup}
+                onDismiss={() => setTaskPriorityPopup(false)}
+                isBlocking={TaskStatusPopup}
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                    <div className="modal-body">
+                        <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
+                            <tbody>
+                                {priorityRank?.map((item: any, index) => {
+                                    return (
+                                        <tr key={index}>
+                                            <td>
+                                                <div className="form-check l-radio">
+                                                    <input className="form-check-input"
+                                                        type="radio" checked={props?.item?.Priority_x0020_Rank == item.Title}
+                                                        onClick={() => props.item.Priority_x0020_Rank = item.Title} />
+                                                    <label className="form-check-label mx-2">{item.Title}</label>
                                                 </div>
                                             </td>
                                         </tr>
