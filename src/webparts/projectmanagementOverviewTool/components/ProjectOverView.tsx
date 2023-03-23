@@ -86,7 +86,7 @@ export default function ProjectOverview() {
                 width: "75px",
                 Cell: ({ row }: any) => (
                     <span>
-                      <InlineEditingcolumns columnName='PercentComplete' item={row.original}/>
+                        <InlineEditingcolumns callBack={CallBack} columnName='PercentComplete' item={row.original} />
                     </span>
                 ),
             },
@@ -97,7 +97,7 @@ export default function ProjectOverview() {
                 width: "75px",
                 Cell: ({ row }: any) => (
                     <span>
-                      <InlineEditingcolumns columnName='Priority' item={row.original}/>
+                        <InlineEditingcolumns callBack={CallBack} columnName='Priority' item={row.original} />
                     </span>
                 ),
             },
@@ -108,7 +108,7 @@ export default function ProjectOverview() {
                 width: "180px",
                 Cell: ({ row }: any) => (
                     <span>
-                        <ShowTaskTeamMembers props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers>
+                        <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers>
                     </span>
                 )
             },
@@ -126,7 +126,7 @@ export default function ProjectOverview() {
 
                 Cell: ({ row }: any) => (
                     <span>
-                      <img src={require('../../../Assets/ICON/edit_page.svg')}  width="25"  onClick={(e) => EditComponentPopup(row?.original)}></img>
+                        <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(row?.original)}></img>
                     </span>
                 ),
             },
@@ -157,6 +157,14 @@ export default function ProjectOverview() {
         useExpanded,
         usePagination
     );
+    //Inline Editing Callback
+    const inlineEditingCall = (item:any) => {
+        page?.map((tasks:any)=>{
+            if(tasks.Id==item.Id){
+                tasks=item;
+            }
+        })
+    }
     const generateSortingIndicator = (column: any) => {
         return column.isSorted ? (column.isSortedDesc ? <FaSortDown /> : <FaSortUp />) : (column.showSortIcon ? <FaSort /> : '');
     };
@@ -184,7 +192,8 @@ export default function ProjectOverview() {
         //     }
         Alltask.map((items: any) => {
             items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-
+            items.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+            items.listId='EC34B38F-0669-480A-910C-F84E92E58ADF';
             items.AssignedUser = []
             items.TeamMembersSearch = '';
             if (items.AssignedTo != undefined) {

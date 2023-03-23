@@ -5,9 +5,13 @@ import * as Moment from 'moment';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
-let taskUsers: any;
-let TaskCreatorApproverBackupArray: any;
-let TaskApproverBackupArray: any;
+let taskUsers: any = [];
+var AssignedToIds: any = [];
+var ResponsibleTeamIds: any = [];
+var TeamMemberIds: any = [];
+var ApproverIds: any = [];
+let TaskCreatorApproverBackupArray: any = [];
+let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
@@ -39,19 +43,38 @@ const inlineEditingcolumns = (props: any) => {
         { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
-    React.useEffect( () => {
+    React.useEffect(() => {
         if (props?.item?.Services?.length > 0) {
             setServicesTaskCheck(true)
         } else {
             setServicesTaskCheck(false)
         }
-taskUsers=  globalCommon.loadTaskUsers()
+        loadTaskUsers();
     }, [])
-    const openTaskStatusUpdatePopup = () => {
+    const getPercentCompleteTitle=(percent:any)=>{
+        let result='';
+        StatusArray?.map((status:any)=>{
+            if(status?.value==percent){
+                result=status?.status;
+            }
+        })
+        if(result.length<=0){
+            result=percent+"% Completed"
+        }
+        return result
+    }
+    const loadTaskUsers = async () => {
+        taskUsers = await globalCommon.loadTaskUsers()
+    }
+    const openTaskStatusUpdatePopup = async () => {
+
         let statusValue: any
         let AssignedUsers: any = [];
         let TeamMemberTemp: any = [];
-        TaskApproverBackupArray = props?.item?.Approver;
+        if (props?.item?.Approver?.length > 0) {
+            TaskApproverBackupArray = props?.item?.Approver;
+        }
+
         if (props?.item?.Author != undefined && props?.item?.Author != null) {
             taskUsers?.map((userData: any) => {
                 if (props?.item?.Author.Id == userData?.AssingedToUserId) {
@@ -125,6 +148,27 @@ taskUsers=  globalCommon.loadTaskUsers()
     }
     const UpdateTaskStatus = async () => {
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (props?.item?.PercentComplete ? props?.item?.PercentComplete : null) })
+        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+            TaskAssignedTo?.map((taskInfo) => {
+                AssignedToIds.push(taskInfo.Id);
+            })
+        }
+
+        if (ApproverData != undefined && ApproverData?.length > 0) {
+            ApproverData?.map((ApproverInfo) => {
+                ApproverIds.push(ApproverInfo.Id);
+            })
+        }
+        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+            TaskTeamMembers?.map((taskInfo) => {
+                TeamMemberIds.push(taskInfo.Id);
+            })
+        }
+        if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+            TaskResponsibleTeam?.map((taskInfo) => {
+                ResponsibleTeamIds.push(taskInfo.Id);
+            })
+        }
         StatusArray?.map((array: any) => {
             if (props?.item?.PercentComplete == array.value) {
                 setPercentCompleteStatus(array.status);
@@ -132,13 +176,17 @@ taskUsers=  globalCommon.loadTaskUsers()
             }
         })
         setPercentCompleteCheck(false);
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-        await web.lists.getById('ec34b38f-0669-480a-910c-f84e92e58adf').items.getById(props?.item?.Id).update({
-            PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus)) : (props?.item?.PercentComplete ? (props?.item?.PercentComplete) : null),
-
+        let web = new Web(props?.item?.siteUrl);
+        await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
+            PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (props?.item?.PercentComplete ? (props?.item?.PercentComplete / 100) : null),
+            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
+            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+            ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] }
         })
             .then((res: any) => {
                 console.log(res);
+                props?.callBack();
                 setTaskStatusPopup(false);
             })
 
@@ -175,6 +223,24 @@ taskUsers=  globalCommon.loadTaskUsers()
                 }
             })
         })
+    }
+    const isItemExistID = (item: any, array: any) => {
+        let result = false;
+        array?.map((arrayItem: any) => {
+            if (arrayItem?.Id == item.Id || arrayItem?.ID == item.Id || arrayItem?.Id == item.ID || arrayItem?.ID == item.ID) {
+                result = true;
+            }
+        })
+        return result;
+    }
+    const isItemExistTitle = (item: any, array: any) => {
+        let result = false;
+        array?.map((arrayItem: any) => {
+            if (arrayItem?.Title == item) {
+                result = true;
+            }
+        })
+        return result;
     }
     const PercentCompleted = (StatusData: any) => {
 
@@ -259,13 +325,17 @@ taskUsers=  globalCommon.loadTaskUsers()
             })
         }
         if (StatusData.value == 90) {
+            let DesignStatus = false;
+            if (props?.item?.SharewebCategories?.length > 0) {
+                DesignStatus = isItemExistTitle('Design', props?.item?.SharewebCategories?.length)
+            }
             if (props?.item?.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
-            } 
-            // else if (DesignStatus) {
-            //     setWorkingMember(172);
-            // }
-             else {
+            }
+            else if (DesignStatus) {
+                setWorkingMember(172);
+            }
+            else {
                 setWorkingMember(42);
             }
             props.item.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
@@ -289,8 +359,20 @@ taskUsers=  globalCommon.loadTaskUsers()
                         <span style={{ display: "block", width: "100%" }} >
                             &nbsp;
                             {props?.item?.Priority_x0020_Rank}
-                            {props?.item?.Categories?.includes('Immediate') ?
-                                <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a> : " "}
+                            {
+                                props?.item?.SharewebCategories?.map((category: any) => {
+                                    if (category?.Title == 'Immediate') {
+                                        return (
+                                            <a title="Immediate"><img className='ms-1 w-25' src={require("../../../Assets/ICON/urgent.svg")} /> </a>
+                                        )
+                                    }
+                                    if (category?.Title == 'Bottleneck') {
+                                        return (
+                                            <a title="Bottleneck"><img className='ms-1 w-25' src={require("../../../Assets/ICON/bottleneck.svg")} /> </a>
+                                        )
+                                    }
+                                })
+                            }
                         </span>
                     </>
                     : ''
@@ -298,8 +380,51 @@ taskUsers=  globalCommon.loadTaskUsers()
             {
                 props?.columnName == 'PercentComplete' ?
                     <>
+
                         <span style={{ display: "block", width: "100%" }} onClick={() => openTaskStatusUpdatePopup()}>
-                            {props?.item?.PercentComplete}
+                            {/* {props?.item?.PercentComplete} */}
+                            {parseInt(props?.item?.PercentComplete) <= 5 &&
+                                parseInt(props?.item?.PercentComplete) >= 0 ? (
+                                <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                    <img src={require("../../../Assets/ICON/Ellipse.svg")} />
+                                </a>
+                            ) : parseInt(props?.item?.PercentComplete) >= 6 &&
+                                parseInt(props?.item?.PercentComplete) <= 98 ? (
+                                <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                    <img src={require("../../../Assets/ICON/Ellipse-haf.svg")} />
+                                </a>
+                            ) : (
+                                <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                    <img src={require("../../../Assets/ICON/completed.svg")} />
+                                </a>
+                            )}
+                            {
+                                props?.item?.IsTodaysTask ? <>
+                                    {
+                                        props?.item?.AssignedTo?.map((AssignedUser: any) => {
+                                            return (
+                                                taskUsers?.map((user: any) => {
+                                                    if (AssignedUser.Id == user.AssingedToUserId) {
+                                                        return (
+                                                            <span className="user_Member_img">
+                                                                <a
+                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${user.Id}&Name=${user.Title}`}
+                                                                    target="_blank"
+                                                                    data-interception="off"
+                                                                    title={user.Title}
+                                                                >
+                                                                    <img className="imgAuthor" src={user?.Item_x0020_Cover?.Url}></img>
+                                                                </a>
+                                                            </span>
+                                                        )
+                                                    }
+
+                                                })
+                                            )
+                                        })
+                                    }
+                                </> : ''
+                            }
                             {/* {props?.item?.Categories?.includes('Immediate') ?
         <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a> : " "} */}
                         </span>
