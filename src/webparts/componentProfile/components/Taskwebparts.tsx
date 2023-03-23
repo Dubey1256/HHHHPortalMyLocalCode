@@ -81,8 +81,8 @@ export default function ComponentTable({ props }: any) {
             setItems(newItems);
         } else {
             // Item doesn't exist, add it
-            items.Title=item.Title
-            items.Id=item.Id
+            items.Title = item.Title
+            items.Id = item.Id
             setItems([...items, item]);
         }
     }
@@ -1276,7 +1276,7 @@ export default function ComponentTable({ props }: any) {
             if (itrm.SharewebTaskType != undefined) {
                 if (itrm.SharewebTaskType.Title == 'Task') {
                     setActivityDisable(true)
-                  
+
                 }
             }
         }
@@ -1290,11 +1290,11 @@ export default function ComponentTable({ props }: any) {
             if (itrm.SharewebTaskType != undefined) {
                 if (itrm.SharewebTaskType.Title == 'Task') {
                     setActivityDisable(false)
-                  
+
                 }
             }
         }
-      
+
         const list = [...checkedList];
         var flag = true;
         list.forEach((obj: any, index: any) => {
@@ -1583,21 +1583,21 @@ export default function ComponentTable({ props }: any) {
 
     }
     const openActivity = () => {
-        if(MeetingItems.length==0 && childsData.length==0){
+        if (MeetingItems.length == 0 && childsData.length == 0) {
             MeetingItems.push(props)
         }
         if (MeetingItems.length > 1) {
             alert('More than 1 Parents selected, Select only 1 Parent to create a child item')
         }
         else {
-           
+
             if (MeetingItems[0] != undefined) {
-               if(items != undefined && items.length > 0){
-                MeetingItems[0].ClientCategory=[]
-                  items.forEach((val:any)=>{ 
-                    MeetingItems[0].ClientCategory.push(val)
-                  })
-               }
+                if (items != undefined && items.length > 0) {
+                    MeetingItems[0].ClientCategory = []
+                    items.forEach((val: any) => {
+                        MeetingItems[0].ClientCategory.push(val)
+                    })
+                }
                 if (MeetingItems[0].SharewebTaskType != undefined) {
                     if (MeetingItems[0].SharewebTaskType.Title == 'Activities') {
                         setWSPopup(true)
@@ -1606,7 +1606,7 @@ export default function ComponentTable({ props }: any) {
 
                 if (MeetingItems != undefined && MeetingItems[0].SharewebTaskType?.Title == 'Workstream') {
                     setActivityPopup(true)
-                   
+
                 }
                 // if(MeetingItems[0].Portfolio_x0020_Type == 'Service'&& MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined){
                 //     MeetingItems[0]['NoteCall'] = 'Activities';
@@ -1616,7 +1616,7 @@ export default function ComponentTable({ props }: any) {
                     setActivityPopup(true)
                 }
             }
-          
+
         }
 
         if (childsData[0] != undefined && childsData[0].SharewebTaskType != undefined) {
@@ -1627,15 +1627,15 @@ export default function ComponentTable({ props }: any) {
             }
             if (childsData[0] != undefined && childsData[0].SharewebTaskType.Title == 'Workstream') {
                 //setActivityPopup(true)
-                childsData[0].NoteCall='Task'
+                childsData[0].NoteCall = 'Task'
                 setMeetingPopup(true)
                 MeetingItems.push(childsData[0])
             }
         }
 
-       
 
- 
+
+
 
 
 
@@ -1767,16 +1767,16 @@ export default function ComponentTable({ props }: any) {
 
 
 
-    const findUserByName = (name:any) => {
-        const user = AllUsers.filter((user:any) => user.Title === name);
-        let Image:any;
-        if(user[0]?.Item_x0020_Cover!=undefined){
-            Image= user[0].Item_x0020_Cover.Url
-        }else{
-            Image="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+    const findUserByName = (name: any) => {
+        const user = AllUsers.filter((user: any) => user.Title === name);
+        let Image: any;
+        if (user[0]?.Item_x0020_Cover != undefined) {
+            Image = user[0].Item_x0020_Cover.Url
+        } else {
+            Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
         }
-        return user ? Image: null;
-      };
+        return user ? Image : null;
+    };
     return (
         <div className={IsUpdated == 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
             {/* Add activity task */}
@@ -2347,10 +2347,10 @@ export default function ComponentTable({ props }: any) {
                                 Add Activity-Task
                             </button>
                             :*/}
-                             <button type="button" onClick={() => openActivity()} 
-                                disabled={ActivityDisable} className="btn btn-primary" title=" Add Activity-Task">
-                                Add Activity-Task
-                            </button>
+                        <button type="button" onClick={() => openActivity()}
+                            disabled={ActivityDisable} className="btn btn-primary" title=" Add Activity-Task">
+                            Add Activity-Task
+                        </button>
 
                         <button type="button" className="btn btn-primary"
                             onClick={buttonRestructuring}>
@@ -2700,10 +2700,9 @@ export default function ComponentTable({ props }: any) {
 
                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
                                                                     <td style={{ width: "11%" }}>
-                                                                    {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                     {item.Author!=undefined?                        
-                                                                    <img className='AssignUserPhoto' title={item.Author.Title} src={findUserByName(item.Author.Title)} />
-                                                                     :   <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>}
+                                                                        {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
+                                                                        {item.Created != null ? "" : <>
+                                                                            {item.Author != undefined ? <img className='AssignUserPhoto' title={item.Author.Title} src={findUserByName(item.Author.Title)} /> : <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg" />} </>}
                                                                     </td>
 
                                                                     <td style={{ width: "7%" }}>
@@ -2737,7 +2736,7 @@ export default function ComponentTable({ props }: any) {
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "6%" }}>
-                                                                                                <span className='pe-2'><input type="checkbox"   checked={childitem.chekBox} onChange={(e) => onChangeHandler(childitem, item, e)} />
+                                                                                                <span className='pe-2'><input type="checkbox" checked={childitem.chekBox} onChange={(e) => onChangeHandler(childitem, item, e)} />
                                                                                                     <a className="hreflink" data-toggle="modal">
                                                                                                         <img className="icon-sites-img ml20" src={childitem.SiteIcon}></img>
                                                                                                     </a>
@@ -2798,12 +2797,12 @@ export default function ComponentTable({ props }: any) {
                                                                                             </div></td>
                                                                                             <td style={{ width: "9%" }}>{childitem.DueDate}</td>
                                                                                             <td style={{ width: "11%" }}>
-                                                                                            {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
-                                                                                            {childitem.Author!=undefined?                        
-                                                                    <img className='AssignUserPhoto' title={childitem.Author.Title} src={findUserByName(childitem.Author.Title)} />
-                                                                     :   <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>}
-                                                                    </td>                             
-                                                                                              
+                                                                                                {childitem.Created != null ? Moment(childitem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                {childitem.Author != undefined ?
+                                                                                                    <img className='AssignUserPhoto' title={childitem.Author.Title} src={findUserByName(childitem.Author.Title)} />
+                                                                                                    : <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg" />}
+                                                                                            </td>
+
 
                                                                                             <td style={{ width: "7%" }}>
                                                                                                 {/* {childitem.Item_x0020_Type == 'Task' &&
@@ -2846,7 +2845,7 @@ export default function ComponentTable({ props }: any) {
 
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "6%" }}>
-                                                                                                                        <span className='pe-2'><input type="checkbox"  checked={childinew.chekBox} onChange={(e) => onChangeHandler(childinew, item, e)} />
+                                                                                                                        <span className='pe-2'><input type="checkbox" checked={childinew.chekBox} onChange={(e) => onChangeHandler(childinew, item, e)} />
                                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal">
                                                                                                                                 <img className="icon-sites-img ml20" src={childinew.SiteIcon}></img>
                                                                                                                             </a>
@@ -2920,12 +2919,12 @@ export default function ComponentTable({ props }: any) {
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "9%" }}>{childinew.DueDate}</td>
                                                                                                                     <td style={{ width: "11%" }}>
-                                                                                                                    {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                        
-                                                                                                                    {childinew.Author!=undefined?                        
-                                                                    <img className='AssignUserPhoto' title={childinew.Author.Title} src={findUserByName(childinew.Author.Title)} />
-                                                                     :   <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>}
-                                                                               
+                                                                                                                        {childinew.Created != null ? Moment(childinew.Created).format('DD/MM/YYYY') : ""}
+
+                                                                                                                        {childinew.Author != undefined ?
+                                                                                                                            <img className='AssignUserPhoto' title={childinew.Author.Title} src={findUserByName(childinew.Author.Title)} />
+                                                                                                                            : <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg" />}
+
                                                                                                                     </td>
 
                                                                                                                     <td style={{ width: "7%" }}>
@@ -3032,12 +3031,12 @@ export default function ComponentTable({ props }: any) {
 
                                                                                                                                         <td style={{ width: "9%" }}>{subchilditem.DueDate}</td>
                                                                                                                                         <td style={{ width: "11%" }}>
-                                                                                                                                        {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                        {subchilditem.Author!=undefined?                        
-                                                                    <img className='AssignUserPhoto' title={subchilditem.Author.Title} src={findUserByName(subchilditem.Author.Title)} />
-                                                                     :   <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>}
-                                                                               
-                                                                                                                                           
+                                                                                                                                            {subchilditem.Created != null ? Moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                            {subchilditem.Author != undefined ?
+                                                                                                                                                <img className='AssignUserPhoto' title={subchilditem.Author.Title} src={findUserByName(subchilditem.Author.Title)} />
+                                                                                                                                                : <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg" />}
+
+
                                                                                                                                         </td>
 
                                                                                                                                         <td style={{ width: "7%" }}>
@@ -3144,12 +3143,12 @@ export default function ComponentTable({ props }: any) {
 
                                                                                                                                                             <td style={{ width: "9%" }}>{nextsubchilditem.DueDate}</td>
                                                                                                                                                             <td style={{ width: "11%" }}>
-                                                                                                                                                            {nextsubchilditem.Created != null ? Moment(nextsubchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                                            {nextsubchilditem.Author!=undefined?                        
-                                                                    <img className='AssignUserPhoto' title={nextsubchilditem.Author.Title} src={findUserByName(nextsubchilditem.Author.Title)} />
-                                                                     :   <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"/>}
-                                                                               
-                                                                                                                                                                                                                                                                 </td>
+                                                                                                                                                                {nextsubchilditem.Created != null ? Moment(nextsubchilditem.Created).format('DD/MM/YYYY') : ""}
+                                                                                                                                                                {nextsubchilditem.Author != undefined ?
+                                                                                                                                                                    <img className='AssignUserPhoto' title={nextsubchilditem.Author.Title} src={findUserByName(nextsubchilditem.Author.Title)} />
+                                                                                                                                                                    : <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg" />}
+
+                                                                                                                                                            </td>
 
                                                                                                                                                             <td style={{ width: "7%" }}>
                                                                                                                                                                 {/* {nextsubchilditem.Item_x0020_Type == 'Task' &&
