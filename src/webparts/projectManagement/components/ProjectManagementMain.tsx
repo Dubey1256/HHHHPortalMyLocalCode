@@ -1,5 +1,6 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import {
   Button,
   Table,
@@ -336,7 +337,7 @@ const ProjectManagementMain = (props: any) => {
             }
           });
         },
-        function (error) {}
+        function (error) { }
       );
   };
   const tagAndCreateCallBack = React.useCallback(() => {
@@ -356,13 +357,13 @@ const ProjectManagementMain = (props: any) => {
         smartmeta = await web.lists
           .getById(config.listId)
           .items.select(
-            "Id,StartDate,DueDate,Title,PercentComplete,Categories,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+            "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
           )
           .top(4999)
           .filter("ProjectId eq " + QueryId)
           .orderBy("Priority_x0020_Rank", false)
           .expand(
-            "Project,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType"
+            "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
           )
           .get();
         arraycount++;
@@ -409,8 +410,8 @@ const ProjectManagementMain = (props: any) => {
           }
           items.componentString =
             items.Component != undefined &&
-            items.Component != undefined &&
-            items.Component.length > 0
+              items.Component != undefined &&
+              items.Component.length > 0
               ? getComponentasString(items.Component)
               : "";
           items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
@@ -585,16 +586,19 @@ const ProjectManagementMain = (props: any) => {
         accessor: "Priority_x0020_Rank",
         showSortIcon: true,
         Cell: ({ row }: any) => (
+          // <span>
+          //   {row?.original?.Priority_x0020_Rank}
+          //   {
+          //     row?.original?.Categories?.includes('Immediate') ?
+          //       <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a>
+          //       :
+          //       " "
+          //   }
+
+          // </span>
           <span>
-            {row?.original?.Priority_x0020_Rank}
-            {
-              row?.original?.Categories?.includes('Immediate') ? 
-              <a style={{marginRight:'5px'}} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")}  /> </a>
-               : 
-              " "
-            }
-            
-          </span>
+          <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='Priority' item={row?.original} />
+      </span>
         ),
       },
 
@@ -610,34 +614,64 @@ const ProjectManagementMain = (props: any) => {
         accessor: "PercentComplete",
         showSortIcon: true,
         Cell: ({ row }: any) => (
+          // <span>
+          //   {parseInt(row?.original?.PercentComplete) <= 5 &&
+          //     parseInt(row?.original?.PercentComplete) >= 0 ? (
+          //     <a title={row?.original?.PercentComplete}>
+          //       <img
+
+          //         onMouseEnter={row?.original?.PercentComplete}
+          //         src={require("../../../Assets/ICON/Ellipse.svg")}
+          //       />
+          //     </a>
+          //   ) : parseInt(row?.original?.PercentComplete) >= 6 &&
+          //     parseInt(row?.original?.PercentComplete) <= 98 ? (
+          //     <a title={row?.original?.PercentComplete}>
+          //       <img
+
+          //         onMouseEnter={row?.original?.PercentComplete}
+          //         src={require("../../../Assets/ICON/Ellipse-haf.svg")}
+          //       />
+          //     </a>
+          //   ) : (
+          //     <a title={row?.original?.PercentComplete}>
+          //       <img
+
+          //         onMouseEnter={row?.original?.PercentComplete}
+          //         src={require("../../../Assets/ICON/completed.svg")}
+          //       />
+          //     </a>
+          //   )}
+          //   {
+          //     row?.original?.IsTodaysTask?<>
+          //     {
+          //       row?.original?.AssignedTo?.map((AssignedUser:any)=>{
+          //         return(
+          //           AllUser?.map((user:any)=>{
+          //             if(AssignedUser.Id==user.AssingedToUserId){
+          //               return(
+          //                 <span className="user_Member_img">
+          //               <a
+          //                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${user.Id}&Name=${user.Title}`}
+          //                 target="_blank"
+          //                 data-interception="off"
+          //                 title={user.Title}
+          //               >
+          //                 <img className="imgAuthor" src={user?.Item_x0020_Cover?.Url}></img>
+          //               </a>
+          //             </span>
+          //               )
+          //             }
+
+          //           })
+          //         )
+          //       })
+          //     }
+          //     </>:''
+          //   }
+          // </span>
           <span>
-            {parseInt(row.original.PercentComplete) <= 5 &&
-            parseInt(row.original.PercentComplete) >= 0 ? (
-              <a title={row.original.PercentComplete}>
-                <img
-                 
-                  onMouseEnter={row.original.PercentComplete}
-                  src={require("../../../Assets/ICON/Ellipse.svg")}
-                />
-              </a>
-            ) : parseInt(row.original.PercentComplete) >= 6 &&
-              parseInt(row.original.PercentComplete) <= 98 ? (
-              <a title={row.original.PercentComplete}>
-                <img
-                
-                  onMouseEnter={row.original.PercentComplete}
-                  src={require("../../../Assets/ICON/Ellipse-haf.svg")}
-                />
-              </a>
-            ) : (
-              <a title={row.original.PercentComplete}>
-                <img
-                
-                  onMouseEnter={row.original.PercentComplete}
-                  src={require("../../../Assets/ICON/completed.svg")}
-                />
-              </a>
-            )}
+            <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='PercentComplete' item={row?.original} />
           </span>
         ),
       },
@@ -677,14 +711,7 @@ const ProjectManagementMain = (props: any) => {
     headerGroups,
     page,
     prepareRow,
-    visibleColumns,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
     gotoPage,
-    nextPage,
-    previousPage,
     setPageSize,
     state: { pageIndex, pageSize },
   }: any = useTable(
@@ -989,11 +1016,11 @@ const ProjectManagementMain = (props: any) => {
                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                           />
                           <>
-                            
+
                             <a>{Masterdata?.Title} </a>
                           </>
                         </h2>
-                        <span onClick={()=>EditComponentPopup(Masterdata)}
+                        <span onClick={() => EditComponentPopup(Masterdata)}
                           className="mx-2 svg__iconbox svg__icon--edit"
                           title="Edit Project"
                         ></span>
@@ -1035,8 +1062,8 @@ const ProjectManagementMain = (props: any) => {
                                   <a>
                                     {Masterdata.DueDate != null
                                       ? Moment(Masterdata.Created).format(
-                                          "DD/MM/YYYY"
-                                        )
+                                        "DD/MM/YYYY"
+                                      )
                                       : ""}
                                   </a>
                                 </span>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
+import "bootstrap/dist/css/bootstrap.min.css"; import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import {
     useTable,
@@ -8,7 +8,7 @@ import {
     useExpanded,
     usePagination,
     HeaderGroup,
-    
+
 } from 'react-table';
 import { Filter, DefaultColumnFilter } from './filters';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
@@ -17,6 +17,7 @@ import * as Moment from 'moment';
 import { Modal } from 'office-ui-fabric-react';
 import AddProject from './AddProject'
 import EditProjectPopup from './EditProjectPopup';
+import InlineEditingcolumns from './inlineEditingcolumns';
 var siteConfig: any = []
 var AllTaskUsers: any = []
 var Idd: number;
@@ -28,7 +29,7 @@ export default function ProjectOverview() {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [searchedNameData, setSearchedDataName] = React.useState([]);
     const [data, setData] = React.useState([]);
-    const [AllTasks, setAllTasks]:any = React.useState([]);
+    const [AllTasks, setAllTasks]: any = React.useState([]);
     const [inputStatus, setInputStatus] = React.useState(false);
     const [EditmodalIsOpen, setEditmodalIsOpen] = React.useState(false);
     const [AddmodalIsOpen, setAddmodalIsOpen] = React.useState(false);
@@ -70,7 +71,8 @@ export default function ProjectOverview() {
             {
                 internalHeader: 'Title',
                 accessor: 'Title',
-                showSortIcon:true,
+                showSortIcon: true,
+                size: 200,
                 Cell: ({ row }: any) => (
                     <span>
                         <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
@@ -80,40 +82,51 @@ export default function ProjectOverview() {
             {
                 internalHeader: 'Percent Complete',
                 accessor: 'PercentComplete',
-                showSortIcon:true,
-               
+                showSortIcon: true,
+                width: "75px",
+                Cell: ({ row }: any) => (
+                    <span>
+                        <InlineEditingcolumns callBack={CallBack} columnName='PercentComplete' item={row.original} />
+                    </span>
+                ),
             },
             {
                 internalHeader: 'Priority',
                 accessor: 'Priority_x0020_Rank',
-                showSortIcon:true,
-               
+                showSortIcon: true,
+                width: "75px",
+                Cell: ({ row }: any) => (
+                    <span>
+                        <InlineEditingcolumns callBack={CallBack} columnName='Priority' item={row.original} />
+                    </span>
+                ),
             },
             {
                 internalHeader: 'Team Members',
                 accessor: 'TeamMembersSearch',
-                showSortIcon:true,
-               
+                showSortIcon: true,
+                width: "180px",
                 Cell: ({ row }: any) => (
                     <span>
-                       <ShowTaskTeamMembers props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers>
+                        <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers>
                     </span>
                 )
             },
             {
                 internalHeader: 'Due Date',
-                showSortIcon:true,
+                showSortIcon: true,
                 accessor: 'DisplayDueDate',
-                
+                width: "150px",
             },
-            {   internalHeader:'',
+            {
+                internalHeader: '',
                 id: 'Id', // 'id' is required
-                isSorted:false,
-                showSortIcon:false,
-                
+                isSorted: false,
+                showSortIcon: false,
+
                 Cell: ({ row }: any) => (
                     <span>
-                      <img src={require('../../../Assets/ICON/edit_page.svg')}  width="25"  onClick={(e) => EditComponentPopup(row?.original)}></img>
+                        <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(row?.original)}></img>
                     </span>
                 ),
             },
@@ -129,14 +142,7 @@ export default function ProjectOverview() {
         headerGroups,
         page,
         prepareRow,
-        visibleColumns,
-        canPreviousPage,
-        canNextPage,
-        pageOptions,
-        pageCount,
         gotoPage,
-        nextPage,
-        previousPage,
         setPageSize,
         state: { pageIndex, pageSize },
     }: any = useTable(
@@ -144,24 +150,23 @@ export default function ProjectOverview() {
             columns,
             data,
             defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 10 }
+            initialState: { pageIndex: 0, pageSize: 150000 },
         },
         useFilters,
         useSortBy,
         useExpanded,
         usePagination
     );
+    //Inline Editing Callback
+    const inlineEditingCall = (item:any) => {
+        page?.map((tasks:any)=>{
+            if(tasks.Id==item.Id){
+                tasks=item;
+            }
+        })
+    }
     const generateSortingIndicator = (column: any) => {
-        return column.isSorted ? (column.isSortedDesc ? <FaSortDown  /> : <FaSortUp  />) : (column.showSortIcon?<FaSort/> :'');
-    };
-
-    const onChangeInSelect = (event: any) => {
-        setPageSize(Number(event.target.value));
-    };
-
-    const onChangeInInput = (event: any) => {
-        const page = event.target.value ? Number(event.target.value) - 1 : 0;
-        gotoPage(page);
+        return column.isSorted ? (column.isSortedDesc ? <FaSortDown /> : <FaSortUp />) : (column.showSortIcon ? <FaSort /> : '');
     };
 
     const EditComponentPopup = (item: any) => {
@@ -174,97 +179,101 @@ export default function ProjectOverview() {
     }
     const GetMasterData = async () => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let taskUsers:any = [];
+        let taskUsers: any = [];
         let Alltask: any = [];
         // var AllUsers: any = []
         Alltask = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
-            .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title").expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).filter("Item_x0020_Type eq 'Project'").getAll();           
-          
+            .select("Deliverables,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title, Approver/Id, Approver/Title").expand("Approver,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).filter("Item_x0020_Type eq 'Project'").getAll();
+
         // if(taskUsers.ItemType=="Project"){
         // taskUsers.map((item: any) => {
         //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
         //         Alltask.push(item)
         //     }
-            Alltask.map((items: any) => {
-                items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-                
-                items.AssignedUser = []
-                items.TeamMembersSearch='';
-                if (items.AssignedTo != undefined) {
-                    items.AssignedTo.map((taskUser: any) => {
-                        AllTaskUsers.map((user: any) => {
-                            if (user.AssingedToUserId == taskUser.Id) {
-                             if(user?.Title!=undefined){
-                                items.TeamMembersSearch= items.TeamMembersSearch+' '+user?.Title
-                             }
+        Alltask.map((items: any) => {
+            items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+            items.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+            items.listId='EC34B38F-0669-480A-910C-F84E92E58ADF';
+            items.AssignedUser = []
+            items.TeamMembersSearch = '';
+            if (items.AssignedTo != undefined) {
+                items.AssignedTo.map((taskUser: any) => {
+                    AllTaskUsers.map((user: any) => {
+                        if (user.AssingedToUserId == taskUser.Id) {
+                            if (user?.Title != undefined) {
+                                items.TeamMembersSearch = items.TeamMembersSearch + ' ' + user?.Title
                             }
-                        })
+                        }
                     })
-                }
-                items.DisplayDueDate=items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
-            })
+                })
+            }
+            items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
+        })
         // })
         setAllTasks(Alltask);
         setData(Alltask);
     }
     //    Save data in master task list
     const [title, settitle] = React.useState('')
-  
+    const tableStyle = {
+        display: "block",
+        height: "600px",
+        overflow: "auto"
+    };
     //Just Check 
     // AssignedUser: '',
-   
-  
-  
+
+    // const page = React.useMemo(() => data, [data]);
+
     const CallBack = React.useCallback(() => {
-     GetMasterData()
+        GetMasterData()
     }, [])
     console.log(AllTasks);
     return (
         <div>
             <div className="col-sm-12 pad0 smart">
                 <div className="section-event">
-                    <div className="wrapper">
+                    <div >
                         <div className='header-section justify-content-between'>
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
-                        <div className="text-end">
-                        <AddProject CallBack={CallBack} />
+                            <div className="text-end">
+                                <AddProject CallBack={CallBack} />
+                            </div>
                         </div>
-                        </div>
-                       <div>
-                <Table className="SortingTable" bordered hover {...getTableProps()}>
-                    <thead>
-                        {headerGroups.map((headerGroup: any) => (
-                            <tr  {...headerGroup.getHeaderGroupProps()}>
-                                {headerGroup.headers.map((column: any) => (
-                                    <th  {...column.getHeaderProps()} 
-                                   
-                                    >
-                                        <span class="Table-SortingIcon" style={{marginTop:'-6px'}} {...column.getSortByToggleProps()} >
-                                            {column.render('Header')}
-                                            {generateSortingIndicator(column)}
-                                        </span>
-                                        <Filter column={column}  />
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
+                        <div>
+                            <Table className="SortingTable" bordered hover {...getTableProps()}>
+                                <thead>
+                                    {headerGroups.map((headerGroup: any) => (
+                                        <tr  {...headerGroup.getHeaderGroupProps()}>
+                                            {headerGroup.headers.map((column: any) => (
+                                                <th  {...column.getHeaderProps()}
+                                                >
+                                                    <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
+                                                        {column.render('Header')}
+                                                        {generateSortingIndicator(column)}
+                                                    </span>
+                                                    <Filter column={column} />
+                                                </th>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </thead>
 
-                    <tbody {...getTableBodyProps()}>
-                        {page.map((row: any) => {
-                            prepareRow(row)
-                            return (
-                                <tr {...row.getRowProps()}  >
-                                    {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
-                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                <tbody {...getTableBodyProps()}>
+                                    {page?.map((row: any) => {
+                                        prepareRow(row)
+                                        return (
+                                            <tr {...row.getRowProps()}  >
+                                                {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
+                                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                                })}
+                                            </tr>
+                                        )
+
                                     })}
-                                </tr>
-                            )
-
-                        })}
-                    </tbody>
-                </Table>
-                {/* <nav>
+                                </tbody>
+                            </Table>
+                            {/* <nav>
                     <Pagination>
                         <PaginationItem>
                             <PaginationLink onClick={() => previousPage()} disabled={!canPreviousPage}>
@@ -305,11 +314,11 @@ export default function ProjectOverview() {
                         </Col>
                     </Pagination>
                 </nav> */}
-            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-         {IsComponent && <EditProjectPopup props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
+            {IsComponent && <EditProjectPopup props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
 
         </div>
     )
