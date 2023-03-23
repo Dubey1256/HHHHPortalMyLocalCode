@@ -2,6 +2,7 @@ import * as React from "react";
 import { Web } from "sp-pnp-js";
 import * as globalCommon from "../globalComponents/globalCommon";
 import { GlobalConstants } from "../globalComponents/LocalCommon";
+// import teamsImg from '../Assets/ICON/Teams-Logo.png'; 
 function ShowTaskTeamMembers(item: any) {
   const [Display, setDisplay] = React.useState("none");
   const [ItemNew, setItemMember] = React.useState<any>({});
@@ -192,13 +193,15 @@ function ShowTaskTeamMembers(item: any) {
           )}
           {ItemNew.allMembersEmail != null
           ? (
-            <span className="team-icon">
+            <span style={{marginLeft:'5px'}} >
               <a
                 href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew.allMembersEmail}`}
                 target="_blank"
               >
-                <img
-                  src={require('../Assets/ICON/MicrosoftTeams-image.png')} width="25"
+                <img alt="m-teams"
+                width="25px"
+                height="25px"
+                  src={require('../Assets/ICON/Teams-Logo.png')}
                 />
               </a>
             </span>

@@ -14,11 +14,12 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
       environmentMessage,
       hasTeamsContext,
       userDisplayName,
-      pageContext
+      Context,
+      siteUrl
     } = this.props;
     return (
       <div>
-       <ProjectManagementMain pageContext={this.props.pageContext}/> 
+       <ProjectManagementMain pageContext={this.props.Context.pageContext} siteUrl={this.props.siteUrl}/> 
       </div>
     );
   }
