@@ -28,16 +28,16 @@ var BackupCat: any = "";
 var FeedBackItemArray: any = [];
 var NewArray: any = [];
 var feedbackArray: any = [];
-var SiteTypeBackupArray:any =[];
+var SiteTypeBackupArray: any = [];
 const CreateActivity = (props: any) => {
     if (props != undefined) {
         //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         var AllItems = props.props
         SelectedTasks.push(AllItems)
-   if(AllItems.Services != undefined && AllItems.Services.length>0){
-    portfolioId=AllItems.Services[0].Id
-   }
-       
+        if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+            portfolioId = AllItems.Services[0].Id
+        }
+
         console.log(props)
     }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
@@ -63,62 +63,62 @@ const CreateActivity = (props: any) => {
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [IsClientPopup, setIsClientPopup] = React.useState(false);
     const [site, setSite] = React.useState('');
-    var [isActive, setIsActive] = React.useState({ siteType: false,});
+    var [isActive, setIsActive] = React.useState({ siteType: false, });
     const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
 
     var CheckCategory: any = []
     CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Approval", "Id": 227, "ParentId": 225 },
         { "TaxType": "Categories", "Title": "Immediate", "Id": 228, "parentId": 225 });
 
-   
-        if (AllItems.Portfolio_x0020_Type != undefined) {
-            if (AllItems.Portfolio_x0020_Type == 'Component') {
-                smartComponentData.push(AllItems);
-            }
-             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
- 
-            if (AllItems.Portfolio_x0020_Type == 'Service') {
-                linkedComponentData.push(AllItems);
-            }
-            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-           
-             linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
+
+    if (AllItems.Portfolio_x0020_Type != undefined) {
+        if (AllItems.Portfolio_x0020_Type == 'Component') {
+            smartComponentData.push(AllItems);
         }
-        if (AllItems.Portfolio_x0020_Type == undefined) {
-            if(AllItems.Component != undefined && AllItems.Component.length>0){
-           smartComponentData.push(AllItems);
-            }
- 
-            if (AllItems.Services != undefined && AllItems.Services.length>0) {
-                linkedComponentData.push(AllItems);
-            }
-             linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-             smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-       
-       }
-       React.useEffect(()=>{
-        if(AllItems.Clientcategories != undefined && AllItems.Clientcategories.length > 0){
-            AllItems.Clientcategories.forEach((value:any)=>{
+        smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+
+        if (AllItems.Portfolio_x0020_Type == 'Service') {
+            linkedComponentData.push(AllItems);
+        }
+        linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+
+        linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+        smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+    }
+    if (AllItems.Portfolio_x0020_Type == undefined) {
+        if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+            smartComponentData.push(AllItems);
+        }
+
+        if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+            linkedComponentData.push(AllItems);
+        }
+        linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+        smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+
+    }
+    React.useEffect(() => {
+        if (AllItems.Clientcategories != undefined && AllItems.Clientcategories.length > 0) {
+            AllItems.Clientcategories.forEach((value: any) => {
                 ClientCategoriesData.push(value)
             })
         }
         GetSmartMetadata();
-       },[])
-       
-   
+    }, [])
+
+
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
         var siteConfig = []
@@ -140,16 +140,18 @@ const CreateActivity = (props: any) => {
                 site.isSiteSelect = false;
                 SitesTypes.push(site);
             }
+
         })
-        if (AllItems.NoteCall == 'Task') {
+        if (AllItems.NoteCall == 'Task' && AllItems.Item_x0020_Type != 'Component' && AllItems.Item_x0020_Type != 'SubComponent' && AllItems.Item_x0020_Type != 'Feature') {
             SitesTypes?.forEach((type: any) => {
-                 if(type.listId != null){
-                if (type.listId.toLowerCase() == AllItems.listId.toLowerCase()) {
-                    type.IscreateTask = true;
-                } 
-            }
+                if (type.listId != null) {
+                    if (type.listId.toLowerCase() == AllItems.listId.toLowerCase()) {
+                        type.IscreateTask = true;
+                    }
+                }
             })
 
+            if(AllItems.listId != undefined){
             let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
             let componentDetails = [];
             componentDetails = await web.lists
@@ -169,6 +171,35 @@ const CreateActivity = (props: any) => {
             }
             getTasktype();
         }
+        }
+        // if (AllItems.NoteCall == 'Task' && AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') {
+        //     SitesTypes?.forEach((type: any) => {
+        //          if(type.listId != null){
+        //         if (type.listId.toLowerCase() == AllItems.listId.toLowerCase()) {
+        //             type.IscreateTask = true;
+        //         } 
+        //     }
+        //     })
+
+        //     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        //     let componentDetails = [];
+        //     componentDetails = await web.lists
+        //         .getById(AllItems.listId)
+        //         .items
+        //         .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
+        //         .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
+        //         .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
+        //         .orderBy("Created", false)
+        //         .top(4999)
+        //         .get()
+        //     console.log(componentDetails)
+        //     if (componentDetails.length == 0) {
+        //         WorstreamLatestId = 1;
+        //     } else {
+        //         WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+        //     }
+        //     getTasktype();
+        // }
 
         setSiteType(SitesTypes)
         SiteTypeBackupArray = SitesTypes;
@@ -209,30 +240,30 @@ const CreateActivity = (props: any) => {
     const setActiveTile = async (item: keyof typeof save, isActiveItem: keyof typeof isActive, value: any) => {
         AllItems['SiteListItem'] = value.Title
         let saveItem = save;
-        
+
         // if(value.isSiteSelect == true){
         //     value.isSiteSelect=false;
         // }else{
         //     value.isSiteSelect = true;
         //     var isActiveData = isActive;
         // }
-        
-        let tempArray:any = [];
-        SiteTypeBackupArray.forEach((val:any)=>{
-            if(val.Id == value.Id){
-                if(val.IscreateTask){
+
+        let tempArray: any = [];
+        SiteTypeBackupArray.forEach((val: any) => {
+            if (val.Id == value.Id) {
+                if (val.IscreateTask) {
                     val.IscreateTask = false;
-                }else{
+                } else {
                     val.IscreateTask = true;
 
                 }
-                if( val.isSiteSelect){
-                    val.isSiteSelect= false;
-                }else{
+                if (val.isSiteSelect) {
+                    val.isSiteSelect = false;
+                } else {
                     val.isSiteSelect = true;
                 }
                 tempArray.push(val);
-            }else{
+            } else {
                 tempArray.push(val);
             }
         })
@@ -284,10 +315,10 @@ const CreateActivity = (props: any) => {
     };
     const Call = React.useCallback((item1: any, type: any) => {
         if (type == "SmartComponent") {
-            var ComponentData:any=[]
+            var ComponentData: any = []
             if (AllItems != undefined && item1 != undefined) {
                 AllItems.smartComponent = item1.smartComponent;
-                item1.smartComponent.forEach((val:any)=>{
+                item1.smartComponent.forEach((val: any) => {
                     ComponentData.push(val)
                 })
                 setSmartComponentData(ComponentData);
@@ -315,7 +346,7 @@ const CreateActivity = (props: any) => {
             }
         }
         if (type == "ClientCategory") {
-            var Data:any=[]
+            var Data: any = []
             if (item1 != undefined && item1.Clientcategories != "") {
                 var title: any = {};
                 title.Title = item1.Clientcategories;
@@ -331,11 +362,11 @@ const CreateActivity = (props: any) => {
             }
         }
         if (type == "LinkedComponent") {
-            let ServiceData:any=[]
+            let ServiceData: any = []
             if (item1?.linkedComponent?.length > 0) {
                 // Item.props.linkedComponent = item1.linkedComponent;
                 // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-                item1.linkedComponent.forEach((val:any)=>{
+                item1.linkedComponent.forEach((val: any) => {
                     ServiceData.push(val)
                 })
                 setLinkedComponentData(ServiceData);
@@ -343,17 +374,17 @@ const CreateActivity = (props: any) => {
             }
         }
 
-        if (CategoriesData != undefined){
-            CategoriesData.forEach(function(type:any){
-            CheckCategory.forEach(function(val:any){
-                if(type.Id == val.Id){
-                BackupCat = type.Id
-                setcheckedCat(true)
-                }
-              })
+        if (CategoriesData != undefined) {
+            CategoriesData.forEach(function (type: any) {
+                CheckCategory.forEach(function (val: any) {
+                    if (type.Id == val.Id) {
+                        BackupCat = type.Id
+                        setcheckedCat(true)
+                    }
+                })
 
-          })
-        //   setUpdate(update+2)
+            })
+            //   setUpdate(update+2)
         }
         setIsComponentPicker(false);
         setIsComponent(false);
@@ -446,7 +477,34 @@ const CreateActivity = (props: any) => {
             }
             item.SharewebID = SharewebID
         }
+        siteTypess?.forEach(async (val: any) => {
+            if (val.IscreateTask == true) {
+                if (AllItems.NoteCall == 'Task' && AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') {
 
+                    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                    let componentDetails = [];
+                    componentDetails = await web.lists
+                        .getById(val.listId)
+                        .items
+                        .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                        .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
+                        .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + val.Id + "'"))
+                        .orderBy("Created", false)
+                        .top(4999)
+                        .get()
+                    console.log(componentDetails)
+                    if (componentDetails.length == 0) {
+                        WorstreamLatestId = 1;
+                    } else {
+                        WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+                    }
+                    getTasktype();
+                }
+            }
+        })
+    
+    
+    
 
     }
     const closeTaskStatusUpdatePoup = (res: any) => {
@@ -454,13 +512,13 @@ const CreateActivity = (props: any) => {
         props.Call(res);
 
     }
-    
+
     const checkCat = (type: any) => {
-      CheckCategory.map((catTitle: any) => {
-        if (type == catTitle.Title) {
-          NewArray.push(catTitle);
-        }
-      });
+        CheckCategory.map((catTitle: any) => {
+            if (type == catTitle.Title) {
+                NewArray.push(catTitle);
+            }
+        });
     };
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 0) {
@@ -483,9 +541,9 @@ const CreateActivity = (props: any) => {
         var TaskprofileId: any = ''
         if (NewArray != undefined && NewArray.length > 0) {
             NewArray.map((NeitemA: any) => {
-              CategoriesData.push(NeitemA);
+                CategoriesData.push(NeitemA);
             });
-          }
+        }
         var RelevantPortfolioIds: any = []
         var Component: any = []
         smartComponentData.forEach((com: any) => {
@@ -549,12 +607,12 @@ const CreateActivity = (props: any) => {
             }
         })
         var ClientCategory: any = []
-        if(ClientCategoriesData != undefined && ClientCategoriesData.length>0)
-        ClientCategoriesData.map((val:any) => {
-            if (val.Id != undefined) {
-                ClientCategory.push(val.Id)
-            }
-        })
+        if (ClientCategoriesData != undefined && ClientCategoriesData.length > 0)
+            ClientCategoriesData.map((val: any) => {
+                if (val.Id != undefined) {
+                    ClientCategory.push(val.Id)
+                }
+            })
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
@@ -600,7 +658,7 @@ const CreateActivity = (props: any) => {
                         Categories: categoriesItem ? categoriesItem : null,
                         DueDate: date != undefined ? new Date(date).toDateString() : date,
                         SharewebCategoriesId: { "results": CategoryID },
-                       ClientCategoryId:{ "results": ClientCategory},
+                        ClientCategoryId: { "results": ClientCategory },
                         ServicesId: { "results": RelevantPortfolioIds },
                         SharewebTaskTypeId: 1,
                         Body: AllItems.Body,
@@ -702,7 +760,7 @@ const CreateActivity = (props: any) => {
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
                             ParentTaskId: AllItems.Id,
-                            ClientCategoryId:{ "results": ClientCategory},
+                            ClientCategoryId: { "results": ClientCategory },
                             SharewebTaskTypeId: SharewebTasknewTypeId,
                             Body: AllItems.Description,
                             Shareweb_x0020_ID: SharewebID,
@@ -722,6 +780,7 @@ const CreateActivity = (props: any) => {
                         })
                     }
                 }
+
 
             }
         })
@@ -841,7 +900,7 @@ const CreateActivity = (props: any) => {
 
                     <div className={AllItems.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                         <div className='row mt-2 border Create-taskpage'>
-                            {AllItems.NoteCall != 'Task' &&
+                            {(AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') &&
                                 <fieldset>
                                     <legend className="border-bottom fs-6 ">Sites</legend>
                                     <ul className="quick-actions">
@@ -851,7 +910,7 @@ const CreateActivity = (props: any) => {
                                                     {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
                                                         <>
                                                             <li
-                                                                 id={"subcategorytasks" + item.Id} className={item.isSiteSelect? 'mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item)} >
+                                                                id={"subcategorytasks" + item.Id} className={item.isSiteSelect ? 'mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item)} >
                                                                 {/*  */}
                                                                 <a className='text-white text-decoration-none' >
                                                                     <span className="icon-sites">
@@ -870,7 +929,7 @@ const CreateActivity = (props: any) => {
                         </div>
                         <div className='row'>
                             <div className='col-sm-10'>
-                                <div className="row"> 
+                                <div className="row">
                                     <div className="col-sm-10 mb-10 mt-2">
                                         <label className="full_width">
                                             Task Name <a id='siteName'
@@ -890,25 +949,25 @@ const CreateActivity = (props: any) => {
 
                                         />
                                     </div>
-                                    </div>
-                                    <div className='row mt-2'>
+                                </div>
+                                <div className='row mt-2'>
 
-                                        <TeamConfigurationCard ItemInfo={AllItems} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                    <TeamConfigurationCard ItemInfo={AllItems} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
 
+                                </div>
+                                <div className='row'>
+                                    <div className='col-sm-5'>
+                                        <FroalaImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
                                     </div>
-                                    <div className='row'>
-                                        <div className='col-sm-5'>
-                                            <FroalaImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
-                                        </div>
-                                        <div className='col-sm-7'>
-                                            <FroalaCommentBox
-                                                EditorValue={AllItems.Body != undefined ? AllItems.Body : ''}
-                                                callBack={HtmlEditorCallBack}
-                                            >
-                                            </FroalaCommentBox>
-                                        </div>
+                                    <div className='col-sm-7'>
+                                        <FroalaCommentBox
+                                            EditorValue={AllItems.Body != undefined ? AllItems.Body : ''}
+                                            callBack={HtmlEditorCallBack}
+                                        >
+                                        </FroalaCommentBox>
                                     </div>
-                                
+                                </div>
+
                             </div>
 
                             <div className='col-sm-2'>
@@ -1013,7 +1072,7 @@ const CreateActivity = (props: any) => {
                                         {smartComponentData ? smartComponentData?.map((com: any) => {
                                             return (
                                                 <>
-                                                    <div className="d-flex Component-container-edit-task" style={{ width: "81%" }}>
+                                                    <div className="d-flex Component-container-edit-task mb-1" style={{ width: "81%" }}>
                                                         <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                         <a>
                                                             <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
@@ -1085,7 +1144,7 @@ const CreateActivity = (props: any) => {
                                                     <div
                                                         className="col-sm-12 padL-0 checkbox">
                                                         <input type="checkbox"
-                                                             onClick={() => checkCat(item.Title)} />
+                                                            onClick={() => checkCat(item.Title)} />
                                                         <span style={{ marginLeft: "20px" }}> {item.Title}</span>
                                                     </div>
                                                 </>
@@ -1114,7 +1173,7 @@ const CreateActivity = (props: any) => {
                                         })}
                                     </div> : null
                                 }
-                                 <div className="row mt-2">
+                                <div className="row mt-2">
                                     <div className="col-sm-12">
                                         <div className="col-sm-12 padding-0 input-group">
                                             <label className="full_width">Client Category</label>
@@ -1125,7 +1184,7 @@ const CreateActivity = (props: any) => {
                                                 <a className="hreflink" title="Edit Categories">
 
                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                       onClick={()=>EditClientCategory(AllItems)} />
+                                                        onClick={() => EditClientCategory(AllItems)} />
                                                 </a>
                                             </span>
                                         </div>
