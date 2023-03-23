@@ -249,14 +249,14 @@ const LinkedServices = (item: any) => {
             })
             setData(finalData);
         }
-        if (columnName == "Client-Category") { }
-        if (columnName == "Team-Member") { }
-        if (columnName == "Status") { }
-        if (columnName == "Item-Rank") { }
-        if (columnName == "Due-Date") { }
-        if(searchKey.length == 0){
-            setData(LinkedServicesBackupArray);
-        }
+        // if (columnName == "Client-Category") { }
+        // if (columnName == "Team-Member") { }
+        // if (columnName == "Status") { }
+        // if (columnName == "Item-Rank") { }
+        // if (columnName == "Due-Date") { }
+        // if(searchKey.length == 0){
+        //     setData(LinkedServicesBackupArray);
+        // }
     }
 
     const CustomFooter = () => {
