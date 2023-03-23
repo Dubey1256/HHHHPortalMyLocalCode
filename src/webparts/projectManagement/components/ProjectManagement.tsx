@@ -19,7 +19,7 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
     } = this.props;
     return (
       <div>
-       <ProjectManagementMain Context={this.props.Context} siteUrl={this.props.siteUrl}/> 
+       <ProjectManagementMain pageContext={this.props.Context.pageContext} siteUrl={this.props.siteUrl}/> 
       </div>
     );
   }

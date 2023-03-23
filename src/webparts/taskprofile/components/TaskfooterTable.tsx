@@ -612,7 +612,7 @@ function TasksTable(props:any){
 
                     })
             
-                setData((data) => [...data]);
+                setData((data));
             }
 
             const CreateOpenCall = React.useCallback((item) => {
@@ -738,9 +738,10 @@ function TasksTable(props:any){
                 })
                let Items: any = []; Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
                setRestructureChecked(Items);
-               if(TestArray.length ===0)
-               setNewArrayBackup(NewArrayBackup => ([...props.props]));
-              else setNewArrayBackup(NewArrayBackup => ([...TestArray]));
+               if(TestArray.length ===0){
+                TestArray.push(props.props);
+               }
+              setNewArrayBackup(TestArray);
               
         
             }
@@ -788,10 +789,13 @@ function TasksTable(props:any){
             }
             const UpdateTaskRestructure = async function () {
                 var Ids: any = [];
+                let SharewebTaskLevel2No :any ='';
                 if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
                     NewArrayBackup.forEach((obj, index) => {
-                        if ((NewArrayBackup.length - 1) === index)
+                        if ((NewArrayBackup.length - 1) === index){
                             Ids.push(obj.Id);
+                            SharewebTaskLevel2No =obj.SharewebTaskLevel2No;
+                        }
                     })
         
                 }
@@ -801,6 +805,7 @@ function TasksTable(props:any){
                     // EventsId: checkedList[0].Portfolio_x0020_Type === 'Event' ? { "results": Ids } : [],
                     //    '__metadata': { 'type': 'SP.Data.'+checkedList[0].siteType+'ListItem' },
                     ParentTaskId: NewArrayBackup[0].Id,
+                    SharewebTaskLevel2No :SharewebTaskLevel2No,
                 }).then((res: any) => {
                     maidataBackup.forEach((obj, index) => {
                         obj.isRestructureActive = false;
@@ -808,6 +813,7 @@ function TasksTable(props:any){
                             if (obj.childs.length === 0) {
                                 obj.downArrowIcon = '';
                                 obj.RightArrowIcon = '';
+                               
                             }
                         }
                         if (obj.childs != undefined && obj.childs.length > 0) {
@@ -839,25 +845,31 @@ function TasksTable(props:any){
                         }
         
                     })
+                    let flag =true;
                     maidataBackup.forEach((obj, index) => {
+
                         if (obj.Id === Ids[0]) {
                             obj.flag = true;
                             obj.show = true;
+                            flag =false;
+                            obj.SharewebTaskLevel2No =SharewebTaskLevel2No;
                             obj.downArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                             obj.RightArrowIcon = obj.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-        
+                            obj['Shareweb_x0020_ID'] = globalCommon.getTaskId(obj);
                             obj.childs.push(checkedList[0]);
                             obj.childsLength = obj.childs.length;
                         }
                         if (obj.childs != undefined && obj.childs.length > 0) {
                             obj.childs.forEach((sub: any, indexsub: any) => {
-                                sub.isRestructureActive = false;
+                                sub.isRestructureActive = false; 
                                 if (sub.Id === Ids[0]) {
                                     sub.flag = true;
                                     sub.show = true;
+                                    flag =false;
+                                    sub.SharewebTaskLevel2No =SharewebTaskLevel2No;
                                     sub.downArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                                     sub.RightArrowIcon = sub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-        
+                                    sub['Shareweb_x0020_ID'] = globalCommon.getTaskId(sub);
                                     sub.childs.push(checkedList[0]);
                                     sub.childsLength = sub.childs.length
                                 }
@@ -866,9 +878,11 @@ function TasksTable(props:any){
                                         if (newsub.Id === Ids[0]) {
                                             newsub.flag = true;
                                             newsub.show = true;
+                                            flag =false;
+                                            newsub.SharewebTaskLevel2No =SharewebTaskLevel2No;
                                             newsub.downArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                                             newsub.RightArrowIcon = newsub.Portfolio_x0020_Type == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
-        
+                                            newsub['Shareweb_x0020_ID'] = globalCommon.getTaskId(newsub);
                                             newsub.childs.push(checkedList[0]);
                                             newsub.childsLength = newsub.childs.length
         
@@ -883,7 +897,9 @@ function TasksTable(props:any){
                         }
         
                     })
-                    setData(data => ([...maidataBackup]));
+                    if(flag)
+                    maidataBackup.push(checkedList[0]);
+                    setData(maidataBackup);
                     RestruringCloseCall()
                 })
             }

@@ -1,19 +1,19 @@
 import * as React from "react";
-import {Panel, PanelType } from 'office-ui-fabric-react';
-import pnp, { Web} from "sp-pnp-js";
+import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 
 import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp} from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
 import * as moment from "moment";
 var LinkedServicesBackupArray: any = [];
+var ComponentsData: any = [];
 const LinkedServices = (item: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [table, setTable] = React.useState(data);
     const [selectedComponent, setSelectedComponent] = React.useState('');
-    const PopupType:any = item.PopupType;
     React.useEffect(() => {
         if (item.smartComponent != undefined && item.smartComponent.length > 0)
             setSelectedComponent(item.smartComponent[0]);
@@ -24,7 +24,7 @@ const LinkedServices = (item: any) => {
         item.Call(callBack.props, type);
     }
     const setModalIsOpenToFalse = () => {
-        Example(item, "LinkedServices");
+        Example(item, "LinkedComponent");
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
@@ -34,7 +34,7 @@ const LinkedServices = (item: any) => {
             item.props.linkedComponent = [];
             item.props.linkedComponent = CheckBoxData;
         }
-        Example(item, "LinkedServices");
+        Example(item, "LinkedComponent");
         setModalIsOpen(false);
     }
     const handleOpen = (item: any) => {
@@ -53,7 +53,6 @@ const LinkedServices = (item: any) => {
     }
     const GetComponents = async () => {
         var RootComponentsData: any = [];
-        var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
@@ -182,16 +181,73 @@ const LinkedServices = (item: any) => {
         setTable(copy)
     }
 
+    // const ColumnSearchForLinkedServices = (e: any, columnName: any) => {
+    //     let searchKey = e.target.value.toLoserCase();
+    //     let tempArray: any = [];
+    //     if (columnName == "Title") {
+    //         data?.map((dataItem: any) => {
+    //             if (dataItem.Title.toLowerCase() == searchKey) {
+    //                 if (dataItem.Child?.length > 0 && dataItem.Child != null) {
+    //                     dataItem.Child?.map((childItem: any) => {
+    //                         if (childItem.Title.toLoserCase() == searchKey) {
+    //                             tempArray.push(dataItem);
+    //                         }
+    //                     })
+    //                 } else {
+    //                     tempArray.push(dataItem);
+    //                 }
+    //             }
+    //         })
+    //         setData(tempArray);
+    //     }
+    //     if (columnName == "Client-Category") { }
+    //     if (columnName == "Team-Member") { }
+    //     if (columnName == "Status") { }
+    //     if (columnName == "Item-Rank") { }
+    //     if (columnName == "Due-Date") { }
+    //     if(searchKey.length == 0){
+    //         setData(LinkedServicesBackupArray);
+    //     }
+    // }
     const ColumnSearchForLinkedServices = (e: any, columnName: any) => {
-        let searchKey = e.target.value.toLoserCase();
+        let searchKey = e.target.value.toLowerCase();
         let tempArray: any = [];
+        let childs: any = [];
+        if(searchKey == ''){
+            tempArray?.forEach((item:any)=>{
+              item.show=false;
+            })
+            setData(ComponentsData)
+        }
         if (columnName == "Title") {
-            data?.map((dataItem: any) => {
-                if (dataItem.Title.toLowerCase() == searchKey) {
-                    tempArray.push(dataItem);
+            data?.forEach((dataItem: any) => {
+                let IsAvailable= dataItem.Title.toLowerCase().includes(searchKey.toLowerCase())
+                if (IsAvailable) {
+                    tempArray.push(dataItem)
+                } 
+                if(dataItem.Child != undefined && dataItem.Child.length>0){
+                    dataItem.Child.forEach((childData:any)=>{
+                        let IsAvailable = childData.Title.toLowerCase(). includes(searchKey.toLowerCase())
+                        if(IsAvailable){
+                           dataItem.show=true;
+                           childs.push(childData)
+                           tempArray.push(dataItem)
+                        }
+                    })
                 }
             })
-            setData(tempArray);
+           
+            tempArray?.forEach((item:any)=>{
+                item.Child=[]
+                childs?.forEach((childData:any)=>{
+                    if(childData.Parent.Id == item.Id)
+                    item.Child.push(childData)
+                })
+            })
+            const finalData = tempArray.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            setData(finalData);
         }
         if (columnName == "Client-Category") { }
         if (columnName == "Team-Member") { }
@@ -218,7 +274,7 @@ const LinkedServices = (item: any) => {
             isOpen={modalIsOpen}
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
-            isBlocking={modalIsOpen}
+            isBlocking={false}
             onRenderFooter={CustomFooter}
         >
             <div className="serviepannelgreena">
