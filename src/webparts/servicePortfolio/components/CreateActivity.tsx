@@ -34,8 +34,10 @@ const CreateActivity = (props: any) => {
         //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         var AllItems = props.props
         SelectedTasks.push(AllItems)
-
-        portfolioId=AllItems.Services[0].Id
+   if(AllItems.Services != undefined && AllItems.Services.length>0){
+    portfolioId=AllItems.Services[0].Id
+   }
+       
         console.log(props)
     }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
@@ -282,9 +284,13 @@ const CreateActivity = (props: any) => {
     };
     const Call = React.useCallback((item1: any, type: any) => {
         if (type == "SmartComponent") {
+            var ComponentData:any=[]
             if (AllItems != undefined && item1 != undefined) {
                 AllItems.smartComponent = item1.smartComponent;
-                setSmartComponentData(item1.smartComponent);
+                item1.smartComponent.forEach((val:any)=>{
+                    ComponentData.push(val)
+                })
+                setSmartComponentData(ComponentData);
             }
 
         }
@@ -325,10 +331,14 @@ const CreateActivity = (props: any) => {
             }
         }
         if (type == "LinkedComponent") {
+            let ServiceData:any=[]
             if (item1?.linkedComponent?.length > 0) {
                 // Item.props.linkedComponent = item1.linkedComponent;
                 // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-                setLinkedComponentData(item1.linkedComponent);
+                item1.linkedComponent.forEach((val:any)=>{
+                    ServiceData.push(val)
+                })
+                setLinkedComponentData(ServiceData);
                 console.log("Popup component linkedComponent", item1.linkedComponent)
             }
         }

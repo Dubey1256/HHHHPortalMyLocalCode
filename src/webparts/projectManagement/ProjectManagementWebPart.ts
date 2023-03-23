@@ -30,7 +30,9 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        pageContext: this.context.pageContext
+        // pageContext: this.context.pageContext,
+        Context : this.context,
+        siteUrl:this.context.pageContext.web.absoluteUrl
       }
     );
 
