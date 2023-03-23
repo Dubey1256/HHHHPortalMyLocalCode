@@ -47,7 +47,7 @@ import PortfolioTagging from "../../projectmanagementOverviewTool/components/Por
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
-
+var QueryId: any = "";
 let linkedComponentData: any = [];
 let smartComponentData: any = [];
 let portfolioType = "";
@@ -74,7 +74,7 @@ const ProjectManagementMain = (props: any) => {
     compoonents: true,
     services: true,
   });
-  var QueryId: any = "";
+  
   React.useEffect(() => {
     getQueryVariable((e: any) => e);
     GetMasterData();
@@ -1369,15 +1369,17 @@ const ProjectManagementMain = (props: any) => {
               </div>
             </article>
           </div>
-          {/* <div>
+          <div>
             <span>
-            <CommentCard  Context={props.Context}   siteUrl={props.siteUrl} listName={"Master Tasks"} itemID={QueryId}  />
+            {QueryId&&<CommentCard  Context={props.Context}   siteUrl={props.siteUrl} listName={"Master Tasks"} itemID={QueryId}  />}
             </span>
             <span>
-            <SmartInformation  listName={"Master Tasks"} Context={props.Context.pageContext.web} siteUrl={props.siteUrl}  Id={QueryId}    />
+              {
+                QueryId && <SmartInformation  listName={"Master Tasks"} Context={props.Context.pageContext.web} siteurl={props.siteUrl}  Id={QueryId}    />
+              }
+            
             </span>
-          </div> */}
-          
+          </div> 
         </div>
       </div>
 
