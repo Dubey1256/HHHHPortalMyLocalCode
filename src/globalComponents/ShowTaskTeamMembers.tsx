@@ -192,19 +192,13 @@ function ShowTaskTeamMembers(item: any) {
           )}
           {ItemNew.allMembersEmail != null
           ? (
-            <span>
+            <span className="team-icon">
               <a
                 href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew.allMembersEmail}`}
                 target="_blank"
               >
                 <img
-                  style={{
-                    width: "25px",
-                    height: "25px",
-                    borderRadius: "20px",
-                    marginLeft: "5px",
-                  }}
-                  src="https://cdn-icons-png.flaticon.com/512/906/906349.png"
+                  src={require('../Assets/ICON/MicrosoftTeams-image.png')} width="25"
                 />
               </a>
             </span>
