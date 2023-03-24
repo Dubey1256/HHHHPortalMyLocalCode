@@ -82,7 +82,10 @@ const ProjectManagementMain = (props: any) => {
     GetMetaData();
    try{
     var $myDiv = $("#spPageCanvasContent");
-    $myDiv.css("max-width", "2400px");
+    $myDiv.addClass('hundred');
+    var $myDiv = $("#workbenchPageContent");
+    $myDiv.addClass('hundred');
+    $('#Canvas div:first-child').addClass('max-w-Auto');
    }catch(e){
     console.log(e);
    }

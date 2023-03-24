@@ -29,10 +29,13 @@ const inlineEditingcolumns = (props: any) => {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
+    const [impTaskCategoryType, setImpTaskCategoryType] = React.useState([]);
+    const [taskCategoryType, setTaskCategoryType] = React.useState([])
     const [taskStatus, setTaskStatus] = React.useState('');
-    // const [taskPriority, setTaskPriority] = React.useState('');
+    const [taskPriority, setTaskPriority] = React.useState('');
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
+    const [selectedCatId, setSelectedCatId]: any[] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -47,6 +50,7 @@ const inlineEditingcolumns = (props: any) => {
         { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
+
     React.useEffect(() => {
         if (props?.item?.Services?.length > 0) {
             setServicesTaskCheck(true)
@@ -54,6 +58,12 @@ const inlineEditingcolumns = (props: any) => {
             setServicesTaskCheck(false)
         }
 
+        let selectedCategoryId: any = [];
+        props?.item?.SharewebCategories?.map((category: any) => {
+            selectedCategoryId.push(category.Id);
+        })
+        setSelectedCatId(selectedCategoryId);
+        setTaskPriority(props?.item?.Priority_x0020_Rank);
         loadTaskUsers();
         GetSmartMetadata();
     }, [])
@@ -79,11 +89,27 @@ const inlineEditingcolumns = (props: any) => {
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .select("Id,Title,listId,siteUrl,siteName,spfxIconName,Item_x005F_x0020_Cover,ProfileType,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
             .expand('Author,Editor')
             .get();
         AllMetadata = MetaData;
+        let impSharewebCategories: any = [];
+        let SharewebtaskCategories: any = []
+        AllMetadata?.map((metadata: any) => {
+            if (metadata.TaxType == 'Categories' && metadata.ParentID == 145 && metadata.ProfileType == "Feature Type1") {
+                impSharewebCategories.push(metadata);
+            }
+            if (metadata.Title == 'Immediate') {
+                impSharewebCategories.push(metadata);
+            }
+            if (metadata.TaxType == 'Categories' ) {
+                SharewebtaskCategories.push(metadata);
+            }
+
+        })
+        setTaskCategoryType(SharewebtaskCategories);
+        setImpTaskCategoryType(impSharewebCategories);
         Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
         setpriorityRank(Priority)
 
@@ -215,12 +241,12 @@ const inlineEditingcolumns = (props: any) => {
         })
         let priority: any;
         let priorityRank = 4;
-        if (props?.item?.Priority_x0020_Rank === undefined || parseInt(props?.item?.Priority_x0020_Rank) <= 0) {
+        if (taskPriority === undefined || parseInt(taskPriority) <= 0) {
             priorityRank = 4;
             priority = '(2) Normal';
         }
         else {
-            priorityRank = parseInt(props?.item?.Priority_x0020_Rank);
+            priorityRank = parseInt(taskPriority);
             if (priorityRank >= 8 && priorityRank <= 10) {
                 priority = '(1) High';
             }
@@ -231,6 +257,19 @@ const inlineEditingcolumns = (props: any) => {
                 priority = '(3) Low';
             }
         }
+        let CategoryTitle: any;
+        selectedCatId?.map((category: any) => {
+            taskCategoryType?.map((item: any) => {
+                if (category === item.Id) {
+                    if (CategoryTitle === undefined) {
+                        CategoryTitle = item.Title + ';';
+                    } else {
+                        CategoryTitle += item.Title + ';';
+                    }
+                }
+            })
+
+        })
 
         setPercentCompleteCheck(false);
         let web = new Web(props?.item?.siteUrl);
@@ -241,7 +280,9 @@ const inlineEditingcolumns = (props: any) => {
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             "Priority": priority,
-            "Priority_x0020_Rank": priorityRank
+            "Categories": CategoryTitle,
+            "Priority_x0020_Rank": priorityRank,
+            SharewebCategoriesId: { "results": selectedCatId },
         })
             .then((res: any) => {
                 console.log(res);
@@ -415,6 +456,15 @@ const inlineEditingcolumns = (props: any) => {
             setTaskPriorityPopup(true)
         }
     }
+    const handleCategoryChange = (event: any, CategoryId: any) => {
+        if (event.target.checked) {
+            setSelectedCatId([...selectedCatId, CategoryId]);
+          } else {
+            setSelectedCatId(selectedCatId.filter((val:any) => val !== CategoryId));
+          }
+       
+
+    }
     return (
         <>
             {
@@ -423,20 +473,27 @@ const inlineEditingcolumns = (props: any) => {
                         <span style={{ display: "block", width: "100%" }} onClick={() => openPriotiyEdit()} >
                             &nbsp;
                             {props?.item?.Priority_x0020_Rank}
+                            <span className='ms-1'>
                             {
                                 props?.item?.SharewebCategories?.map((category: any) => {
                                     if (category?.Title == 'Immediate') {
                                         return (
-                                            <a title="Immediate"><img className='ms-1 w-25' src={require("../../../Assets/ICON/urgent.svg")} /> </a>
+                                            <a title="Immediate"><img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} /> </a>
                                         )
                                     }
                                     if (category?.Title == 'Bottleneck') {
                                         return (
-                                            <a title="Bottleneck"><img className='ms-1 w-25' src={require("../../../Assets/ICON/bottleneck.svg")} /> </a>
+                                            <a title="Bottleneck"><img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} /> </a>
+                                        )
+                                    }
+                                    if (category?.Title == 'Favorite') {
+                                        return (
+                                            <a title="Favorite"><img className=' imgAuthor' src={require("../../../Assets/ICON/favourite selected.svg")} /> </a>
                                         )
                                     }
                                 })
                             }
+                            </span>
                         </span>
                     </>
                     : ''
@@ -547,8 +604,8 @@ const inlineEditingcolumns = (props: any) => {
                                             <td>
                                                 <div className="form-check l-radio">
                                                     <input className="form-check-input"
-                                                        type="radio" checked={props?.item?.Priority_x0020_Rank == item.Title}
-                                                        onClick={() => props.item.Priority_x0020_Rank = item.Title} />
+                                                        type="radio" checked={taskPriority == item.Title}
+                                                        onClick={() => setTaskPriority(item.Title)} />
                                                     <label className="form-check-label mx-2">{item.Title}</label>
                                                 </div>
                                             </td>
@@ -558,6 +615,19 @@ const inlineEditingcolumns = (props: any) => {
                             </tbody>
                         </table>
                     </div>
+                    {impTaskCategoryType?.map((option) => (
+                        <div key={option.Id}>
+                            <input
+                                type="checkbox"
+                                id={option.Id}
+                                value={option.Id}
+                                checked={selectedCatId?.includes(option.Id)}
+                                onChange={(event) => handleCategoryChange(event, option.Id)}
+                            />
+                             <a title={option.Title}><img className=' imgAuthor' src={require(`../../../Assets/ICON/${option.spfxIconName}`)} /> </a>
+                            <label htmlFor={option.Id}>{option.Title}</label>
+                        </div>
+                    ))}
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
                             OK
