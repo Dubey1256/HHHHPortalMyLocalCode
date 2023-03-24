@@ -342,10 +342,11 @@ const SmartTimeTotalFunction = (item: any) => {
             {console.log(AllAvailableTitle)}
             {console.log(additionalTime)}
             {smartTimeTotal.toFixed(1)}
-            <span className='openhoverpopup hoverimg' onClick={OpenTimeEntry}>
+            <span className='openhoverpopup hoverimg'>
+            <span className="svg__iconbox svg__icon--clock" onClick={OpenTimeEntry}></span>
 
-                <img className='ms-1' src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} />
-
+                {/* <img className='ms-1' src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png" style={{ width: "22px" }} />
+ */}
 
                 <div className='hoverpopup overlay'>
                     <div className='hoverpopuptitle'>{item.props.Title}</div>
