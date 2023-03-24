@@ -2701,7 +2701,7 @@ export default function ComponentTable({ props }: any) {
                                                                     <td style={{ width: "9%" }}>{item.DueDate}</td>
                                                                     <td style={{ width: "11%" }}>
                                                                         {item.Created != null ? Moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                        {item.Created != null ? "" : <>
+                                                                        {item.Created == null ? "" : <>
                                                                             {item.Author != undefined ? <img className='AssignUserPhoto' title={item.Author.Title} src={findUserByName(item.Author.Title)} /> : <img className='AssignUserPhoto' src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg" />} </>}
                                                                     </td>
 
