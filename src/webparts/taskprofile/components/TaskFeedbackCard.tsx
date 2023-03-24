@@ -42,12 +42,13 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
   constructor(props: ITaskFeedbackProps) {
     super(props);
 
+  
 
     this.state = {
       showcomment: 'none',
       showcomment_subtext: 'none',
-      fbData: this.props?.feedback,
-      index: this.props?.index,
+      fbData: this.props.feedback,
+      index: this.props.index,
       CommenttoPost: '',
       isModalOpen: false,
       emailcomponentopen:false,
@@ -102,7 +103,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       //Add object in feedback
 
       if (this.props.feedback["Comments"] != undefined) {
-        this.props.feedback["Comments"].push(temp);
+        this.props.feedback["Comments"].unshift(temp);
       }
       else {
         this.props.feedback["Comments"] = [temp];
@@ -132,7 +133,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       //Add object in feedback
 
       if (this.props.feedback["Subtext"][j].Comments != undefined) {
-        this.props.feedback["Subtext"][j].Comments.push(temp);
+        this.props.feedback["Subtext"][j].Comments.unshift(temp);
       }
       else {
         this.props.feedback["Subtext"][j]['Comments'] = [temp];
@@ -393,7 +394,11 @@ private approvalcallback(){
                       <div className='d-flex justify-content-between align-items-center'>
                         {fbComment.AuthorName} - {fbComment.Created}
                         <span>
-                          <a className="ps-1" onClick={() => this.openEditModal(fbComment.Title, k, 0, false)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
+                          <a className="ps-1" onClick={() => this.openEditModal(fbComment.Title, k, 0, false)}>
+                            {/* <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img> */}
+                            <img src={require('../../../Assets/ICON/edit_page.svg')} width="25"></img>
+                            
+                            </a>
                           <a className="ps-1" onClick={() => this.clearComment(false, k, 0)}><img src='/_layouts/images/delete.gif'></img></a>
                         </span>
                       </div>
@@ -482,7 +487,10 @@ private approvalcallback(){
                         <div className="d-flex justify-content-between align-items-center">
                           {fbComment.AuthorName} - {fbComment.Created}
                           <span>
-                            <a className="ps-1" onClick={() => this.openEditModal(fbComment.Title, k, j, true)}><img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img></a>
+                            <a className="ps-1" onClick={() => this.openEditModal(fbComment.Title, k, j, true)}>
+                              {/* <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img> */}
+                             <img  src={require('../../../Assets/ICON/edit_page.svg')} width="25"></img>
+                              </a>
                             <a className="ps-1" onClick={() => this.clearComment(true, k, j)}><img src='/_layouts/images/delete.gif'></img></a>
                           </span>
                         </div>
