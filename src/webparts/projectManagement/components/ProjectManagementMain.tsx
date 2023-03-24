@@ -75,11 +75,17 @@ const ProjectManagementMain = (props: any) => {
     compoonents: true,
     services: true,
   });
-  
+
   React.useEffect(() => {
     getQueryVariable((e: any) => e);
     GetMasterData();
     GetMetaData();
+   try{
+    var $myDiv = $("#spPageCanvasContent");
+    $myDiv.css("max-width", "2400px");
+   }catch(e){
+    console.log(e);
+   }
   }, []);
   var showProgressBar = () => {
     $(" #SpfxProgressbar").show();
@@ -89,26 +95,11 @@ const ProjectManagementMain = (props: any) => {
   };
 
   const getQueryVariable = async (variable: any) => {
-    var query = window.location.search.substring(1);
-
+    const params = new URLSearchParams(window.location.search);
+    let query = params.get('ProjectId')
+    QueryId = query;
+    setProjectId(QueryId);
     console.log(query); //"app=article&act=news_content&aid=160990"
-
-    var vars = query.split("&");
-
-    console.log(vars);
-
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
-      QueryId = pair[1];
-      setProjectId(QueryId);
-
-      console.log(pair); //[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ]
-
-      if (pair[0] == variable) {
-        return pair[1];
-      }
-    }
-
     return false;
   };
 
@@ -597,8 +588,8 @@ const ProjectManagementMain = (props: any) => {
 
           // </span>
           <span>
-          <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='Priority' item={row?.original} />
-      </span>
+            <InlineEditingcolumns type='Task' callBack={tagAndCreateCallBack} columnName='Priority' item={row?.original} />
+          </span>
         ),
       },
 
@@ -1398,15 +1389,15 @@ const ProjectManagementMain = (props: any) => {
           </div>
           <div>
             <span>
-            {QueryId&&<CommentCard  Context={props.Context}   siteUrl={props.siteUrl} listName={"Master Tasks"} itemID={QueryId}  />}
+              {QueryId && <CommentCard Context={props.Context} siteUrl={props.siteUrl} listName={"Master Tasks"} itemID={QueryId} />}
             </span>
             <span>
               {
-                QueryId && <SmartInformation  listName={"Master Tasks"} Context={props.Context.pageContext.web} siteurl={props.siteUrl}  Id={QueryId}    />
+                QueryId && <SmartInformation listName={"Master Tasks"} Context={props.Context.pageContext.web} siteurl={props.siteUrl} Id={QueryId} />
               }
-            
+
             </span>
-          </div> 
+          </div>
         </div>
       </div>
 
