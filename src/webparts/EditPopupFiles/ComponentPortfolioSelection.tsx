@@ -456,17 +456,18 @@ const ComponentPortPolioPopup = (item: any) => {
                         })
                      }
     
-               else if (isSearchTermAvailable && (item[Title] != undefined && Title != "ItemRank" && Title != "ClientCategory" && Title != "TeamLeaderUser" )) {
-                 if(item[Title].toLowerCase().includes(val.toLowerCase())){
+                 else if (isSearchTermAvailable && (item[Title] != undefined && Title != "ItemRank" && Title != "ClientCategory" && Title != "TeamLeaderUser"  )) {
+                if(item[Title].toLowerCase().includes(val.toLowerCase())){
                     isSearchTermAvailable = true;
                     getHighlightdata(item, val.toLowerCase());
-                 }   
-                } else
+                }else{
                     isSearchTermAvailable = false;
-            })
-        }else{
+                }
+            
+        }})}
+            else{
             isSearchTermAvailable = false;
-        }
+            }
       
         return isSearchTermAvailable;
     }
