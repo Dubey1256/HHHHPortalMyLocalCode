@@ -4177,7 +4177,12 @@ export default function ComponentTable({ props }: any) {
                       alt="Loading..."
                     />
                   </div>
-                  {data?.length > 0 &&
+                  {data?.length == 0?    
+                  
+                  <div className="border m-2 p-5 text-center noitems">
+<h5 className="opacity-50">No items available</h5>
+</div>:
+               <>   {data?.length > 0 &&
                     data &&
                     data.map(function (item, index) {
                       if (item.flag == true) {
@@ -6236,6 +6241,8 @@ export default function ComponentTable({ props }: any) {
                         );
                       }
                     })}
+                </>}
+
                 </tbody>
               </table>
             </div>
