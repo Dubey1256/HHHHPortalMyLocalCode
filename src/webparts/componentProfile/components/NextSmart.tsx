@@ -237,7 +237,7 @@ export default function Smartinfo() {
                                                 </span>
                                         </td>
                                         <td ><span ></span></td>
-                                        <td><a  title="Edit" ><img src="/_layouts/images/edititem.gif"/></a></td>
+                                        <td><a  title="Edit" ><img width={25} src={require('../../../Assets/ICON/edit_page.svg')}/></a></td>
                                     </tr>
                                 </tbody>
                             </table>
