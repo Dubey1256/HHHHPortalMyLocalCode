@@ -703,9 +703,10 @@ function TasksTable(props: any) {
 
 
             })
+            setOldArrayBackup(ArrayTest)
+            IsShowRestru = true;
         }
-        setOldArrayBackup(ArrayTest)
-        IsShowRestru = true;
+      
         //setData((data) => [...maidataBackup]);
 
         //  }
