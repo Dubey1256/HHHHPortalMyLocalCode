@@ -218,7 +218,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Created"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                       </tr>
                       <tr>

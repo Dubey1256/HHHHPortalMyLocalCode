@@ -2832,7 +2832,7 @@ function ComponentTable(SelectedProp: any) {
                 }
                 if (obj.childs != undefined && obj.childs.length > 0) {
                     obj.childs.forEach((sub: any) => {
-                        if (sub.Item_x0020_Type === 'SubComponent')
+                        if (sub.Item_x0020_Type === 'SubComponent' || sub.Item_x0020_Type === 'Feature')
                             sub.isRestructureActive = true;
                         if (sub.Id === checkedList[0].Id) {
                             ArrayTest.push(...[obj])
@@ -2841,7 +2841,7 @@ function ComponentTable(SelectedProp: any) {
                         }
                         if (sub.childs != undefined && sub.childs.length > 0) {
                             sub.childs.forEach((subchild: any) => {
-                                if (subchild.Item_x0020_Type === 'SubComponent')
+                                if (subchild.Item_x0020_Type === 'SubComponent' || subchild.Item_x0020_Type === 'Feature')
                                     subchild.isRestructureActive = true;
                                 if (subchild.Id === checkedList[0].Id) {
                                     ArrayTest.push(...[obj])
@@ -3940,7 +3940,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                     <td style={{ width: "10%" }}>{item.ItemRank}</td>
                                                                                     <td style={{ width: "10%" }}>{item.DueDate}</td>
                                                                                     <td style={{ width: "3%" }}></td>
-                                                                                    <td style={{ width: "2%" }}> </td>
+                                                                                    <td style={{ width: "2%" }}> {item.siteType === "Master Tasks" && item.Title !== 'Others' && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}</td>
                                                                                     <td style={{ width: "2%" }}>{item.siteType === "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(item)} /></a>}
                                                                                         {item.siteType != "Master Tasks" && item.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(item)} /></a>}</td>
                                                                                     {/* <a onClick={(e) => editProfile(item)}> */}
@@ -4067,7 +4067,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             <td style={{ width: "10%" }}>{childitem.ItemRank}</td>
                                                                                                             <td style={{ width: "10%" }}>{childitem.DueDate}</td>
 
-                                                                                                            <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                            <td style={{ width: "3%" }}>{childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock"></span></a>}</td>
                                                                                                             <td style={{ width: "2%" }}>{childitem.siteType === "Master Tasks" && childitem.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={childitem.Restructuring} onClick={(e) => OpenModal(childitem)} /></a>}</td>
                                                                                                             <td style={{ width: "2%" }}><a data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
                                                                                                                 {childitem.siteType == "Master Tasks" &&
@@ -4202,7 +4202,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                     <td style={{ width: "6%" }}>{childinew.PercentComplete}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.ItemRank}</td>
                                                                                                                                     <td style={{ width: "10%" }}>{childinew.DueDate}</td>
-                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}
+                                                                                                                                    <td style={{ width: "3%" }}>{childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock"  data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet"></span></a>}
                                                                                                                                     </td>
                                                                                                                                     <td style={{ width: "2%" }}>{childinew.siteType === "Master Tasks" && childinew.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={childinew.Restructuring} onClick={(e) => OpenModal(childinew)} /></a>}</td>
                                                                                                                                     <td style={{ width: "2%" }}> {childinew.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(childinew)} />}
@@ -4326,7 +4326,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                             <td style={{ width: "6%" }}>{subchilditem.PercentComplete}</td>
                                                                                                                                                             <td style={{ width: "10%" }}>{subchilditem.ItemRank}</td>
                                                                                                                                                             <td style={{ width: "10%" }}>{subchilditem.DueDate}</td>
-                                                                                                                                                            <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                                            <td style={{ width: "3%" }}>{subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock"></span></a>}</td>
                                                                                                                                                             <td style={{ width: "2%" }}></td>
                                                                                                                                                             <td style={{ width: "2%" }}> {subchilditem.siteType != "Master Tasks" && <img data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit" src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(subchilditem)} ></img>}</td>
                                                                                                                                                         </tr>
@@ -4473,7 +4473,7 @@ function ComponentTable(SelectedProp: any) {
                                             </li>
                                             <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                                                 <div onClick={() => CreateMeetingPopups('Task')}>
-                                                    <span className="icon-sites">
+                                                    <span className="icon-sites"> 
                                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
                                                     </span>
                                                     Design
