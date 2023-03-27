@@ -49,19 +49,7 @@ const AddCommentComponent = (FbData: any) => {
     const handleChangeInput = (e: any) => {
         setPostTextInput(e.target.value)
     }
-    const PostButtonClick = (status: any, Index: any) => {
-        let txtComment = postTextInput;
-        if (txtComment != '') {
-            let temp = {
-                AuthorImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
-                AuthorName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : "",
-                Created: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
-                Title: txtComment
-            };
-            FeedBackArray.push(temp);
-        }
-        FbData.callBack(status, FeedBackArray, Index);
-    }
+   
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
         await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
@@ -78,6 +66,21 @@ const AddCommentComponent = (FbData: any) => {
             }
         }
     }
+
+    const PostButtonClick = (status: any, Index: any) => {
+        let txtComment = postTextInput;
+        if (txtComment != '') {
+            let temp = {
+                AuthorImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
+                AuthorName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : "",
+                Created: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+                Title: txtComment
+            };
+            FeedBackArray.push(temp);
+        }
+        FbData.callBack(status, FeedBackArray, Index);
+    }
+
     const editPostCloseFunction = () => {
         setEditPostPanel(false);
     }

@@ -21,10 +21,10 @@ export default function subCommentComponent(SubTextItemsArray: any) {
 
     useEffect(() => {
         if (SubTextItems != undefined && SubTextItems.length > 0) {
-            setSubCommentsData(SubTextItems);
-            setUpdatedFeedBackChildArray(SubTextItems);
             SubTextItems.map((subItem: any) => {
                 ChildArray.push(subItem);
+                UpdatedFeedBackChildArray.push(subItem);
+                subCommentsData.push(subItem);
             })
             setBtnStatus(true)
         } else {
@@ -53,6 +53,21 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         setBtnStatus(true);
     }
 
+    const addSubRowInDiv = () => {
+        const object = {
+            Completed: "",
+            Title: "",
+            text: "",
+            Phone: "",
+            LowImportance: "",
+            HighImportance: "",
+            isShowLight: ""
+        };
+        subCommentsData.push(object);
+        setTexts(!Texts)
+        UpdatedFeedBackChildArray.push(object)
+        setBtnStatus(true);
+    }
     const RemoveSubtexTItem = (dltItem: any, Index: number) => {
         let tempArray: any = []
         subCommentsData.map((array: any, index: number) => {
@@ -72,7 +87,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         if (e.target.matches("textarea")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
-            const copy = subCommentsData;
+            const copy = [...subCommentsData];
             const obj = { ...subCommentsData[id], [name]: value };
             copy[id] = obj;
             setSubCommentsData(copy);
@@ -82,7 +97,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
-            const copy = subCommentsData;
+            const copy = [...subCommentsData];
             const obj = {...subCommentsData[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setSubCommentsData(copy);
@@ -116,15 +131,15 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         } else {
             setPostBtnStatus(true)
         }
-        const copy = subCommentsData;
-        const obj = { ...subCommentsData[Index], Comments: dataPost };
-        copy[Index] = obj;
-        setSubCommentsData(copy);
+        // const copy = [...subCommentsData];
+        // const obj = { ...subCommentsData[Index], Comments: dataPost };
+        // copy[Index] = obj;
+        // setSubCommentsData(copy);
         UpdatedFeedBackChildArray[Index].Comments = dataPost;
         callBack(UpdatedFeedBackChildArray, currentArrayIndex);
     }, [])
     const SmartLightUpdateSubChildComment = (index: any, value: any) => {
-        const copy = subCommentsData;
+        const copy = [...subCommentsData];
         const obj = { ...subCommentsData[index], isShowLight: value };
         copy[index] = obj;
         setSubCommentsData(copy);
@@ -232,7 +247,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                         Data={obj.Comments != null ? obj.Comments : []}
                                         allFbData={SubTextItems}
                                         index={index}
-                                        postStatus={postBtnStatus}
+                                        postStatus={index == Number(currentIndex) && postBtnStatus ? true :false}
                                         allUsers={SubTextItemsArray.allUsers}
                                         callBack={postBtnHandleCallBack}
                                         CancelCallback={postBtnHandleCallBackCancel}
@@ -244,7 +259,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                 })}
                 {btnStatus ? <div className="float-end">
                     <button className="btn btn-primary my-1"
-                        onClick={addSubRow}>Add Sub-Text Box
+                        onClick={addSubRowInDiv}>Add Sub-Text Box
                     </button>
                 </div>
 
@@ -262,4 +277,4 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             {subCommentsData.length ? createSubRows(subCommentsData) : null}
         </div>
     );
-}
+}  

@@ -16,7 +16,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
     const [currentIndex, setCurrentIndex] = useState('');
     const [isDisabled, setIsDisabled] = useState(false);
     const [UpdatedFeedBackParentArray, setUpdatedFeedBackParentArray] = useState([]);
-    const [IndexCount, setIndexCount] = useState(1);
+    let [IndexCount, setIndexCount] = useState(1);
     let ApprovalStatus: any = textItems.ApprovalStatus;
     let SmartLightPercentStatus: any = textItems.SmartLightPercentStatus;
     let SmartLightStatus: any = textItems.SmartLightStatus;
@@ -28,7 +28,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     item.taskIndex = index;
                     State.push(item);
                     setTexts(!Texts);
-                    setIndexCount(IndexCount + 1);
+                    IndexCount = IndexCount + 1;
                     UpdatedFeedBackParentArray.push(item);
                 }
             })
@@ -39,14 +39,37 @@ export default function FroalaCommnetBoxes(textItems: any) {
             setIsDisabled(true);
         }
     }, [])
-    const addRow = () => {
+    const addMainRow = () => {
         // let testTaskIndex = State?.length + 1
-        setIndexCount(IndexCount + 1);
+        let testTaskIndex = UpdatedFeedBackParentArray?.length + 1
+        // setIndexCount(IndexCount + 1);
+        IndexCount = IndexCount + 1;
         const object = {
             Completed: "",
             Title: "",
             text: "",
-            taskIndex: IndexCount,
+            taskIndex: testTaskIndex,
+            SeeAbove: '',
+            Phone: '',
+            LowImportance: '',
+            HighImportance: '',
+            isShowLight: ''
+        };
+        State.push(object);
+        UpdatedFeedBackParentArray.push(object)
+        setTexts(!Texts);
+        setBtnStatus(true);
+    }
+    const addMainRowInDiv = () => {
+        // let testTaskIndex = State?.length + 1
+        let testTaskIndex = UpdatedFeedBackParentArray?.length + 1
+        // setIndexCount(IndexCount + 1);
+        IndexCount = IndexCount + 1;
+        const object = {
+            Completed: "",
+            Title: "",
+            text: "",
+            taskIndex: testTaskIndex,
             SeeAbove: '',
             Phone: '',
             LowImportance: '',
@@ -85,11 +108,11 @@ export default function FroalaCommnetBoxes(textItems: any) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
             UpdatedFeedBackParentArray[id].Title = value;
-            const copy = State;
+            const copy = [...State];
             const obj = { ...State[id], [name]: value };
             copy[id] = obj;
             setState(copy);
-           
+
         }
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
@@ -109,20 +132,20 @@ export default function FroalaCommnetBoxes(textItems: any) {
             if (name == "Completed") {
                 UpdatedFeedBackParentArray[id].Completed = (value == "true" ? false : true)
             }
-            const copy = State;
+            const copy = [...State];
             const obj = { ...State[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setState(copy);
-          
+
         }
         callBack(UpdatedFeedBackParentArray);
     }
 
     const subTextCallBack = useCallback((subTextData: any, subTextIndex: any) => {
-        const copy = State;
-        const obj = { ...State[subTextIndex], Subtext: subTextData};    
-        copy[subTextIndex] = obj;
-        setState(copy);
+        // const copy = State;
+        // const obj = { ...State[subTextIndex], Subtext: subTextData};    
+        // copy[subTextIndex] = obj;
+        // setState(copy);
         UpdatedFeedBackParentArray[subTextIndex].Subtext = subTextData
         callBack(UpdatedFeedBackParentArray);
     }, [])
@@ -141,10 +164,10 @@ export default function FroalaCommnetBoxes(textItems: any) {
         } else {
             setPostBtnStatus(true)
         }
-        const copy = State;
-        const obj = { ...State[Index], Comments: dataPost};    
-        copy[Index] = obj;
-        setState(copy);
+        // const copy = State;
+        // const obj = { ...State[Index], Comments: dataPost};    
+        // copy[Index] = obj;
+        // setState(copy);
         UpdatedFeedBackParentArray[Index].Comments = dataPost;
         callBack(UpdatedFeedBackParentArray);
     }, [])
@@ -273,7 +296,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         Data={obj.Comments != null ? obj.Comments : []}
                                         allFbData={TextItems}
                                         index={currentIndex}
-                                        postStatus={postBtnStatus}
+                                        postStatus={i == Number(currentIndex) && postBtnStatus ? true :false}
                                         allUsers={textItems.allUsers}
                                         callBack={postBtnHandleCallBack}
                                         CancelCallback={postBtnHandleCallBackCancel}
@@ -296,14 +319,14 @@ export default function FroalaCommnetBoxes(textItems: any) {
                         </div>
                     );
                 })}
-                {btnStatus ? <button className="btn btn-primary" onClick={addRow}>Add New Box</button> : null}
+                {btnStatus ? <button className="btn btn-primary" onClick={addMainRowInDiv}>Add New Box</button> : null}
             </div>
         )
     }
 
     return (
         <div className="col mt-2">
-            {State.length ? null : <button className="btn btn-primary" onClick={addRow}>Add New Box</button>}
+            {State.length ? null : <button className="btn btn-primary" onClick={addMainRow}>Add New Box</button>}
             {/* <button onClick={showState}>Show state</button> */}
             {State.length ? createRows(State) : null}
         </div>
