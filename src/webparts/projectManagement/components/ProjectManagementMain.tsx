@@ -69,6 +69,7 @@ const ProjectManagementMain = (props: any) => {
   const [projectTitle, setProjectTitle] = React.useState("");
   const [projectId, setProjectId] = React.useState(null);
   const [starIcon, setStarIcon]: any = React.useState(false);
+  const [createTaskId, setCreateTaskId]=React.useState({});
   const [sidebarStatus, setSidebarStatus] = React.useState({
     sideBarFilter: false,
     dashboard: true,
@@ -734,6 +735,7 @@ const ProjectManagementMain = (props: any) => {
     clickedIndex: any,
     type: any
   ) => {
+    setCreateTaskId({portfolioData: portfolio , portfolioType : type})
     let projectData = Masterdata;
     let displayTasks = AllTasks;
     projectData?.smartComponent?.map((item: any, index: any) => {
@@ -796,7 +798,10 @@ const ProjectManagementMain = (props: any) => {
     gotoPage(page);
   };
   return (
-    <>
+   
+   <div>
+    {
+      QueryId != "" ?   <>
       <div className="row">
         <div
           className="d-flex justify-content-between p-0"
@@ -1024,6 +1029,7 @@ const ProjectManagementMain = (props: any) => {
                               pageContext={props.pageContext}
                               projectId={projectId}
                               callBack={tagAndCreateCallBack}
+                              createComponent= {createTaskId}
                             />
                           )}
                           {projectId && (
@@ -1408,7 +1414,9 @@ const ProjectManagementMain = (props: any) => {
           Call={Call}
         ></PortfolioTagging>
       )}
-    </>
+    </>    :   <div>Project not found</div>
+    }
+   </div>
   );
 };
 export default ProjectManagementMain;
