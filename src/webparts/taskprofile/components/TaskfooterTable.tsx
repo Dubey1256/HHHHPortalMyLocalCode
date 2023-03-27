@@ -392,9 +392,9 @@ function TasksTable(props:any){
                         list.splice(index, 1);
                     }
                 })
-                if(itrm.SharewebTaskType?.Title == 'Task'){
-                    setActivityDisable(false)
-                }
+                // if(itrm.SharewebTaskType?.Title == 'Task'){
+                //     setActivityDisable(false)
+                // }
                 if (flag)
                     list.push(itrm);
                 

@@ -62,7 +62,7 @@ export default function ComponentTable({ props }: any) {
   const [AllUsers, setTaskUser] = React.useState([]);
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const [addModalOpen, setAddModalOpen] = React.useState(false);
-  const [state, setState] = React.useState([]);
+  const [count, setCount] = React.useState(0);
   const [filterGroups, setFilterGroups] = React.useState([]);
   const [filterItems, setfilterItems] = React.useState([]);
   // const [AllMetadata, setMetadata] = React.useState([])
@@ -1700,6 +1700,7 @@ export default function ComponentTable({ props }: any) {
           }
         });
         setData((AllItems) => [...AllItems]);
+        setCount(count+1)
       }
     }
   }, []);
