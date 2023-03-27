@@ -15,29 +15,11 @@ export default function FroalaCommnetBoxes(textItems: any) {
     const [postBtnStatus, setPostBtnStatus] = useState(false);
     const [currentIndex, setCurrentIndex] = useState('');
     const [isDisabled, setIsDisabled] = useState(false);
-    const [TitleValue, setTitleValue] = useState("")
+    const [UpdatedFeedBackParentArray, setUpdatedFeedBackParentArray] = useState([]);
+    const [IndexCount, setIndexCount] = useState(1);
     let ApprovalStatus: any = textItems.ApprovalStatus;
     let SmartLightPercentStatus: any = textItems.SmartLightPercentStatus;
     let SmartLightStatus: any = textItems.SmartLightStatus;
-    var ParentArray: any = [];
-    
-    const addRow = () => {
-        let testTaskIndex = State?.length + 1
-        const object = {
-            Completed: "",
-            Title: "",
-            text: "",
-            taskIndex: testTaskIndex,
-            SeeAbove: '',
-            Phone: '',
-            LowImportance: '',
-            HighImportance: ''
-        };
-        State.push(object);
-        ParentArray.push(object);
-        setTexts(!Texts);
-        setBtnStatus(true);
-    }
     useEffect(() => {
         if (TextItems != undefined && TextItems.length > 0) {
             setBtnStatus(true)
@@ -46,7 +28,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     item.taskIndex = index;
                     State.push(item);
                     setTexts(!Texts);
-                    ParentArray.push(item)
+                    setIndexCount(IndexCount + 1);
+                    UpdatedFeedBackParentArray.push(item);
                 }
             })
         } else {
@@ -56,6 +39,26 @@ export default function FroalaCommnetBoxes(textItems: any) {
             setIsDisabled(true);
         }
     }, [])
+    const addRow = () => {
+        // let testTaskIndex = State?.length + 1
+        setIndexCount(IndexCount + 1);
+        const object = {
+            Completed: "",
+            Title: "",
+            text: "",
+            taskIndex: IndexCount,
+            SeeAbove: '',
+            Phone: '',
+            LowImportance: '',
+            HighImportance: '',
+            isShowLight: ''
+        };
+        State.push(object);
+        UpdatedFeedBackParentArray.push(object)
+        setTexts(!Texts);
+        setBtnStatus(true);
+    }
+
     const RemoveItem = (dltItem: any) => {
         let tempArray: any = []
         State.map((array: any) => {
@@ -63,10 +66,10 @@ export default function FroalaCommnetBoxes(textItems: any) {
                 tempArray.push(array);
             }
         })
-        ParentArray = [];
-        tempArray?.map((tempDataItem: any) => {
-            ParentArray.push(tempDataItem);
-        })
+        // ParentArray = [];
+        // tempArray?.map((tempDataItem: any) => {
+        //     ParentArray.push(tempDataItem);
+        // })
 
         if (tempArray?.length == 0) {
             setBtnStatus(false)
@@ -81,44 +84,55 @@ export default function FroalaCommnetBoxes(textItems: any) {
         if (e.target.matches("textarea")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
-            setTitleValue(value);
-            const copy = [...State];
+            UpdatedFeedBackParentArray[id].Title = value;
+            const copy = State;
             const obj = { ...State[id], [name]: value };
             copy[id] = obj;
             setState(copy);
-            ParentArray = copy;
+           
         }
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
-            const copy = [...State];
+            if (name == "SeeAbove") {
+                UpdatedFeedBackParentArray[id].SeeAbove = (value == "true" ? false : true)
+            }
+            if (name == "Phone") {
+                UpdatedFeedBackParentArray[id].Phone = (value == "true" ? false : true)
+            }
+            if (name == "LowImportance") {
+                UpdatedFeedBackParentArray[id].LowImportance = (value == "true" ? false : true)
+            }
+            if (name == "HighImportance") {
+                UpdatedFeedBackParentArray[id].HighImportance = (value == "true" ? false : true)
+            }
+            if (name == "Completed") {
+                UpdatedFeedBackParentArray[id].Completed = (value == "true" ? false : true)
+            }
+            const copy = State;
             const obj = { ...State[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setState(copy);
-            ParentArray = copy
+          
         }
-        callBack(ParentArray);
+        callBack(UpdatedFeedBackParentArray);
     }
 
     const subTextCallBack = useCallback((subTextData: any, subTextIndex: any) => {
-        const copy = [...State];
-        const obj = { ...State[subTextIndex], Subtext: subTextData, Title: TitleValue };    
+        const copy = State;
+        const obj = { ...State[subTextIndex], Subtext: subTextData};    
         copy[subTextIndex] = obj;
         setState(copy);
-        ParentArray = copy;
-        callBack(ParentArray);
-        // if (subTextIndex != undefined) {
-        //     ParentArray[subTextIndex].Subtext = subTextData;
-        // }
-        // callBack(ParentArray);
+        UpdatedFeedBackParentArray[subTextIndex].Subtext = subTextData
+        callBack(UpdatedFeedBackParentArray);
     }, [])
 
     const postBtnHandle = (index: any) => {
         setCurrentIndex(index)
         if (postBtnStatus) {
-            setPostBtnStatus(false)
+            setPostBtnStatus(false);
         } else {
-            setPostBtnStatus(true)
+            setPostBtnStatus(true);
         }
     }
     const postBtnHandleCallBack = useCallback((status: any, dataPost: any, Index: any) => {
@@ -127,29 +141,29 @@ export default function FroalaCommnetBoxes(textItems: any) {
         } else {
             setPostBtnStatus(true)
         }
-        ParentArray[Index].Comments = dataPost;
-
-        callBack(ParentArray);
-
+        const copy = State;
+        const obj = { ...State[Index], Comments: dataPost};    
+        copy[Index] = obj;
+        setState(copy);
+        UpdatedFeedBackParentArray[Index].Comments = dataPost;
+        callBack(UpdatedFeedBackParentArray);
     }, [])
 
     const SmartLightUpdateSubComment = (index: any, value: any) => {
-        const copy = [...State];
+        const copy = State;
         const obj = { ...State[index], isShowLight: value };
         copy[index] = obj;
         setState(copy);
-        ParentArray = copy;
-        callBack(ParentArray);
+        UpdatedFeedBackParentArray[index].isShowLight = value;
+        callBack(UpdatedFeedBackParentArray);
     }
-
-    const postBtnHandleCallBackCancel =useCallback((status:any)=>{
+    const postBtnHandleCallBackCancel = useCallback((status: any) => {
         if (status) {
-            setPostBtnStatus(false)
+            setPostBtnStatus(false);
         } else {
-            setPostBtnStatus(true)
+            setPostBtnStatus(true);
         }
-    },[])
-
+    }, [])
     function createRows(state: any[]) {
         return (
             <div className="add-text-box">

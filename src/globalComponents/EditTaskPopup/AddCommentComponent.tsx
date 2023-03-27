@@ -4,8 +4,6 @@ import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 
-
-
 const AddCommentComponent = (FbData: any) => {
     const FeedBackData = FbData.Data;
     const [FeedBackArray, setFeedBackArray] = useState([]);
@@ -28,7 +26,7 @@ const AddCommentComponent = (FbData: any) => {
         }
         getCurrentUserDetails();
     }, [])
-
+  
     const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any) => {
         const commentDetails = {
             Title: comment,
@@ -112,7 +110,7 @@ const AddCommentComponent = (FbData: any) => {
                                                 </span>
                                                 <span>
                                                     <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src={require('../../Assets/ICON/edit_page.svg')}  width="25"/></a>
-                                                    <a className="ps-1" onClick={() => clearComment(true, index, 0)}><img src='/_layouts/images/delete.gif'></img></a>
+                                                    <a className="ps-1" onClick={() => clearComment(true, index, 0)}><img src={require('../../Assets/ICON/cross.svg')}  width="25"></img></a>
                                                 </span>
                                             </div>
                                             <div><span dangerouslySetInnerHTML={{ __html: commentDtl.Title }}></span></div>
