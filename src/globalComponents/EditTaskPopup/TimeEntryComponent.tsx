@@ -6,6 +6,7 @@ import * as $ from 'jquery';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import * as Moment from 'moment';
 import pnp, { PermissionKind } from "sp-pnp-js";
+import "bootstrap/dist/css/bootstrap.min.css";
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
 var changeTime: any = 0;

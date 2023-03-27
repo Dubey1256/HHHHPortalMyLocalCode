@@ -576,7 +576,10 @@ const CreateActivity = (props: any) => {
 
         // })
         if (linkedComponentData.length == 0) {
-            RelevantPortfolioIds.push(portfolioId)
+            if(portfolioId != ''){
+                RelevantPortfolioIds.push(portfolioId)
+            }
+            
         }
         if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
             linkedComponentData?.map((com: any) => {
@@ -709,6 +712,9 @@ const CreateActivity = (props: any) => {
                         }
                         if (Task.Events != undefined && Task.Portfolio_x0020_Type == 'Events') {
                             SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                        }
+                        if(AllItems.SharewebTaskLevel1No == undefined){
+                            WorstreamLatestId  = AllItems.SharewebTaskLevel1No;
                         }
                         // var Component: any = []
                         // smartComponentData.forEach((com: any) => {
