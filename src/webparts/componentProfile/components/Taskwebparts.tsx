@@ -1697,9 +1697,11 @@ export default function ComponentTable({ props }: any) {
           val.show = false;
           if (val.Id == MainId) {
             val.childs.push(childItem.data);
+          }else{
+            AllItems.push(childItem.data)
           }
         });
-        setData((AllItems) => [...AllItems]);
+        //setData((AllItems) => [...AllItems]);
         setCount(count+1)
       }
     }

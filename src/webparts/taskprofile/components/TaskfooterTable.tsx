@@ -54,6 +54,7 @@ function TasksTable(props: any) {
     const [RestructureChecked, setRestructureChecked] = React.useState([]);
     const [selectedItem, setSelectedItem] = React.useState([]);
     const [ChengedTitle, setChengedTitle] = React.useState('');
+    //const [count, setcount] = React.useState(0);
     IsUpdated = props.props.Portfolio_x0020_Type;
 
     const GetSmartmetadata = async () => {
@@ -130,6 +131,7 @@ function TasksTable(props: any) {
                 $.each(AllTasksMatches, function (index: any, item: any) {
                     item.isDrafted = false;
                     item.flag = true;
+                    item.show = true;
                     item.siteType = props.props.siteType;
                     item.childs = [];
                     item.listId = props.props.listId;
@@ -295,7 +297,7 @@ function TasksTable(props: any) {
 
         copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
 
-        setTable(copy)
+        //  setTable(copy)
 
     }
     const sortByDng = () => {
@@ -304,35 +306,37 @@ function TasksTable(props: any) {
 
         copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
 
-        setTable(copy)
+        // setTable(copy)
 
     }
     const handleOpenAll = () => {
         setCloseAll(!closeAll)
-        // var Isshow1: any = Isshow == true ? false : true;
-        // data.forEach((obj) => {
-        //     obj.show = Isshow1;
-        //     if (obj.childs != undefined && obj.childs.length > 0) {
-        //         obj.childs.forEach( (subchild:any) => {
-        //             subchild.show = Isshow1;
-        //             if (subchild.childs != undefined && subchild.childs.length > 0) {
-        //                 subchild.childs.forEach((child:any) => {
-        //                     child.show = Isshow1;
-        //                 })
+        var Isshow1: any = Isshow == true ? false : true;
 
-        //             }
-        //         })
+        data.forEach((obj) => {
+            obj.show = Isshow1;
+            if (obj.childs != undefined && obj.childs.length > 0) {
+                obj.childs.forEach((subchild: any) => {
+                    subchild.show = Isshow1;
+                    if (subchild.childs != undefined && subchild.childs.length > 0) {
+                        subchild.childs.forEach((child: any) => {
+                            child.show = Isshow1;
+                        })
 
-        //     }
+                    }
+                })
 
-        // })
-        // setIsshow(Isshow1);
+            }
+
+        })
+        //  count = count +1
+        setCount(count + 1);
         // setData(data => ([...data]));
     };
     const handleOpen = (item: any) => {
-        setIsShowTask(!isShowTask)
-        // item.show = item.show = item.show == true ? false : true;
-        // setData(data => ([...data]));
+        // setIsShowTask(!isShowTask)
+        item.show = item.show == true ? false : true;
+        setCount(count + 1);
 
 
     };
@@ -392,9 +396,9 @@ function TasksTable(props: any) {
                 list.splice(index, 1);
             }
         })
-        // if(itrm.SharewebTaskType?.Title == 'Task'){
-        //     setActivityDisable(false)
-        // }
+        if (itrm.SharewebTaskType?.Title == 'Task') {
+            setActivityDisable(false)
+        }
         if (flag)
             list.push(itrm);
 
@@ -703,14 +707,14 @@ function TasksTable(props: any) {
 
 
             })
+
             setOldArrayBackup(ArrayTest)
             IsShowRestru = true;
-        }
-      
-        //setData((data) => [...maidataBackup]);
+            //setData((data) => [...maidataBackup]);
 
-        //  }
-        // setAddModalOpen(true)
+            //  }
+            // setAddModalOpen(true)
+        }
     }
     const RestruringCloseCall = () => {
         IsShowRestru = false;
@@ -785,7 +789,7 @@ function TasksTable(props: any) {
         await web.lists.getById(checkedList[0].listId).items.getById(checkedList[0].Id).update({
             ParentTaskId: NewArrayBackup[0].Id,
             SharewebTaskTypeId: ChengedTitle === 'Workstream' ? 3 : 2,
-            SharewebTaskLevel2No: (ChengedTitle === 'Task' ? (SharewebTaskLevel2No === undefined ? '' : SharewebTaskLevel2No) : (Numbers + 1)),
+            SharewebTaskLevel2No: (ChengedTitle === 'Task' ? (SharewebTaskLevel2No === undefined ? null : SharewebTaskLevel2No) : (Numbers + 1)),
         }).then((res: any) => {
             if(checkedList[0].SharewebTaskType !=undefined){
                 checkedList[0].SharewebTaskType.Title = ChengedTitle === 'Workstream' ?ChengedTitle :'Task';
@@ -1218,7 +1222,7 @@ function TasksTable(props: any) {
                                     </div>
                                     {data?.length > 0 && data && data.map(function (item, index) {
 
-                                        if (item.flag == true && closeAll == true) {
+                                        if (item.flag == true) {
                                             return (
                                                 <>
                                                     <tr >
@@ -1232,7 +1236,7 @@ function TasksTable(props: any) {
                                                                             {item.childs != undefined && item.childs.length > 0 &&
                                                                                 <a className='hreflink'
                                                                                     title="Tap to expand the childs">
-                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && isShowTask ? <img src={item.downArrowIcon} />
+                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
                                                                                         : <img src={item.RightArrowIcon} />}
                                                                                     </div>
                                                                                 </a>
@@ -1244,9 +1248,9 @@ function TasksTable(props: any) {
 
                                                                         <div className="d-flex">
 
-
-                                                                            <span className='pe-2'><input type="checkbox" checked={item.chekBox} onChange={(e) => onChangeHandler(item, 'Parent', e)} /></span>
-
+                                                                            {item.Title !== 'Tasks' ?
+                                                                                <span className='pe-2'><input type="checkbox" checked={item.chekBox} onChange={(e) => onChangeHandler(item, 'Parent', e)} /></span>
+                                                                                : ''}
                                                                             <span>  <a className="hreflink" data-toggle="modal">
                                                                                 <img className="icon-sites-img ml20" src={item.SiteIcon}></img>
                                                                             </a>
@@ -1347,7 +1351,7 @@ function TasksTable(props: any) {
                                                             </table>
                                                         </td>
                                                     </tr>
-                                                    {isShowTask && item.childs?.length > 0 && (
+                                                    {item.show && item.childs?.length > 0 && (
                                                         <>
                                                             {item.childs.map(function (childitem: any) {
                                                                 if (childitem.flag == true) {
@@ -1873,77 +1877,77 @@ function TasksTable(props: any) {
             {/* <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel> */}
-            <Panel headerText={` Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
-                <div>
-                    {ResturuningOpen ?
-                        <div className='bg-ee p-2 restructurebox'>
-                            <div>
-                                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 " src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
-                                ><span>{NewArrayBackup[0].Title}</span>
-                                </a>  please click Submit to continue.</span> : ''}
-                            </div>
-                            <div> {checkedList != undefined && checkedList.length > 0 && ((checkedList[0].SharewebTaskType.Title === 'Task' || checkedList[0].SharewebTaskType === undefined || checkedList[0].SharewebTaskType.Title === undefined) || (NewArrayBackup != undefined && NewArrayBackup[0] != undefined && NewArrayBackup[0].SharewebTaskType.Title !== 'Workstream')) ?
+            {ResturuningOpen &&
+                <Panel headerText={` Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
+                    <div>
+                        {ResturuningOpen ?
+                            <div className='bg-ee p-2 restructurebox'>
                                 <div>
-                                    <span> {'Select Task Type. :'}<input type="radio" name="fav_language" value="Workstream" checked={ChengedTitle == "Workstream" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Workstream')} /><label className="ms-1"> {'Workstream'} </label></span>
-                                    <span> <input type='radio' name="fav_language" value="Task" checked={ChengedTitle === "Task" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Task')} /> <label className="ms-1"> {'Task'} </label> </span>
+                                    {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 " src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                    ><span>{NewArrayBackup[0].Title}</span>
+                                    </a>  please click Submit to continue.</span> : ''}
                                 </div>
-                                : ''}</div>
-                            <div>
-                                <span>  Old: </span>
-                                {OldArrayBackup.map(function (obj: any, index) {
-                                    if (obj.Title !== 'Tasks') {
+                                <div> {checkedList != undefined && checkedList.length > 0 && ((checkedList[0].SharewebTaskType.Title === 'Task' || checkedList[0].SharewebTaskType === undefined || checkedList[0].SharewebTaskType.Title === undefined) || (NewArrayBackup != undefined && NewArrayBackup[0] != undefined && NewArrayBackup[0].SharewebTaskType.Title !== 'Workstream')) ?
+                                    <div>
+                                        <span> {'Select Task Type. :'}<input type="radio" name="fav_language" value="Workstream" checked={ChengedTitle == "Workstream" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Workstream')} /><label className="ms-1"> {'Workstream'} </label></span>
+                                        <span> <input type='radio' name="fav_language" value="Task" checked={ChengedTitle === "Task" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Task')} /> <label className="ms-1"> {'Task'} </label> </span>
+                                    </div>
+                                    : ''}</div>
+                                <div>
+                                    <span>  Old: </span>
+                                    {OldArrayBackup.map(function (obj: any, index) {
+                                        if (obj.Title !== 'Tasks') {
+                                            return (
+                                                <span> <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                                ><span>{obj.Title}  </span>
+                                                </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
+                                            )
+                                        }
+                                    })}
+
+                                </div>
+                                <div>
+                                    <span>  New:   </span> {NewArrayBackup.map(function (newobj: any, indexnew) {
                                         return (
-                                            <span> <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
-                                            ><span>{obj.Title}  </span>
-                                            </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
+                                            <>
+                                                <span> <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                ><span>{newobj.Title}  </span>
+                                                </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                         )
-                                    }
-                                })}
+                                    })}
+                                    <span> <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                    ><span>{RestructureChecked[0].Title}  </span>
+                                    </a></span>
+                                </div>
+                                {console.log("restructure functio test in div===================================")}
 
                             </div>
-                            <div>
-                                <span>  New:   </span> {NewArrayBackup.map(function (newobj: any, indexnew) {
-                                    return (
-                                        <>
-                                            <span> <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
-                                            ><span>{newobj.Title}  </span>
-                                            </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
-                                    )
-                                })}
-                                <span> <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
-                                ><span>{RestructureChecked[0].Title}  </span>
-                                </a></span>
-                            </div>
-                            {console.log("restructure functio test in div===================================")}
+                            : ''}
+                    </div>
+                    <footer className="mt-2 text-end">
+                        <button type="button" className="btn btn-primary " onClick={(e) => UpdateTaskRestructure()}>Save</button>
 
-                        </div>
-                        : ''}
-                </div>
-                <footer className="mt-2 text-end">
-                    <button type="button" className="btn btn-primary " onClick={(e) => UpdateTaskRestructure()}>Save</button>
-
-                    <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
+                        <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
 
 
-                </footer>
-            </Panel>
+                    </footer>
+                </Panel>
+            }
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
-            <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
+            {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
+            }
         </div>
     )
 
 }
 export default TasksTable;
 
-function setTable(copy: any) {
-    throw new Error('Function not implemented.');
-}

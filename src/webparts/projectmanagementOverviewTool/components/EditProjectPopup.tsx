@@ -1327,7 +1327,10 @@ function EditProjectPopup(item: any) {
     return (
       <>
         <div
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
+          style={{     marginRight: "auto",
+            fontSize: "20px",
+            fontWeight: "600",
+            paddingLeft: "25px" }}
         >
           {`Project > ${EditData.Title}`}
         </div>
@@ -1526,7 +1529,7 @@ function EditProjectPopup(item: any) {
                                 </div>
 
                                 <div className="  inner-tabb">
-                                  <div>
+                                  <div >
                                     {smartComponentData
                                       ? smartComponentData?.map(
                                           (com: any, index: any) => {
@@ -1590,12 +1593,12 @@ function EditProjectPopup(item: any) {
 
                                 <div className="inner-tabb full-width">
                                   {linkedComponentData?.length > 0 ? (
-                                    <div>
+                                    <div className="serviepannelgreena">
                                       {linkedComponentData?.map(
                                         (com: any, index: any) => {
                                           return (
                                             <>
-                                              <div className="d-flex Component-container-edit-task">
+                                              <div className="d-flex Component-container-edit-task block">
                                                 <div>
                                                   <a
                                                     className="hreflink "
