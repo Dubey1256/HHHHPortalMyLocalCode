@@ -547,7 +547,7 @@ const CreateWS = (props: any) => {
                 DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
                 Shareweb_x0020_ID: SharewebID,
                 Priority: AllItems.Priority,
-                SharewebTaskLevel2No: WorstreamLatestId,
+                //SharewebTaskLevel2No: WorstreamLatestId,
                 SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },

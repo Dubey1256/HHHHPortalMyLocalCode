@@ -77,6 +77,20 @@ function EditProjectPopup(item: any) {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
+
+
+  const [activePicker, setActivePicker] = React.useState(null);
+
+  const [datepicker, setdatepicker] = React.useState(false);
+
+  // Date picker closer
+  const handlePickerFocus = (pickerName: any) => {
+    setActivePicker(pickerName);
+  };
+
+  const handlePickerBlur = () => {
+    setActivePicker(null);
+  };
   // $('.ms-Dialog-main .main-153').hide();
   const setModalIsOpenToTrue = (e: any) => {
     // e.preventDefault()
@@ -1308,8 +1322,11 @@ function EditProjectPopup(item: any) {
     return (
       <>
         <div
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
-        >
+          style={{     marginRight: "auto",
+          fontSize: "20px",
+          fontWeight: "600",
+          paddingLeft: "25px" }}
+      >
           {`Project > ${EditData.Title}`}
         </div>
         <Tooltip />
@@ -1571,12 +1588,12 @@ function EditProjectPopup(item: any) {
 
                                 <div className="inner-tabb full-width">
                                   {linkedComponentData?.length > 0 ? (
-                                    <div>
-                                      {linkedComponentData?.map(
-                                        (com: any, index: any) => {
-                                          return (
-                                            <>
-                                              <div className="d-flex Component-container-edit-task">
+                                    <div className="serviepannelgreena">
+                                    {linkedComponentData?.map(
+                                      (com: any, index: any) => {
+                                        return (
+                                          <>
+                                            <div className="d-flex Component-container-edit-task block">
                                                 <div>
                                                   <a
                                                     className="hreflink "
@@ -1616,14 +1633,15 @@ function EditProjectPopup(item: any) {
                               </label>
 
                               <DatePicker
-                                className="form-control"
-                                selected={Startdate}
-                                value={EditData.StartDate}
-                                onChange={handleDatestart}
-                                dateFormat="dd/MM/yyyy"
-                                preventOpenOnFocus
-                                open={EditData.StartDate == Startdate}
-                              />
+                              className="form-control"
+                              selected={Startdate}
+                              value={EditData.StartDate}
+                              onChange={handleDatestart}
+                              dateFormat="dd/MM/yyyy"
+                              onFocus={() => handlePickerFocus("startDate")}
+                              onBlur={handlePickerBlur}
+                              open={activePicker === "startDate"}
+                            />
                             </div>
                           </div>
                           <div className="col-sm-4 ps-0">
@@ -1632,14 +1650,15 @@ function EditProjectPopup(item: any) {
                                 Due Date
                               </label>
                               <DatePicker
-                                className="form-control"
-                                // selected={date}
-                                // value={EditData.DueDate}
-                                // onChange={handleDatedue}
-                                dateFormat="dd/MM/yyyy"
-                                selected={date}
-                                onChange={(date) => setStartdate(date)}
-                              />
+                              className="form-control"
+                              selected={date}
+                              value={EditData.DueDate}
+                              onChange={handleDatedue}
+                              dateFormat="dd/MM/yyyy"
+                              onFocus={() => handlePickerFocus("date")}
+                              onBlur={handlePickerBlur}
+                              open={activePicker === "date"}
+                            />
                             </div>
                           </div>
                           <div className="col-sm-4 ps-0">
@@ -1649,13 +1668,18 @@ function EditProjectPopup(item: any) {
                                 Completion Date{" "}
                               </label>
                               <DatePicker
-                                className="form-control"
-                                name="CompletionDate"
-                                selected={Completiondate}
-                                dateFormat="dd/MM/yyyy"
-                                value={EditData.CompletedDate}
-                                onChange={handleDate}
-                              />
+                              className="form-control"
+                              name="CompletionDate"
+                              selected={Completiondate}
+                              dateFormat="dd/MM/yyyy"
+                              value={EditData.CompletedDate}
+                              onChange={handleDate}
+                              onFocus={() =>
+                                handlePickerFocus("Completiondate")
+                              }
+                              onBlur={handlePickerBlur}
+                              open={activePicker === "Completiondate"}
+                            />
                             </div>
                           </div>
                         </div>
@@ -2433,7 +2457,8 @@ function EditProjectPopup(item: any) {
                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png"
                       />
                       <a
-                        data-interception
+                      target="_blank"
+                      data-interception="off"
                         href={`mailto:?subject=${"Test"}&body=${
                           EditData.component_x0020_link
                         }`}
@@ -2444,7 +2469,8 @@ function EditProjectPopup(item: any) {
                     </span>
                     <span className="p-1">|</span>
                     <a
-                      data-interception
+                    
+                      data-interception="off"
                       className="p-1"
                       href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
                       target="_blank"
