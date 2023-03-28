@@ -1166,7 +1166,11 @@ function CreateTaskComponent(props: any) {
             <div className='Create-taskpage'>
                 <div className='row'>
                     {props?.projectId == undefined ? <div className='col-sm-12'>
-                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a data-interception="off" target='_blank' href={oldTaskIrl} style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
+                    <div className='header-section full-width justify-content-between'>
+                            <h2 style={{ color: "#000066", fontWeight: "600" }}>Create Task
+                            <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
+                            </h2>
+                        </div>
                     </div> : ''}
                     <div className='col-sm-6 ps-0'>
                         <label className='full-width'>Task Name</label>
