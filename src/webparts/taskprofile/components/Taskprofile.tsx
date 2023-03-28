@@ -835,7 +835,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   }
                 }
               })
-            } else if (value.Parent == undefined || value.Parent.Id == undefined) {
+            } else if (value.Parent == undefined) {
               if (value.Item_x0020_Type == 'Component') {
                 flag = true;
                 breadcrumbitem.Parentitem = value;
@@ -881,7 +881,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   }
                 }
               })
-            } else if (value.Parent !=undefined && value.Parent.Id == undefined) {
+            } else if (value.Parent ==undefined ) {
               if (value.Item_x0020_Type == 'Component') {
                 flag = true;
                 breadcrumbitem.Parentitem = value;
@@ -944,12 +944,16 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    private breadcrumbOtherHierarchy(breadcrumbitem: any) {
     let self = this;
     this.allDataOfTask.forEach(function (value: any) {
-      if (self.taskResult.SharewebTaskType != undefined) {
+      if (self.taskResult.SharewebTaskType = undefined) {
         if (self.taskResult.SharewebTaskType.Title == 'Activities' || self.taskResult.SharewebTaskType.Title == 'Project') {
-          if (value.Id == self.taskResult.Id) {
-            value.isLastNode = true;
-            breadcrumbitem.ParentTask = value;
+          
+          if(self.taskResult.ParentTask==undefined){
+            if (value.Id == self.taskResult.Id) {
+              value.isLastNode = true;
+              breadcrumbitem.ParentTask = value;
+            }
           }
+           
         } else if (self.taskResult.SharewebTaskType.Title == 'Workstream' || self.taskResult.SharewebTaskType.Title == 'Step') {
           if (self.taskResult.ParentTask.Id != undefined) {
             if (self.taskResult.ParentTask.Id == value.Id) {
@@ -1101,7 +1105,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem.Subchild.Id}`}>{breadcrumbitem.Subchild.Title}</a>
                       </li>
                     }
-                     {breadcrumbitem.ParentTask != undefined && (this.state.Result["Component"] != null && this.state.Result["Component"].length > 0)||(this.state.Result["Services"] != null && this.state.Result["Services"].length > 0)&&
+                     {breadcrumbitem.ParentTask != undefined&& breadcrumbitem.ParentTask.Shareweb_x0020_ID!=undefined&&
                       <li className="ng-scope" >
 
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem.ParentTask.siteType}`}>{breadcrumbitem.ParentTask.Title}</a>
