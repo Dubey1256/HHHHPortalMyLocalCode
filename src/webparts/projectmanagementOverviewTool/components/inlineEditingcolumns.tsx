@@ -488,7 +488,7 @@ const inlineEditingcolumns = (props: any) => {
                                     }
                                     if (category?.Title == 'Favorite') {
                                         return (
-                                            <a title="Favorite"><img className=' imgAuthor' src={require("../../../Assets/ICON/favourite selected.svg")} /> </a>
+                                            <a title="Favorite"><img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} /> </a>
                                         )
                                     }
                                 })
@@ -507,16 +507,21 @@ const inlineEditingcolumns = (props: any) => {
                             {parseInt(props?.item?.PercentComplete) <= 5 &&
                                 parseInt(props?.item?.PercentComplete) >= 0 ? (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/Ellipse.svg")} />
+                                   
+                                    <span className='svg__iconbox svg__icon--Ellipse'></span>
                                 </a>
                             ) : parseInt(props?.item?.PercentComplete) >= 6 &&
                                 parseInt(props?.item?.PercentComplete) <= 98 ? (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/Ellipse-haf.svg")} />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30" fill="none">
+<circle cx="15" cy="15" r="14" fill="white" stroke="#414141" stroke-width="2"/>
+<path d="M30 15C30 16.9698 29.612 18.9204 28.8582 20.7403C28.1044 22.5601 26.9995 24.2137 25.6066 25.6066C24.2137 26.9995 22.5601 28.1044 20.7403 28.8582C18.9204 29.612 16.9698 30 15 30C13.0302 30 11.0796 29.612 9.25975 28.8582C7.43986 28.1044 5.78628 26.9995 4.3934 25.6066C3.00052 24.2137 1.89563 22.5601 1.14181 20.7403C0.387986 18.9204 -1.72208e-07 16.9698 0 15L15 15L30 15Z" fill="#414141"/>
+</svg>
                                 </a>
                             ) : (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/completed.svg")} />
+                                    
+                                    <span className='svg__iconbox svg__icon--completed'></span>
                                 </a>
                             )}
                             {
