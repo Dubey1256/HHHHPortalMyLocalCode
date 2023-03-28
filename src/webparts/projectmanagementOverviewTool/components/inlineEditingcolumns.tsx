@@ -423,20 +423,20 @@ const inlineEditingcolumns = (props: any) => {
                         <span style={{ display: "block", width: "100%" }} onClick={() => openPriotiyEdit()} >
                             &nbsp;
                             {props?.item?.Priority_x0020_Rank}
-                            {
+                            {/* {
                                 props?.item?.SharewebCategories?.map((category: any) => {
                                     if (category?.Title == 'Immediate') {
                                         return (
-                                            <a title="Immediate"><img className='ms-1 w-25' src={require("../../../Assets/ICON/urgent.svg")} /> </a>
+                                            // <a title="Immediate"><img className='ms-1 w-25' src={require("../../../Assets/ICON/urgent.svg")} /> </a>
                                         )
                                     }
                                     if (category?.Title == 'Bottleneck') {
                                         return (
-                                            <a title="Bottleneck"><img className='ms-1 w-25' src={require("../../../Assets/ICON/bottleneck.svg")} /> </a>
+                                            // <a title="Bottleneck"><img className='ms-1 w-25' src={require("../../../Assets/ICON/bottleneck.svg")} /> </a>
                                         )
                                     }
                                 })
-                            }
+                            } */}
                         </span>
                     </>
                     : ''
@@ -446,20 +446,20 @@ const inlineEditingcolumns = (props: any) => {
                     <>
 
                         <span style={{ display: "block", width: "100%" }} onClick={() => openTaskStatusUpdatePopup()}>
-                            {/* {props?.item?.PercentComplete} */}
+                            {props?.item?.PercentComplete}
                             {parseInt(props?.item?.PercentComplete) <= 5 &&
                                 parseInt(props?.item?.PercentComplete) >= 0 ? (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/Ellipse.svg")} />
+                                    {/* <img src={require("../../../Assets/ICON/Ellipse.svg")} /> */}
                                 </a>
                             ) : parseInt(props?.item?.PercentComplete) >= 6 &&
                                 parseInt(props?.item?.PercentComplete) <= 98 ? (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/Ellipsehaf.svg")} />
+                                    {/* <img src={require("../../../Assets/ICON/Ellipsehaf.svg")} /> */}
                                 </a>
                             ) : (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/completed.svg")} />
+                                    {/* <img src={require("../../../Assets/ICON/completed.svg")} /> */}
                                 </a>
                             )}
                             {
