@@ -882,6 +882,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 }
               })
             } else if (value.Parent ==undefined ) {
+            } else if (value.Parent ==undefined ) {
               if (value.Item_x0020_Type == 'Component') {
                 flag = true;
                 breadcrumbitem.Parentitem = value;
